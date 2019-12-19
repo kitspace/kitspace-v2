@@ -29,6 +29,7 @@ services:
       context: gitea
       dockerfile: Dockerfile
     environment:
+      - ROOT_URL=http://gitea.kitspace.test:3000/
       - USER_UID=1000
       - USER_GID=1000
       - DB_TYPE=postgres

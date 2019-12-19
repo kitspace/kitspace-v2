@@ -17,6 +17,7 @@ function api(path) {
 
 Home.getInitialProps = async ({ req }) => {
    
+  console.log(req.session)
   const cookie = req.headers.cookie
   const session = req.session || {}
   const _csrf = session.Csrf
