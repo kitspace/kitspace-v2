@@ -12,17 +12,19 @@ services:
     volumes:
       - './nginx:/etc/nginx/conf.d'
   frontend:
-      ports:
-        - "1234:3000"
-      build:
-        context: frontend
-        dockerfile: Dockerfile
-      volumes:
-        - ./frontend:/app
-        - /app/node_modules
-          #- /app/.next
+    ports:
+      - "1234:3000"
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+        #- /app/.next
   gitea:
-    image: gitea/gitea:latest
+    build:
+      context: gitea
+      dockerfile: Dockerfile
     environment:
       - USER_UID=1000
       - USER_GID=1000
@@ -55,3 +57,16 @@ services:
         #  - gitea
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
+
+        #graphql-engine:
+        #  image: hasura/graphql-engine:v1.0.0
+        #  ports:
+        #  - "8080:8080"
+        #  depends_on:
+        #  - "postgres"
+        #  restart: always
+        #  environment:
+        #    HASURA_GRAPHQL_DATABASE_URL: postgres://gitea:${POSTGRES_PASSWORD}@postgres:5432/gitea
+        #    HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+        #    ## uncomment next line to set an admin secret
+        #    # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
