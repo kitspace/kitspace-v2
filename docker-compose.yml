@@ -5,16 +5,22 @@ version: "2"
 #    external: false
 
 services:
+  nginx:
+    ports:
+      - "3000:80"
+    image: 'nginx:1.13.10-alpine'
+    volumes:
+      - './nginx:/etc/nginx/conf.d'
   frontend:
       ports:
-        - "3000:3000"
+        - "1234:3000"
       build:
         context: frontend
         dockerfile: Dockerfile
       volumes:
         - ./frontend:/app
         - /app/node_modules
-        - /app/.next
+          #- /app/.next
   gitea:
     image: gitea/gitea:latest
     environment:
