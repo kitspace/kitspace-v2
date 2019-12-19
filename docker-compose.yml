@@ -3,7 +3,7 @@ version: "2"
 services:
   nginx:
     ports:
-      - "3000:80"
+      - "${NGINX_HTTP_PORT}:80"
     image: 'nginx:1.13.10'
     volumes:
       - './nginx:/etc/nginx/conf.d'
@@ -25,7 +25,7 @@ services:
       context: gitea
       dockerfile: Dockerfile
     environment:
-      - ROOT_URL=http://gitea.${KITSPACE_DOMAIN}:3000/
+      - ROOT_URL=http://gitea.${KITSPACE_DOMAIN}:${NGINX_HTTP_PORT}/
       - USER_UID=1000
       - USER_GID=1000
       - DB_TYPE=postgres
