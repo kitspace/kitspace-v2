@@ -2,7 +2,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name localhost;
+    server_name @KITSPACE_DOMAIN;
 
     #error_page 403 /login;
 
@@ -29,10 +29,10 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name gitea.localhost;
+    server_name gitea.@KITSPACE_DOMAIN;
 
     location ^~ / {
-        proxy_cookie_path ~^(.+)$ "$1; domain=.kitspace.test";
+        proxy_cookie_path ~^(.+)$ "$1; domain=.@KITSPACE_DOMAIN";
         proxy_pass http://gitea:3000;
     }
 }
