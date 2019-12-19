@@ -1,0 +1,41 @@
+version: "2"
+
+#networks:
+#  gitea:
+#    external: false
+
+services:
+  gitea:
+    image: gitea/gitea:latest
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - DB_TYPE=postgres
+      - DB_HOST=postgres:5432
+      - DB_NAME=gitea
+      - DB_USER=gitea
+      - DB_PASSWD=${POSTGRES_PASSWORD}
+    restart: always
+    #networks:
+    #  - gitea
+    volumes:
+      - ./volumes/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "222:22"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:9.6
+    restart: always
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=gitea
+        #networks:
+        #  - gitea
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
