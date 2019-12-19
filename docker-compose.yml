@@ -11,6 +11,9 @@ services:
     image: 'nginx:1.13.10-alpine'
     volumes:
       - './nginx:/etc/nginx/conf.d'
+    depends_on:
+      - gitea
+      - frontend
   frontend:
     ports:
       - "1234:3000"
