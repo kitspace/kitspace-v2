@@ -14,6 +14,12 @@ Allow people to:
 ## Development
 
 ### Set Up
+0. Get all the source code
+```
+git clone https://github.com/kitspace/kitspace-using-gitea
+cd kitspace-using-gitea
+git submodule update --init
+```
 
 1. Install [Docker](https://www.docker.com/get-started) and [docker-compose](https://pypi.org/project/docker-compose/) (on Ubuntu: `snap install docker` and `apt install docker-compose`)
 2. Add the following to `/etc/hosts` (or your platform's equivalent)
