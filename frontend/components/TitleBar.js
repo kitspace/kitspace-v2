@@ -1,6 +1,10 @@
 import React from 'react'
 import * as semantic from 'semantic-ui-react'
 
+import 'semantic-ui-css/components/menu.css'
+import 'semantic-ui-css/components/image.css'
+import 'semantic-ui-css/components/button.css'
+import 'semantic-ui-css/components/icon.css'
 import './TitleBar.scss'
 
 export default function TitleBar(props) {

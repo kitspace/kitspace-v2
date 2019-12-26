@@ -2,6 +2,7 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
+import 'semantic-ui-css/components/site.css'
 import './Head.scss'
 
 const defaultDescription = ''
@@ -27,7 +28,6 @@ const Head = props => (
     <meta property="og:image" content={props.ogImage || defaultOGImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <link rel="stylesheet" href="/static/semantic.min.css" />
   </NextHead>
 )
 
