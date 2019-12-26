@@ -1,11 +1,14 @@
 import React from 'react'
 import * as semantic from 'semantic-ui-react'
 
+import logoSvg from '!raw-loader!./logo.svg'
 import 'semantic-ui-css/components/menu.css'
 import 'semantic-ui-css/components/image.css'
 import 'semantic-ui-css/components/button.css'
 import 'semantic-ui-css/components/icon.css'
 import './TitleBar.scss'
+
+const logo = 'data:image/svg+xml;utf-8,' + encodeURIComponent(logoSvg)
 
 export default function TitleBar(props) {
   const isProjectRoute =
@@ -16,7 +19,7 @@ export default function TitleBar(props) {
           <div className="logoContainer">
             <semantic.Menu inverted pointing secondary stackable={false}>
               <a href="/">
-                <semantic.Image className="logoImg" src="/static/logo.svg" />
+                <semantic.Image className="logoImg" src={logo} />
               </a>
               <semantic.Menu.Item
                 as="a"
