@@ -1,14 +1,19 @@
 import React from 'react'
 import Link from 'next/link'
-import Head from '../components/head'
-import Nav from '../components/nav'
 import superagent from 'superagent'
 
+import Head from '../components/Head'
+import TitleBar from '../components/TitleBar'
+
 const Home = ({ name, _csrf, repos }) => (
-  <div>
-    Hi there {name}, {_csrf}
-    <pre>{JSON.stringify(repos, null, 2)}</pre>
-  </div>
+  <>
+    <Head />
+    <TitleBar route="/" />
+    <div>
+      Hi there {name}, {_csrf}
+      <pre>{JSON.stringify(repos, null, 2)}</pre>
+    </div>
+  </>
 )
 
 function api(path) {
@@ -16,7 +21,6 @@ function api(path) {
 }
 
 Home.getInitialProps = async ({ req }) => {
-   
   console.log(req.session)
   const cookie = req.headers.cookie
   const session = req.session || {}
@@ -28,7 +32,7 @@ Home.getInitialProps = async ({ req }) => {
     .set(cookie ? { cookie } : {})
     .then(r => r.body.data)
   let repos = await get
-  console.log({repos})
+  console.log({ repos })
 
   repos = await Promise.all(
     repos.map(async repo => {
