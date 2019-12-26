@@ -3,3 +3,7 @@ services:
   nginx:
     ports:
       - "443:443"
+  frontend:
+    environment:
+      - NODE_ENV=production
+    command: "/bin/bash -c 'yarn build && yarn start'"
