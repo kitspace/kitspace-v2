@@ -16,16 +16,20 @@ const Home = ({ name, _csrf, repos }) => (
   </>
 )
 
-function api(path) {
-  return 'http://gitea:3000/api/v1' + path
-}
+const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+
+const gitea_internal_url = 'http://gitea:3000/api/v1'
+
 
 Home.getInitialProps = async ({ req }) => {
-  req = req || {headers: {}}
+  let api = path => gitea_internal_url + path
+  if (req == null) {
+    api = path => gitea_public_url + path
+  }
+  req = req || { headers: {} }
   const cookie = req.headers.cookie
   const session = req.session || {}
   const _csrf = session.Csrf
-  console.log({cookie, session, _csrf})
   let get = superagent
     .get(api('/repos/search'))
     .query({ sort: 'updated', order: 'desc' })

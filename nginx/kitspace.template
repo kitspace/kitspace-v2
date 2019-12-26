@@ -44,6 +44,8 @@ server {
     server_name gitea.@KITSPACE_DOMAIN;
 
     location ^~ / {
+        add_header 'Access-Control-Allow-Origin' '@KITSPACE_SCHEME://@KITSPACE_DOMAIN:@KITSPACE_PORT';
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
         proxy_cookie_path ~^(.+)$ "$1; domain=.@KITSPACE_DOMAIN";
         proxy_pass http://gitea:3000;
     }

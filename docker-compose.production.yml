@@ -1,9 +1,14 @@
 version: "2"
 services:
   nginx:
+    environment:
+      - RUN_CERTBOT=${RUN_CERTBOT}
+      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN}
+      - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     ports:
+      - "80:80"
       - "443:443"
   frontend:
     environment:
       - NODE_ENV=production
-    command: "/bin/bash -c 'yarn && yarn build && yarn start'"
+    command: "/bin/bash -c 'yarn install && yarn build && yarn start'"

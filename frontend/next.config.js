@@ -3,6 +3,9 @@ const withSass = require('@zeit/next-sass')
 
 module.exports = withSass(
   withCss({
+    env: {
+      KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
+    },
     webpack(config) {
       // Fixes npm packages that depend on `fs` module
       config.node = {
