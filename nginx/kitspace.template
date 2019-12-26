@@ -22,6 +22,9 @@ server {
         proxy_pass http://frontend:3000;
     }
 
+    location /static {
+        proxy_pass http://frontend:3000;
+    }
 
     location ^~ / {
         proxy_set_header    Host                $http_host;

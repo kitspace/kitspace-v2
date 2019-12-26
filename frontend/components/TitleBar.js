@@ -12,7 +12,7 @@ export default function TitleBar(props) {
           <div className="logoContainer">
             <semantic.Menu inverted pointing secondary stackable={false}>
               <a href="/">
-                <semantic.Image className="logoImg" src="/logo.svg" />
+                <semantic.Image className="logoImg" src="/static/logo.svg" />
               </a>
               <semantic.Menu.Item
                 as="a"
