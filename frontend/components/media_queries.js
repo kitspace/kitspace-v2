@@ -1,4 +1,4 @@
-//these are also defined in common.scss if adjustments need to be made, they
+//these are also defined in Head.scss if adjustments need to be made, they
 //need to be made there and here
 const small_width = '(max-width: 946px)'
 const semantic_container = '(max-width: 1199px)'

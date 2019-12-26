@@ -2,6 +2,8 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
+import './Head.scss'
+
 const defaultDescription = ''
 const defaultOGURL = ''
 const defaultOGImage = ''
