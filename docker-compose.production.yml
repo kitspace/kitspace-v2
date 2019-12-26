@@ -6,4 +6,4 @@ services:
   frontend:
     environment:
       - NODE_ENV=production
-    command: "/bin/bash -c 'yarn build && yarn start'"
+    command: "/bin/bash -c 'yarn && yarn build && yarn start'"
