@@ -1,8 +1,5 @@
 import React from 'react'
 import * as semantic from 'semantic-ui-react'
-import ReactResponsive from 'react-responsive'
-
-import mediaQueries from './media_queries'
 
 import './TitleBar.scss'
 
@@ -11,11 +8,9 @@ export default function TitleBar(props) {
     props.route === '/' || RegExp('^/boards/').test(props.route)
   const isSubmitRoute = RegExp('^/submit/').test(props.route)
   return (
-    <ReactResponsive query={mediaQueries.mobile}>
-      {matches => (
         <div className="titleBar">
           <div className="logoContainer">
-            <semantic.Menu inverted pointing secondary stackable={matches}>
+            <semantic.Menu inverted pointing secondary stackable={false}>
               <a href="/">
                 <semantic.Image className="logoImg" src="/logo.svg" />
               </a>
@@ -48,7 +43,6 @@ export default function TitleBar(props) {
               inverted
               pointing
               secondary
-              stackable={matches}
             >
               <semantic.Menu.Item
                 as="a"
@@ -69,7 +63,6 @@ export default function TitleBar(props) {
                 <semantic.Menu.Item>
                   <semantic.Button
                     icon
-                    labelPosition={matches ? null : "left"}
                     color="green"
                     href="/submit"
                   >
@@ -81,7 +74,5 @@ export default function TitleBar(props) {
             </semantic.Menu>
           </div>
         </div>
-      )}
-    </ReactResponsive>
   )
 }
