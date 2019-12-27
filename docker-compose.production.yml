@@ -5,6 +5,8 @@ services:
       - RUN_CERTBOT=${RUN_CERTBOT}
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+    volumes:
+      - /etc/letsencrypt
     ports:
       - "80:80"
       - "443:443"

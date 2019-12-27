@@ -4,13 +4,13 @@ services:
   nginx:
     image: "kitspace/nginx-certbot-plugin:latest"
     ports:
-      - "${KITSPACE_PORT}:80"
+      - "${KITSPACE_DEV_PORT}:80"
     volumes:
       - './nginx:/etc/nginx/conf.d'
     depends_on:
       - gitea
       - frontend
-    command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_PORT/${KITSPACE_PORT}/g' -e 's/@KITSPACE_SCHEME/${KITSPACE_SCHEME}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
+    command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
     restart: unless-stopped
 
   frontend:
@@ -20,7 +20,7 @@ services:
     ports:
       - "1234:3000"
     environment:
-      - "KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}:${KITSPACE_PORT}"
+      - "KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -31,7 +31,7 @@ services:
       context: gitea
       dockerfile: Dockerfile
     environment:
-      - ROOT_URL=http://gitea.${KITSPACE_DOMAIN}:${KITSPACE_PORT}/
+      - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
       - USER_GID=1000
       - DB_TYPE=postgres
