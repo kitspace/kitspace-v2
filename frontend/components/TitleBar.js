@@ -24,17 +24,17 @@ export default function TitleBar(props) {
               <semantic.Image className="logoImg" src={logo} />
             </a>
           </Link>
-          <Link href="/">
+          <Link href="/" passHref>
             <semantic.Menu.Item as="a" active={isProjectRoute || isSubmitRoute}>
               {'Projects'}
             </semantic.Menu.Item>
           </Link>
-          <Link href="/bom-builder">
+          <Link href="/bom-builder" passHref>
             <semantic.Menu.Item as="a" active={props.route === '/bom-builder/'}>
               {'BOM Builder'}
             </semantic.Menu.Item>
           </Link>
-          <Link href="/1-click-bom">
+          <Link href="/1-click-bom" passHref>
             <semantic.Menu.Item as="a" active={props.route === '/1-click-bom/'}>
               {'1-click BOM'}
             </semantic.Menu.Item>
