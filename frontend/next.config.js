@@ -26,11 +26,7 @@ module.exports = withSass(
       return config
     },
     exportPathMap(map) {
-      if (process.env.EXPORT_ERROR_PAGES !== 'true') {
-        console.log('Returning default map')
-        return map
-      }
-      console.log('Exporting static error pages')
+      console.log({map})
       const codes = [
         400,
         401,

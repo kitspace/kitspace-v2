@@ -7,7 +7,7 @@ services:
       - "${KITSPACE_DEV_PORT}:80"
     volumes:
       - './nginx:/etc/nginx/conf.d'
-      - './frontend:/frontend'
+      - './frontend:/srv/frontend'
     depends_on:
       - gitea
       - frontend

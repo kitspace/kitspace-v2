@@ -4,6 +4,5 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-RUN yarn install
 
-CMD [ "/bin/bash", "-c", "yarn && yarn run dev" ]
+CMD [ "/bin/bash", "-c", "yarn install && yarn build && yarn run dev" ]

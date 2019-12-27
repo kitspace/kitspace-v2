@@ -3,11 +3,13 @@ import Error from 'next/error'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
+import Head from '../components/Head'
 import TitleBar from '../components/TitleBar'
 
 const KitspaceError = ({ statusCode }) => {
   return (
     <>
+      <Head />
       <TitleBar />
       <Error statusCode={statusCode} />
     </>

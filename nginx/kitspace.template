@@ -6,12 +6,16 @@ server {
 
     error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status.html;
     location /error/ {
-      root /frontend/error_pages/;
+      root /srv/frontend/static_fallback/;
     }
 
     location ~ ^/_next/static/(.*)$ {
-        root /frontend/;
-        try_files /.next/static/$1 /error_pages/_next/static/$1 =404;
+        root /srv/frontend/;
+        try_files /.next/static/$1 /static_fallback/_next/static/$1 =404;
+    }
+
+    location /static/ {
+        alias /srv/frontend/public/static/;
     }
 
     location /_next {
@@ -21,9 +25,6 @@ server {
         proxy_pass http://frontend:3000;
     }
 
-    location /static {
-        proxy_pass http://frontend:3000;
-    }
 
     location ^~ / {
         proxy_intercept_errors on;
