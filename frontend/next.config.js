@@ -16,7 +16,7 @@ module.exports = withSass(
         use: {
           loader: 'file-loader',
           options: {
-            publicPath: '/error_pages/_next/static/',
+            publicPath: '/_next/static/',
             outputPath: 'static',
             name: '[name].[hash].[ext]',
           },
@@ -25,8 +25,12 @@ module.exports = withSass(
 
       return config
     },
-    assetPrefix: '/error_pages',
-    exportPathMap() {
+    exportPathMap(map) {
+      if (process.env.EXPORT_ERROR_PAGES !== 'true') {
+        console.log('Returning default map')
+        return map
+      }
+      console.log('Exporting static error pages')
       const codes = [
         400,
         401,
@@ -69,9 +73,9 @@ module.exports = withSass(
         510,
         511,
       ]
-      const map = {}
+      map = {}
       codes.forEach(err => {
-        map[err] = { page: '/_error', query: { staticStatusCode: err } }
+        map['/error/' + err] = { page: '/_error', query: { staticStatusCode: err } }
       })
       return map
     },
