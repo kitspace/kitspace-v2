@@ -12,7 +12,6 @@ services:
       - gitea
       - frontend
     command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
-    restart: unless-stopped
 
   frontend:
     build:
@@ -25,7 +24,6 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    restart: unless-stopped
 
   gitea:
     build:
@@ -49,7 +47,6 @@ services:
       - "2222:22"
     depends_on:
       - postgres
-    restart: unless-stopped
 
   postgres:
     image: postgres:9.6
@@ -59,4 +56,3 @@ services:
       - POSTGRES_DB=gitea
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
-    restart: unless-stopped

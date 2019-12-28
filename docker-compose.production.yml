@@ -10,7 +10,13 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    restart: always
   frontend:
     environment:
       - NODE_ENV=production
     command: "/bin/bash -c 'yarn install && yarn build && yarn start'"
+    restart: always
+  postgres:
+    restart: always
+  gitea:
+    restart: always
