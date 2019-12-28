@@ -2,7 +2,7 @@ version: "2"
 services:
   nginx:
     environment:
-      - RUN_CERTBOT=${RUN_CERTBOT}
+      - "RUN_CERTBOT=true"
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     volumes:
