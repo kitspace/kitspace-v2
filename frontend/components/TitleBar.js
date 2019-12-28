@@ -60,7 +60,12 @@ export default function TitleBar(props) {
           </semantic.Menu.Item>
           {isSubmitRoute ? null : (
             <semantic.Menu.Item>
-              <semantic.Button icon color="green" href="/submit">
+              <semantic.Button
+                icon
+                labelPosition="left"
+                color="green"
+                href="/submit"
+              >
                 <semantic.Icon name="plus" />
                 Add a project
               </semantic.Button>
