@@ -1,22 +1,22 @@
 import React from 'react'
-import Error from 'next/error'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import Head from '../components/Head'
 import TitleBar from '../components/TitleBar'
+import Error from '../components/Error'
 
-const KitspaceError = ({ statusCode }) => {
+const ErrorPage = ({ statusCode }) => {
   return (
-    <>
+    <div style={{ maxHeight: '100vh', overflow: 'hidden' }}>
       <Head />
       <TitleBar />
       <Error statusCode={statusCode} />
-    </>
+    </div>
   )
 }
 
-KitspaceError.getInitialProps = ({ res, err, query }) => {
+ErrorPage.getInitialProps = ({ res, err, query }) => {
   const statusCode = query.staticStatusCode
     ? query.staticStatusCode
     : res
@@ -27,4 +27,4 @@ KitspaceError.getInitialProps = ({ res, err, query }) => {
   return { statusCode }
 }
 
-export default KitspaceError
+export default ErrorPage
