@@ -10,6 +10,7 @@
 /build
 /dist
 /.next
+/static_fallback
 
 # misc
 .DS_Store

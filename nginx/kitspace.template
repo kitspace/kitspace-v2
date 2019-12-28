@@ -4,9 +4,12 @@ server {
 
     server_name @KITSPACE_DOMAIN;
 
-    error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status.html;
+    recursive_error_pages on;
+    error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status/index.html;
+
     location /error/ {
-      root /srv/frontend/static_fallback/;
+         internal;
+         root /srv/frontend/static_fallback/;
     }
 
     location ~ ^/_next/static/(.*)$ {
@@ -25,8 +28,13 @@ server {
         proxy_pass http://frontend:3000;
     }
 
+    location /static_fallback/ {
+        internal;
+        alias /srv/frontend/static_fallback/;
+    }
 
-    location ^~ / {
+
+    location / {
         proxy_intercept_errors on;
         proxy_set_header    Host                $http_host;
         proxy_set_header    X-Real-IP           $remote_addr;
@@ -34,6 +42,7 @@ server {
         proxy_set_header    X-Forwarded-Proto   $scheme;
         proxy_cookie_path ~^(.+)$ "$1; domain=.@KITSPACE_DOMAIN";
         proxy_pass http://gitea:3000/kitspace/;
+        error_page 500 501 502 503 504 506 507 508 510 511 =200 /static_fallback$uri;
     }
 
 }

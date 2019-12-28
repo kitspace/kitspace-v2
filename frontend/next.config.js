@@ -25,8 +25,8 @@ module.exports = withSass(
 
       return config
     },
+    exportTrailingSlash: true,
     exportPathMap(map) {
-      console.log({map})
       const codes = [
         400,
         401,
@@ -69,7 +69,6 @@ module.exports = withSass(
         510,
         511,
       ]
-      map = {}
       codes.forEach(err => {
         map['/error/' + err] = { page: '/_error', query: { staticStatusCode: err } }
       })
