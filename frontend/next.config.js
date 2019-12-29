@@ -27,6 +27,10 @@ module.exports = withSass(
     },
     exportTrailingSlash: true,
     exportPathMap(map) {
+      for (const key in map) {
+        map[key].query = map[key].query || {}
+        map[key].query.isStaticFallback = true
+      }
       const codes = [
         400,
         401,

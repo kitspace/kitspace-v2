@@ -5,16 +5,18 @@ import superagent from 'superagent'
 import Head from '../components/Head'
 import TitleBar from '../components/TitleBar'
 
-const Home = ({ name, _csrf, repos }) => (
-  <>
-    <Head />
-    <TitleBar route="/" />
-    <div>
-      Hi there {name}, {_csrf}
-      <pre>{JSON.stringify(repos, null, 2)}</pre>
-    </div>
-  </>
-)
+function Home({ name, _csrf, repos }) {
+  return (
+    <>
+      <Head />
+      <TitleBar route="/" />
+      <div>
+        Hi there {name}, {_csrf}
+        <pre>{JSON.stringify(repos, null, 2)}</pre>
+      </div>
+    </>
+  )
+}
 
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -29,13 +31,12 @@ function getSession(req) {
   }
 }
 
-Home.getInitialProps = async ({ req }) => {
+Home.getInitialProps = async ({ req, query }) => {
   let api = path => gitea_internal_url + path
   if (req == null) {
     api = path => gitea_public_url + path
   }
   const session = getSession(req) || {}
-  console.log({session})
   const cookie = req?.headers?.cookie
   const _csrf = session._csrf
   let get = superagent
