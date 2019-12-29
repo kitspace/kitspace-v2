@@ -20,6 +20,15 @@ const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
 
+async function getSession(req) {
+  if (req != null) {
+    return req.session
+  }
+  if (typeof window !== 'undefined') {
+    return window.session
+  }
+}
+
 
 Home.getInitialProps = async ({ req }) => {
   let api = path => gitea_internal_url + path
@@ -28,7 +37,7 @@ Home.getInitialProps = async ({ req }) => {
   }
   req = req || { headers: {} }
   const cookie = req.headers.cookie
-  const session = req.session || {}
+  const session = await getSession(req) || {}
   const _csrf = session.Csrf
   let get = superagent
     .get(api('/repos/search'))
