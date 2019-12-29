@@ -35,8 +35,9 @@ Home.getInitialProps = async ({ req }) => {
     api = path => gitea_public_url + path
   }
   const session = getSession(req) || {}
+  console.log({session})
   const cookie = req?.headers?.cookie
-  const _csrf = session.Csrf
+  const _csrf = session._csrf
   let get = superagent
     .get(api('/repos/search'))
     .query({ sort: 'updated', order: 'desc' })
@@ -63,7 +64,7 @@ Home.getInitialProps = async ({ req }) => {
   )
 
   return {
-    name: session?.User?.username || 'unknown user',
+    name: session?.user?.username || 'unknown user',
     _csrf,
     repos,
   }
