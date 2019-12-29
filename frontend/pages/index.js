@@ -63,7 +63,7 @@ Home.getInitialProps = async ({ req }) => {
   )
 
   return {
-    name: session?.User?.Name || 'unknown user',
+    name: session?.User?.username || 'unknown user',
     _csrf,
     repos,
   }
