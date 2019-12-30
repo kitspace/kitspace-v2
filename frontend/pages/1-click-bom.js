@@ -10,7 +10,7 @@ export default function BomBuilder(props) {
     <div>
       <TitleBar route="/1-click-bom/" />
       <Container style={{ marginTop: 30 }}>
-        <p style={{ textAlign: 'center' }}>
+        <p style={{ textAlign: 'center', minHeight: 86 }}>
           <a href="https://chrome.google.com/webstore/detail/1clickbom/mflpmlediakefinapghmabapjeippfdi">
             <img src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/chrome.png" />
           </a>
@@ -33,7 +33,7 @@ export default function BomBuilder(props) {
             Read further documentation on GitHub
           </a>
         </p>
-        <p style={{ textAlign: 'center', marginTop: 10 }}>
+        <p style={{ textAlign: 'center', marginTop: 10, minHeight: 454}}>
           <img src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/demo.gif" />
         </p>
       </Container>

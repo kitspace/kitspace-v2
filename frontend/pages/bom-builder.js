@@ -32,9 +32,9 @@ export default function BomBuilder(props) {
           width="560"
           height="315"
           src="https://www.youtube.com/embed/m96G7B1doRQ"
-          frameborder="0"
+          frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
+          allowFullScreen
         ></iframe>
 
         <h2 id="a-demo-of-all-the-features-of-the-beta-version">
@@ -45,9 +45,9 @@ export default function BomBuilder(props) {
           width="560"
           height="315"
           src="https://www.youtube.com/embed/U7GB7RV1VzE"
-          frameborder="0"
+          frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
+          allowFullScreen
         ></iframe>
       </Container>
     </>
