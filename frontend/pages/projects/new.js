@@ -19,7 +19,7 @@ const gitea_internal_url = 'http://gitea:3000/api/v1'
 function New({ user, _csrf }) {
   const [remoteRepo, setRemoteRepo] = React.useState('')
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
-  const uid = user.id
+  const uid = user?.id
   return (
     <>
       <Head />
@@ -46,14 +46,28 @@ function New({ user, _csrf }) {
                     //  body: JSON.stringify({ _csrf, clone_addr, repo_name, uid }),
                     //  mode: 'no-cors',
                     //}).then(r => console.log(r))
-                    superagent
-                      .post('http://gitea.kitspace.test:3000/api/repo/migrate')
-                      .withCredentials()
-                      .query({ _csrf, clone_addr, repo_name, uid })
-                      .then(r => {
-                        console.log({ r })
-                      })
-                  },
+                    //superagent
+                    //  .post('https://gitea.staging.kitspace.org/api/v1/repos/migrate')
+                    //  .withCredentials()
+                    //  .query({ _csrf, clone_addr, repo_name, uid })
+                    //  .then(r => {
+                    //    console.log({ r })
+                    //  })
+		  fetch("https://gitea.staging.kitspace.org/api/v1/repos/migrate", {
+			      "credentials": "include",
+			      "headers": {
+					      "User-Agent": "Mozilla/5.0 (X11; SunOS sun4u; rv:67.0) Gecko/20100101 Firefox/67.0",
+					      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+					      "Accept-Language": "en-GB,en;q=0.5",
+					      "Content-Type": "application/x-www-form-urlencoded",
+					      "Pragma": "no-cache",
+					      "Cache-Control": "no-cache"
+					  },
+			      "body": `_csrf=${_csrf}&clone_addr=${encodeURIComponent(clone_addr)}&auth_username=&auth_password=&uid=${uid}&repo_name=${repo_name}&description=`,
+			      "method": "POST",
+			      "mode": "cors"
+		  })
+	  },
                 }}
                 className="urlInput"
                 fluid
