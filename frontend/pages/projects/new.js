@@ -23,40 +23,44 @@ function New({ name, _csrf }) {
       <Head />
       <TitleBar route="/projects/new" />
       <div className="ui two column stackable center aligned grid">
-        <semantic.Grid.Row verticalAlign="middle">
-          <semantic.Grid.Column>
-            <p>Sync an existing Git repository</p>
-            <semantic.Input
-              action={{
-                content: 'Sync',
-                color: 'green',
-                onClick: e => console.log(e),
-              }}
-              className="urlInput"
-              fluid
-              onChange={e => console.log(e)}
-              placeholder="https://github.com/emard/ulx3s"
-              value=""
-            />
+        <semantic.Grid.Row>
+          <semantic.Grid.Column className='optionColumn'>
+            <div>
+              <p>Sync an existing Git repository</p>
+              <semantic.Input
+                action={{
+                  content: 'Sync',
+                  color: 'green',
+                  onClick: e => console.log(e),
+                }}
+                className="urlInput"
+                fluid
+                onChange={e => console.log(e)}
+                placeholder="https://github.com/emard/ulx3s"
+                value=""
+              />
+            </div>
           </semantic.Grid.Column>
           <div className="dividerContainer">
             <semantic.Divider vertical>Or</semantic.Divider>
           </div>
-          <semantic.Grid.Column>
-            <p>Upload a KiCad folder</p>
-            <label className="ui green button" htmlFor="uploadInput">
-              Upload
-            </label>
-            <input
-              multiple
-              type="file"
-              webkitdirectory=""
-              directory=""
-              mozdirectory=""
-              id="uploadInput"
-              style={{ display: 'none' }}
-              onChange={e => console.log(e)}
-            />
+          <semantic.Grid.Column className='optionColumn'>
+            <div>
+              <p>Upload a KiCad folder</p>
+              <label className="ui green button" htmlFor="uploadInput">
+                Browse...
+              </label>
+              <input
+                multiple
+                type="file"
+                webkitdirectory=""
+                directory=""
+                mozdirectory=""
+                id="uploadInput"
+                style={{ display: 'none' }}
+                onChange={e => console.log(e)}
+              />
+            </div>
           </semantic.Grid.Column>
         </semantic.Grid.Row>
       </div>

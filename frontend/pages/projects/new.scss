@@ -1,7 +1,9 @@
 .ui.two.column.stackable.center.aligned.grid {
   margin-top: 30px;
   height: 75vh;
+  max-width: 1500px;
 }
+
 .urlInput {
   padding-left: 100px;
   padding-right: 100px;
@@ -11,4 +13,14 @@
 
 .urlInput > input {
   max-width: 500px !important;
+}
+
+.optionColumn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.optionColumn > div {
+  width: 100%;
 }
