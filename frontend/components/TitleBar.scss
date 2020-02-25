@@ -36,7 +36,10 @@
   overflow: hidden;
   position: relative;
   width: 100%;
-  justify-content: space-around;
+  justify-content: space-between;
+  @include breakpoint(small_width) {
+    justify-content: space-around;
+  }
 
   .bigSiteMenu {
     display: flex;
