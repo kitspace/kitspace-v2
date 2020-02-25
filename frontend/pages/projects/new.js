@@ -1,12 +1,11 @@
 import React from 'react'
 import Link from 'next/link'
 import superagent from 'superagent'
-import * as semantic from 'semantic-ui-react'
-import 'semantic-ui-css/components/segment.css'
+import { Grid, Divider, Form, Input } from 'semantic-ui-react'
 import 'semantic-ui-css/components/grid.css'
 import 'semantic-ui-css/components/divider.css'
-import 'semantic-ui-css/components/input.css'
 import 'semantic-ui-css/components/form.css'
+import 'semantic-ui-css/components/input.css'
 
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
@@ -23,11 +22,11 @@ function New({ name, _csrf }) {
       <Head />
       <TitleBar route="/projects/new" />
       <div className="ui two column stackable center aligned grid">
-        <semantic.Grid.Row>
-          <semantic.Grid.Column className="optionColumn">
+        <Grid.Row>
+          <Grid.Column className="optionColumn">
             <div>
               <p>Sync an existing Git repository</p>
-              <semantic.Input
+              <Input
                 action={{
                   content: 'Sync',
                   color: 'green',
@@ -40,11 +39,11 @@ function New({ name, _csrf }) {
                 value=""
               />
             </div>
-          </semantic.Grid.Column>
+          </Grid.Column>
           <div className="dividerContainer">
-            <semantic.Divider vertical>Or</semantic.Divider>
+            <Divider vertical>Or</Divider>
           </div>
-          <semantic.Grid.Column className="optionColumn">
+          <Grid.Column className="optionColumn">
             <div>
               <p>Upload a KiCad folder</p>
               <label className="ui green button" htmlFor="uploadInput">
@@ -61,8 +60,8 @@ function New({ name, _csrf }) {
                 onChange={e => console.log(e.target.files)}
               />
             </div>
-          </semantic.Grid.Column>
-        </semantic.Grid.Row>
+          </Grid.Column>
+        </Grid.Row>
       </div>
     </>
   )
@@ -72,8 +71,7 @@ function getSession(req) {
   let session = {}
   if (req != null && req.session) {
     session = req.session
-  }
-  else if (typeof window !== 'undefined' && window.session) {
+  } else if (typeof window !== 'undefined' && window.session) {
     session = window.session
   }
   return session
