@@ -1,6 +1,8 @@
 import App from 'next/app'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
+import 'semantic-ui-css/components/reset.css'
+import 'semantic-ui-css/components/site.css'
 import 'semantic-ui-css/components/message.css'
 
 import './_app.scss'

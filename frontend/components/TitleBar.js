@@ -13,9 +13,9 @@ import './TitleBar.scss'
 const logo = 'data:image/svg+xml;utf-8,' + encodeURIComponent(logoSvg)
 
 export default function TitleBar(props) {
-  const isSubmitRoute = RegExp('^/submit').test(props.route)
+  const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
-    isSubmitRoute || props.route === '/' || RegExp('^/boards/').test(props.route)
+    isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
   return (
     <div className="titleBar">
       <div className="bigSiteMenu">
@@ -102,7 +102,7 @@ function SocialMenuItems(props) {
       </semantic.Menu.Item>
       {props.isSubmitRoute ? null : (
         <semantic.Menu.Item>
-          <semantic.Button icon labelPosition="left" color="green" href="/submit">
+          <semantic.Button icon labelPosition="left" color="green" href="/projects/new">
             <semantic.Icon name="plus" />
             Add a project
           </semantic.Button>
