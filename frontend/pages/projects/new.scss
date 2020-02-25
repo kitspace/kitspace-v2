@@ -5,8 +5,14 @@
 }
 
 .urlInput {
-  padding-left: 100px;
-  padding-right: 100px;
+  @media (min-width: 769px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  @media (min-width: 900px) {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
   width: 100%;
   justify-content: center;
 }
@@ -23,4 +29,9 @@
 
 .optionColumn > div {
   width: 100%;
+}
+
+.dividerContainer {
+  align-items: center;
+  display: flex;
 }

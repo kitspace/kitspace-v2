@@ -24,7 +24,7 @@ function New({ name, _csrf }) {
       <TitleBar route="/projects/new" />
       <div className="ui two column stackable center aligned grid">
         <semantic.Grid.Row>
-          <semantic.Grid.Column className='optionColumn'>
+          <semantic.Grid.Column className="optionColumn">
             <div>
               <p>Sync an existing Git repository</p>
               <semantic.Input
@@ -44,7 +44,7 @@ function New({ name, _csrf }) {
           <div className="dividerContainer">
             <semantic.Divider vertical>Or</semantic.Divider>
           </div>
-          <semantic.Grid.Column className='optionColumn'>
+          <semantic.Grid.Column className="optionColumn">
             <div>
               <p>Upload a KiCad folder</p>
               <label className="ui green button" htmlFor="uploadInput">
@@ -58,7 +58,7 @@ function New({ name, _csrf }) {
                 mozdirectory=""
                 id="uploadInput"
                 style={{ display: 'none' }}
-                onChange={e => console.log(e)}
+                onChange={e => console.log(e.target.files)}
               />
             </div>
           </semantic.Grid.Column>
@@ -69,25 +69,24 @@ function New({ name, _csrf }) {
 }
 
 function getSession(req) {
-  if (req != null) {
-    return req.session
+  let session = {}
+  if (req != null && req.session) {
+    session = req.session
   }
-  if (typeof window !== 'undefined') {
-    return window.session
+  else if (typeof window !== 'undefined' && window.session) {
+    session = window.session
   }
+  return session
 }
 
 New.getInitialProps = async ({ req, query }) => {
-  let api = path => gitea_internal_url + path
-  if (req == null) {
-    api = path => gitea_public_url + path
-  }
-  const session = getSession(req) || {}
+  const api = req ? gitea_internal_url : gitea_public_url
+  const session = getSession(req)
   const cookie = req?.headers?.cookie
   const _csrf = session._csrf
 
   return {
-    name: session?.user?.username || 'unknown user',
+    name: session.user?.username || 'unknown user',
     _csrf,
   }
 }
