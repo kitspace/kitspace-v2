@@ -3,39 +3,33 @@ import * as semantic from 'semantic-ui-react'
 import Link from 'next/link'
 
 import logo from './logo.svg'
-import 'semantic-ui-css/components/menu.css'
-import 'semantic-ui-css/components/image.css'
-import 'semantic-ui-css/components/button.css'
-import 'semantic-ui-css/components/icon.css'
-import 'semantic-ui-css/components/popup.css'
-import './TitleBar.scss'
-
+import styles from './TitleBar.module.scss'
 
 export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
     isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
   return (
-    <div className="titleBar">
-      <div className="bigSiteMenu">
+    <div className={styles.titleBar}>
+      <div className={styles.bigSiteMenu}>
         <semantic.Menu inverted pointing secondary>
           <Link href="/">
             <a>
-              <semantic.Image className="logoImg" src={logo} />
+              <semantic.Image className={styles.logoImg} src={logo} />
             </a>
           </Link>
           <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
         </semantic.Menu>
       </div>
-      <div className="bigSocialMenu">
+      <div className={styles.bigSocialMenu}>
         <semantic.Menu inverted pointing secondary>
           <SocialMenuItems isSubmitRoute={isSubmitRoute} />
         </semantic.Menu>
       </div>
-      <div className="smallMenu">
+      <div className={styles.smallMenu}>
         <Link href="/">
           <a>
-            <semantic.Image className="logoImg" src={logo} />
+            <semantic.Image className={styles.logoImg} src={logo} />
           </a>
         </Link>
         <semantic.Popup

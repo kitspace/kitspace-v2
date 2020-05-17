@@ -1,11 +1,25 @@
 import App from 'next/app'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
-import 'semantic-ui-css/components/reset.css'
-import 'semantic-ui-css/components/site.css'
-import 'semantic-ui-css/components/message.css'
 
+
+//import 'semantic-ui-css/components/reset.css'
+//import 'semantic-ui-css/components/site.css'
+//
+//import 'semantic-ui-css/components/button.css'
+//import 'semantic-ui-css/components/container.css'
+//import 'semantic-ui-css/components/divider.css'
+//import 'semantic-ui-css/components/grid.css'
+//import 'semantic-ui-css/components/icon.css'
+//import 'semantic-ui-css/components/image.css'
+//import 'semantic-ui-css/components/input.css'
+//import 'semantic-ui-css/components/menu.css'
+//import 'semantic-ui-css/components/message.css'
+//import 'semantic-ui-css/components/popup.css'
+
+import 'semantic-ui-css/semantic.min.css'
 import './_app.scss'
+import '../components/site.scss'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setSession = session ? (
@@ -37,7 +51,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   )
 }
 
-KitspaceApp.getInitialProps = async appContext => {
+KitspaceApp.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext)
   const session = appContext.ctx.req ? appContext.ctx.req.session : null
   const { isStaticFallback } = appContext.ctx.query

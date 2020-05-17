@@ -1,6 +1,5 @@
 import React from 'react'
 import { Container } from 'semantic-ui-react'
-import 'semantic-ui-css/components/container.css'
 import Link from 'next/link'
 
 import TitleBar from '../components/TitleBar'

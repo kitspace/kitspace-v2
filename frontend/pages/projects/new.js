@@ -2,15 +2,12 @@ import React from 'react'
 import Link from 'next/link'
 import superagent from 'superagent'
 import { Grid, Divider, Input } from 'semantic-ui-react'
-import 'semantic-ui-css/components/grid.css'
-import 'semantic-ui-css/components/divider.css'
-import 'semantic-ui-css/components/input.css'
 import path from 'path'
 
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
 
-import './new.scss'
+import styles from './new.module.scss'
 
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -24,9 +21,11 @@ function New({ user, _csrf }) {
     <>
       <Head />
       <TitleBar route="/projects/new" />
-      <div className="ui two column stackable center aligned grid">
+      <div
+        className={`${styles.projectsNew} ui two column stackable center aligned grid`}
+      >
         <Grid.Row>
-          <Grid.Column className="optionColumn">
+          <Grid.Column className={styles.optionColumn}>
             <div>
               <p>Sync an existing Git repository</p>
               <Input
@@ -57,18 +56,18 @@ function New({ user, _csrf }) {
                     })
                   },
                 }}
-                className="urlInput"
+                className={styles.urlInput}
                 fluid
-                onChange={e => setRemoteRepo(e.target.value)}
+                onChange={(e) => setRemoteRepo(e.target.value)}
                 placeholder={remoteRepoPlaceHolder}
                 value={remoteRepo}
               />
             </div>
           </Grid.Column>
-          <div className="dividerContainer">
+          <div className={styles.dividerContainer}>
             <Divider vertical>Or</Divider>
           </div>
-          <Grid.Column className="optionColumn">
+          <Grid.Column className={styles.optionColumn}>
             <div>
               <p>Upload a KiCad folder</p>
               <label className="ui green button" htmlFor="uploadInput">
@@ -82,7 +81,7 @@ function New({ user, _csrf }) {
                 mozdirectory=""
                 id="uploadInput"
                 style={{ display: 'none' }}
-                onChange={e => console.log(e.target.files)}
+                onChange={(e) => console.log(e.target.files)}
               />
             </div>
           </Grid.Column>
