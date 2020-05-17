@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import superagent from 'superagent'
-import { Grid, Divider, Input } from 'semantic-ui-react'
+import { Grid, Divider, Input, Button } from 'semantic-ui-react'
 import path from 'path'
 
 import Head from '../../components/Head'
@@ -29,44 +29,44 @@ function New({ user, _csrf }) {
             <div>
               <p>Sync an existing Git repository</p>
               <Input
-                action={{
-                  content: 'Sync',
-                  color: 'green',
-                  onClick: () => {
-                    const clone_addr = remoteRepo || remoteRepoPlaceHolder
-                    const repo_name = urlToName(clone_addr)
-                    fetch(gitea_public_url + '/repos/migrate?_csrf=' + _csrf, {
-                      method: 'POST',
-                      mode: 'cors',
-                      credentials: 'include',
-                      headers: {
-                        accept: 'application/json',
-                        'content-type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        clone_addr,
-                        uid,
-                        repo_name,
-                        mirror: false,
-                        wiki: false,
-                        private: false,
-                        pull_requests: false,
-                        releases: true,
-                      }),
-                    })
-                  },
-                }}
                 className={styles.urlInput}
                 fluid
                 onChange={(e) => setRemoteRepo(e.target.value)}
                 placeholder={remoteRepoPlaceHolder}
                 value={remoteRepo}
               />
+              <Button
+                className={styles.syncButton}
+                color="green"
+                onClick={() => {
+                  const clone_addr = remoteRepo || remoteRepoPlaceHolder
+                  const repo_name = urlToName(clone_addr)
+                  fetch(gitea_public_url + '/repos/migrate?_csrf=' + _csrf, {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: {
+                      accept: 'application/json',
+                      'content-type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      clone_addr,
+                      uid,
+                      repo_name,
+                      mirror: false,
+                      wiki: false,
+                      private: false,
+                      pull_requests: false,
+                      releases: true,
+                    }),
+                  })
+                }}
+              >
+                Sync
+              </Button>
             </div>
           </Grid.Column>
-          <div className={styles.dividerContainer}>
-            <Divider vertical>Or</Divider>
-          </div>
+          <Divider className={styles.divider} vertical>Or</Divider>
           <Grid.Column className={styles.optionColumn}>
             <div>
               <p>Upload a KiCad folder</p>

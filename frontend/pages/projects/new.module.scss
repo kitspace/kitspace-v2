@@ -6,15 +6,16 @@
 
 .urlInput {
   @media (min-width: 769px) {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
   }
-  @media (min-width: 900px) {
+  @media (min-width: 1134px) {
     padding-left: 100px;
     padding-right: 100px;
   }
   width: 100%;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
 .urlInput > input {
@@ -31,7 +32,8 @@
   width: 100%;
 }
 
-.dividerContainer {
-  align-items: center;
-  display: flex;
+.divider {
+  @media (max-width: 769px) {
+    max-height: 10px !important;
+  }
 }
