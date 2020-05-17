@@ -4,7 +4,7 @@
 .titleBar {
   .smallMenu {
     display: none;
-    @include breakpoint(mobile-m) {
+    @include breakpoint(mobile_menu) {
       display: flex;
       justify-content: space-around;
       width: 90%;
@@ -18,7 +18,7 @@
 
   .bigSocialMenu {
     display: flex;
-    @include breakpoint(mobile-m) {
+    @include breakpoint(mobile_menu) {
       display: none;
     }
     align-items: center;
@@ -32,18 +32,17 @@
   box-shadow: 0 0.1em 0.5em $cod-gray;
   display: flex;
   flex-wrap: wrap;
-  max-width: 100%;
   overflow: hidden;
   position: relative;
-  width: 100%;
+  width: 100vw;
   justify-content: space-between;
-  @include breakpoint(small_width) {
+  @media (max-width: 1047px) {
     justify-content: space-around;
   }
 
   .bigSiteMenu {
     display: flex;
-    @include breakpoint(mobile-m) {
+    @include breakpoint(mobile_menu) {
       display: none;
     }
     justify-content: flex-start;
