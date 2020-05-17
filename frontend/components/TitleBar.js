@@ -100,9 +100,18 @@ function SocialMenuItems(props) {
         <semantic.Icon name="github" />
         GitHub
       </semantic.Menu.Item>
+      <semantic.Menu.Item as="a" href="https://opencollective.com/kitspace">
+        <semantic.Icon name="heart" />
+        Donate
+      </semantic.Menu.Item>
       {props.isSubmitRoute ? null : (
         <semantic.Menu.Item>
-          <semantic.Button icon labelPosition="left" color="green" href="/projects/new">
+          <semantic.Button
+            icon
+            labelPosition="left"
+            color="green"
+            href="/projects/new"
+          >
             <semantic.Icon name="plus" />
             Add a project
           </semantic.Button>
