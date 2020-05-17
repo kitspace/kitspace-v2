@@ -28,45 +28,51 @@ function New({ user, _csrf }) {
           <Grid.Column className={styles.optionColumn}>
             <div>
               <p>Sync an existing Git repository</p>
-              <Input
-                className={styles.urlInput}
-                fluid
-                onChange={(e) => setRemoteRepo(e.target.value)}
-                placeholder={remoteRepoPlaceHolder}
-                value={remoteRepo}
-              />
-              <Button
-                className={styles.syncButton}
-                color="green"
-                onClick={() => {
-                  const clone_addr = remoteRepo || remoteRepoPlaceHolder
-                  const repo_name = urlToName(clone_addr)
-                  fetch(gitea_public_url + '/repos/migrate?_csrf=' + _csrf, {
-                    method: 'POST',
-                    mode: 'cors',
-                    credentials: 'include',
-                    headers: {
-                      accept: 'application/json',
-                      'content-type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      clone_addr,
-                      uid,
-                      repo_name,
-                      mirror: false,
-                      wiki: false,
-                      private: false,
-                      pull_requests: false,
-                      releases: true,
-                    }),
-                  })
-                }}
-              >
-                Sync
-              </Button>
+              <div className={styles.syncSide}>
+                <Input
+                  className={styles.urlInput}
+                  style={{ maxHeight: 37 }}
+                  fluid
+                  onChange={(e) => setRemoteRepo(e.target.value)}
+                  placeholder={remoteRepoPlaceHolder}
+                  value={remoteRepo}
+                />
+                <div className={styles.syncButton}>
+                  <Button
+                    color="green"
+                    onClick={() => {
+                      const clone_addr = remoteRepo || remoteRepoPlaceHolder
+                      const repo_name = urlToName(clone_addr)
+                      fetch(gitea_public_url + '/repos/migrate?_csrf=' + _csrf, {
+                        method: 'POST',
+                        mode: 'cors',
+                        credentials: 'include',
+                        headers: {
+                          accept: 'application/json',
+                          'content-type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          clone_addr,
+                          uid,
+                          repo_name,
+                          mirror: false,
+                          wiki: false,
+                          private: false,
+                          pull_requests: false,
+                          releases: true,
+                        }),
+                      })
+                    }}
+                  >
+                    Sync
+                  </Button>
+                </div>
+              </div>
             </div>
           </Grid.Column>
-          <Divider className={styles.divider} vertical>Or</Divider>
+          <Divider className={styles.divider} vertical>
+            Or
+          </Divider>
           <Grid.Column className={styles.optionColumn}>
             <div>
               <p>Upload a KiCad folder</p>
