@@ -2,7 +2,7 @@ import React from 'react'
 import * as semantic from 'semantic-ui-react'
 import Link from 'next/link'
 
-import logoSvg from '!raw-loader!./logo.svg'
+import logo from './logo.svg'
 import 'semantic-ui-css/components/menu.css'
 import 'semantic-ui-css/components/image.css'
 import 'semantic-ui-css/components/button.css'
@@ -10,7 +10,6 @@ import 'semantic-ui-css/components/icon.css'
 import 'semantic-ui-css/components/popup.css'
 import './TitleBar.scss'
 
-const logo = 'data:image/svg+xml;utf-8,' + encodeURIComponent(logoSvg)
 
 export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
