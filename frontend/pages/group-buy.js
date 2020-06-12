@@ -13,7 +13,7 @@ const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
 
-function New({ user, _csrf }) {
+export default function GroupBuyPage({ user, _csrf }) {
   const [remoteRepo, setRemoteRepo] = React.useState('')
   const uid = user?.id
   return (
@@ -45,5 +45,3 @@ New.getInitialProps = async ({ req, query }) => {
     _csrf,
   }
 }
-
-export default New
