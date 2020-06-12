@@ -39,13 +39,12 @@ Home.getInitialProps = async ({ req, query }) => {
   const session = getSession(req) || {}
   const cookie = req?.headers?.cookie
   const _csrf = session._csrf
-  let get = superagent
+  let repos = await superagent
     .get(api('/repos/search'))
     .query({ sort: 'updated', order: 'desc' })
     .query({ _csrf })
     .set(cookie ? { cookie } : {})
     .then(r => r.body.data)
-  let repos = await get
 
   repos = await Promise.all(
     repos.map(async repo => {
