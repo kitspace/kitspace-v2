@@ -34,10 +34,16 @@ git submodule update --init
 ```
 cp .env.example .env
 ```
-4. Build and run the docker containers
+4. Build and run the gitea ang nginx docker containers
+```
+docker-compose up nginx gitea
+```
+
+5. Go to [gitea.kitspace.test:3000](http://gitea.kitspace.test:3000) and complete the install (everything should already be filled in correctly). Create a new user and login.
+
+6. Build and run the rest of the docker containers
 ```
 docker-compose up
 ```
 
-5. Go to [gitea.kitspace.test:3000](http://gitea.kitspace.test:3000) and complete the install (everything should already be filled in correctly) and create a user and login.
-6. Making edits on the code in `frontend/` should auto compile and hot-reload to [kitspace.test:3000](http://kitspace.test:3000).
+7. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
