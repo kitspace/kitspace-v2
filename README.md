@@ -34,12 +34,12 @@ git submodule update --init
 ```
 cp .env.example .env
 ```
-4. Build and run the gitea ang nginx docker containers
+4. Build and run the gitea docker container
 ```
-docker-compose up nginx gitea
+docker-compose up gitea
 ```
 
-5. Go to [gitea.kitspace.test:3000](http://gitea.kitspace.test:3000) and complete the install (everything should already be filled in correctly). Create a new user and login.
+5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login.
 
 6. Build and run the rest of the docker containers
 ```
