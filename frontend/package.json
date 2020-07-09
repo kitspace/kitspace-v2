@@ -2,7 +2,8 @@
   "name": "kitspace-frontend",
   "scripts": {
     "dev": "nodemon server.js --watch server.js --watch next.config.js",
-    "build": "next build && next export -o static_fallback",
+    "build": "next build",
+    "build-fallback": "next build && next export -o static_fallback",
     "start": "node server.js"
   },
   "license": "AGPL-3.0",
