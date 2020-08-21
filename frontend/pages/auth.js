@@ -1,4 +1,5 @@
 import React from 'react'
+import { useRouter } from 'next/router'
 import { Button, Container, Form, Grid, Header, Segment, Tab } from 'semantic-ui-react'
 
 import TitleBar from '../components/TitleBar'
@@ -67,12 +68,22 @@ const panes = [
 
 
 export default function() {
+  const router = useRouter()
+
+  let activeIndex;
+
+  if (router.query.hasOwnProperty('login')) {
+    activeIndex = 0
+  } else {
+    activeIndex = 1
+  }
+
   return <>
     <TitleBar route='/auth/'/>
     <Container style={{ marginTop: 30 }}>
       <Grid textAlign='center' verticalAlign='middle'>
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Tab panes={panes}/>
+          <Tab panes={panes} activeIndex={activeIndex}/>
         </Grid.Column>
       </Grid>
     </Container>
