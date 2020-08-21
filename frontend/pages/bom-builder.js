@@ -4,10 +4,12 @@ import {Container} from 'semantic-ui-react'
 import Head from '../components/Head'
 import TitleBar from '../components/TitleBar'
 
-export default function BomBuilder(props) {
+export default function BomBuilder() {
   return (
     <>
-      <Head />
+      <Head>
+        <title>BOM Builder</title>
+      </Head>
       <TitleBar route="/bom-builder/" />
       <Container style={{marginTop: 30}}>
         <h1 id="the-kitspace-bom-builder">The Kitspace BOM Builder</h1>
@@ -37,7 +39,7 @@ export default function BomBuilder(props) {
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-        ></iframe>
+        />
 
         <h2 id="a-demo-of-all-the-features-of-the-beta-version">
           A demo of all the features of the beta version
@@ -50,7 +52,7 @@ export default function BomBuilder(props) {
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-        ></iframe>
+        />
       </Container>
     </>
   )

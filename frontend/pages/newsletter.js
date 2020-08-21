@@ -3,7 +3,6 @@ import {Button, Container, Form} from 'semantic-ui-react'
 
 import TitleBar from '../components/TitleBar'
 
-
 export default function Newsletter() {
   return (
     <div>
@@ -49,7 +48,7 @@ export default function Newsletter() {
               control="input"
               type="checkbox"
               defaultChecked
-              />
+            />
             <Form.Field
               label="New projects added"
               name="new_projects"
