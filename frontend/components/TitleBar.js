@@ -2,8 +2,9 @@ import React from 'react'
 import * as semantic from 'semantic-ui-react'
 import Link from 'next/link'
 
-import logo from './logo.svg'
 import styles from './TitleBar.module.scss'
+
+const logoSrc = '/static/logo.svg'
 
 export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
@@ -15,7 +16,7 @@ export default function TitleBar(props) {
         <semantic.Menu inverted pointing secondary>
           <Link href="/">
             <a>
-              <semantic.Image className={styles.logoImg} src={logo} />
+              <semantic.Image className={styles.logoImg} src={logoSrc} />
             </a>
           </Link>
           <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
@@ -29,7 +30,7 @@ export default function TitleBar(props) {
       <div className={styles.smallMenu}>
         <Link href="/">
           <a>
-            <semantic.Image className={styles.logoImg} src={logo} />
+            <semantic.Image className={styles.logoImg} src={logoSrc} />
           </a>
         </Link>
         <semantic.Popup
