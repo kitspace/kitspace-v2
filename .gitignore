@@ -1,3 +1,6 @@
+# IDEs
+.idea/
+
 .env
 volumes/
 nginx/default.conf
