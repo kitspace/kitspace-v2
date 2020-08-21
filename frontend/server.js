@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
-const app = next({ dev, conf })
+const app = next({dev, conf})
 
 const nextHandler = app.getRequestHandler()
 
@@ -13,7 +13,7 @@ app.prepare().then(() => {
   const server = express()
 
   if (dev) {
-    server.use(function(req, res, next) {
+    server.use(function (req, res, next) {
       console.log('%s %s', req.method, req.url)
       next()
     })

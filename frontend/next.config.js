@@ -65,8 +65,8 @@ module.exports = {
       510,
       511,
     ]
-    codes.forEach((err) => {
-      map['/error/' + err] = { page: '/_error', query: { staticStatusCode: err } }
+    codes.forEach(err => {
+      map['/error/' + err] = {page: '/_error', query: {staticStatusCode: err}}
     })
     return map
   },
