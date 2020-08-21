@@ -1,6 +1,6 @@
 import React from 'react'
 import NextHead from 'next/head'
-import { string } from 'prop-types'
+import {string} from 'prop-types'
 
 const defaultDescription = ''
 const defaultOGURL = ''
@@ -10,7 +10,10 @@ const Head = props => (
   <NextHead>
     <meta charSet="UTF-8" />
     <title>{props.title || ''}</title>
-    <meta name="description" content={props.description || defaultDescription} />
+    <meta
+      name="description"
+      content={props.description || defaultDescription}
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/static/favicon.png" />
     <meta property="og:url" content={props.url || defaultOGURL} />

@@ -4,13 +4,14 @@ import {Image, Popup, Menu, Button, Icon} from 'semantic-ui-react'
 
 import styles from './TitleBar.module.scss'
 
-
 const logoSrc = '/static/logo.svg'
 
 export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
-    isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
+    isSubmitRoute ||
+    props.route === '/' ||
+    RegExp('^/projects/').test(props.route)
   return (
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
@@ -94,10 +95,7 @@ function SiteMenuItems(props) {
 function SocialMenuItems() {
   return (
     <>
-      <Menu.Item
-        as="a"
-        href="https://riot.im/app/#/room/#kitspace:matrix.org"
-      >
+      <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
         <Icon name="chat" />
         Chat
       </Menu.Item>

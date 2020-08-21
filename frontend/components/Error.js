@@ -11,7 +11,7 @@ const statusCodes = {
  */
 export default class Error extends React.Component {
   render() {
-    const { statusCode } = this.props
+    const {statusCode} = this.props
     const title =
       this.props.title ||
       statusCodes[statusCode] ||
@@ -24,7 +24,7 @@ export default class Error extends React.Component {
           </title>
         </Head>
         <div>
-          <style dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }} />
+          <style dangerouslySetInnerHTML={{__html: 'body { margin: 0 }'}} />
           {statusCode ? <h1 style={styles.h1}>{statusCode}</h1> : null}
           <div style={styles.desc}>
             <h2 style={styles.h2}>{title}.</h2>

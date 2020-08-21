@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import superagent from 'superagent'
-import { Grid, Divider, Input, Button } from 'semantic-ui-react'
+import {Grid, Divider, Input, Button} from 'semantic-ui-react'
 import path from 'path'
 
 import Head from '../../components/Head'
@@ -13,7 +13,7 @@ const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
 
-function New({ user, _csrf }) {
+function New({user, _csrf}) {
   const [remoteRepo, setRemoteRepo] = React.useState('')
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
   const uid = user?.id
@@ -31,9 +31,9 @@ function New({ user, _csrf }) {
               <div className={styles.syncSide}>
                 <Input
                   className={styles.urlInput}
-                  style={{ maxHeight: 37 }}
+                  style={{maxHeight: 37}}
                   fluid
-                  onChange={(e) => setRemoteRepo(e.target.value)}
+                  onChange={e => setRemoteRepo(e.target.value)}
                   placeholder={remoteRepoPlaceHolder}
                   value={remoteRepo}
                 />
@@ -43,25 +43,28 @@ function New({ user, _csrf }) {
                     onClick={() => {
                       const clone_addr = remoteRepo || remoteRepoPlaceHolder
                       const repo_name = urlToName(clone_addr)
-                      fetch(gitea_public_url + '/repos/migrate?_csrf=' + _csrf, {
-                        method: 'POST',
-                        mode: 'cors',
-                        credentials: 'include',
-                        headers: {
-                          accept: 'application/json',
-                          'content-type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          clone_addr,
-                          uid,
-                          repo_name,
-                          mirror: false,
-                          wiki: false,
-                          private: false,
-                          pull_requests: false,
-                          releases: true,
-                        }),
-                      })
+                      fetch(
+                        gitea_public_url + '/repos/migrate?_csrf=' + _csrf,
+                        {
+                          method: 'POST',
+                          mode: 'cors',
+                          credentials: 'include',
+                          headers: {
+                            accept: 'application/json',
+                            'content-type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            clone_addr,
+                            uid,
+                            repo_name,
+                            mirror: false,
+                            wiki: false,
+                            private: false,
+                            pull_requests: false,
+                            releases: true,
+                          }),
+                        }
+                      )
                     }}
                   >
                     Sync
@@ -86,8 +89,8 @@ function New({ user, _csrf }) {
                 directory=""
                 mozdirectory=""
                 id="uploadInput"
-                style={{ display: 'none' }}
-                onChange={(e) => console.log(e.target.files)}
+                style={{display: 'none'}}
+                onChange={e => console.log(e.target.files)}
               />
             </div>
           </Grid.Column>
@@ -112,7 +115,7 @@ function urlToName(url) {
   return path.basename(url.pathname, path.extname(url.pathname))
 }
 
-New.getInitialProps = async ({ req, query }) => {
+New.getInitialProps = async ({req, query}) => {
   const session = getSession(req)
   const cookie = req?.headers?.cookie
   const _csrf = session._csrf
