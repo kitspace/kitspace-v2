@@ -70,12 +70,12 @@ const panes = [
 export default function() {
   const router = useRouter()
 
-  let activeIndex;
+  let defaultActiveIndex;
 
   if (router.query.hasOwnProperty('login')) {
-    activeIndex = 0
+    defaultActiveIndex = 0
   } else {
-    activeIndex = 1
+    defaultActiveIndex = 1
   }
 
   return <>
@@ -83,7 +83,7 @@ export default function() {
     <Container style={{ marginTop: 30 }}>
       <Grid textAlign='center' verticalAlign='middle'>
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Tab panes={panes} activeIndex={activeIndex}/>
+          <Tab panes={panes} defaultActiveIndex={defaultActiveIndex}/>
         </Grid.Column>
       </Grid>
     </Container>
