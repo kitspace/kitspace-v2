@@ -1,31 +1,8 @@
 import React from 'react'
-import { Button, Container, Form, Grid, Header, Icon, Segment, Tab } from 'semantic-ui-react'
-import TitleBar from '../components/TitleBar'
+import { Button, Container, Form, Grid, Header, Segment, Tab } from 'semantic-ui-react'
 
-function ExternalProviders() {
-  return <>
-    <Header as='h3' textAlign='center'>Or with</Header>
-    <Grid columns={3} divied>
-      <Grid.Row>
-        <Grid.Column>
-          <Button color='twitter'>
-            <Icon name='twitter'/> Twitter
-          </Button>
-        </Grid.Column>
-        <Grid.Column>
-          <Button color='github'>
-            <Icon name='github'/> GitHub
-          </Button>
-        </Grid.Column>
-        <Grid.Column>
-          <Button color='blue'>
-            <Icon name='google'/> Google
-          </Button>
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
-  </>
-}
+import TitleBar from '../components/TitleBar'
+import ExternalAuthProviders from '../components/ExternalAuthProviders'
 
 const panes = [
   {
@@ -50,7 +27,7 @@ const panes = [
             <Button color='green' fluid size='large'>Login</Button>
           </Segment>
         </Form>
-        <ExternalProviders />
+        <ExternalAuthProviders />
       </>
     },
   },
@@ -58,7 +35,7 @@ const panes = [
     menuItem: 'Sign up',
     render: () => {
       return <>
-        <Header as='h2' color='teal' textAlign='center'>Create new account</Header>
+        <Header as='h2' color='teal' textAlign='center'>Create a new account</Header>
         <Form size="large">
           <Segment stacked>
             <Form.Input fluid
@@ -81,7 +58,7 @@ const panes = [
                         style={{ marginBottom: 20 }}/>
             <Button color='green' fluid size='large'>Sign up</Button>
           </Segment>
-        <ExternalProviders />
+        <ExternalAuthProviders />
         </Form>
       </>
     },
