@@ -5,7 +5,7 @@ import React from 'react'
 export default function () {
   return <>
     <Header as='h3' textAlign='center'>Or with</Header>
-    <Grid columns={3} divied>
+    <Grid columns={3} divided>
       <Grid.Row>
         <Grid.Column>
           <Button color='twitter'>
@@ -13,7 +13,7 @@ export default function () {
           </Button>
         </Grid.Column>
         <Grid.Column>
-          <Button color='github'>
+          <Button>
             <Icon name='github'/> GitHub
           </Button>
         </Grid.Column>
