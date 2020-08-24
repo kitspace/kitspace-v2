@@ -34,18 +34,27 @@ git submodule update --init
 ```
 cp .env.example .env
 ```
+
 4. Build and run the Gitea docker container
 ```
 docker-compose up gitea
 ```
 
-5. Go to [localhost:3333/install](http://localhost:3333/install) and complete the install (everything should already be filled in correctly). Create a new user and login.
+5. Go to [localhost:3333/install](http://localhost:3333/install) and complete the install (everything should already be filled in correctly, just press the button at the bottom). 
+
+6. Create a new user on [localhost:3333/user/sign_up](http://localhost:3333/user/sign_up), this will be the admin user
 
 
-6. Bring up the rest of the docker containers
+7. Build and bring up the frontend 
+
+```
+docker-compose up frontend
+```
+
+8. Bring up the rest of the containers (in the future this command is all you need to do to bring up everything, including gitea and the frontend)
 
 ```
 docker-compose up
 ```
 
-7. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
+9. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
