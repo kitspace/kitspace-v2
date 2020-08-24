@@ -1,9 +1,16 @@
-FROM node:10.16.0
+FROM node:10.16.0-alpine
+
+ENV NODE_ENV=development
 
 RUN mkdir /app
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-RUN NODE_ENV=production yarn install
 
-CMD [ "/bin/bash", "-c", "yarn install && yarn build && yarn run dev" ]
+RUN yarn --prune-lockfile
+
+COPY . .
+
+RUN yarn build
+
+CMD ["yarn", "dev"]
