@@ -35,7 +35,7 @@ function getSession(req) {
   return session
 }
 
-New.getInitialProps = async ({ req, query }) => {
+GroupBuyPage.getInitialProps = async ({ req, query }) => {
   const session = getSession(req)
   const cookie = req?.headers?.cookie
   const _csrf = session._csrf
