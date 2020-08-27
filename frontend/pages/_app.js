@@ -15,6 +15,7 @@ import 'semantic-ui-css/components/input.css'
 import 'semantic-ui-css/components/menu.css'
 import 'semantic-ui-css/components/message.css'
 import 'semantic-ui-css/components/popup.css'
+import 'semantic-ui-css/components/card.css'
 
 import './_app.scss'
 
