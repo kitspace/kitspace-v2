@@ -7,7 +7,7 @@ Re-writing [Kitspace](https://github.com/kitspace/kitspace) to use [Gitea](https
 ## Goals
 Allow people to:
 1. Add projects without knowing Git/Github
-2. Stil import/sync external Git repositories
+2. Still import/sync external Git repositories
 3. Edit/make improvements and propose these changes to project creators
 
 
@@ -42,3 +42,5 @@ docker-compose up
 5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login.
 
 6. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
+    
+7. If you add a dependency to `frontent/package.json`, rebuild the frontend image.
