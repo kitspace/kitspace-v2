@@ -5,7 +5,7 @@
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node server.js",
-    "fmt": "prettier --write *.js $(find . -name '*.jsx') $(find . -name '*.js')"
+    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next)"
   },
   "license": "AGPL-3.0",
   "dependencies": {
