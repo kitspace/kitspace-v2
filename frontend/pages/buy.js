@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useReducer } from 'react'
 import Link from 'next/link'
 import superagent from 'superagent'
 import { Container, Card, Grid, Divider, Input, Button } from 'semantic-ui-react'
@@ -13,11 +13,151 @@ import styles from './buy.module.scss'
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe('pk_test_JJ1eMdKN0Hp4UFJ6kWXWO4ix00jtXzq5XG')
+const stripePromise = loadStripe('pk_test_Z1JtcYjtxxzggl4ExcHM2M29')
 
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
+
+const formatPrice = ({ amount, currency, quantity }) => {
+  const numberFormat = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'symbol',
+  })
+  const parts = numberFormat.formatToParts(amount)
+  let zeroDecimalCurrency = true
+  for (let part of parts) {
+    if (part.type === 'decimal') {
+      zeroDecimalCurrency = false
+    }
+  }
+  amount = zeroDecimalCurrency ? amount : amount / 100
+  const total = (quantity * amount).toFixed(2)
+  return numberFormat.format(total)
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {
+        ...state,
+        quantity: state.quantity + 1,
+        price: formatPrice({
+          amount: state.basePrice,
+          currency: state.currency,
+          quantity: state.quantity + 1,
+        }),
+      }
+    case 'decrement':
+      return {
+        ...state,
+        quantity: state.quantity - 1,
+        price: formatPrice({
+          amount: state.basePrice,
+          currency: state.currency,
+          quantity: state.quantity - 1,
+        }),
+      }
+    case 'setLoading':
+      return { ...state, loading: action.payload.loading }
+    case 'setError':
+      return { ...state, error: action.payload.error }
+    default:
+      throw new Error()
+  }
+}
+
+const Checkout = () => {
+  const [state, dispatch] = useReducer(reducer, {
+    priceId: 'price_1GtsPCI6rpeFFqzw9sE1DgFI',
+    basePrice: 1000,
+    currency: 'usd',
+    quantity: 1,
+    price: formatPrice({
+      amount: 1000,
+      currency: 'usd',
+      quantity: 1,
+    }),
+    loading: false,
+    error: null,
+  })
+
+  const handleClick = async event => {
+    // Call your backend to create the Checkout session.
+    dispatch({ type: 'setLoading', payload: { loading: true } })
+    // When the customer clicks on the button, redirect them to Checkout.
+    const stripe = await stripePromise
+    const { error } = await stripe.redirectToCheckout({
+      mode: 'payment',
+      lineItems: [{ price: state.priceId, quantity: state.quantity }],
+      successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${window.location.origin}/canceled`,
+    })
+    // If `redirectToCheckout` fails due to a browser or network
+    // error, display the localized error message to your customer
+    // using `error.message`.
+    if (error) {
+      dispatch({ type: 'setError', payload: { error } })
+      dispatch({ type: 'setLoading', payload: { loading: false } })
+    }
+  }
+
+  return (
+    <div className="sr-root">
+      <div className="sr-main">
+        <header className="sr-header">
+          <div className="sr-header__logo"></div>
+        </header>
+        <section className="container">
+          <div>
+            <h1>Test product</h1>
+            <div className="pasha-image">
+              <img
+                alt="Test product photo"
+                src="https://files.stripe.com/links/fl_test_PMF600BEFFSoUQlKsaIbkFxK"
+                width="288"
+                height="644.5"
+              />
+            </div>
+          </div>
+          <div className="quantity-setter">
+            <button
+              className="increment-btn"
+              disabled={state.quantity === 1}
+              onClick={() => dispatch({ type: 'decrement' })}
+            >
+              -
+            </button>
+            <input
+              type="number"
+              id="quantity-input"
+              min="1"
+              max="10"
+              value={state.quantity}
+              readOnly
+            />
+            <button
+              className="increment-btn"
+              disabled={state.quantity === 10}
+              onClick={() => dispatch({ type: 'increment' })}
+            >
+              +
+            </button>
+          </div>
+          <p className="sr-legal-text">Number of kits (max 10)</p>
+
+          <button role="link" onClick={handleClick} disabled={state.loading}>
+            {state.loading || !state.price
+              ? `Loading...`
+              : `Buy for ${state.price}`}
+          </button>
+          <div className="sr-field-error">{state.error?.message}</div>
+        </section>
+      </div>
+    </div>
+  )
+}
 
 export default function BuyPage({ user, _csrf }) {
   const [remoteRepo, setRemoteRepo] = React.useState('')
@@ -26,30 +166,8 @@ export default function BuyPage({ user, _csrf }) {
     <>
       <Head />
       <TitleBar route="/buy" />
-      <div>hi</div>
       <Container>
-        <Card>
-          <Card.Content>
-            <Elements stripe={stripePromise}>
-              <CardElement
-                options={{
-                  style: {
-                    base: {
-                      fontSize: '16px',
-                      color: '#424770',
-                      '::placeholder': {
-                        color: '#aab7c4',
-                      },
-                    },
-                    invalid: {
-                      color: '#9e2146',
-                    },
-                  },
-                }}
-              />
-            </Elements>
-          </Card.Content>
-        </Card>
+        <Checkout />
       </Container>
     </>
   )
