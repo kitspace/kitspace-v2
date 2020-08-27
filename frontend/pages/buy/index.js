@@ -6,10 +6,10 @@ import { Elements, CardElement } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import path from 'path'
 
-import Head from '../components/Head'
-import TitleBar from '../components/TitleBar'
+import Head from '../../components/Head'
+import TitleBar from '../../components/TitleBar'
 
-import styles from './buy.module.scss'
+import styles from './index.module.scss'
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -91,8 +91,8 @@ const Checkout = () => {
     const { error } = await stripe.redirectToCheckout({
       mode: 'payment',
       lineItems: [{ price: state.priceId, quantity: state.quantity }],
-      successUrl: `${window.location.origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${window.location.origin}/canceled`,
+      successUrl: `${window.location.origin}/buy/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${window.location.origin}/buy/canceled`,
     })
     // If `redirectToCheckout` fails due to a browser or network
     // error, display the localized error message to your customer
@@ -116,8 +116,6 @@ const Checkout = () => {
               <img
                 alt="Test product photo"
                 src="https://files.stripe.com/links/fl_test_PMF600BEFFSoUQlKsaIbkFxK"
-                width="288"
-                height="644.5"
               />
             </div>
           </div>
