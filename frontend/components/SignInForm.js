@@ -36,8 +36,6 @@ export default function () {
             error={errors.field === 'username' && form.username !== undefined}
             style={{ marginBottom: 20 }}
           />
-        </Segment>
-        <Segment>
           <Input
             fluid
             icon="lock"

@@ -5,8 +5,7 @@ import ExternalAuthProviders from './ExternalAuthProviders'
 import useForm from '../hooks/useForm'
 import { SignUpForm } from '../models/SignUpForm'
 
-
-export default function()  {
+export default function () {
   const [form, onChange, isValid, errors] = useForm(SignUpForm)
 
   const submit = () => {
@@ -37,8 +36,6 @@ export default function()  {
             error={errors.field === 'username' && form.username !== undefined}
             style={{ marginBottom: 20 }}
           />
-        </Segment>
-        <Segment stacked>
           <Input
             fluid
             icon="mail"
@@ -62,6 +59,8 @@ export default function()  {
             error={errors.field === 'password' && form.password !== undefined}
             style={{ marginBottom: 20 }}
           />
+        </Segment>
+        <Segment>
           <Button
             fluid
             color="green"
