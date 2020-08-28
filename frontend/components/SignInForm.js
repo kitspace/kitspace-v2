@@ -8,9 +8,7 @@ import { SignInForm } from '../models/SignInForm'
 export default function () {
   const [form, onChange, isValid, errors] = useForm(SignInForm)
 
-  const submit = () => {
-    console.log(form)
-  }
+  const submit = () => {}
 
   return (
     <>
