@@ -15,9 +15,9 @@ export default function TitleBar(props) {
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          <Link href="/">
-            <Image className={styles.logoImg} src={logoSrc} />
-          </Link>
+          {/*<Link href="/">*/}
+          {/*  <Image className={styles.logoImg} src={logoSrc} />*/}
+          {/*</Link>*/}
           <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
         </Menu>
       </div>
@@ -32,9 +32,9 @@ export default function TitleBar(props) {
         </Menu>
       </div>
       <div className={styles.smallMenu}>
-        <Link href="/">
-          <Image className="logoImg" src="/images/logo.svg" />
-        </Link>
+        {/*<Link href="/">*/}
+        {/*  <Image className="logoImg" src="/images/logo.svg" />*/}
+        {/*</Link>*/}
         <Popup
           trigger={
             <Button icon size="large" basic inverted>

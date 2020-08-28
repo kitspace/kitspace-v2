@@ -1,14 +1,26 @@
 import React from 'react'
+import superagent from 'superagent'
 import { Button, Form, Header, Segment, Input, Message } from 'semantic-ui-react'
 
 import ExternalAuthProviders from './ExternalAuthProviders'
 import useForm from '../hooks/useForm'
 import { SignUpForm } from '../models/SignUpForm'
 
+const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
+
+
 export default function () {
   const [form, onChange, isValid, errors] = useForm(SignUpForm)
 
-  const submit = () => {}
+  const submit = async () => {
+    await superagent.post(endpoint).end((err, res) => {
+      if(err) {
+        console.log(err)
+      } else {
+        console.log(res)
+      }
+    })
+  }
 
   return (
     <>
