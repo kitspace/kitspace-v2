@@ -1,4 +1,4 @@
-import {Button, Grid, Header, Icon} from 'semantic-ui-react'
+import { Button, Grid, Header, Icon } from 'semantic-ui-react'
 import React from 'react'
 
 export default function () {

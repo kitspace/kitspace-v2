@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, Container, Form} from 'semantic-ui-react'
+import { Button, Container, Form } from 'semantic-ui-react'
 
 import TitleBar from '../components/TitleBar'
 
@@ -7,21 +7,20 @@ export default function Newsletter() {
   return (
     <div>
       <TitleBar route="/newsletter/" />
-      <Container style={{marginTop: 50}}>
+      <Container style={{ marginTop: 50 }}>
         <p>
-          Often people say to us: "Wow that's a nice printed circuit board. I
-          would like to subscribe to your newsletter." Now you can! Let us know
-          what would like to hear about exactly. Don't worry, it's easy to
-          unsubscribe if you change your mind later. If you just want to get in
-          touch email <a href="mailto:info@kitspace.org">info@kitspace.org</a>{' '}
-          instead.
+          Often people say to us: "Wow that's a nice printed circuit board. I would
+          like to subscribe to your newsletter." Now you can! Let us know what would
+          like to hear about exactly. Don't worry, it's easy to unsubscribe if you
+          change your mind later. If you just want to get in touch email{' '}
+          <a href="mailto:info@kitspace.org">info@kitspace.org</a> instead.
         </p>
         <Form
           name="newsletter"
           method="POST"
           action="POST"
           data-netlify="true"
-          style={{padding: 15}}
+          style={{ padding: 15 }}
         >
           <input type="hidden" name="form-name" value="newsletter" />
           <Form.Field>
@@ -31,7 +30,7 @@ export default function Newsletter() {
               type="email"
               name="email"
               placeholder="you@example.com"
-              style={{maxWidth: 300}}
+              style={{ maxWidth: 300 }}
             />
           </Form.Field>
           <div hidden aria-hidden="true">
@@ -67,13 +66,13 @@ export default function Newsletter() {
           <Form.Field inline size="tiny">
             <label htmlFor="anything_else">Anything else: </label>
             <input
-              style={{height: 13}}
+              style={{ height: 13 }}
               type="text"
               name="anything_else"
               id="anything_else"
             />
           </Form.Field>
-          <Button primary type="submit" style={{marginTop: 30}}>
+          <Button primary type="submit" style={{ marginTop: 30 }}>
             Subscribe
           </Button>
         </Form>
