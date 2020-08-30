@@ -1,6 +1,6 @@
 import React from 'react'
 import superagent from 'superagent'
-import { Button, Form, Header, Segment, Input, Message } from 'semantic-ui-react'
+import { Button, Form, Header, Input, Message, Segment } from 'semantic-ui-react'
 
 import ExternalAuthProviders from './ExternalAuthProviders'
 import useForm from '../hooks/useForm'
@@ -9,18 +9,20 @@ import { SignUpForm } from '../models/SignUpForm'
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
 
-export default function () {
+export default function() {
   const [form, onChange, isValid, errors] = useForm(SignUpForm)
 
   const submit = async () => {
-    await superagent.post(endpoint).end((err, res) => {
-      if(err) {
+    await superagent.post(endpoint).send(form).end((err, res) => {
+      if (err) {
         console.log(err)
       } else {
         console.log(res)
       }
     })
   }
+
+  const errorField = field => errors.field === field && form[field] !== undefined
 
   return (
     <>
@@ -43,7 +45,7 @@ export default function () {
             name="username"
             value={form.username || ''}
             onChange={onChange}
-            error={errors.field === 'username' && form.username !== undefined}
+            error={errorField('username')}
             style={{ marginBottom: 20 }}
           />
           <Input
@@ -53,7 +55,7 @@ export default function () {
             placeholder="email"
             name="email"
             value={form.email || ''}
-            error={errors.field === 'email' && form.email !== undefined}
+            error={errorField('mail')}
             onChange={onChange}
             style={{ marginBottom: 20 }}
           />
@@ -66,7 +68,7 @@ export default function () {
             name="password"
             value={form.password || ''}
             onChange={onChange}
-            error={errors.field === 'password' && form.password !== undefined}
+            error={errorField('password')}
             style={{ marginBottom: 20 }}
           />
         </Segment>
@@ -81,7 +83,7 @@ export default function () {
             Sign up
           </Button>
         </Segment>
-        <ExternalAuthProviders />
+        <ExternalAuthProviders/>
       </Form>
     </>
   )
