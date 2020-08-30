@@ -6,7 +6,39 @@ import ExternalAuthProviders from './ExternalAuthProviders'
 import useForm from '../hooks/useForm'
 import { SignUpForm } from '../models/SignUpForm'
 
-const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
+import { Model, Server } from 'miragejs'
+
+// TODO: this is the right value after removing the mocking procedure.
+// const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
+
+
+// This part for mocking until we get the backend right!
+const endpoint = '/user/kitspace/sign_up'
+
+new Server({
+  models: {
+    user: Model,
+  },
+  routes() {
+
+    this.post(endpoint, (schema, request) => {
+      const attrs = JSON.parse(request.requestBody)
+
+      const reservedNames = ['admin', 'user']  // Not a full list of Gitea reserved names
+      if (schema.users.where({ 'username': attrs.username }).length !== 0) {
+        return { error: 'Conflict', message: 'User already exists.' }
+      } else if (schema.users.where({ 'email': attrs.email }).length !== 0) {
+        return { error: 'Conflict', message: 'Email already used.' }
+      } else if (reservedNames.includes(attrs.username)) {
+        return { error: 'Conflict', message: 'Name is reserved.' }
+      } else {
+        schema.users.create(attrs)
+        return { email: attrs.email, ActiveCodeLives: '3 hours' }
+      }
+    })
+  },
+})
+// End of mocking code.
 
 
 export default function() {
@@ -17,7 +49,7 @@ export default function() {
       if (err) {
         console.log(err)
       } else {
-        console.log(res)
+        console.log(res.body)
       }
     })
   }
