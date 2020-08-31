@@ -1,14 +1,42 @@
-import React from 'react'
+import React, { useState } from 'react'
+import superagent from 'superagent'
 import { Button, Form, Header, Segment, Input, Message } from 'semantic-ui-react'
 
 import ExternalAuthProviders from './ExternalAuthProviders'
 import useForm from '../hooks/useForm'
 import { SignInForm } from '../models/SignInForm'
 
+// TODO: this is the right value after removing the mocking procedure.
+// const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
+const endpoint = '/user/kitspace/sign_in'
+// End of mocking code.
+
 export default function () {
   const [form, onChange, isValid, errors] = useForm(SignInForm)
+  const [apiResponse, setApiResponse] = useState({})
 
-  const submit = () => {}
+  const errorField = field => errors.field === field && form[field] !== undefined
+
+  const hasFromError = form[errors.field] !== undefined
+  const hasApiError = apiResponse.error !== undefined
+  const isSuccessfulLogin = apiResponse.login !== undefined
+
+  const submit = async () => {
+    await superagent
+      .post(endpoint)
+      .send(form)
+      .end((err, res) => {
+        if (err) {
+          setApiResponse({
+            error: 'API error',
+            message: 'Something went wrong. Please, try again later.',
+          })
+        } else {
+          const { error, message, LoggedInSuccessfully } = res.body
+          setApiResponse({ error, message, login: LoggedInSuccessfully })
+        }
+      })
+  }
 
   return (
     <>
@@ -16,10 +44,14 @@ export default function () {
         Login
       </Header>
       <Message
-        negative
-        style={{ display: form[errors.field] === undefined ? 'none' : 'block' }}
+        negative={hasFromError || hasApiError}
+        positive={isSuccessfulLogin}
+        style={{
+          display:
+            hasFromError || hasApiError || isSuccessfulLogin ? 'block' : 'none',
+        }}
       >
-        {errors.msg}
+        {errors.msg || apiResponse.message || 'Logged in!'}
       </Message>
       <Form size="large">
         <Segment stacked>
@@ -31,7 +63,7 @@ export default function () {
             name="username"
             value={form.username || ''}
             onChange={onChange}
-            error={errors.field === 'username' && form.username !== undefined}
+            error={errorField('username')}
             style={{ marginBottom: 20 }}
           />
           <Input
@@ -43,7 +75,7 @@ export default function () {
             name="password"
             value={form.password || ''}
             onChange={onChange}
-            error={errors.field === 'password' && form.password !== undefined}
+            error={errorField('password')}
             style={{ marginBottom: 20 }}
           />
         </Segment>

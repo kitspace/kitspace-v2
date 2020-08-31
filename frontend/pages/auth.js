@@ -5,18 +5,39 @@ import { Container, Grid, Tab } from 'semantic-ui-react'
 import TitleBar from '../components/TitleBar'
 import SignUpForm from '../components/SignUpForm'
 import SignInForm from '../components/SignInForm'
-import { Model, Server } from 'miragejs'
 
+import { Model, Server } from 'miragejs'
 
 new Server({
   models: {
     user: Model,
   },
   routes() {
+    this.post('/user/kitspace/sign_in', (schema, request) => {
+      const attrs = JSON.parse(request.requestBody)
+
+      const prohibitedUsers = ['ProhibitedUser1', 'ProhibitedUser2']
+      const inactiveAccounts = ['InactiveUser1', 'InactiveUser2']
+
+      const isActualUser =
+        schema.users.where({ username: attrs.username, password: attrs.password })
+          .length !== 0
+
+      if (prohibitedUsers.includes(attrs.username)) {
+        return { error: 'Prohibited', message: 'Prohibited login.' }
+      } else if (inactiveAccounts.includes(attrs.username)) {
+        return { error: 'ActivationRequired', message: 'Activate your account.' }
+      } else if (!isActualUser) {
+        return { error: 'Not Found', message: 'Wrong username or password.' }
+      } else {
+        return { LoggedInSuccessfully: true }
+      }
+    })
+
     this.post('/user/kitspace/sign_up', (schema, request) => {
       const attrs = JSON.parse(request.requestBody)
 
-      const reservedNames = ['admin', 'user'] // Not a full list of Gitea reserved names.
+      const reservedNames = ['admin', 'user'] // Not a complete list of Gitea reserved names.
 
       if (schema.users.where({ username: attrs.username }).length !== 0) {
         return { error: 'Conflict', message: 'User already exists.' }
@@ -31,7 +52,6 @@ new Server({
     })
   },
 })
-
 
 export default function () {
   const router = useRouter()
