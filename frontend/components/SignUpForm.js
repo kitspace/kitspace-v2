@@ -12,10 +12,8 @@ const endpoint = '/user/kitspace/sign_up'
 // End of mocking code.
 
 export default function () {
-  const [form, onChange, isValid, errors] = useForm(SignUpForm)
+  const [form, onChange, isValid, errors, isErrorField] = useForm(SignUpForm)
   const [apiResponse, setApiResponse] = useState({})
-
-  const errorField = field => errors.field === field && form[field] !== undefined
 
   const submit = async () => {
     await superagent
@@ -68,7 +66,7 @@ export default function () {
             name="username"
             value={form.username || ''}
             onChange={onChange}
-            error={errorField('username')}
+            error={isErrorField('username')}
             style={{ marginBottom: 20 }}
           />
           <Input
@@ -78,7 +76,7 @@ export default function () {
             placeholder="email"
             name="email"
             value={form.email || ''}
-            error={errorField('mail')}
+            error={isErrorField('mail')}
             onChange={onChange}
             style={{ marginBottom: 20 }}
           />
@@ -91,7 +89,7 @@ export default function () {
             name="password"
             value={form.password || ''}
             onChange={onChange}
-            error={errorField('password')}
+            error={isErrorField('password')}
             style={{ marginBottom: 20 }}
           />
         </Segment>

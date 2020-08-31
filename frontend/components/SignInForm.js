@@ -12,10 +12,8 @@ const endpoint = '/user/kitspace/sign_in'
 // End of mocking code.
 
 export default function () {
-  const [form, onChange, isValid, errors] = useForm(SignInForm)
+  const [form, onChange, isValid, errors, isErrorField] = useForm(SignInForm)
   const [apiResponse, setApiResponse] = useState({})
-
-  const errorField = field => errors.field === field && form[field] !== undefined
 
   const hasFromError = form[errors.field] !== undefined
   const hasApiError = apiResponse.error !== undefined
@@ -63,7 +61,7 @@ export default function () {
             name="username"
             value={form.username || ''}
             onChange={onChange}
-            error={errorField('username')}
+            error={isErrorField('username')}
             style={{ marginBottom: 20 }}
           />
           <Input
@@ -75,7 +73,7 @@ export default function () {
             name="password"
             value={form.password || ''}
             onChange={onChange}
-            error={errorField('password')}
+            error={isErrorField('password')}
             style={{ marginBottom: 20 }}
           />
         </Segment>

@@ -15,5 +15,7 @@ export default function (schema) {
     ? { field: errorDetails.context.key, msg: errorDetails.message }
     : {}
 
-  return [form, onChange, isValid, errors]
+  const isErrorField = field => errors.field === field && form[field] !== undefined
+
+  return [form, onChange, isValid, errors, isErrorField]
 }
