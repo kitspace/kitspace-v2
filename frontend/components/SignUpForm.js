@@ -2,7 +2,7 @@ import React from 'react'
 import superagent from 'superagent'
 import { Button, Form, Header, Segment, Input, Message } from 'semantic-ui-react'
 
-import ExternalAuthProviders from './ExternalAuthProviders'
+import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
 import { SignUpForm } from '../models/SignUpForm'
 
@@ -81,7 +81,7 @@ export default function () {
             Sign up
           </Button>
         </Segment>
-        <ExternalAuthProviders />
+        <OAuthButtons />
       </Form>
     </>
   )

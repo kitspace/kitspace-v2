@@ -15,7 +15,7 @@ export default function () {
             </Button>
           </Grid.Column>
           <Grid.Column>
-            <Button>
+             <Button>
               <Icon name="github" /> GitHub
             </Button>
           </Grid.Column>

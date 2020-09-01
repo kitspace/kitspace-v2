@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Form, Header, Segment, Input, Message } from 'semantic-ui-react'
 
-import ExternalAuthProviders from './ExternalAuthProviders'
+import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
 import { SignInForm } from '../models/SignInForm'
 
@@ -58,7 +58,7 @@ export default function () {
             Login
           </Button>
         </Segment>
-        <ExternalAuthProviders />
+        <OAuthButtons />
       </Form>
     </>
   )
