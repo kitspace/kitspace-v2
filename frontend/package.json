@@ -25,6 +25,7 @@
     "url-loader": "^4.1.0"
   },
   "devDependencies": {
+    "miragejs": "^0.1.40",
     "nodemon": "^2.0.2"
   }
 }
