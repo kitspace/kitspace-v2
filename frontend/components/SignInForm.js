@@ -39,7 +39,7 @@ export default function () {
   return (
     <>
       <Header as="h2" textAlign="center">
-        Login
+        Log in
       </Header>
       <Message
         negative={hasFromError || hasApiError}
@@ -55,9 +55,7 @@ export default function () {
         <Segment stacked>
           <Input
             fluid
-            icon="user"
-            iconPosition="left"
-            placeholder="username"
+            placeholder="Username"
             name="username"
             value={form.username || ''}
             onChange={onChange}
@@ -66,8 +64,6 @@ export default function () {
           />
           <Input
             fluid
-            icon="lock"
-            iconPosition="left"
             placeholder="Password"
             type="password"
             name="password"

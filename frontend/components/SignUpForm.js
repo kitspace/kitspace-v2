@@ -60,10 +60,8 @@ export default function () {
         <Segment stacked>
           <Input
             fluid
-            icon="user"
-            iconPosition="left"
-            placeholder="username"
-            name="username"
+            placeholder="Username"
+            name="Username"
             value={form.username || ''}
             onChange={onChange}
             error={isErrorField('username')}
@@ -71,9 +69,7 @@ export default function () {
           />
           <Input
             fluid
-            icon="mail"
-            iconPosition="left"
-            placeholder="email"
+            placeholder="Email"
             name="email"
             value={form.email || ''}
             error={isErrorField('mail')}
@@ -82,8 +78,6 @@ export default function () {
           />
           <Input
             fluid
-            icon="lock"
-            iconPosition="left"
             placeholder="Password"
             type="password"
             name="password"

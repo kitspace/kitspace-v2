@@ -8,6 +8,7 @@ import SignInForm from '../components/SignInForm'
 
 import { Model, Server } from 'miragejs'
 
+// mock server.
 new Server({
   models: {
     user: Model,
@@ -52,6 +53,7 @@ new Server({
     })
   },
 })
+// end of mock server.
 
 export default function () {
   const router = useRouter()
@@ -67,13 +69,13 @@ export default function () {
   return (
     <>
       <TitleBar route="/auth/" auth />
-      <Container style={{ marginTop: 30 }}>
+      <Container style={{ paddingTop: '4rem' }}>
         <Grid textAlign="center" verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
             <Tab
               panes={[
                 { menuItem: 'Sign up', render: () => <SignUpForm /> },
-                { menuItem: 'Login', render: () => <SignInForm /> },
+                { menuItem: 'Log in', render: () => <SignInForm /> },
               ]}
               defaultActiveIndex={defaultActiveIndex}
             />
