@@ -61,7 +61,7 @@ export default function () {
           <Input
             fluid
             placeholder="Username"
-            name="Username"
+            name="username"
             value={form.username || ''}
             onChange={onChange}
             error={isErrorField('username')}
