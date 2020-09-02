@@ -6,10 +6,7 @@ import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
 import { SignUpForm } from '../models/SignUpForm'
 
-// TODO: this is the right value after removing the mocking procedure.
-// const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
-const endpoint = '/user/kitspace/sign_up'
-// End of mocking code.
+const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
 export default function () {
   const [form, onChange, isValid, errors, isErrorField] = useForm(SignUpForm)
@@ -20,13 +17,14 @@ export default function () {
       .post(endpoint)
       .send(form)
       .end((err, res) => {
+        const { error, message, email, ActiveCodeLives } = res.body
+
         if (err) {
           setApiResponse({
-            error: 'API error',
-            message: 'Something went wrong. Please, try again later.',
+            error: error || 'API error',
+            message: message || 'Something went wrong. Please, try again later.',
           })
         } else {
-          const { error, message, email, ActiveCodeLives } = res.body
           setApiResponse({ error, message, email, duration: ActiveCodeLives })
         }
       })
