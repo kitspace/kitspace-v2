@@ -1,115 +1,159 @@
 import React from 'react'
-import * as semantic from 'semantic-ui-react'
 import Link from 'next/link'
+import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
 
-import logo from './logo.svg'
 import styles from './TitleBar.module.scss'
 
+const logoSrc = '/static/logo.svg'
+
 export default function TitleBar(props) {
+  const isAuthenticated = props.auth
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
     isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
   return (
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
-        <semantic.Menu inverted pointing secondary>
-          <Link href="/">
-            <a>
-              <semantic.Image className={styles.logoImg} src={logo} />
-            </a>
-          </Link>
+        <Menu inverted pointing secondary>
+          {/*<Link href="/">*/}
+          {/*  <Image className={styles.logoImg} src={logoSrc} />*/}
+          {/*</Link>*/}
           <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
-        </semantic.Menu>
+        </Menu>
       </div>
       <div className={styles.bigSocialMenu}>
-        <semantic.Menu inverted pointing secondary>
-          <SocialMenuItems isSubmitRoute={isSubmitRoute} />
-        </semantic.Menu>
+        <Menu inverted pointing secondary>
+          {isSubmitRoute || !isAuthenticated ? (
+            <ContactMenu />
+          ) : (
+            <AddAProjectButton />
+          )}
+          <SigningButton auth={props.auth} />
+        </Menu>
       </div>
       <div className={styles.smallMenu}>
-        <Link href="/">
-          <a>
-            <semantic.Image className={styles.logoImg} src={logo} />
-          </a>
-        </Link>
-        <semantic.Popup
+        {/*<Link href="/">*/}
+        {/*  <Image className="logoImg" src="/images/logo.svg" />*/}
+        {/*</Link>*/}
+        <Popup
           trigger={
-            <semantic.Button icon size="large" basic inverted>
-              <semantic.Icon inverted name="bars" />
-            </semantic.Button>
+            <Button icon size="large" basic inverted>
+              <Icon inverted name="bars" />
+            </Button>
           }
           on="click"
           position="bottom right"
           inverted
           basic
         >
-          <semantic.Menu inverted vertical>
+          <Menu inverted vertical>
             <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
-            <SocialMenuItems isSubmitRoute={isSubmitRoute} />
-          </semantic.Menu>
-        </semantic.Popup>
+            <SocialMenuItems />
+            {isSubmitRoute ? null : <AddAProjectButton />}
+          </Menu>
+        </Popup>
       </div>
     </div>
+  )
+}
+
+function AddAProjectButton() {
+  return (
+    <Menu.Item>
+      <Button icon labelPosition="left" color="green" href="/projects/new">
+        <Icon name="plus" />
+        Add a project
+      </Button>
+    </Menu.Item>
   )
 }
 
 function SiteMenuItems(props) {
   return (
     <>
-      <Link href="/" passHref>
-        <semantic.Menu.Item as="a" active={props.isProjectRoute}>
-          {'Projects'}
-        </semantic.Menu.Item>
-      </Link>
-      <Link href="/bom-builder" passHref>
-        <semantic.Menu.Item as="a" active={props.route === '/bom-builder/'}>
-          {'BOM Builder'}
-        </semantic.Menu.Item>
-      </Link>
-      <Link href="/1-click-bom" passHref>
-        <semantic.Menu.Item as="a" active={props.route === '/1-click-bom/'}>
-          {'1-click BOM'}
-        </semantic.Menu.Item>
-      </Link>
+      <Menu.Item as="a" href="/" active={props.isProjectRoute}>
+        {'Projects'}
+      </Menu.Item>
+      <Menu.Item
+        as="a"
+        href="/bom-builder"
+        active={props.route === '/bom-builder/'}
+      >
+        {'BOM Builder'}
+      </Menu.Item>
+      <Menu.Item
+        as="a"
+        href="/1-click-bom"
+        active={props.route === '/1-click-bom/'}
+      >
+        {'1-click BOM'}
+      </Menu.Item>
     </>
   )
 }
 
-function SocialMenuItems(props) {
+function SocialMenuItems() {
   return (
     <>
-      <semantic.Menu.Item
-        as="a"
-        href="https://riot.im/app/#/room/#kitspace:matrix.org"
-      >
-        <semantic.Icon name="chat" />
+      <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
+        <Icon name="chat" />
         Chat
-      </semantic.Menu.Item>
-      <semantic.Menu.Item as="a" href="https://twitter.com/kitspaceorg">
-        <semantic.Icon name="twitter" />
+      </Menu.Item>
+      <Menu.Item as="a" href="/newsletter/">
+        <Icon name="envelope" />
+        Email & Newsletter
+      </Menu.Item>
+      <Menu.Item as="a" href="https://twitter.com/kitspaceorg">
+        <Icon name="twitter" />
         Twitter
-      </semantic.Menu.Item>
-      <semantic.Menu.Item as="a" href="https://github.com/kitspace">
-        <semantic.Icon name="github" />
+      </Menu.Item>
+      <Menu.Item as="a" href="https://github.com/kitspace">
+        <Icon name="github" />
         GitHub
-      </semantic.Menu.Item>
-      <semantic.Menu.Item as="a" href="https://opencollective.com/kitspace">
-        <semantic.Icon name="heart" />
+      </Menu.Item>
+      <Menu.Item as="a" href="https://opencollective.com/kitspace">
+        <Icon name="heart" />
         Donate
-      </semantic.Menu.Item>
-      {props.isSubmitRoute ? null : (
-        <semantic.Menu.Item>
-          <semantic.Button
-            icon
-            labelPosition="left"
-            color="green"
-            href="/projects/new"
-          >
-            <semantic.Icon name="plus" />
-            Add a project
-          </semantic.Button>
-        </semantic.Menu.Item>
-      )}
+      </Menu.Item>
     </>
+  )
+}
+
+function ContactMenu() {
+  return (
+    <Popup
+      trigger={
+        <Menu.Item className="contact-button">
+          <Button labelPosition="right" icon color="blue">
+            <Icon inverted name="comments" />
+            {/* just here to force the loading of
+                brand-icons before the menu is visible */}
+            <Icon
+              name="twitter"
+              style={{ visibility: 'hidden', width: '0px', height: '0px' }}
+            />
+            Make contact
+          </Button>
+        </Menu.Item>
+      }
+      on="click"
+      position="bottom right"
+      color="blue"
+    >
+      <Menu secondary vertical>
+        <SocialMenuItems />
+      </Menu>
+    </Popup>
+  )
+}
+
+function SigningButton(props) {
+  const isAuthenticated = props.auth
+  return (
+    <Menu.Item>
+      <Button color={isAuthenticated ? 'red' : 'green'} href="#">
+        {isAuthenticated ? 'Sign out' : 'Sign in'}
+      </Button>
+    </Menu.Item>
   )
 }

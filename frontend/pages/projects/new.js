@@ -33,7 +33,7 @@ function New({ user, _csrf }) {
                   className={styles.urlInput}
                   style={{ maxHeight: 37 }}
                   fluid
-                  onChange={(e) => setRemoteRepo(e.target.value)}
+                  onChange={e => setRemoteRepo(e.target.value)}
                   placeholder={remoteRepoPlaceHolder}
                   value={remoteRepo}
                 />
@@ -87,7 +87,7 @@ function New({ user, _csrf }) {
                 mozdirectory=""
                 id="uploadInput"
                 style={{ display: 'none' }}
-                onChange={(e) => console.log(e.target.files)}
+                onChange={e => console.log(e.target.files)}
               />
             </div>
           </Grid.Column>

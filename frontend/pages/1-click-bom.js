@@ -32,7 +32,7 @@ export default function BomBuilder(props) {
             Read further documentation on GitHub
           </a>
         </p>
-        <p style={{ textAlign: 'center', marginTop: 10, minHeight: 454}}>
+        <p style={{ textAlign: 'center', marginTop: 10, minHeight: 454 }}>
           <img src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/demo.gif" />
         </p>
       </Container>

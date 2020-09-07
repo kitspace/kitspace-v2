@@ -48,7 +48,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   )
 }
 
-KitspaceApp.getInitialProps = async (appContext) => {
+KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
   const session = appContext.ctx.req ? appContext.ctx.req.session : null
   const { isStaticFallback } = appContext.ctx.query
