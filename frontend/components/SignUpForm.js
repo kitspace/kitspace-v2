@@ -47,7 +47,12 @@ export default function () {
             hasFromError || hasApiError || isSuccessfulReg ? 'block' : 'none',
         }}
       >
-        <Message.Header style={{ display: isSuccessfulReg ? 'block' : 'none' }}>
+        <Message.Header
+          style={{
+            display:
+              isSuccessfulReg && !(hasFromError || hasApiError) ? 'block' : 'none',
+          }}
+        >
           Success!
         </Message.Header>
         {errors.msg ||
