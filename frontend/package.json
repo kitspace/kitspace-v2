@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "cypress": "^5.1.0",
+    "faker": "^5.1.0",
     "nodemon": "^2.0.2"
   }
 }

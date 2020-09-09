@@ -1,3 +1,5 @@
+import faker from 'faker'
+
 import { SignUpForm } from '../../models/SignUpForm'
 
 describe('Sign up form validation', () => {
@@ -61,6 +63,18 @@ describe('Sign up form validation', () => {
 
 describe('Sign up form submission', () => {
   it('should add user to gitea', () => {
-    // TODO: actual submission and compare it with the admin panel on gitea.
+    const username = faker.internet.userName()
+
+    cy.request('POST', 'http://gitea.kitspace.test:3000/user/kitspace/sign_up', {
+      username: username,
+      email: faker.internet.email(),
+      password: 'sdcdgfer3wgref',
+    })
+
+    cy.visit('http://gitea.kitspace.test:3000/admin/users')
+    cy.get('input#user_name').type(Cypress.env('gitea_admin_username'))
+    cy.get('input#password').type(Cypress.env('gitea_admin_password'))
+    cy.get('button').click()
+    cy.get('tbody').get('tr').contains(username).should('be.visible')
   })
 })
