@@ -62,6 +62,11 @@ describe('Sign up form validation', () => {
 })
 
 describe('Sign up form submission', () => {
+  /* TODO: the way `superagent` submit `xhr` request isn't compatible with `Cypress
+     so pressing the button directly don't work for now.
+     To test API errors which is tested by gitea itself, we can mock or find a solution for `superagent`
+   */
+
   it('should add user to gitea', () => {
     const username = faker.internet.userName()
 
