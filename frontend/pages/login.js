@@ -11,7 +11,7 @@ export default function () {
 
   let defaultActiveIndex
 
-  if (router.query.hasOwnProperty('login')) {
+  if (router.query.hasOwnProperty('sign_up')) {
     defaultActiveIndex = 0
   } else {
     defaultActiveIndex = 1
