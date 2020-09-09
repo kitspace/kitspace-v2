@@ -44,3 +44,14 @@ docker-compose up
 6. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
     
 7. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose --no-cache frontend`.
+
+# Running Integration Tests
+1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
+
+2. navigate to `frontend`: `cd frontend/`.
+
+3. Start the testing client with the `npx cypress open` command.
+
+4. The Cypress GUI should pop up.
+
+5. To run all tests, press `Run all specs`.
