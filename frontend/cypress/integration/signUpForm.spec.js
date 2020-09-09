@@ -66,8 +66,9 @@ describe('Sign up form submission', () => {
      so pressing the button directly don't work for now.
      To test API errors which is tested by gitea itself, we can mock or find a solution for `superagent`
    */
+  beforeEach(() => cy.clearCookies())
 
-  it('should add user to gitea', () => {
+  it('adds user to gitea', () => {
     const username = faker.internet.userName()
 
     cy.request('POST', 'http://gitea.kitspace.test:3000/user/kitspace/sign_up', {
