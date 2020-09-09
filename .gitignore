@@ -2,6 +2,7 @@
 .idea/
 
 .env
+frontend/cypress.json
 volumes/
 nginx/default.conf
 
