@@ -1,5 +1,12 @@
-import { Button, Grid, Header, Icon } from 'semantic-ui-react'
 import React from 'react'
+import { Grid, Header } from 'semantic-ui-react'
+import {
+  GithubLoginButton,
+  TwitterLoginButton,
+} from 'react-social-login-buttons'
+
+import GoogleButton from './GoogleLoginButton'
+
 
 export default function () {
   return (
@@ -10,19 +17,13 @@ export default function () {
       <Grid columns={3} divided>
         <Grid.Row>
           <Grid.Column>
-            <Button color="twitter">
-              <Icon name="twitter" /> Twitter
-            </Button>
+            <TwitterLoginButton>Twitter</TwitterLoginButton>
           </Grid.Column>
           <Grid.Column>
-            <Button>
-              <Icon name="github" /> GitHub
-            </Button>
+            <GithubLoginButton>GitHub</GithubLoginButton>
           </Grid.Column>
           <Grid.Column>
-            <Button color="blue">
-              <Icon name="google" /> Google
-            </Button>
+            <GoogleButton />
           </Grid.Column>
         </Grid.Row>
       </Grid>
