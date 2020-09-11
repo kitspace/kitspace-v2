@@ -1,8 +1,9 @@
 Cypress.Commands.add('signUp', (username, email, password) => {
-  cy.request('POST', 'http://gitea.kitspace.test:3000/user/kitspace/sign_up', {
-    username,
-    email,
-    password,
+  cy.request({
+    url: 'http://gitea.kitspace.test:3000/user/kitspace/sign_up',
+    method: 'POST',
+    body: { username, email, password },
+    failOnStatusCode: false,
   })
 
   cy.get('input[name=username]').clear().type(username)

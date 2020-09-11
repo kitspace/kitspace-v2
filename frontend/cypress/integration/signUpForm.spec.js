@@ -103,4 +103,70 @@ describe('Sign up form submission', () => {
     cy.get('button').click()
     cy.get('tbody').get('tr').contains(username).should('be.visible')
   })
+
+  it('submits a from with used username', () => {
+    cy.visit('/login?sign_up', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'fetch')
+          .withArgs(endpoint)
+          .resolves({
+            ok: false,
+            json: () => ({ error: 'Conflict', message: 'User already exists.' }),
+          })
+      },
+    })
+
+    cy.signUp(username, email, password)
+
+    cy.get('.negative').as('message')
+
+    cy.get('@message').should('be.visible')
+    cy.get('@message').get('div.header').should('not.be.visible')
+    cy.get('@message').should('include.text', 'User already exists.')
+  })
+
+  it('submits a from with used email', () => {
+    cy.visit('/login?sign_up', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'fetch')
+          .withArgs(endpoint)
+          .resolves({
+            ok: false,
+            json: () => ({ error: 'Conflict', message: 'Email already used.' }),
+          })
+      },
+    })
+
+    cy.signUp(username, email, password)
+
+    cy.get('.negative').as('message')
+
+    cy.get('@message').should('be.visible')
+    cy.get('@message').get('div.header').should('not.be.visible')
+    cy.get('@message').should('include.text', 'Email already used.')
+  })
+
+  it('submits a from with reserved username', () => {
+    const reservedNames = ['admin', 'user'] // Not a full list of Gitea reserved names.
+    cy.visit('/login?sign_up', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'fetch')
+          .withArgs(endpoint)
+          .resolves({
+            ok: false,
+            json: () => ({ error: 'Conflict', message: 'Name is reserved.' }),
+          })
+      },
+    })
+
+    reservedNames.forEach(name => {
+      cy.signUp(name, email, password)
+
+      cy.get('.negative').as('message')
+
+      cy.get('@message').should('be.visible')
+      cy.get('@message').get('div.header').should('not.be.visible')
+    })
+    cy.get('@message').should('include.text', 'Name is reserved.')
+  })
 })
