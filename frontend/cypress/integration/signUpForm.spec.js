@@ -1,3 +1,5 @@
+/// <reference types="../support" />
+
 import faker from 'faker'
 
 import { SignUpForm } from '../../models/SignUpForm'
@@ -84,7 +86,6 @@ describe('Sign up form validation', () => {
 })
 
 describe('Sign up form submission', () => {
-  const endpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
