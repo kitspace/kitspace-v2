@@ -1,12 +1,8 @@
 import React from 'react'
 import { Grid, Header } from 'semantic-ui-react'
-import {
-  GithubLoginButton,
-  TwitterLoginButton,
-} from 'react-social-login-buttons'
+import { GithubLoginButton, TwitterLoginButton } from 'react-social-login-buttons'
 
 import GoogleButton from './GoogleLoginButton'
-
 
 export default function () {
   return (
