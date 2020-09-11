@@ -13,21 +13,23 @@ export default function () {
   const [apiResponse, setApiResponse] = useState({})
 
   const submit = async () => {
-    await superagent
-      .post(endpoint)
-      .send(form)
-      .end((err, res) => {
-        const { error, message, email, ActiveCodeLives } = res.body
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(form),
+      headers: {'Content-Type': 'application/json'}
+    })
+    const data = await response.json()
 
-        if (err) {
-          setApiResponse({
-            error: error || 'API error',
-            message: message || 'Something went wrong. Please, try again later.',
-          })
-        } else {
-          setApiResponse({ error, message, email, duration: ActiveCodeLives })
-        }
+    if(response.ok) {
+      const {email, ActiveCodeLives} = data
+      setApiResponse({email, duration: ActiveCodeLives})
+    } else {
+      const {error, message} = data
+      setApiResponse({
+        error: error || 'API error',
+        message: message || 'Something went wrong. Please, try again later.'
       })
+    }
   }
 
   const hasFromError = form[errors.field] !== undefined
