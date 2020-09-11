@@ -39,7 +39,6 @@ describe('Sign up form validation', () => {
       cy.get('input[name=username]').clear().type(username)
       cy.get('.negative').as('message')
 
-
       // Success header shouldn't appear.
       cy.get('@message').should('be.visible')
       cy.get('@message').get('div.header').should('not.be.visible')
@@ -94,16 +93,7 @@ describe('Sign up form submission', () => {
   beforeEach(() => cy.clearCookies())
 
   it('submits a valid form', () => {
-    cy.visit('/login?sign_up', {
-      onBeforeLoad(win) {
-        cy.stub(win, 'fetch')
-          .withArgs(endpoint)
-          .resolves({
-            ok: true,
-            json: () => ({ email: email, ActiveCodeLives: duration }),
-          })
-      },
-    })
+    cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
 
     cy.signUp(username, email, password)
 
@@ -128,16 +118,7 @@ describe('Sign up form submission', () => {
   })
 
   it('submits a from with used username', () => {
-    cy.visit('/login?sign_up', {
-      onBeforeLoad(win) {
-        cy.stub(win, 'fetch')
-          .withArgs(endpoint)
-          .resolves({
-            ok: false,
-            json: () => ({ error: 'Conflict', message: 'User already exists.' }),
-          })
-      },
-    })
+    cy.stubSignUpReq(false, { error: 'Conflict', message: 'User already exists.' })
 
     cy.signUp(username, email, password)
 
@@ -152,16 +133,7 @@ describe('Sign up form submission', () => {
   })
 
   it('submits a from with used email', () => {
-    cy.visit('/login?sign_up', {
-      onBeforeLoad(win) {
-        cy.stub(win, 'fetch')
-          .withArgs(endpoint)
-          .resolves({
-            ok: false,
-            json: () => ({ error: 'Conflict', message: 'Email already used.' }),
-          })
-      },
-    })
+    cy.stubSignUpReq(false, { error: 'Conflict', message: 'Email already used.' })
 
     cy.signUp(username, email, password)
 
@@ -176,17 +148,9 @@ describe('Sign up form submission', () => {
   })
 
   it('submits a from with reserved username', () => {
+    cy.stubSignUpReq(false, { error: 'Conflict', message: 'Name is reserved.' })
+
     const reservedNames = ['admin', 'user'] // Not a full list of Gitea reserved names.
-    cy.visit('/login?sign_up', {
-      onBeforeLoad(win) {
-        cy.stub(win, 'fetch')
-          .withArgs(endpoint)
-          .resolves({
-            ok: false,
-            json: () => ({ error: 'Conflict', message: 'Name is reserved.' }),
-          })
-      },
-    })
 
     reservedNames.forEach(name => {
       cy.signUp(name, email, password)

@@ -12,3 +12,21 @@ Cypress.Commands.add('signUp', (username, email, password) => {
 
   cy.get('button').contains('Sign up').click()
 })
+
+Cypress.Commands.add('stubSignUpReq', (ok, response) => {
+  // stub all request to the Gitea `/user/kitspace/sign_up`
+  // with a specific response.
+
+  const endpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
+
+  cy.visit('/login?sign_up', {
+    onBeforeLoad(win) {
+      cy.stub(win, 'fetch')
+        .withArgs(endpoint)
+        .resolves({
+          ok,
+          json: () => response,
+        })
+    },
+  })
+})
