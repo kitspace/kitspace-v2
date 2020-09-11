@@ -22,7 +22,14 @@ describe('Sign up form validation', () => {
   })
 
   it('validates username field', () => {
-    const invalidUsernames = ['a_b', 'abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
+    const invalidUsernames = [
+      'a_b',
+      'abc ',
+      'abc@',
+      ' ',
+      '^',
+      'ZqFe3jOudI7DuBOJ1wyXT',
+    ]
 
     invalidUsernames.forEach(username => {
       cy.get('input[name=username]').clear().type(username)
@@ -66,7 +73,7 @@ describe('Sign up form submission', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
-
+  const duration = '3 hours'
   beforeEach(() => cy.clearCookies())
 
   it('submits a valid form', () => {
@@ -76,12 +83,19 @@ describe('Sign up form submission', () => {
           .withArgs(endpoint)
           .resolves({
             ok: true,
-            json: () => ({ email: email, ActiveCodeLives: '3 hours' }),
+            json: () => ({ email: email, ActiveCodeLives: duration }),
           })
       },
     })
 
     cy.signUp(username, email, password)
+
+    cy.get('.positive').as('message')
+
+    cy.get('@message').should('be.visible')
+    cy.get('@message').get('div.header').should('be.visible')
+    cy.get('@message').should('include.text', email)
+    cy.get('@message').should('include.text', duration)
 
     cy.visit('http://gitea.kitspace.test:3000/admin/users?sort=newest')
     cy.get('input#user_name').type(Cypress.env('gitea_admin_username'))

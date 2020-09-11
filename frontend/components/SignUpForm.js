@@ -59,7 +59,7 @@ export default function () {
         </Message.Header>
         {errors.msg ||
           apiResponse.message ||
-          `The activation email has been sent you, it'll be available for ${apiResponse.duration}.`}
+          `The activation email has been sent to ${apiResponse.email}, it'll be available for ${apiResponse.duration}.`}
       </Message>
       <Form size="large">
         <Segment stacked>
