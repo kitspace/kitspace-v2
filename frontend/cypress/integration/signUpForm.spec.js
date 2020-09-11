@@ -22,7 +22,7 @@ describe('Sign up form validation', () => {
   })
 
   it('validates username field', () => {
-    const invalidUsernames = ['abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
+    const invalidUsernames = ['a_b', 'abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
 
     invalidUsernames.forEach(username => {
       cy.get('input[name=username]').clear().type(username)
@@ -62,22 +62,28 @@ describe('Sign up form validation', () => {
 })
 
 describe('Sign up form submission', () => {
-  /* TODO: the way `superagent` submit `xhr` request isn't compatible with `Cypress
-     so pressing the button directly don't work for now.
-     To test API errors which is tested by gitea itself, we can mock or find a solution for `superagent`
-   */
+  const endpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
+  const username = faker.name.firstName()
+  const email = faker.internet.email()
+  const password = '123456'
+
   beforeEach(() => cy.clearCookies())
 
-  it('adds user to gitea', () => {
-    const username = faker.internet.userName()
-
-    cy.request('POST', 'http://gitea.kitspace.test:3000/user/kitspace/sign_up', {
-      username: username,
-      email: faker.internet.email(),
-      password: 'sdcdgfer3wgref',
+  it('submits a valid form', () => {
+    cy.visit('/login?sign_up', {
+      onBeforeLoad(win) {
+        cy.stub(win, 'fetch')
+          .withArgs(endpoint)
+          .resolves({
+            ok: true,
+            json: () => ({ email: email, ActiveCodeLives: '3 hours' }),
+          })
+      },
     })
 
-    cy.visit('http://gitea.kitspace.test:3000/admin/users')
+    cy.signUp(username, email, password)
+
+    cy.visit('http://gitea.kitspace.test:3000/admin/users?sort=newest')
     cy.get('input#user_name').type(Cypress.env('gitea_admin_username'))
     cy.get('input#password').type(Cypress.env('gitea_admin_password'))
     cy.get('button').click()

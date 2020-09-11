@@ -16,18 +16,18 @@ export default function () {
     const response = await fetch(endpoint, {
       method: 'POST',
       body: JSON.stringify(form),
-      headers: {'Content-Type': 'application/json'}
+      headers: { 'Content-Type': 'application/json' },
     })
     const data = await response.json()
 
-    if(response.ok) {
-      const {email, ActiveCodeLives} = data
-      setApiResponse({email, duration: ActiveCodeLives})
+    if (response.ok) {
+      const { email, ActiveCodeLives } = data
+      setApiResponse({ email, duration: ActiveCodeLives })
     } else {
-      const {error, message} = data
+      const { error, message } = data
       setApiResponse({
         error: error || 'API error',
-        message: message || 'Something went wrong. Please, try again later.'
+        message: message || 'Something went wrong. Please, try again later.',
       })
     }
   }
