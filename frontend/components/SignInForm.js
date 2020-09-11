@@ -17,21 +17,24 @@ export default function () {
   const isSuccessfulLogin = apiResponse.login !== undefined
 
   const submit = async () => {
-    await superagent
-      .post(endpoint)
-      .send(form)
-      .end((err, res) => {
-        const { error, message, LoggedInSuccessfully } = res.body
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(form),
+      headers: { 'Content-Type': 'application/json' },
+    })
 
-        if (err) {
-          setApiResponse({
-            error: error || 'API error',
-            message: message || 'Something went wrong. Please, try again later.',
-          })
-        } else {
-          setApiResponse({ error, message, login: LoggedInSuccessfully })
-        }
+    const data = await response.json()
+
+    if (response.ok) {
+      const { LoggedInSuccessfully } = data
+      setApiResponse({ login: LoggedInSuccessfully })
+    } else {
+      const { error, message } = data
+      setApiResponse({
+        error: error || 'API error',
+        message: message || 'Something went wrong. Please, try again later.',
       })
+    }
   }
 
   return (
