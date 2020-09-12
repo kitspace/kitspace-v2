@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import superagent from 'superagent'
 import { Button, Form, Header, Input, Message, Segment } from 'semantic-ui-react'
 
 import OAuthButtons from './OAuthButtons'
