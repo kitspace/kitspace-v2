@@ -1,10 +1,10 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import { Container, Grid, Tab } from 'semantic-ui-react'
+import { Grid, Tab } from 'semantic-ui-react'
 
-import TitleBar from '../components/TitleBar'
 import SignUpForm from '../components/SignUpForm'
 import SignInForm from '../components/SignInForm'
+import { Page } from '../components/page'
 
 export default function () {
   const router = useRouter()
@@ -18,21 +18,18 @@ export default function () {
   }
 
   return (
-    <>
-      <TitleBar route="/login/" auth />
-      <Container style={{ paddingTop: '4rem' }}>
-        <Grid textAlign="center" verticalAlign="middle">
-          <Grid.Column style={{ maxWidth: 450 }}>
-            <Tab
-              panes={[
-                { menuItem: 'Sign up', render: () => <SignUpForm /> },
-                { menuItem: 'Log in', render: () => <SignInForm /> },
-              ]}
-              defaultActiveIndex={defaultActiveIndex}
-            />
-          </Grid.Column>
-        </Grid>
-      </Container>
-    </>
+    <Page title="login">
+      <Grid textAlign="center" verticalAlign="middle">
+        <Grid.Column style={{ maxWidth: 450 }}>
+          <Tab
+            panes={[
+              { menuItem: 'Sign up', render: () => <SignUpForm /> },
+              { menuItem: 'Log in', render: () => <SignInForm /> },
+            ]}
+            defaultActiveIndex={defaultActiveIndex}
+          />
+        </Grid.Column>
+      </Grid>
+    </Page>
   )
 }
