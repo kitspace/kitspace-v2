@@ -30,6 +30,7 @@
     "@types/faker": "^5.1.0",
     "cypress": "^5.1.0",
     "faker": "^5.1.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "prop-types": "^15.7.2"
   }
 }

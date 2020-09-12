@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { string } from 'prop-types'
 import Head from './Head'
 import TitleBar from './TitleBar'
 import { Container } from 'semantic-ui-react'
@@ -19,4 +19,9 @@ export const Page = props => {
       <Container style={{ marginTop: 30 }}>{props.children}</Container>
     </>
   )
+}
+
+Page.propTypes = {
+  title: string,
+  head: Head.propTypes
 }
