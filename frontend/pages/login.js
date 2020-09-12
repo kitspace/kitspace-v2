@@ -19,7 +19,7 @@ export default function () {
 
   return (
     <>
-      <TitleBar route="/auth/" auth />
+      <TitleBar route="/login/" auth />
       <Container style={{ paddingTop: '4rem' }}>
         <Grid textAlign="center" verticalAlign="middle">
           <Grid.Column style={{ maxWidth: 450 }}>
