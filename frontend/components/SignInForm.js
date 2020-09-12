@@ -56,7 +56,7 @@ export default function () {
         <Segment stacked>
           <Input
             fluid
-            placeholder="Username"
+            placeholder="Username or Email"
             name="username"
             value={form.username || ''}
             onChange={onChange}
