@@ -3,13 +3,13 @@ import Link from 'next/link'
 import superagent from 'superagent'
 
 import Head from '../components/Head'
-import TitleBar from '../components/TitleBar'
+import NavBar from '../components/NavBar'
 
 function Home({ name, _csrf, repos }) {
   return (
     <>
       <Head />
-      <TitleBar route="/" />
+      <NavBar route="/" />
       <div>
         Hi there {name}, {_csrf}
         <pre>{JSON.stringify(repos, null, 2)}</pre>

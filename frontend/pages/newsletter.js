@@ -1,7 +1,7 @@
 import React from 'react'
-import { Button, Container, Form } from 'semantic-ui-react'
+import { Button, Form } from 'semantic-ui-react'
 
-import { Page } from '../components/page'
+import { Page } from '../components/Page'
 
 export default function Newsletter() {
   return (

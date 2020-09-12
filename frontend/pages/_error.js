@@ -3,14 +3,14 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import Head from '../components/Head'
-import TitleBar from '../components/TitleBar'
+import NavBar from '../components/NavBar'
 import Error from '../components/Error'
 
 const ErrorPage = ({ statusCode }) => {
   return (
     <div style={{ maxHeight: '100vh', overflow: 'hidden' }}>
       <Head />
-      <TitleBar />
+      <NavBar />
       <Error statusCode={statusCode} />
     </div>
   )

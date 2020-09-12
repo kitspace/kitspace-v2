@@ -6,7 +6,7 @@ import styles from './TitleBar.module.scss'
 
 const logoSrc = '/static/logo.svg'
 
-export default function TitleBar(props) {
+export default function NavBar(props) {
   const isAuthenticated = props.auth
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =

@@ -1,7 +1,8 @@
 import React from 'react'
-import { string } from 'prop-types'
+import { string, object } from 'prop-types'
+
 import Head from './Head'
-import TitleBar from './TitleBar'
+import NavBar from './NavBar'
 import { Container } from 'semantic-ui-react'
 
 export const Page = props => {
@@ -15,7 +16,7 @@ export const Page = props => {
       >
         <title>{props.title}</title>
       </Head>
-      <TitleBar />
+      <NavBar />
       <Container style={{ marginTop: 30 }}>{props.children}</Container>
     </>
   )
@@ -23,5 +24,5 @@ export const Page = props => {
 
 Page.propTypes = {
   title: string,
-  head: Head.propTypes
+  head: object,
 }
