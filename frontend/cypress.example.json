@@ -1,7 +1,0 @@
-{
-  "baseUrl": "http://kitspace.test:3000",
-  "env": {
-    "gitea_admin_username": "your gitea admin username",
-    "gitea_admin_password": "your gitea admin password"
-  }
-}

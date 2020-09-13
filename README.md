@@ -47,15 +47,13 @@ docker-compose up
 
 # Running Integration Tests
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
+ 
+2. navigate to `frontend`: `cd frontend/`.
 
-2. Copy `frontend/cypress.example.json` to `frontend/cypress.json`.
+3. Source the `.env` file with `set -a && source ../.env && set +a`
 
-3. Update `gitea_admin_username` and `gitea_admin_password` with the values you used during setup.
+3. Start the testing client with the `npx cypress open` command.
 
-4. navigate to `frontend`: `cd frontend/`.
+4. The Cypress GUI should pop up.
 
-5. Start the testing client with the `npx cypress open` command.
-
-6. The Cypress GUI should pop up.
-
-7. To run all tests, press `Run all specs`.
+5. To run all tests, press `Run all specs`.
