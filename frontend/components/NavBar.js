@@ -1,40 +1,60 @@
-import React from 'react'
-import Link from 'next/link'
+import React, { useContext } from 'react'
 import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
+import { useRouter } from 'next/router'
 
+import { AuthContext } from '../contexts/AuthContext'
 import styles from './TitleBar.module.scss'
 
 const logoSrc = '/static/logo.svg'
 
-export default function NavBar(props) {
-  const isAuthenticated = props.auth
-  const isSubmitRoute = RegExp('^/projects/new').test(props.route)
+export const NavBar = () => {
+  const { pathname } = useRouter()
+
+  const isSubmitRoute = RegExp('^/projects/new').test(pathname)
   const isProjectRoute =
-    isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
+    isSubmitRoute || pathname === '/' || RegExp('^/projects/').test(pathname)
+
   return (
+
     <div className={styles.titleBar}>
+      <BigBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
+      <SmallBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
+    </div>
+  )
+}
+
+function BigBar({ isProjectRoute, isSubmitRoute }) {
+  /* This is the Navbar render on big screens */
+  return (
+    <>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          <Link href="/">
+          <a href="/">
             <Image className={styles.logoImg} src={logoSrc} />
-          </Link>
-          <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
+          </a>
+          <SiteMenuItems isProjectRoute={isProjectRoute} />
         </Menu>
       </div>
       <div className={styles.bigSocialMenu}>
         <Menu inverted pointing secondary>
-          {isSubmitRoute || !isAuthenticated ? (
-            <ContactMenu />
-          ) : (
-            <AddAProjectButton />
-          )}
-          <SigningButton auth={props.auth} />
+          {isSubmitRoute ? null : <AddProjectButton />}
+          <ContactMenu />
+          <SigningButton />
         </Menu>
       </div>
+    </>
+  )
+}
+
+function SmallBar({ isProjectRoute, isSubmitRoute }) {
+  /* This is the Navbar render on small screens */
+
+  return (
+    <>
       <div className={styles.smallMenu}>
-        {/*<Link href="/">*/}
-        {/*  <Image className="logoImg" src="/images/logo.svg" />*/}
-        {/*</Link>*/}
+        <a href="/">
+          <Image className="logoImg" src={logoSrc} />
+        </a>
         <Popup
           trigger={
             <Button icon size="large" basic inverted>
@@ -47,46 +67,56 @@ export default function NavBar(props) {
           basic
         >
           <Menu inverted vertical>
-            <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
+            {isSubmitRoute ? null : <AddProjectButton />}
+            <SiteMenuItems isProjectRoute={isProjectRoute} />
             <SocialMenuItems />
-            {isSubmitRoute ? null : <AddAProjectButton />}
+            <SigningButton />
           </Menu>
         </Popup>
       </div>
-    </div>
+    </>
   )
 }
 
-function AddAProjectButton() {
+function AddProjectButton() {
+  const { isAuthenticated } = useContext(AuthContext)
+  const { push, pathname } = useRouter()
+
+  const onClick = event => {
+    event.preventDefault()
+
+    if (isAuthenticated) {
+      push('/projects/new')
+    } else {
+      push('/login')
+    }
+  }
+
   return (
-    <Menu.Item>
-      <Button icon labelPosition="left" color="green" href="/projects/new">
-        <Icon name="plus" />
-        Add a project
-      </Button>
-    </Menu.Item>
+    pathname !== '/login' ? <>
+      <Menu.Item>
+        <Button icon labelPosition="left" color="green" onClick={onClick}>
+          <Icon name="plus" />
+          Add a project
+        </Button>
+      </Menu.Item>
+    </> : null
   )
 }
 
-function SiteMenuItems(props) {
+function SiteMenuItems({ isProjectRoute }) {
+  const { pathname } = useRouter()
+
   return (
     <>
-      <Menu.Item as="a" href="/" active={props.isProjectRoute}>
-        {'Projects'}
+      <Menu.Item as="a" href="/" active={isProjectRoute}>
+        Projects
       </Menu.Item>
-      <Menu.Item
-        as="a"
-        href="/bom-builder"
-        active={props.route === '/bom-builder/'}
-      >
-        {'BOM Builder'}
+      <Menu.Item as="a" href="/bom-builder" active={pathname === '/bom-builder/'}>
+        BOM Builder
       </Menu.Item>
-      <Menu.Item
-        as="a"
-        href="/1-click-bom"
-        active={props.route === '/1-click-bom/'}
-      >
-        {'1-click BOM'}
+      <Menu.Item as="a" href="/1-click-bom" active={pathname === '/1-click-bom/'}>
+        1-click BOM
       </Menu.Item>
     </>
   )
@@ -126,8 +156,7 @@ function ContactMenu() {
         <Menu.Item className="contact-button">
           <Button labelPosition="right" icon color="blue">
             <Icon inverted name="comments" />
-            {/* just here to force the loading of
-                brand-icons before the menu is visible */}
+            {/* force the loading of brand-icons before the menu is visible */}
             <Icon
               name="twitter"
               style={{ visibility: 'hidden', width: '0px', height: '0px' }}
@@ -147,13 +176,31 @@ function ContactMenu() {
   )
 }
 
-function SigningButton(props) {
-  const isAuthenticated = props.auth
+function SigningButton() {
+  const { pathname } = useRouter()
+
+  const { isAuthenticated } = useContext(AuthContext)
+  const isLoginRoute = pathname === '/login'
+
+  return isAuthenticated ? <LogoutButton /> : isLoginRoute ? null : <LoginButton />
+}
+
+function LoginButton() {
   return (
     <Menu.Item>
-      <Button color={isAuthenticated ? 'red' : 'green'} href="#">
-        {isAuthenticated ? 'Sign out' : 'Sign in'}
+      <Button color="green" href="/login">
+        Log in
       </Button>
     </Menu.Item>
   )
 }
+
+function LogoutButton() {
+  return (
+    <Menu.Item>
+      <Button color="red">Log out</Button>
+    </Menu.Item>
+  )
+}
+
+export default NavBar
