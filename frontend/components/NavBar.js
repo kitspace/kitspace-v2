@@ -15,9 +15,9 @@ export default function NavBar(props) {
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          {/*<Link href="/">*/}
-          {/*  <Image className={styles.logoImg} src={logoSrc} />*/}
-          {/*</Link>*/}
+          <Link href="/">
+            <Image className={styles.logoImg} src={logoSrc} />
+          </Link>
           <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
         </Menu>
       </div>

@@ -7,7 +7,6 @@
   background-color: $cod-gray;
   border-bottom-left-radius: 5;
   border-bottom-right-radius: 5;
-  box-shadow: 0 0.1em 0.5em $cod-gray;
   display: flex;
   flex-wrap: wrap;
   overflow: hidden;
@@ -42,6 +41,10 @@
 .logoImg {
   max-height: 46px;
   min-width: 140px;
+}
+
+.logoImg:hover {
+  cursor: pointer;
 }
 
 .submissionButton {
