@@ -63,12 +63,7 @@ describe('Log in form submission', () => {
     cy.clearCookies()
 
     // User information should appear in Gitea admin dashboard.
-    cy.visit('http://gitea.kitspace.test:3000/admin/users?sort=newest', {
-      failOnStatusCode: false,
-    })
-    cy.get('input#user_name').type(Cypress.env('gitea_admin_username'))
-    cy.get('input#password').type(Cypress.env('gitea_admin_password'))
-    cy.get('button').click()
+    cy.goToUsersAdminPanel()
 
     // Assert the login action has hit Gitea backend
     cy.get('tbody')

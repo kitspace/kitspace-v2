@@ -111,10 +111,7 @@ describe('Sign up form submission', () => {
     cy.get('@message').should('include.text', duration)
 
     // User information should appear in Gitea admin dashboard.
-    cy.visit('http://gitea.kitspace.test:3000/admin/users?sort=newest')
-    cy.get('input#user_name').type(Cypress.env('gitea_admin_username'))
-    cy.get('input#password').type(Cypress.env('gitea_admin_password'))
-    cy.get('button').click()
+    cy.goToUsersAdminPanel()
     cy.get('tbody').get('tr').contains(username).should('be.visible')
   })
 
