@@ -1,0 +1,4 @@
+{
+  "baseUrl": "http://kitspace.test:3000",
+  "experimentalFetchPolyfill": true
+}
