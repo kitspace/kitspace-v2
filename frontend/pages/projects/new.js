@@ -2,7 +2,6 @@ import React from 'react'
 import { Grid, Divider, Input, Button } from 'semantic-ui-react'
 import path from 'path'
 
-
 import styles from './new.module.scss'
 import { Page } from '../../components/Page'
 

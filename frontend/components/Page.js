@@ -4,10 +4,11 @@ import { string, object } from 'prop-types'
 import Head from './Head'
 import NavBar from './NavBar'
 import { Container } from 'semantic-ui-react'
+import AuthProvider from '../contexts/AuthContext'
 
 export const Page = props => {
   return (
-    <>
+    <AuthProvider>
       <Head
         description={props.head?.description}
         ogImage={props.head?.ogImage}
@@ -18,7 +19,7 @@ export const Page = props => {
       </Head>
       <NavBar />
       <Container style={{ marginTop: 30 }}>{props.children}</Container>
-    </>
+    </AuthProvider>
   )
 }
 

@@ -5,7 +5,7 @@ import { Page } from '../components/Page'
 
 function Home({ name, _csrf, repos }) {
   return (
-    <Page title='home'>
+    <Page title="home">
       <div>
         Hi there {name}, {_csrf}
         <pre>{JSON.stringify(repos, null, 2)}</pre>
