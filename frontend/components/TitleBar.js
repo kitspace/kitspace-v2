@@ -1,40 +1,37 @@
 import React from 'react'
 import Link from 'next/link'
-import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
+import {Image, Popup, Menu, Button, Icon} from 'semantic-ui-react'
 
 import styles from './TitleBar.module.scss'
 
 const logoSrc = '/static/logo.svg'
 
 export default function TitleBar(props) {
-  const isAuthenticated = props.auth
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
-    isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
+    isSubmitRoute ||
+    props.route === '/' ||
+    RegExp('^/projects/').test(props.route)
   return (
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          {/*<Link href="/">*/}
-          {/*  <Image className={styles.logoImg} src={logoSrc} />*/}
-          {/*</Link>*/}
+          <Link href="/">
+            <Image className={styles.logoImg} src={logoSrc} />
+          </Link>
           <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
         </Menu>
       </div>
       <div className={styles.bigSocialMenu}>
         <Menu inverted pointing secondary>
-          {isSubmitRoute || !isAuthenticated ? (
-            <ContactMenu />
-          ) : (
-            <AddAProjectButton />
-          )}
-          <SigningButton auth={props.auth} />
+          {isSubmitRoute ? null : <AddAProjectButton />}
+          <ContactMenu />
         </Menu>
       </div>
       <div className={styles.smallMenu}>
-        {/*<Link href="/">*/}
-        {/*  <Image className="logoImg" src="/images/logo.svg" />*/}
-        {/*</Link>*/}
+        <Link href="/">
+          <Image className="logoImg" src={logoSrc} />
+        </Link>
         <Popup
           trigger={
             <Button icon size="large" basic inverted>
@@ -47,7 +44,10 @@ export default function TitleBar(props) {
           basic
         >
           <Menu inverted vertical>
-            <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
+            <SiteMenuItems
+              route={props.route}
+              isProjectRoute={isProjectRoute}
+            />
             <SocialMenuItems />
             {isSubmitRoute ? null : <AddAProjectButton />}
           </Menu>
@@ -118,7 +118,6 @@ function SocialMenuItems() {
     </>
   )
 }
-
 function ContactMenu() {
   return (
     <Popup
@@ -130,7 +129,7 @@ function ContactMenu() {
                 brand-icons before the menu is visible */}
             <Icon
               name="twitter"
-              style={{ visibility: 'hidden', width: '0px', height: '0px' }}
+              style={{visibility: 'hidden', width: '0px', height: '0px'}}
             />
             Make contact
           </Button>
@@ -144,16 +143,5 @@ function ContactMenu() {
         <SocialMenuItems />
       </Menu>
     </Popup>
-  )
-}
-
-function SigningButton(props) {
-  const isAuthenticated = props.auth
-  return (
-    <Menu.Item>
-      <Button color={isAuthenticated ? 'red' : 'green'} href="#">
-        {isAuthenticated ? 'Sign out' : 'Sign in'}
-      </Button>
-    </Menu.Item>
   )
 }
