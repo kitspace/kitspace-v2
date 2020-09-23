@@ -39,6 +39,20 @@ const formatPrice = ({ amount, currency, quantity }) => {
 
 function reducer(state, action) {
   switch (action.type) {
+    case 'setQuantity':
+      const n = parseInt(action.payload)
+      if (isNaN(n) || n < 1) {
+        return state
+      }
+      return {
+        ...state,
+        quantity: n,
+        price: formatPrice({
+          amount: state.basePrice,
+          currency: state.currency,
+          quantity: n,
+        }),
+      }
     case 'increment':
       return {
         ...state,
@@ -50,6 +64,9 @@ function reducer(state, action) {
         }),
       }
     case 'decrement':
+      if (state.quantity - 1 < 1) {
+        return state
+      }
       return {
         ...state,
         quantity: state.quantity - 1,
@@ -111,11 +128,11 @@ const Checkout = () => {
         </header>
         <section className="container">
           <div>
-            <h1>Test product</h1>
+            <h1>Alpha Spectrometer Kit</h1>
             <div className="pasha-image">
               <img
-                alt="Test product photo"
-                src="https://files.stripe.com/links/fl_test_PMF600BEFFSoUQlKsaIbkFxK"
+                alt="Photo of complete alpha spectrometer"
+                src="https://files.stripe.com/links/fl_test_i6OGUXgbLXIuvVTycehgLxtt"
               />
             </div>
           </div>
@@ -131,19 +148,19 @@ const Checkout = () => {
               type="number"
               id="quantity-input"
               min="1"
-              max="10"
               value={state.quantity}
-              readOnly
+              onChange={e =>
+                dispatch({ type: 'setQuantity', payload: e.target.value })
+              }
             />
             <button
               className="increment-btn"
-              disabled={state.quantity === 10}
               onClick={() => dispatch({ type: 'increment' })}
             >
               +
             </button>
           </div>
-          <p className="sr-legal-text">Number of kits (max 10)</p>
+          <p className="sr-legal-text">Number of kits</p>
 
           <button role="link" onClick={handleClick} disabled={state.loading}>
             {state.loading || !state.price
