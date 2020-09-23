@@ -8,6 +8,7 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
+    "@stripe/react-stripe-js": "^1.1.2",
     "@stripe/stripe-js": "^1.9.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
