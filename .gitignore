@@ -7,3 +7,4 @@ nginx/default.conf
 
 # e2e cypress results
 frontend/cypress/videos
+frontend/cypress/screenshots
