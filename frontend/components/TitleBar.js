@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import {Image, Popup, Menu, Button, Icon} from 'semantic-ui-react'
+import { Image, Popup, Menu, Button, Icon } from 'semantic-ui-react'
 
 import styles from './TitleBar.module.scss'
 
@@ -9,9 +9,7 @@ const logoSrc = '/static/logo.svg'
 export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
-    isSubmitRoute ||
-    props.route === '/' ||
-    RegExp('^/projects/').test(props.route)
+    isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
   return (
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
@@ -44,10 +42,7 @@ export default function TitleBar(props) {
           basic
         >
           <Menu inverted vertical>
-            <SiteMenuItems
-              route={props.route}
-              isProjectRoute={isProjectRoute}
-            />
+            <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
             <SocialMenuItems />
             {isSubmitRoute ? null : <AddAProjectButton />}
           </Menu>
@@ -129,7 +124,7 @@ function ContactMenu() {
                 brand-icons before the menu is visible */}
             <Icon
               name="twitter"
-              style={{visibility: 'hidden', width: '0px', height: '0px'}}
+              style={{ visibility: 'hidden', width: '0px', height: '0px' }}
             />
             Make contact
           </Button>
