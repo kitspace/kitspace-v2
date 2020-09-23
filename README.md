@@ -43,7 +43,7 @@ docker-compose up
 
 6. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
     
-7. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose --no-cache frontend`.
+7. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose build --no-cache frontend`.
 
 # Running Integration Tests
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
