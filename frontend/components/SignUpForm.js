@@ -16,6 +16,7 @@ export default function () {
       method: 'POST',
       body: JSON.stringify(form),
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
     })
     const data = await response.json()
 
