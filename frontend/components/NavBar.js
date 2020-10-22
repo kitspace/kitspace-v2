@@ -15,7 +15,6 @@ export const NavBar = () => {
     isSubmitRoute || pathname === '/' || RegExp('^/projects/').test(pathname)
 
   return (
-
     <div className={styles.titleBar}>
       <BigBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
       <SmallBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
@@ -92,16 +91,16 @@ function AddProjectButton() {
     }
   }
 
-  return (
-    pathname !== '/login' ? <>
+  return pathname !== '/login' ? (
+    <>
       <Menu.Item>
         <Button icon labelPosition="left" color="green" onClick={onClick}>
           <Icon name="plus" />
           Add a project
         </Button>
       </Menu.Item>
-    </> : null
-  )
+    </>
+  ) : null
 }
 
 function SiteMenuItems({ isProjectRoute }) {

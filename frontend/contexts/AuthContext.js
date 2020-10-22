@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 
 export const AuthContext = createContext({ isAuthenticated: false })
 
@@ -12,6 +12,16 @@ export default function AuthProvider(props) {
   const deAuthorize = () => {
     setAuth(false)
   }
+
+  useEffect(() => {
+    const session = window?.session
+
+    if (session?.user) {
+      authorize()
+    } else {
+      deAuthorize()
+    }
+  })
 
   return (
     <AuthContext.Provider value={{ isAuthenticated: auth, authorize, deAuthorize }}>
