@@ -199,23 +199,18 @@ function LogoutButton() {
 
   const onClick = async () => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/logout`
-    const xhr = new XMLHttpRequest()
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      body: `_csrf=${window.session._csrf}`,
+      credentials: 'include',
+    })
 
-    xhr.open('POST', endpoint, true)
-    xhr.withCredentials = true
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        if(router.pathname === '/') {
-          router.reload()
-        } else {
-          router.push('/')
-        }
-      }
+    if (response.ok) {
+      router.pathname === '/' ? router.reload() : await router.push('/')
     }
-
-    xhr.send(`_csrf=${window.session._csrf}`)
   }
   return (
     <Menu.Item>
