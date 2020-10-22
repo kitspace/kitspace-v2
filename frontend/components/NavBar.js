@@ -198,14 +198,20 @@ function LogoutButton() {
   const router = useRouter()
 
   const onClick = async () => {
-    const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_out`
+    const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/logout`
     const xhr = new XMLHttpRequest()
 
     xhr.open('POST', endpoint, true)
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.withCredentials = true
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.onreadystatechange = () => {
       if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        router.push('/')
+        if(router.pathname === '/') {
+          router.reload()
+        } else {
+          router.push('/')
+        }
       }
     }
 
