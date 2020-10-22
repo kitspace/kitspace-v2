@@ -185,9 +185,15 @@ function SigningButton() {
 }
 
 function LoginButton() {
+  const router = useRouter()
+
+  const onClick = async () => {
+    await router.push(`/login?redirect=${router.pathname}`)
+  }
+
   return (
     <Menu.Item>
-      <Button color="green" href="/login">
+      <Button color="green" onClick={onClick}>
         Log in
       </Button>
     </Menu.Item>
@@ -209,7 +215,10 @@ function LogoutButton() {
     })
 
     if (response.ok) {
-      router.pathname === '/' ? router.reload() : await router.push('/')
+      if (router.pathname !== '/') {
+        await router.push('/')
+      }
+      router.reload()
     }
   }
   return (

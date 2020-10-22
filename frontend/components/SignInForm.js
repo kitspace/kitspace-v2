@@ -12,10 +12,14 @@ import {
 import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
 import { SignInForm } from '../models/SignInForm'
+import { useRouter } from 'next/router'
+import { pathToRegexp } from 'next/dist/next-server/server/lib/path-match'
 
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
 export default function () {
+  const router = useRouter()
+
   const [form, onChange, isValid, errors, isErrorField] = useForm(SignInForm)
   const [apiResponse, setApiResponse] = useState({})
 
@@ -34,8 +38,8 @@ export default function () {
     const data = await response.json()
 
     if (response.ok) {
-      const { LoggedInSuccessfully } = data
-      setApiResponse({ login: LoggedInSuccessfully })
+      await router.push(`${router.query.redirect ? router.query.redirect : '/'}`)
+      await router.reload()
     } else {
       const { error, message } = data
       setApiResponse({
