@@ -5,7 +5,11 @@ export default function (schema) {
 
   const onChange = e => {
     e.persist()
-    setForm(form => ({ ...form, [e.target.name]: e.target.value }))
+    setForm(form => ({
+      ...form,
+      [e.target.name]:
+        e.target.type === 'checkbox' ? e.target.checked : e.target.value,
+    }))
   }
   const { error } = schema.validate({ ...form })
   const isValid = error === undefined

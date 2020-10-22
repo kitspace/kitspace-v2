@@ -1,5 +1,13 @@
 import React, { useState } from 'react'
-import { Button, Form, Header, Segment, Input, Message } from 'semantic-ui-react'
+import {
+  Button,
+  Form,
+  Header,
+  Segment,
+  Input,
+  Message,
+  Checkbox,
+} from 'semantic-ui-react'
 
 import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
@@ -20,6 +28,7 @@ export default function () {
       method: 'POST',
       body: JSON.stringify(form),
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
     })
 
     const data = await response.json()
@@ -73,6 +82,7 @@ export default function () {
             style={{ marginBottom: 20 }}
           />
         </Segment>
+        <Checkbox label="Remember Me" name="remember" onChange={onChange} />
         <Segment>
           <Button
             fluid
