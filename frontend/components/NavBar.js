@@ -195,9 +195,23 @@ function LoginButton() {
 }
 
 function LogoutButton() {
+  const onClick = async () => {
+    const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_out`
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      body: `_csrf=${window.session._csrf}&`,
+      credentials: 'include',
+    })
+    console.log(response)
+  }
   return (
     <Menu.Item>
-      <Button color="red">Log out</Button>
+      <Button color="red" onClick={onClick}>
+        Log out
+      </Button>
     </Menu.Item>
   )
 }
