@@ -195,17 +195,21 @@ function LoginButton() {
 }
 
 function LogoutButton() {
+  const router = useRouter()
+
   const onClick = async () => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_out`
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
-      body: `_csrf=${window.session._csrf}&`,
-      credentials: 'include',
-    })
-    console.log(response)
+    const xhr = new XMLHttpRequest()
+
+    xhr.open('POST', endpoint, true)
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        router.push('/')
+      }
+    }
+
+    xhr.send(`_csrf=${window.session._csrf}`)
   }
   return (
     <Menu.Item>
