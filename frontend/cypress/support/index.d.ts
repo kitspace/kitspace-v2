@@ -47,6 +47,15 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
+     * Sign out a user
+     * @example
+     * cy.signUp()
+     */
+    signOut(): Chainable<any>
+  }
+
+  interface Chainable<Subject> {
+    /**
      * Users database are at `{gitea}/admin/users`
      * Kitspace user interaction should appear there.
      * @example

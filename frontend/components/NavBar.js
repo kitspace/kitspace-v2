@@ -81,20 +81,26 @@ function AddProjectButton() {
   const { isAuthenticated } = useContext(AuthContext)
   const { push, pathname } = useRouter()
 
-  const onClick = event => {
-    event.preventDefault()
+  const onClick = async (e) => {
+    e.preventDefault()
 
     if (isAuthenticated) {
-      push('/projects/new')
+      await push('/projects/new')
     } else {
-      push('/login')
+      await push('/login')
     }
   }
 
   return pathname !== '/login' ? (
     <>
       <Menu.Item>
-        <Button icon labelPosition="left" color="green" onClick={onClick}>
+        <Button
+          id="add_project"
+          icon
+          labelPosition="left"
+          color="green"
+          onClick={onClick}
+        >
           <Icon name="plus" />
           Add a project
         </Button>
