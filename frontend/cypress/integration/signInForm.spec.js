@@ -59,6 +59,9 @@ describe('Log in form submission', () => {
     // Currently the username is in the homepage body,
     // probably will change in the future
     cy.get('.ui.container').should('include.text', username)
+
+    // Checking the session object is more robust.
+    cy.window().its('session.user.username').should('eq', username)
   })
 
   it('submits form with wrong username', () => {
