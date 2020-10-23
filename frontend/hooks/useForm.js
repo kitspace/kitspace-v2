@@ -6,6 +6,7 @@ export default function (schema) {
   const onChange = e => {
     e.persist()
     setForm(form => ({
+      _csrf: `${window.session._csrf}`,
       ...form,
       [e.target.name]:
         e.target.type === 'checkbox' ? e.target.checked : e.target.value,
