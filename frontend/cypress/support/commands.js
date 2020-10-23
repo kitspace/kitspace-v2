@@ -57,7 +57,7 @@ Cypress.Commands.add('stubSignUpReq', (ok, response) => {
 })
 
 Cypress.Commands.add('stubSignInReq', (ok, response, path) => {
-  cy.visit(path ? path: '/login', {
+  cy.visit(path ? path : '/login', {
     onBeforeLoad(win) {
       cy.stub(win, 'fetch')
         .withArgs(signInEndpoint)

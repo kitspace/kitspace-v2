@@ -66,7 +66,11 @@ describe('Validates redirects after login', () => {
     cy.get('#login').click()
 
     // sign the user in.
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true }, `/login?redirect=/${pageClickFrom}`)
+    cy.stubSignInReq(
+      true,
+      { LoggedInSuccessfully: true },
+      `/login?redirect=/${pageClickFrom}`,
+    )
     cy.signIn(username, password)
 
     cy.get('button').contains('Login').click()
