@@ -199,7 +199,7 @@ function LoginButton() {
 
   return (
     <Menu.Item>
-      <Button color="green" onClick={onClick}>
+      <Button id='login' color="green" onClick={onClick}>
         Log in
       </Button>
     </Menu.Item>
