@@ -229,7 +229,7 @@ function LogoutButton() {
   }
   return (
     <Menu.Item>
-      <Button color="red" onClick={onClick}>
+      <Button id='logout'color="red" onClick={onClick}>
         Log out
       </Button>
     </Menu.Item>

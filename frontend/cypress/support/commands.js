@@ -36,12 +36,7 @@ Cypress.Commands.add('signIn', (username, password) => {
 })
 
 Cypress.Commands.add('signOut', () => {
-  cy.request({
-    url: signOutEndpoint,
-    method: 'POST',
-    body: '',
-    failOnStatusCode: false,
-  })
+  cy.get('#logout').click()
 })
 
 Cypress.Commands.add('stubSignUpReq', (ok, response) => {
