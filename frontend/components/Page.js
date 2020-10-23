@@ -17,24 +17,24 @@ const PageProxy = ({ route }) => {
   return null
 }
 
-const Content = props => {
+const Content = ({ reqSignIn, reqSignOut, children }) => {
   const { isAuthenticated } = useContext(AuthContext)
   console.log(isAuthenticated)
 
-  if (props.reqSignIn) {
+  if (reqSignIn) {
     return isAuthenticated ? (
-      <Container style={{ marginTop: 30 }}>{props.children}</Container>
+      <Container style={{ marginTop: 30 }}>{children}</Container>
     ) : (
       <PageProxy route="/login" />
     )
-  } else if (props.reqSignOut) {
+  } else if (reqSignOut) {
     return !isAuthenticated ? (
-      <Container style={{ marginTop: 30 }}>{props.children}</Container>
+      <Container style={{ marginTop: 30 }}>{children}</Container>
     ) : (
       <PageProxy route="/" />
     )
   } else {
-    return <Container style={{ marginTop: 30 }}>{props.children}</Container>
+    return <Container style={{ marginTop: 30 }}>{children}</Container>
   }
 }
 
