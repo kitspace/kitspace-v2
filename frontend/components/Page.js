@@ -7,11 +7,11 @@ import { Container } from 'semantic-ui-react'
 import AuthProvider, { AuthContext } from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 
-const LoginPageProxy = () => {
+const PageProxy = ({ route }) => {
   const { push } = useRouter()
 
   useEffect(() => {
-    push('/login').then()
+    push(route).then()
   })
 
   return null
@@ -24,12 +24,14 @@ const Content = props => {
   if (props.reqSignIn) {
     return isAuthenticated ? (
       <Container style={{ marginTop: 30 }}>{props.children}</Container>
-    ) : <LoginPageProxy />
+    ) : (
+      <PageProxy route="/login" />
+    )
   } else if (props.reqSignOut) {
     return !isAuthenticated ? (
       <Container style={{ marginTop: 30 }}>{props.children}</Container>
     ) : (
-      <LoginPageProxy />
+      <PageProxy route="/" />
     )
   } else {
     return <Container style={{ marginTop: 30 }}>{props.children}</Container>
@@ -62,4 +64,8 @@ Page.propTypes = {
 Content.propTypes = {
   reqSignIn: bool,
   reqSignOut: bool,
+}
+
+PageProxy.propTypes = {
+  route: string,
 }
