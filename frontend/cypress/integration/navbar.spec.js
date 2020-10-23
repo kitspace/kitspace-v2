@@ -60,7 +60,7 @@ describe('Validates redirects after login', () => {
   })
 
   it('Redirect to correct page if there is a redirect query', () => {
-    const pageClickFrom = '1-click-bom'
+    const pageClickFrom = 'bom-builder'
 
     cy.visit(pageClickFrom)
     cy.get('#login').click()

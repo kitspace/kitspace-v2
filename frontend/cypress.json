@@ -1,4 +1,5 @@
 {
   "baseUrl": "http://kitspace.test:3000",
-  "experimentalFetchPolyfill": true
+  "experimentalFetchPolyfill": true,
+  "pageLoadTimeout": 100000
 }
