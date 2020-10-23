@@ -15,7 +15,7 @@ declare namespace Cypress {
      * @example
      * cy.stubSignUpReq(true, LoggedInSuccessfully: true)
      */
-    stubSignInReq(ok: boolean, response: ObjectLike): Chainable<any>
+    stubSignInReq(ok: boolean, response: ObjectLike, path?: string): Chainable<any>
   }
 
     interface Chainable<Subject> {

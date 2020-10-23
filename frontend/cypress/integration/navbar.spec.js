@@ -25,10 +25,11 @@ describe('Validates `Add Project` behavior', () => {
 
   it('authenticated user', () => {
     // sign the user in.
+    cy.visit('/login')
     cy.stubSignInReq(true, { LoggedInSuccessfully: true })
     cy.signIn(username, password)
 
-    // Clicking `Add Project` redirects to the login page.
+    // Clicking `Add Project` redirects to new project page.
     cy.get('#add_project').click()
     cy.url().should('eq', 'http://kitspace.test:3000/projects/new')
   })
@@ -65,8 +66,10 @@ describe('Validates redirects after login', () => {
     cy.get('#login').click()
 
     // sign the user in.
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true })
+    cy.stubSignInReq(true, { LoggedInSuccessfully: true }, `/login?redirect=/${pageClickFrom}`)
     cy.signIn(username, password)
+
+    cy.get('button').contains('Login').click()
     cy.url().should('eq', `http://kitspace.test:3000/${pageClickFrom}`)
   })
 })
