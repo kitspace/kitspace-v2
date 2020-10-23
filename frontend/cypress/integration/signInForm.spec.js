@@ -54,23 +54,11 @@ describe('Log in form submission', () => {
 
     cy.signIn(username, password)
 
-    // Success message should indicate successful login
-    cy.get('.positive').as('message')
-    cy.get('@message').should('be.visible')
-    cy.get('@message').should('include.text', 'Logged in!')
-
-    // Clear user cookie to sign in as admin for next step
-    cy.clearCookies()
-
-    // User information should appear in Gitea admin dashboard.
-    cy.goToUsersAdminPanel()
-
-    // Assert the login action has hit Gitea backend
-    cy.get('tbody')
-      .get('tr')
-      .get(':nth-child(9)')
-      .eq(9)
-      .then(elem => assert('Never Signed-In' !== elem[0].outerText, 'Login failed'))
+    // After a successful login the user is redirect to the homepage.
+    cy.url().should('eq', 'http://kitspace.test:3000/')
+    // Currently the username is in the homepage body,
+    // probably will change in the future
+    cy.get('.ui.container').should('include.text', username)
   })
 
   it('submits form with wrong username', () => {
