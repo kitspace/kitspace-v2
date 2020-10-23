@@ -13,7 +13,6 @@ import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
 import { SignInForm } from '../models/SignInForm'
 import { useRouter } from 'next/router'
-import { pathToRegexp } from 'next/dist/next-server/server/lib/path-match'
 
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
