@@ -37,7 +37,7 @@ Cypress.Commands.add('signIn', (username, password) => {
 
 Cypress.Commands.add('signOut', () => {
   cy.window().then(win => {
-    if (win.session.user !== null) {
+    if(win.session.user !== null) {
       cy.get('#logout').click()
     }
   })
@@ -56,8 +56,8 @@ Cypress.Commands.add('stubSignUpReq', (ok, response) => {
   })
 })
 
-Cypress.Commands.add('stubSignInReq', (ok, response, path) => {
-  cy.visit(path ? path: '/login', {
+Cypress.Commands.add('stubSignInReq', (ok, response) => {
+  cy.visit('/login', {
     onBeforeLoad(win) {
       cy.stub(win, 'fetch')
         .withArgs(signInEndpoint)
