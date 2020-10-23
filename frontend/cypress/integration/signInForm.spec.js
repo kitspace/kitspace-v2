@@ -3,12 +3,21 @@ import faker from 'faker'
 import { SignInForm } from '../../models/SignInForm'
 
 describe('Log in form validation', () => {
-  before(() => cy.visit('/login'))
+  before(() => {
+    cy.visit('/login')
+    cy.signOut()
+  })
+
+  beforeEach(() => {
+    cy.visit('/login')
+    cy.signOut()
+  })
 
   afterEach(() => cy.get('button').contains('Login').should('be.disabled'))
 
-  it('routes to sign up form based on params', () => {
+  it('routes to sign in form based on params', () => {
     // The form is rendered on screen.
+    cy.visit('/login')
     cy.contains('Log in')
   })
 
@@ -42,7 +51,12 @@ describe('Log in form submission', () => {
 
   before(() => {
     cy.visit('/login')
-    cy.clearCookies()
+    cy.signOut()
+  })
+
+  beforeEach(() => {
+    cy.visit('/login')
+    cy.signOut()
   })
 
   it('submits a valid form', () => {

@@ -6,7 +6,13 @@ import { SignUpForm } from '../../models/SignUpForm'
 
 describe('Sign up form validation', () => {
   before(() => {
+    cy.signOut()
     cy.visit('/login?sign_up')
+  })
+
+  beforeEach(() => {
+    cy.visit('/login?sign_up')
+    cy.signOut()
   })
 
   afterEach(() => {
@@ -16,6 +22,7 @@ describe('Sign up form validation', () => {
 
   it('routes to sign up form based on params', () => {
     // The form is rendered on screen.
+    cy.visit('/login?sign_up')
     cy.contains('Create a new account')
   })
 
@@ -89,7 +96,12 @@ describe('Sign up form submission', () => {
   const password = '123456'
   const duration = '3 hours'
 
-  beforeEach(() => cy.clearCookies())
+  before(() => cy.signOut())
+
+  beforeEach(() => {
+    cy.visit('/login?sign_up')
+    cy.signOut()
+  })
 
   it('submits a valid form', () => {
     cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
