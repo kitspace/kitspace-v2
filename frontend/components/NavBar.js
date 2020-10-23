@@ -81,7 +81,7 @@ function AddProjectButton() {
   const { isAuthenticated } = useContext(AuthContext)
   const { push, pathname } = useRouter()
 
-  const onClick = async (e) => {
+  const onClick = async e => {
     e.preventDefault()
 
     if (isAuthenticated) {
@@ -199,7 +199,7 @@ function LoginButton() {
 
   return (
     <Menu.Item>
-      <Button id='login' color="green" onClick={onClick}>
+      <Button id="login" color="green" onClick={onClick}>
         Log in
       </Button>
     </Menu.Item>
@@ -229,7 +229,7 @@ function LogoutButton() {
   }
   return (
     <Menu.Item>
-      <Button id='logout'color="red" onClick={onClick}>
+      <Button id="logout" color="red" onClick={onClick}>
         Log out
       </Button>
     </Menu.Item>

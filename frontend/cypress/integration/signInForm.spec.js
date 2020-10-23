@@ -14,9 +14,7 @@ describe('Log in form validation', () => {
 
   it('has the proper fields', () => {
     // The form contains all the fields from the `SingUpForm` model.
-    const formFields = SignInForm.schema().$_terms.keys.map(field => field.key)
-
-    formFields.forEach(field => cy.get(`input[name=${field}]`))
+    cy.hasProperFields(SignInForm)
   })
 
   it('validates username field', () => {

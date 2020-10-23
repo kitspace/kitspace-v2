@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import * as Joi from 'joi'
+
 declare namespace Cypress {
   interface Chainable<Subject> {
     /**
@@ -7,7 +9,7 @@ declare namespace Cypress {
      * @example
      * cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
      */
-    stubSignUpReq(ok: boolean, response: ObjectLike): Chainable<any>
+    stubSignUpReq(ok: boolean, response: object): Chainable<any>
   }
   interface Chainable<Subject> {
       /**
@@ -15,7 +17,7 @@ declare namespace Cypress {
      * @example
      * cy.stubSignUpReq(true, LoggedInSuccessfully: true)
      */
-    stubSignInReq(ok: boolean, response: ObjectLike, path?: string): Chainable<any>
+    stubSignInReq(ok: boolean, response: object, path?: string): Chainable<any>
   }
 
     interface Chainable<Subject> {
@@ -62,5 +64,15 @@ declare namespace Cypress {
      * cy.goToUsersAdminPanel(username, password)
      */
     goToUsersAdminPanel()
+  }
+
+  interface Chainable<Subject> {
+    /**
+     * Validate the form has all the proper fields defined in a schema
+     * ignoring private fields(added automatically e.g., _csrf)
+     * @example
+     * hasProperFields(SignInForm)
+     */
+    hasProperFields(schema: Joi.ObjectSchema)
   }
 }

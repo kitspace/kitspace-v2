@@ -79,3 +79,15 @@ Cypress.Commands.add('goToUsersAdminPanel', () => {
   cy.get('button').click()
   cy.visit('http://gitea.kitspace.test:3000/admin/users?sort=newest')
 })
+
+Cypress.Commands.add('hasProperFields', schema => {
+  const formFields = schema.schema().$_terms.keys.map(field => field.key)
+
+  formFields.forEach(field => {
+    if (!field.startsWith('_')) {
+      // fields starting with `_` are added automatically not by the user
+      // e.g., `_csrf` field
+      cy.get(`input[name=${field}]`)
+    }
+  })
+})
