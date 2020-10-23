@@ -14,7 +14,7 @@ function New({ user, _csrf }) {
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
   const uid = user?.id
   return (
-    <Page title="new">
+    <Page title="new" reqSignIn>
       <div
         className={`${styles.projectsNew} ui two column stackable center aligned grid`}
       >
