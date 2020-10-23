@@ -18,7 +18,7 @@ export default function () {
   }
 
   return (
-    <Page title="login">
+    <Page title="login" reqSignOut>
       <Grid textAlign="center" verticalAlign="middle">
         <Grid.Column style={{ maxWidth: 450 }}>
           <Tab

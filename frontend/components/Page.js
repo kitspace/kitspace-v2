@@ -50,7 +50,9 @@ export const Page = props => {
         <title>{props.title}</title>
       </Head>
       <NavBar />
-      <Content reqSignIn={props.reqSignIn}>{props.children}</Content>
+      <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
+        {props.children}
+      </Content>
     </AuthProvider>
   )
 }
@@ -58,6 +60,7 @@ export const Page = props => {
 Page.propTypes = {
   title: string,
   reqSignIn: bool,
+  reqSignOut: bool,
   head: object,
 }
 
