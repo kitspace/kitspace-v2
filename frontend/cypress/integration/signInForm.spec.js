@@ -32,7 +32,7 @@ describe('Log in form validation', () => {
 
     invalidUsernames.forEach(username => {
       cy.get('input[name=username]').clear().type(username)
-      cy.get('.negative').as('message')
+      cy.get('.prompt.label').as('message')
 
       // Success header shouldn't appear.
       cy.get('@message').should('be.visible')
