@@ -56,8 +56,7 @@ export default function () {
         negative={hasApiError}
         positive={isSuccessfulLogin}
         style={{
-          display:
-            hasApiError || isSuccessfulLogin ? 'block' : 'none',
+          display: hasApiError || isSuccessfulLogin ? 'block' : 'none',
         }}
       >
         {apiResponse.message || 'Logged in!'}

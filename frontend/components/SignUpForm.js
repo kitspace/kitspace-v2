@@ -44,14 +44,12 @@ export default function () {
         negative={hasApiError}
         positive={isSuccessfulReg}
         style={{
-          display:
-            hasApiError || isSuccessfulReg ? 'block' : 'none',
+          display: hasApiError || isSuccessfulReg ? 'block' : 'none',
         }}
       >
         <Message.Header
           style={{
-            display:
-              isSuccessfulReg && !hasApiError ? 'block' : 'none',
+            display: isSuccessfulReg && !hasApiError ? 'block' : 'none',
           }}
         >
           Success!
