@@ -8,34 +8,27 @@ import AuthProvider, { AuthContext } from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 
 const PageProxy = ({ route }) => {
+  /* TODO: Figure out redirects.
+  *  for protected routes either that requires `reqSignOut` or `reqSignIn`
+  *  now it it only renders empty page if the access policy was violated.
+  */
   const { push } = useRouter()
 
   useEffect(() => {
     push(route).then()
-  })
+  }, [])
 
   return null
 }
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
   const { isAuthenticated } = useContext(AuthContext)
-  console.log(isAuthenticated)
 
-  if (reqSignIn) {
-    return isAuthenticated ? (
-      <Container style={{ marginTop: 30 }}>{children}</Container>
-    ) : (
-      <PageProxy route="/login" />
-    )
-  } else if (reqSignOut) {
-    return !isAuthenticated ? (
-      <Container style={{ marginTop: 30 }}>{children}</Container>
-    ) : (
-      <PageProxy route="/" />
-    )
-  } else {
-    return <Container style={{ marginTop: 30 }}>{children}</Container>
-  }
+  return (reqSignIn && isAuthenticated) ||
+    (reqSignOut && !isAuthenticated) ||
+    (reqSignOut === undefined && reqSignIn === undefined) ? (
+    <Container style={{ marginTop: 30 }}>{children}</Container>
+  ) : null
 }
 
 export const Page = props => {
