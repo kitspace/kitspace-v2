@@ -63,10 +63,12 @@ export default function () {
       >
         {errors.msg || apiResponse.message || 'Logged in!'}
       </Message>
-      <Form size="large">
-        <Segment stacked>
-          <Input
+      <Form>
+        <Segment>
+          <Form.Field
+            control={Input}
             fluid
+            label="Username or Email"
             placeholder="Username or Email"
             name="username"
             value={form.username || ''}
@@ -74,8 +76,10 @@ export default function () {
             error={isErrorField('username')}
             style={{ marginBottom: 20 }}
           />
-          <Input
+          <Form.Field
+            control={Input}
             fluid
+            label="Password"
             placeholder="Password"
             type="password"
             name="password"
@@ -84,20 +88,25 @@ export default function () {
             error={isErrorField('password')}
             style={{ marginBottom: 20 }}
           />
-        </Segment>
-        <Checkbox label="Remember Me" name="remember" onChange={onChange} />
-        <Segment>
-          <Button
+          <Form.Field
+            control={Checkbox}
+            label="Remember ME"
+            name="remember"
+            onChange={onChange}
+          />
+          <Form.Field
             fluid
+            control={Button}
+            content="Login"
             color="green"
             size="large"
             onClick={submit}
             disabled={!isValid}
-          >
-            Login
-          </Button>
+          />
         </Segment>
-        <OAuthButtons />
+        <Segment>
+          <OAuthButtons />
+        </Segment>
       </Form>
     </>
   )
