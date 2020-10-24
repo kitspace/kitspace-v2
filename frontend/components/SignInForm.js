@@ -66,8 +66,8 @@ export default function () {
       <Form>
         <Segment>
           <Form.Field
-            control={Input}
             fluid
+            control={Input}
             label="Username or Email"
             placeholder="Username or Email"
             name="username"
@@ -77,8 +77,8 @@ export default function () {
             style={{ marginBottom: 20 }}
           />
           <Form.Field
-            control={Input}
             fluid
+            control={Input}
             label="Password"
             placeholder="Password"
             type="password"

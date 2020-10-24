@@ -61,10 +61,12 @@ export default function () {
           apiResponse.message ||
           `The activation email has been sent to ${apiResponse.email}, it'll be available for ${apiResponse.duration}.`}
       </Message>
-      <Form size="large">
-        <Segment stacked>
-          <Input
+      <Form>
+        <Segment>
+          <Form.Field
             fluid
+            control={Input}
+            label="Username"
             placeholder="Username"
             name="username"
             value={form.username || ''}
@@ -72,8 +74,10 @@ export default function () {
             error={isErrorField('username')}
             style={{ marginBottom: 20 }}
           />
-          <Input
+          <Form.Field
             fluid
+            control={Input}
+            label="Email"
             placeholder="Email"
             name="email"
             value={form.email || ''}
@@ -81,8 +85,10 @@ export default function () {
             onChange={onChange}
             style={{ marginBottom: 20 }}
           />
-          <Input
+          <Form.Field
             fluid
+            control={Input}
+            label="Email"
             placeholder="Password"
             type="password"
             name="password"
@@ -91,19 +97,19 @@ export default function () {
             error={isErrorField('password')}
             style={{ marginBottom: 20 }}
           />
-        </Segment>
-        <Segment>
-          <Button
+          <Form.Field
             fluid
+            control={Button}
+            content="Sign up"
             color="green"
             size="large"
             onClick={submit}
             disabled={!isValid}
-          >
-            Sign up
-          </Button>
+          />
         </Segment>
-        <OAuthButtons />
+        <Segment>
+          <OAuthButtons />
+        </Segment>
       </Form>
     </>
   )
