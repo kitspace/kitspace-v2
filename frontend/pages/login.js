@@ -19,8 +19,8 @@ export default function () {
 
   return (
     <Page title="login" reqSignOut>
-      <Grid textAlign="center" verticalAlign="middle">
-        <Grid.Column style={{ maxWidth: 450 }}>
+      <Grid style={{maxWidth: '500px', margin: 'auto'}} verticalAlign="middle">
+        <Grid.Column>
           <Tab
             panes={[
               { menuItem: 'Sign up', render: () => <SignUpForm /> },
