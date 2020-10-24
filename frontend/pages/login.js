@@ -19,7 +19,7 @@ export default function () {
 
   return (
     <Page title="login" reqSignOut>
-      <Grid style={{maxWidth: '500px', margin: 'auto'}} verticalAlign="middle">
+      <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab
             panes={[

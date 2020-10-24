@@ -8,7 +8,7 @@ import { SignUpForm } from '../models/SignUpForm'
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
 export default function () {
-  const [form, onChange, isValid, errors, isErrorField] = useForm(SignUpForm)
+  const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(SignUpForm)
   const [apiResponse, setApiResponse] = useState({})
 
   const submit = async () => {
@@ -32,7 +32,6 @@ export default function () {
     }
   }
 
-  const hasFromError = form[errors.field] !== undefined
   const hasApiError = apiResponse.error !== undefined
   const isSuccessfulReg = apiResponse.duration !== undefined
 
@@ -42,17 +41,17 @@ export default function () {
         Create a new account
       </Header>
       <Message
-        negative={hasFromError || hasApiError}
+        negative={hasApiError}
         positive={isSuccessfulReg}
         style={{
           display:
-            hasFromError || hasApiError || isSuccessfulReg ? 'block' : 'none',
+            hasApiError || isSuccessfulReg ? 'block' : 'none',
         }}
       >
         <Message.Header
           style={{
             display:
-              isSuccessfulReg && !(hasFromError || hasApiError) ? 'block' : 'none',
+              isSuccessfulReg && !hasApiError ? 'block' : 'none',
           }}
         >
           Success!
@@ -71,8 +70,7 @@ export default function () {
             name="username"
             value={form.username || ''}
             onChange={onChange}
-            error={isErrorField('username')}
-            style={{ marginBottom: 20 }}
+            error={formatErrorPrompt('username')}
           />
           <Form.Field
             fluid
@@ -81,9 +79,8 @@ export default function () {
             placeholder="Email"
             name="email"
             value={form.email || ''}
-            error={isErrorField('mail')}
+            error={formatErrorPrompt('email')}
             onChange={onChange}
-            style={{ marginBottom: 20 }}
           />
           <Form.Field
             fluid
@@ -94,8 +91,7 @@ export default function () {
             name="password"
             value={form.password || ''}
             onChange={onChange}
-            error={isErrorField('password')}
-            style={{ marginBottom: 20 }}
+            error={formatErrorPrompt('password')}
           />
           <Form.Field
             fluid

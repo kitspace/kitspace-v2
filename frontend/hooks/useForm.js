@@ -22,5 +22,9 @@ export default function (schema) {
 
   const isErrorField = field => errors.field === field && form[field] !== undefined
 
-  return [form, onChange, isValid, errors, isErrorField]
+  const formatErrorPrompt = field => {
+    return isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
+  }
+
+  return [form, onChange, isValid, errors, formatErrorPrompt]
 }

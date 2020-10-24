@@ -19,10 +19,9 @@ const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 export default function () {
   const router = useRouter()
 
-  const [form, onChange, isValid, errors, isErrorField] = useForm(SignInForm)
+  const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(SignInForm)
   const [apiResponse, setApiResponse] = useState({})
 
-  const hasFromError = form[errors.field] !== undefined
   const hasApiError = apiResponse.error !== undefined
   const isSuccessfulLogin = apiResponse.login !== undefined
 
@@ -54,14 +53,14 @@ export default function () {
         Log in
       </Header>
       <Message
-        negative={hasFromError || hasApiError}
+        negative={hasApiError}
         positive={isSuccessfulLogin}
         style={{
           display:
-            hasFromError || hasApiError || isSuccessfulLogin ? 'block' : 'none',
+            hasApiError || isSuccessfulLogin ? 'block' : 'none',
         }}
       >
-        {errors.msg || apiResponse.message || 'Logged in!'}
+        {apiResponse.message || 'Logged in!'}
       </Message>
       <Form>
         <Segment>
@@ -73,8 +72,7 @@ export default function () {
             name="username"
             value={form.username || ''}
             onChange={onChange}
-            error={isErrorField('username')}
-            style={{ marginBottom: 20 }}
+            error={formatErrorPrompt('username')}
           />
           <Form.Field
             fluid
@@ -85,8 +83,7 @@ export default function () {
             name="password"
             value={form.password || ''}
             onChange={onChange}
-            error={isErrorField('password')}
-            style={{ marginBottom: 20 }}
+            error={formatErrorPrompt('password')}
           />
           <Form.Field
             control={Checkbox}
