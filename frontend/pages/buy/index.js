@@ -1,7 +1,17 @@
 import React, { useReducer } from 'react'
 import Link from 'next/link'
 import superagent from 'superagent'
-import { Container, Card, Grid, Divider, Input, Button } from 'semantic-ui-react'
+import {
+  Container,
+  Card,
+  Grid,
+  Divider,
+  Input,
+  Button,
+  Image,
+  Segment,
+  Table,
+} from 'semantic-ui-react'
 import { Elements, CardElement } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import path from 'path'
@@ -19,7 +29,35 @@ const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
 
-const formatPrice = ({ amount, currency, quantity, shipping }) => {
+const formatTotalPrice = ({ amount, currency, quantity, shipping }) => {
+  const numberFormat = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'symbol',
+  })
+  let parts = numberFormat.formatToParts(amount)
+  let zeroDecimalCurrency = true
+  for (const part of parts) {
+    if (part.type === 'decimal') {
+      zeroDecimalCurrency = false
+    }
+  }
+  amount = zeroDecimalCurrency ? amount : amount / 100
+  parts = numberFormat.formatToParts(shipping)
+  let zeroDecimalCurrencyShipping = true
+  for (const part of parts) {
+    if (part.type === 'decimal') {
+      zeroDecimalCurrency = false
+    }
+  }
+  shipping = shipping / 100
+  const total = (quantity * amount + shipping).toFixed(2)
+  console.log({ total })
+  console.log(numberFormat.format(total))
+  return numberFormat.format(total)
+}
+
+const formatPrice = ({ amount, currency, quantity }) => {
   const numberFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
@@ -33,8 +71,7 @@ const formatPrice = ({ amount, currency, quantity, shipping }) => {
     }
   }
   amount = zeroDecimalCurrency ? amount : amount / 100
-  shipping = zeroDecimalCurrency ? shipping : shipping / 100
-  const total = (quantity * amount + shipping).toFixed(2)
+  const total = (quantity * amount).toFixed(2)
   return numberFormat.format(total)
 }
 
@@ -48,7 +85,7 @@ function reducer(state, action) {
       return {
         ...state,
         quantity: n,
-        price: formatPrice({
+        price: formatTotalPrice({
           amount: state.basePrice,
           currency: state.currency,
           quantity: n,
@@ -59,7 +96,7 @@ function reducer(state, action) {
       return {
         ...state,
         quantity: state.quantity + 1,
-        price: formatPrice({
+        price: formatTotalPrice({
           amount: state.basePrice,
           currency: state.currency,
           quantity: state.quantity + 1,
@@ -73,7 +110,7 @@ function reducer(state, action) {
       return {
         ...state,
         quantity: state.quantity - 1,
-        price: formatPrice({
+        price: formatTotalPrice({
           amount: state.basePrice,
           currency: state.currency,
           quantity: state.quantity - 1,
@@ -97,7 +134,7 @@ const Checkout = () => {
     quantity: 1,
     shippingPriceId: 'price_1HhIekI6rpeFFqzwiaMFMUXv',
     shippingPrice: 1000,
-    price: formatPrice({
+    price: formatTotalPrice({
       amount: 3000,
       currency: 'eur',
       quantity: 1,
@@ -172,49 +209,125 @@ const Checkout = () => {
         <header className="sr-header">
           <div className="sr-header__logo"></div>
         </header>
-        <section className="container">
+        <section
+          className="container"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <div>
             <h1>Electron Detector Kit</h1>
-            <div className="pasha-image">
-              <img
-                alt="Photo of complete eletron detector"
-                src="https://files.stripe.com/links/fl_test_z6eUIKztTPiPOXQHe9EgRVIk"
-                style={{ width: 600 }}
-              />
-            </div>
-          </div>
-          <div className="quantity-setter">
-            <button
-              className="increment-btn"
-              disabled={state.quantity === 1}
-              onClick={() => dispatch({ type: 'decrement' })}
-            >
-              -
-            </button>
-            <input
-              type="number"
-              id="quantity-input"
-              min="1"
-              value={state.quantity}
-              onChange={e =>
-                dispatch({ type: 'setQuantity', payload: e.target.value })
-              }
+            <Image
+              alt="Photo of complete eletron-detector"
+              src="https://files.stripe.com/links/fl_test_z6eUIKztTPiPOXQHe9EgRVIk"
+              style={{ width: 600, marginBottom: 20 }}
             />
-            <button
-              className="increment-btn"
-              onClick={() => dispatch({ type: 'increment' })}
-            >
-              +
-            </button>
           </div>
-          <p className="sr-legal-text">Number of kits</p>
+          <div style={{ padding: 50, width: 600 }}>
+            <p>
+              A complete kit to make your own{' '}
+              <a href="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/">
+                electron-detector
+              </a>
+              .
+            </p>
+          </div>
 
-          <button role="link" onClick={handleClick} disabled={state.loading}>
-            {state.loading || !state.price
-              ? `Loading...`
-              : `Buy for ${state.price}`}
-          </button>
-          <div className="sr-field-error">{state.error?.message}</div>
+          <div
+            style={{
+              flexDirection: 'column',
+              display: 'flex',
+              justifyContent: 'right',
+              alignItems: 'right',
+              marginBottom: 100,
+            }}
+          >
+            <Table basic="very">
+              <tbody>
+                <Table.Row>
+                  <Table.Cell style={{ width: '75%' }}>
+                    Electron Detector Kit
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div style={{ display: 'flex' }}>
+                      <Button
+                        basic
+                        className="increment-btn"
+                        onClick={() => dispatch({ type: 'decrement' })}
+                      >
+                        -
+                      </Button>
+                      <Input
+                        style={{ width: 100, marginLeft: 10, marginRight: 10 }}
+                        size="mini"
+                        type="number"
+                        id="quantity-input"
+                        min="1"
+                        value={state.quantity}
+                        onChange={e =>
+                          dispatch({ type: 'setQuantity', payload: e.target.value })
+                        }
+                      />
+                      <Button
+                        basic
+                        className="increment-btn"
+                        onClick={() => dispatch({ type: 'increment' })}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {formatPrice({
+                      amount: state.basePrice,
+                      currency: state.currency,
+                      quantity: state.quantity,
+                    })}
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell>
+                    <div>Shipping (Europe)</div>
+                    <div style={{ textEmphasis: 'italic', color: 'grey' }}>
+                      delivered by{' '}
+                      {new Date(
+                        new Date().getTime() + 14 * 86400000,
+                      ).toLocaleDateString()}
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell />
+                  <Table.Cell>
+                    {formatPrice({
+                      amount: state.shippingPrice,
+                      currency: state.currency,
+                      quantity: 1,
+                    })}
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell>
+                    <b>Total:</b>
+                  </Table.Cell>
+                  <Table.Cell></Table.Cell>
+                  <Table.Cell>
+                    <b>{state.price}</b>
+                  </Table.Cell>
+                </Table.Row>
+              </tbody>
+            </Table>
+            <Button
+              primary
+              role="link"
+              onClick={handleClick}
+              disabled={state.loading}
+            >
+              {state.loading || !state.price ? 'Loading...' : 'Order'}
+            </Button>
+            <div className="sr-field-error">{state.error?.message}</div>
+          </div>
         </section>
       </div>
     </div>
@@ -228,7 +341,7 @@ export default function BuyPage({ user, _csrf }) {
     <>
       <Head />
       <TitleBar route="/buy" />
-      <Container>
+      <Container style={{ marginTop: 50 }}>
         <Checkout />
       </Container>
     </>
