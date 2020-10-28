@@ -24,7 +24,7 @@ export default function CanceledPage({ user, _csrf }) {
             alignItems: 'center',
           }}
         >
-          <div style={{ fontSize: '24px' }}>Your order was cancelled :'(</div>
+          <div style={{ fontSize: '24px' }}>Your order did not go through :'(</div>
           <div style={{ marginTop: 20 }}>
             <a
               style={{ fontWeight: 'normal', color: '#555555' }}
