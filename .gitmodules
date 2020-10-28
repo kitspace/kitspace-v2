@@ -1,3 +1,0 @@
-[submodule "gitea"]
-	path = gitea
-	url = https://github.com/kitspace/gitea
