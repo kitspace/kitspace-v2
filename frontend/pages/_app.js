@@ -45,7 +45,6 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
         {setStaticFallback}}
       </Head>
       <Component {...pageProps} />
-      {isStaticFallback ? <ErrorMessage /> : null}
     </>
   )
 }
