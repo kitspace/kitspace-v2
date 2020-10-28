@@ -220,7 +220,7 @@ const Checkout = () => {
             <h1>Electron Detector Kit</h1>
             <Image
               alt="Photo of complete eletron-detector"
-              src="https://files.stripe.com/links/fl_test_z6eUIKztTPiPOXQHe9EgRVIk"
+              src="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
               style={{ width: 600, marginBottom: 20 }}
             />
           </div>
