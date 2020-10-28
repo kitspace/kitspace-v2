@@ -224,13 +224,13 @@ const Checkout = () => {
               style={{ width: 600, marginBottom: 20 }}
             />
           </div>
-          <div style={{ padding: 50, width: 600 }}>
+          <div style={{ padding: 20, width: 600 }}>
             <p>
-              A complete kit to make your own{' '}
+              All the parts to make your own{' '}
               <a href="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/">
                 electron-detector
               </a>
-              .
+              . The PCB, battery and box are not included in this kit.
             </p>
           </div>
 
