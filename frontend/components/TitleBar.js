@@ -82,7 +82,7 @@ function SiteMenuItems(props) {
   const remoteDomain = props.remoteDomain || ''
   return (
     <>
-      <Menu.Item as="a" href="/" active={props.isProjectRoute}>
+      <Menu.Item as="a" href={remoteDomain + "/"} active={props.isProjectRoute}>
         {'Projects'}
       </Menu.Item>
       <Menu.Item
