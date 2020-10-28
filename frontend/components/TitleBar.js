@@ -18,7 +18,11 @@ export default function TitleBar(props) {
           <a href={remoteDomain + '/'}>
             <Image className={styles.logoImg} src={logoSrc} />
           </a>
-          <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
+          <SiteMenuItems
+            remoteDomain={remoteDomain}
+            route={props.route}
+            isProjectRoute={isProjectRoute}
+          />
         </Menu>
       </div>
       <div className={styles.bigSocialMenu}>
