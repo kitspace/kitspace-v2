@@ -13,7 +13,28 @@ export default function CanceledPage({ user, _csrf }) {
     <>
       <Head />
       <TitleBar route="/buy/canceled" />
-      <Container>Y U no give us money?</Container>
+      <Container style={{ marginTop: 50, width: '100%' }}>
+        <div
+          style={{
+            marginTop: 400,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ fontSize: '24px' }}>Your order was canceled :'(</div>
+          <div style={{ marginTop: 20 }}>
+            <a
+              style={{ fontWeight: 'normal', color: '#555555' }}
+              href="/buy/electron-detector-parts-only"
+            >
+              try again
+            </a>
+          </div>
+        </div>
+      </Container>
     </>
   )
 }

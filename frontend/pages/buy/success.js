@@ -7,13 +7,33 @@ import TitleBar from '../../components/TitleBar'
 import styles from './success.module.scss'
 
 export default function SuccessPage({ user, _csrf }) {
-  const [remoteRepo, setRemoteRepo] = React.useState('')
   const uid = user?.id
   return (
     <>
       <Head />
       <TitleBar route="/buy/success" />
-      <Container>Super nice</Container>
+      <Container style={{ marginTop: 50, width: '100%' }}>
+        <div
+          style={{
+            marginTop: 400,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ fontSize: '24px' }}>Thank you for your order.</div>
+          <div style={{ marginTop: 20 }}>
+            <a
+              style={{ fontWeight: 'normal', color: '#555555' }}
+              href="https://kitspace.org"
+            >
+              browse projects
+            </a>
+          </div>
+        </div>
+      </Container>
     </>
   )
 }
