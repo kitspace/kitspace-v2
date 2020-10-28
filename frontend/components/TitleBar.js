@@ -52,10 +52,11 @@ export default function TitleBar(props) {
   )
 }
 
-function AddAProjectButton() {
+function AddAProjectButton(props) {
+  const domain = props.domain || ''
   return (
     <Menu.Item>
-      <Button icon labelPosition="left" color="green" href="/projects/new">
+      <Button icon labelPosition="left" color="green" href={domain + '/submit'}>
         <Icon name="plus" />
         Add a project
       </Button>
@@ -64,6 +65,7 @@ function AddAProjectButton() {
 }
 
 function SiteMenuItems(props) {
+  const domain = props.domain || ''
   return (
     <>
       <Menu.Item as="a" href="/" active={props.isProjectRoute}>
@@ -71,14 +73,14 @@ function SiteMenuItems(props) {
       </Menu.Item>
       <Menu.Item
         as="a"
-        href="/bom-builder"
+        href={domain + '/bom-builder'}
         active={props.route === '/bom-builder/'}
       >
         {'BOM Builder'}
       </Menu.Item>
       <Menu.Item
         as="a"
-        href="/1-click-bom"
+        href={domain + '/1-click-bom'}
         active={props.route === '/1-click-bom/'}
       >
         {'1-click BOM'}
@@ -87,14 +89,15 @@ function SiteMenuItems(props) {
   )
 }
 
-function SocialMenuItems() {
+function SocialMenuItems(props) {
+  const domain = props.domain || ''
   return (
     <>
       <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
         <Icon name="chat" />
         Chat
       </Menu.Item>
-      <Menu.Item as="a" href="/newsletter/">
+      <Menu.Item as="a" href={domain + '/newsletter/'}>
         <Icon name="envelope" />
         Email & Newsletter
       </Menu.Item>
