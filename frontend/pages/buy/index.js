@@ -128,11 +128,12 @@ const Checkout = () => {
         </header>
         <section className="container">
           <div>
-            <h1>Alpha Spectrometer Kit</h1>
+            <h1>Electron Detector Kit</h1>
             <div className="pasha-image">
               <img
-                alt="Photo of complete alpha spectrometer"
-                src="https://files.stripe.com/links/fl_test_i6OGUXgbLXIuvVTycehgLxtt"
+                alt="Photo of complete eletron detector"
+                src="https://files.stripe.com/links/fl_test_z6eUIKztTPiPOXQHe9EgRVIk"
+                style={{width: 600}}
               />
             </div>
           </div>
