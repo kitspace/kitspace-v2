@@ -4,7 +4,7 @@ import { Container } from 'semantic-ui-react'
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
 
-import styles from './canceled.module.scss'
+import styles from './cancelled.module.scss'
 
 export default function CanceledPage({ user, _csrf }) {
   const [remoteRepo, setRemoteRepo] = React.useState('')
@@ -12,7 +12,7 @@ export default function CanceledPage({ user, _csrf }) {
   return (
     <>
       <Head />
-      <TitleBar route="/buy/canceled" />
+      <TitleBar route="/buy/cancelled" />
       <Container style={{ marginTop: 50, width: '100%' }}>
         <div
           style={{
@@ -24,7 +24,7 @@ export default function CanceledPage({ user, _csrf }) {
             alignItems: 'center',
           }}
         >
-          <div style={{ fontSize: '24px' }}>Your order was canceled :'(</div>
+          <div style={{ fontSize: '24px' }}>Your order was cancelled :'(</div>
           <div style={{ marginTop: 20 }}>
             <a
               style={{ fontWeight: 'normal', color: '#555555' }}

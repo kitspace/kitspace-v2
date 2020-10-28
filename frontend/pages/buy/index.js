@@ -156,7 +156,7 @@ const Checkout = () => {
         { price: state.shippingPriceId, quantity: 1 },
       ],
       successUrl: `${window.location.origin}/buy/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${window.location.origin}/buy/canceled`,
+      cancelUrl: `${window.location.origin}/buy/cancelled`,
       shippingAddressCollection: {
         allowedCountries: [
           'AL',
