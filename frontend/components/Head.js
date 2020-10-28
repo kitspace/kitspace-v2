@@ -2,9 +2,9 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
-const defaultDescription = ''
-const defaultOGURL = ''
-const defaultOGImage = ''
+const defaultDescription = 'A site for sharing electronics projects.'
+const defaultOGURL = 'https://kitspace.org'
+const defaultOGImage = 'https://kitspace.org/images/logo_meta.png'
 
 const Head = props => (
   <NextHead>
