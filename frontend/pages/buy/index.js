@@ -19,7 +19,7 @@ const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
 
-const formatPrice = ({ amount, currency, quantity }) => {
+const formatPrice = ({ amount, currency, quantity, shipping }) => {
   const numberFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
@@ -33,7 +33,8 @@ const formatPrice = ({ amount, currency, quantity }) => {
     }
   }
   amount = zeroDecimalCurrency ? amount : amount / 100
-  const total = (quantity * amount).toFixed(2)
+  shipping = zeroDecimalCurrency ? shipping : shipping / 100
+  const total = (quantity * amount + shipping).toFixed(2)
   return numberFormat.format(total)
 }
 
@@ -51,6 +52,7 @@ function reducer(state, action) {
           amount: state.basePrice,
           currency: state.currency,
           quantity: n,
+          shipping: state.shippingPrice,
         }),
       }
     case 'increment':
@@ -61,6 +63,7 @@ function reducer(state, action) {
           amount: state.basePrice,
           currency: state.currency,
           quantity: state.quantity + 1,
+          shipping: state.shippingPrice,
         }),
       }
     case 'decrement':
@@ -74,6 +77,7 @@ function reducer(state, action) {
           amount: state.basePrice,
           currency: state.currency,
           quantity: state.quantity - 1,
+          shipping: state.shippingPrice,
         }),
       }
     case 'setLoading':
@@ -87,14 +91,17 @@ function reducer(state, action) {
 
 const Checkout = () => {
   const [state, dispatch] = useReducer(reducer, {
-    priceId: 'price_1GtsPCI6rpeFFqzw9sE1DgFI',
-    basePrice: 1000,
-    currency: 'usd',
+    priceId: 'price_1HhIbjI6rpeFFqzwRGjSR0Z2',
+    basePrice: 3000,
+    currency: 'eur',
     quantity: 1,
+    shippingPriceId: 'price_1HhIekI6rpeFFqzwiaMFMUXv',
+    shippingPrice: 1000,
     price: formatPrice({
-      amount: 1000,
-      currency: 'usd',
+      amount: 3000,
+      currency: 'eur',
       quantity: 1,
+      shipping: 1000,
     }),
     loading: false,
     error: null,
@@ -107,9 +114,48 @@ const Checkout = () => {
     const stripe = await stripePromise
     const { error } = await stripe.redirectToCheckout({
       mode: 'payment',
-      lineItems: [{ price: state.priceId, quantity: state.quantity }],
+      lineItems: [
+        { price: state.priceId, quantity: state.quantity },
+        { price: state.shippingPriceId, quantity: 1 },
+      ],
       successUrl: `${window.location.origin}/buy/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${window.location.origin}/buy/canceled`,
+      shippingAddressCollection: {
+        allowedCountries: [
+          'AL',
+          'AT',
+          'BA',
+          'BE',
+          'BG',
+          'CH',
+          'CY',
+          'DE',
+          'DK',
+          'EE',
+          'ES',
+          'FI',
+          'FR',
+          'GB',
+          'GR',
+          'HR',
+          'HU',
+          'IE',
+          'IS',
+          'IT',
+          'LT',
+          'LV',
+          'MK',
+          'MT',
+          'NL',
+          'NO',
+          'PL',
+          'PT',
+          'RO',
+          'RS',
+          'SE',
+          'SI',
+        ],
+      },
     })
     // If `redirectToCheckout` fails due to a browser or network
     // error, display the localized error message to your customer
@@ -133,7 +179,7 @@ const Checkout = () => {
               <img
                 alt="Photo of complete eletron detector"
                 src="https://files.stripe.com/links/fl_test_z6eUIKztTPiPOXQHe9EgRVIk"
-                style={{width: 600}}
+                style={{ width: 600 }}
               />
             </div>
           </div>
