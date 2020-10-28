@@ -10,6 +10,7 @@ export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
     isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
+  const remoteDomain = "https://kitspace.org"
   return (
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
@@ -22,7 +23,9 @@ export default function TitleBar(props) {
       </div>
       <div className={styles.bigSocialMenu}>
         <Menu inverted pointing secondary>
-          {isSubmitRoute ? null : <AddAProjectButton />}
+          {isSubmitRoute ? null : (
+            <AddAProjectButton remoteDomain={remoteDomain} />
+          )}
           <ContactMenu />
         </Menu>
       </div>
@@ -42,9 +45,15 @@ export default function TitleBar(props) {
           basic
         >
           <Menu inverted vertical>
-            <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
-            <SocialMenuItems />
-            {isSubmitRoute ? null : <AddAProjectButton />}
+            <SiteMenuItems
+              remoteDomain={remoteDomain}
+              route={props.route}
+              isProjectRoute={isProjectRoute}
+            />
+            <SocialMenuItems remoteDomain={remoteDomain} />
+            {isSubmitRoute ? null : (
+              <AddAProjectButton remoteDomain={remoteDomain} />
+            )}
           </Menu>
         </Popup>
       </div>
@@ -53,10 +62,15 @@ export default function TitleBar(props) {
 }
 
 function AddAProjectButton(props) {
-  const domain = props.domain || ''
+  const remoteDomain = props.remoteDomain || ''
   return (
     <Menu.Item>
-      <Button icon labelPosition="left" color="green" href={domain + '/submit'}>
+      <Button
+        icon
+        labelPosition="left"
+        color="green"
+        href={remoteDomain + '/submit'}
+      >
         <Icon name="plus" />
         Add a project
       </Button>
@@ -65,7 +79,7 @@ function AddAProjectButton(props) {
 }
 
 function SiteMenuItems(props) {
-  const domain = props.domain || ''
+  const remoteDomain = props.remoteDomain || ''
   return (
     <>
       <Menu.Item as="a" href="/" active={props.isProjectRoute}>
@@ -73,14 +87,14 @@ function SiteMenuItems(props) {
       </Menu.Item>
       <Menu.Item
         as="a"
-        href={domain + '/bom-builder'}
+        href={remoteDomain + '/bom-builder'}
         active={props.route === '/bom-builder/'}
       >
         {'BOM Builder'}
       </Menu.Item>
       <Menu.Item
         as="a"
-        href={domain + '/1-click-bom'}
+        href={remoteDomain + '/1-click-bom'}
         active={props.route === '/1-click-bom/'}
       >
         {'1-click BOM'}
@@ -90,14 +104,14 @@ function SiteMenuItems(props) {
 }
 
 function SocialMenuItems(props) {
-  const domain = props.domain || ''
+  const remoteDomain = props.remoteDomain || ''
   return (
     <>
       <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
         <Icon name="chat" />
         Chat
       </Menu.Item>
-      <Menu.Item as="a" href={domain + '/newsletter/'}>
+      <Menu.Item as="a" href={remoteDomain + '/newsletter/'}>
         <Icon name="envelope" />
         Email & Newsletter
       </Menu.Item>
