@@ -291,7 +291,7 @@ const Checkout = () => {
                   </Table.Cell>
                 </Table.Row>
                 <Table.Row>
-                  <Table.Cell>
+                  <Table.Cell colspan="2">
                     <div>Shipping (Europe)</div>
                     <div style={{ textEmphasis: 'italic', color: 'grey' }}>
                       delivered by{' '}
@@ -305,7 +305,6 @@ const Checkout = () => {
                       })}
                     </div>
                   </Table.Cell>
-                  <Table.Cell />
                   <Table.Cell>
                     {formatPrice({
                       amount: state.shippingPrice,
