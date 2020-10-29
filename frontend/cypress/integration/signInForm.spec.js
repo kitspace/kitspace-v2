@@ -39,7 +39,7 @@ describe('Log in form validation', () => {
       cy.get('@message').get('div.header').should('not.be.visible')
 
       // The error message should indicate that the username is invalid.
-      cy.get('@message').should('include.text', '"username"')
+      cy.get('@message').should('include.text', 'Invalid username or email')
     })
   })
 })
