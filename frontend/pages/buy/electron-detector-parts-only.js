@@ -339,6 +339,7 @@ export default function BuyPage({ user, _csrf }) {
     <>
       <Head
         title="Electron Detector Kit"
+        description="All the parts to make your own electron-detector."
         ogImage="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
         ogImageWidth="1024"
         ogImageHeight="768"
