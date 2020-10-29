@@ -33,7 +33,7 @@ export default function TitleBar(props) {
       </div>
       <div className={styles.smallMenu}>
         <a href={remoteDomain + '/'}>
-          <Image className="logoImg" src={logoSrc} />
+          <Image className={styles.logoImg} src={logoSrc} />
         </a>
         <Popup
           trigger={
