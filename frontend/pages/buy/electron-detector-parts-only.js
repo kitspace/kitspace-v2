@@ -219,9 +219,9 @@ const Checkout = () => {
           <div>
             <h1>Electron Detector Kit</h1>
             <Image
-              alt="Photo of complete eletron-detector"
+              alt="Photo of the electron detector kit"
               src="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
-              style={{ width: 600, marginBottom: 20 }}
+              style={{ width: 600, height: 450, marginBottom: 20 }}
             />
           </div>
           <div style={{ padding: 20, width: 600 }}>
