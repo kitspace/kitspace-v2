@@ -337,7 +337,12 @@ export default function BuyPage({ user, _csrf }) {
   const uid = user?.id
   return (
     <>
-      <Head />
+      <Head
+        title="Electron Detector Kit"
+        ogImage="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
+        ogImageWidth="1024"
+        ogImageHeight="768"
+      />
       <TitleBar route="/buy" />
       <Container style={{ marginTop: 50 }}>
         <Checkout />

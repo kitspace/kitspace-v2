@@ -23,8 +23,8 @@ const Head = props => (
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={props.ogImage || defaultOGImage} />
     <meta property="og:image" content={props.ogImage || defaultOGImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:width" content={props.ogImageWidth || '1200'} />
+    <meta property="og:image:height" content={props.ogImageHeight || '630'} />
   </NextHead>
 )
 
