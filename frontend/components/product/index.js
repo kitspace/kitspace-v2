@@ -1,3 +1,4 @@
+// TODO: import loadStripe in `Page`, and improve UI for mobile devices.
 import React, { useReducer } from 'react'
 import { string, number } from 'prop-types'
 import { Button, Grid, Segment } from 'semantic-ui-react'
