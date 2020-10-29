@@ -1,34 +1,37 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { string, object, bool } from 'prop-types'
 
 import Head from './Head'
 import NavBar from './NavBar'
-import { Container } from 'semantic-ui-react'
-import AuthProvider, { AuthContext } from '../contexts/AuthContext'
+import { Container, Dimmer, Loader } from 'semantic-ui-react'
+import AuthProvider from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 
-const PageProxy = ({ route }) => {
-  /* TODO: Figure out redirects.
-  *  for protected routes either that requires `reqSignOut` or `reqSignIn`
-  *  now it it only renders empty page if the access policy was violated.
-  */
+const Content = ({ reqSignIn, reqSignOut, children }) => {
   const { push } = useRouter()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    push(route).then()
-  }, [])
+    const isAuthenticated = window.session?.user !== null
 
-  return null
-}
+    if (reqSignIn && !isAuthenticated) {
+      push('/login').then()
+    } else if (reqSignOut && isAuthenticated) {
+      push('/').then()
+    } else {
+      setLoading(false)
+    }
+  }, [loading])
 
-const Content = ({ reqSignIn, reqSignOut, children }) => {
-  const { isAuthenticated } = useContext(AuthContext)
-
-  return (reqSignIn && isAuthenticated) ||
-    (reqSignOut && !isAuthenticated) ||
-    (reqSignOut === undefined && reqSignIn === undefined) ? (
-    <Container style={{ marginTop: 30 }}>{children}</Container>
-  ) : null
+  if (loading) {
+    return (
+      <Dimmer active inverted>
+        <Loader>Loading...</Loader>
+      </Dimmer>
+    )
+  } else {
+    return <Container style={{ marginTop: 30 }}>{children}</Container>
+  }
 }
 
 export const Page = props => {
@@ -60,8 +63,4 @@ Page.propTypes = {
 Content.propTypes = {
   reqSignIn: bool,
   reqSignOut: bool,
-}
-
-PageProxy.propTypes = {
-  route: string,
 }
