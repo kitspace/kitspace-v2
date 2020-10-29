@@ -85,6 +85,10 @@ export const reducer = (state, action) => {
           shipping: state.shippingPrice,
         }),
       }
+    case 'setLoading':
+      return { ...state, loading: action.payload.loading }
+    case 'setError':
+      return { ...state, error: action.payload.error }
     default:
       throw new Error()
   }
