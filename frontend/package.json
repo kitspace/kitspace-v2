@@ -10,6 +10,7 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
+    "@stripe/react-stripe": "^7.0.0-beta.0",
     "@stripe/stripe-js": "^1.10.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/faker": "^5.1.0",
+    "@types/stripe": "^7.13.25",
     "cypress": "^5.1.0",
     "faker": "^5.1.0",
     "nodemon": "^2.0.2",

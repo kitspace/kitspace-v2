@@ -15,10 +15,6 @@ import TitleBar from '../../components/TitleBar'
 // recreating the `Stripe` object on every render.
 const stripePromise = loadStripe('pk_test_Z1JtcYjtxxzggl4ExcHM2M29')
 
-const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-
-const gitea_internal_url = 'http://gitea:3000/api/v1'
-
 const formatTotalPrice = ({ amount, currency, quantity, shipping }) => {
   const numberFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
