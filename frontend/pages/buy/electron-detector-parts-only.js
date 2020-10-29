@@ -230,7 +230,7 @@ const Checkout = () => {
               <a href="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/">
                 electron-detector
               </a>
-              . The PCB, battery and box are not included in this kit.
+              . The PCB, battery and metal enclosure are not included in this kit.
             </p>
           </div>
 
