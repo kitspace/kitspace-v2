@@ -296,7 +296,12 @@ const Checkout = () => {
                         delivered by{' '}
                         {new Date(
                           new Date().getTime() + 14 * 86400000,
-                        ).toLocaleDateString()}
+                        ).toLocaleDateString(undefined, {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
                       </div>
                     </Table.Cell>
                     <Table.Cell />
