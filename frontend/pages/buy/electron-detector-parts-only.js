@@ -221,10 +221,10 @@ const Checkout = () => {
             <Image
               alt="Photo of the electron detector kit"
               src="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
-              style={{ width: 600, height: 450, marginBottom: 20 }}
+              className={styles.productImage}
             />
           </div>
-          <div style={{ padding: 20, width: 600 }}>
+          <div style={{ padding: 20, maxWidth: 600 }}>
             <p>
               All the parts to make your own{' '}
               <a href="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/">
@@ -236,86 +236,90 @@ const Checkout = () => {
 
           <div
             style={{
+              maxWidth: '80%',
               flexDirection: 'column',
               display: 'flex',
-              justifyContent: 'right',
-              alignItems: 'right',
               marginBottom: 100,
             }}
           >
-            <Table basic="very">
-              <tbody>
-                <Table.Row>
-                  <Table.Cell style={{ width: '75%' }}>
-                    Electron Detector Kit
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div style={{ display: 'flex' }}>
-                      <Button
-                        basic
-                        className="increment-btn"
-                        onClick={() => dispatch({ type: 'decrement' })}
-                      >
-                        -
-                      </Button>
-                      <Input
-                        style={{ width: 100, marginLeft: 10, marginRight: 10 }}
-                        size="mini"
-                        type="number"
-                        id="quantity-input"
-                        min="1"
-                        value={state.quantity}
-                        onChange={e =>
-                          dispatch({ type: 'setQuantity', payload: e.target.value })
-                        }
-                      />
-                      <Button
-                        basic
-                        className="increment-btn"
-                        onClick={() => dispatch({ type: 'increment' })}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {formatPrice({
-                      amount: state.basePrice,
-                      currency: state.currency,
-                      quantity: state.quantity,
-                    })}
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell>
-                    <div>Shipping (Europe)</div>
-                    <div style={{ textEmphasis: 'italic', color: 'grey' }}>
-                      delivered by{' '}
-                      {new Date(
-                        new Date().getTime() + 14 * 86400000,
-                      ).toLocaleDateString()}
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell />
-                  <Table.Cell>
-                    {formatPrice({
-                      amount: state.shippingPrice,
-                      currency: state.currency,
-                      quantity: 1,
-                    })}
-                  </Table.Cell>
-                </Table.Row>
-                <Table.Row>
-                  <Table.Cell>
-                    <b>Total:</b>
-                  </Table.Cell>
-                  <Table.Cell></Table.Cell>
-                  <Table.Cell>
-                    <b>{state.price}</b>
-                  </Table.Cell>
-                </Table.Row>
-              </tbody>
-            </Table>
+            <div>
+              <Table basic="very">
+                <tbody>
+                  <Table.Row>
+                    <Table.Cell style={{ width: '75%' }}>
+                      Electron Detector Kit
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div style={{ display: 'flex' }}>
+                        <Button
+                          basic
+                          className="increment-btn"
+                          onClick={() => dispatch({ type: 'decrement' })}
+                        >
+                          -
+                        </Button>
+                        <Input
+                          style={{ width: 100, marginLeft: 10, marginRight: 10 }}
+                          size="mini"
+                          type="number"
+                          id="quantity-input"
+                          min="1"
+                          value={state.quantity}
+                          onChange={e =>
+                            dispatch({
+                              type: 'setQuantity',
+                              payload: e.target.value,
+                            })
+                          }
+                        />
+                        <Button
+                          basic
+                          className="increment-btn"
+                          onClick={() => dispatch({ type: 'increment' })}
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      {formatPrice({
+                        amount: state.basePrice,
+                        currency: state.currency,
+                        quantity: state.quantity,
+                      })}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>
+                      <div>Shipping (Europe)</div>
+                      <div style={{ textEmphasis: 'italic', color: 'grey' }}>
+                        delivered by{' '}
+                        {new Date(
+                          new Date().getTime() + 14 * 86400000,
+                        ).toLocaleDateString()}
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell />
+                    <Table.Cell>
+                      {formatPrice({
+                        amount: state.shippingPrice,
+                        currency: state.currency,
+                        quantity: 1,
+                      })}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>
+                      <b>Total:</b>
+                    </Table.Cell>
+                    <Table.Cell></Table.Cell>
+                    <Table.Cell>
+                      <b>{state.price}</b>
+                    </Table.Cell>
+                  </Table.Row>
+                </tbody>
+              </Table>
+            </div>
             <Button
               primary
               role="link"
