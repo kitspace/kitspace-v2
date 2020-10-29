@@ -236,103 +236,106 @@ const Checkout = () => {
 
           <div
             style={{
-              maxWidth: '80%',
+              maxWidth: 580,
               flexDirection: 'column',
               display: 'flex',
               marginBottom: 100,
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <div>
-              <Table basic="very">
-                <tbody>
-                  <Table.Row>
-                    <Table.Cell style={{ width: '75%' }}>
-                      Electron Detector Kit
-                    </Table.Cell>
-                    <Table.Cell>
-                      <div style={{ display: 'flex' }}>
-                        <Button
-                          basic
-                          className="increment-btn"
-                          onClick={() => dispatch({ type: 'decrement' })}
-                        >
-                          -
-                        </Button>
-                        <Input
-                          style={{ width: 100, marginLeft: 10, marginRight: 10 }}
-                          size="mini"
-                          type="number"
-                          id="quantity-input"
-                          min="1"
-                          value={state.quantity}
-                          onChange={e =>
-                            dispatch({
-                              type: 'setQuantity',
-                              payload: e.target.value,
-                            })
-                          }
-                        />
-                        <Button
-                          basic
-                          className="increment-btn"
-                          onClick={() => dispatch({ type: 'increment' })}
-                        >
-                          +
-                        </Button>
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell>
-                      {formatPrice({
-                        amount: state.basePrice,
-                        currency: state.currency,
-                        quantity: state.quantity,
+            <Table basic="very">
+              <tbody>
+                <Table.Row>
+                  <Table.Cell style={{ width: '75%' }}>
+                    Electron Detector Kit
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div style={{ display: 'flex' }}>
+                      <Button
+                        basic
+                        className="increment-btn"
+                        onClick={() => dispatch({ type: 'decrement' })}
+                      >
+                        -
+                      </Button>
+                      <Input
+                        style={{ width: 100, marginLeft: 10, marginRight: 10 }}
+                        size="mini"
+                        type="number"
+                        id="quantity-input"
+                        min="1"
+                        value={state.quantity}
+                        onChange={e =>
+                          dispatch({
+                            type: 'setQuantity',
+                            payload: e.target.value,
+                          })
+                        }
+                      />
+                      <Button
+                        basic
+                        className="increment-btn"
+                        onClick={() => dispatch({ type: 'increment' })}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {formatPrice({
+                      amount: state.basePrice,
+                      currency: state.currency,
+                      quantity: state.quantity,
+                    })}
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell>
+                    <div>Shipping (Europe)</div>
+                    <div style={{ textEmphasis: 'italic', color: 'grey' }}>
+                      delivered by{' '}
+                      {new Date(
+                        new Date().getTime() + 14 * 86400000,
+                      ).toLocaleDateString(undefined, {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
                       })}
-                    </Table.Cell>
-                  </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>
-                      <div>Shipping (Europe)</div>
-                      <div style={{ textEmphasis: 'italic', color: 'grey' }}>
-                        delivered by{' '}
-                        {new Date(
-                          new Date().getTime() + 14 * 86400000,
-                        ).toLocaleDateString(undefined, {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell />
-                    <Table.Cell>
-                      {formatPrice({
-                        amount: state.shippingPrice,
-                        currency: state.currency,
-                        quantity: 1,
-                      })}
-                    </Table.Cell>
-                  </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>
-                      <b>Total:</b>
-                    </Table.Cell>
-                    <Table.Cell></Table.Cell>
-                    <Table.Cell>
-                      <b>{state.price}</b>
-                    </Table.Cell>
-                  </Table.Row>
-                </tbody>
-              </Table>
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell />
+                  <Table.Cell>
+                    {formatPrice({
+                      amount: state.shippingPrice,
+                      currency: state.currency,
+                      quantity: 1,
+                    })}
+                  </Table.Cell>
+                </Table.Row>
+                <Table.Row>
+                  <Table.Cell>
+                    <b>Total:</b>
+                  </Table.Cell>
+                  <Table.Cell></Table.Cell>
+                  <Table.Cell>
+                    <b>{state.price}</b>
+                  </Table.Cell>
+                </Table.Row>
+              </tbody>
+            </Table>
+            <div style={{ width: '100%' }}>
+              <Button
+                primary
+                role="link"
+                onClick={handleClick}
+                disabled={state.loading}
+                style={{ width: '100%' }}
+              >
+                {state.loading || !state.price ? 'Loading...' : 'Order'}
+              </Button>
             </div>
-            <Button
-              primary
-              role="link"
-              onClick={handleClick}
-              disabled={state.loading}
-            >
-              {state.loading || !state.price ? 'Loading...' : 'Order'}
-            </Button>
             <div className="sr-field-error">{state.error?.message}</div>
           </div>
         </section>
