@@ -126,7 +126,7 @@ function reducer(state, action) {
 
 const Checkout = () => {
   const [state, dispatch] = useReducer(reducer, {
-    priceId: 'price_1HhN1rI6rpeFFqzwoZuaJuDT',
+    priceId: 'price_1HhIekI6rpeFFqzwiaMFMUXv',
     basePrice: 2800,
     currency: 'eur',
     quantity: 1,
