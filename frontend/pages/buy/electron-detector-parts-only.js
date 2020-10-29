@@ -220,7 +220,7 @@ const Checkout = () => {
             <h1>Electron Detector Kit</h1>
             <Image
               alt="Photo of the electron detector kit"
-              src="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
+              src="https://files.stripe.com/links/fl_test_dPLbmgEZs94lABQLQm53IXBF"
               className={styles.productImage}
             />
           </div>
@@ -352,7 +352,7 @@ export default function BuyPage({ user, _csrf }) {
       <Head
         title="Electron Detector Kit"
         description="All the parts to make your own electron-detector."
-        ogImage="https://files.stripe.com/links/fl_test_JXLr1rUa34P4i0XuQcZrOIfH"
+        ogImage="https://files.stripe.com/links/fl_test_dPLbmgEZs94lABQLQm53IXBF"
         ogImageWidth="1024"
         ogImageHeight="768"
       />
