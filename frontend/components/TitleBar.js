@@ -10,31 +10,26 @@ export default function TitleBar(props) {
   const isSubmitRoute = RegExp('^/projects/new').test(props.route)
   const isProjectRoute =
     isSubmitRoute || props.route === '/' || RegExp('^/projects/').test(props.route)
-  const remoteDomain = 'https://kitspace.org'
   return (
     <div className={styles.titleBar}>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          <a href={remoteDomain + '/'}>
+          <Link href="/">
             <Image className={styles.logoImg} src={logoSrc} />
-          </a>
-          <SiteMenuItems
-            remoteDomain={remoteDomain}
-            route={props.route}
-            isProjectRoute={isProjectRoute}
-          />
+          </Link>
+          <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
         </Menu>
       </div>
       <div className={styles.bigSocialMenu}>
         <Menu inverted pointing secondary>
-          {isSubmitRoute ? null : <AddAProjectButton remoteDomain={remoteDomain} />}
+          {isSubmitRoute ? null : <AddAProjectButton />}
           <ContactMenu />
         </Menu>
       </div>
       <div className={styles.smallMenu}>
-        <a href={remoteDomain + '/'}>
+        <Link href="/">
           <Image className="logoImg" src={logoSrc} />
-        </a>
+        </Link>
         <Popup
           trigger={
             <Button icon size="large" basic inverted>
@@ -47,15 +42,9 @@ export default function TitleBar(props) {
           basic
         >
           <Menu inverted vertical>
-            <SiteMenuItems
-              remoteDomain={remoteDomain}
-              route={props.route}
-              isProjectRoute={isProjectRoute}
-            />
-            <SocialMenuItems remoteDomain={remoteDomain} />
-            {isSubmitRoute ? null : (
-              <AddAProjectButton remoteDomain={remoteDomain} />
-            )}
+            <SiteMenuItems route={props.route} isProjectRoute={isProjectRoute} />
+            <SocialMenuItems />
+            {isSubmitRoute ? null : <AddAProjectButton />}
           </Menu>
         </Popup>
       </div>
@@ -63,16 +52,10 @@ export default function TitleBar(props) {
   )
 }
 
-function AddAProjectButton(props) {
-  const remoteDomain = props.remoteDomain || ''
+function AddAProjectButton() {
   return (
     <Menu.Item>
-      <Button
-        icon
-        labelPosition="left"
-        color="green"
-        href={remoteDomain + '/submit'}
-      >
+      <Button icon labelPosition="left" color="green" href="/projects/new">
         <Icon name="plus" />
         Add a project
       </Button>
@@ -81,22 +64,21 @@ function AddAProjectButton(props) {
 }
 
 function SiteMenuItems(props) {
-  const remoteDomain = props.remoteDomain || ''
   return (
     <>
-      <Menu.Item as="a" href={remoteDomain + '/'} active={props.isProjectRoute}>
+      <Menu.Item as="a" href="/" active={props.isProjectRoute}>
         {'Projects'}
       </Menu.Item>
       <Menu.Item
         as="a"
-        href={remoteDomain + '/bom-builder'}
+        href="/bom-builder"
         active={props.route === '/bom-builder/'}
       >
         {'BOM Builder'}
       </Menu.Item>
       <Menu.Item
         as="a"
-        href={remoteDomain + '/1-click-bom'}
+        href="/1-click-bom"
         active={props.route === '/1-click-bom/'}
       >
         {'1-click BOM'}
@@ -105,15 +87,14 @@ function SiteMenuItems(props) {
   )
 }
 
-function SocialMenuItems(props) {
-  const remoteDomain = props.remoteDomain || ''
+function SocialMenuItems() {
   return (
     <>
       <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
         <Icon name="chat" />
         Chat
       </Menu.Item>
-      <Menu.Item as="a" href={remoteDomain + '/newsletter/'}>
+      <Menu.Item as="a" href="/newsletter/">
         <Icon name="envelope" />
         Email & Newsletter
       </Menu.Item>

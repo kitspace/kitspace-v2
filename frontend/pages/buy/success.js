@@ -1,10 +1,8 @@
-import React, { useReducer } from 'react'
-import Link from 'next/link'
+import React from 'react'
 import { Container } from 'semantic-ui-react'
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
 
-import styles from './success.module.scss'
 
 export default function SuccessPage({ user, _csrf }) {
   const uid = user?.id

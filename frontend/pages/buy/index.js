@@ -1,25 +1,15 @@
 import React, { useReducer } from 'react'
-import Link from 'next/link'
-import superagent from 'superagent'
 import {
   Container,
-  Card,
-  Grid,
-  Divider,
   Input,
   Button,
   Image,
-  Segment,
   Table,
 } from 'semantic-ui-react'
-import { Elements, CardElement } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import path from 'path'
 
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
-
-import styles from './index.module.scss'
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.

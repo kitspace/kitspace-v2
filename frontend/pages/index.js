@@ -1,20 +1,16 @@
 import React from 'react'
-import Link from 'next/link'
 import superagent from 'superagent'
 
-import Head from '../components/Head'
-import TitleBar from '../components/TitleBar'
+import { Page } from '../components/Page'
 
 function Home({ name, _csrf, repos }) {
   return (
-    <>
-      <Head />
-      <TitleBar route="/" />
+    <Page title="home">
       <div>
         Hi there {name}, {_csrf}
         <pre>{JSON.stringify(repos, null, 2)}</pre>
       </div>
-    </>
+    </Page>
   )
 }
 

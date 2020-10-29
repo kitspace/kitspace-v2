@@ -1,13 +1,10 @@
-import React, { useReducer } from 'react'
-import Link from 'next/link'
+import React from 'react'
 import { Container } from 'semantic-ui-react'
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
 
-import styles from './cancelled.module.scss'
 
 export default function CanceledPage({ user, _csrf }) {
-  const [remoteRepo, setRemoteRepo] = React.useState('')
   const uid = user?.id
   return (
     <>

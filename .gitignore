@@ -1,3 +1,10 @@
+# IDEs
+.idea/
+
 .env
 volumes/
 nginx/default.conf
+
+# e2e cypress results
+frontend/cypress/videos
+frontend/cypress/screenshots

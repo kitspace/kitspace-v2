@@ -13,7 +13,7 @@ app.prepare().then(() => {
   const server = express()
 
   if (dev) {
-    server.use(function(req, res, next) {
+    server.use(function (req, res, next) {
       console.log('%s %s', req.method, req.url)
       next()
     })
