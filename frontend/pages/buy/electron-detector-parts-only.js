@@ -23,7 +23,7 @@ import styles from './index.module.scss'
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe('pk_test_Z1JtcYjtxxzggl4ExcHM2M29')
+const stripePromise = loadStripe('pk_live_jYJD5bwTmzCMJuIKwK9rIIpk')
 
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -130,10 +130,10 @@ const Checkout = () => {
     basePrice: 2800,
     currency: 'eur',
     quantity: 1,
-    shippingPriceId: 'price_1HhIekI6rpeFFqzwiaMFMUXv',
+    shippingPriceId: 'price_1HhgkEI6rpeFFqzwmi8mVgg9',
     shippingPrice: 1000,
     price: formatTotalPrice({
-      amount: 3000,
+      amount: 2800,
       currency: 'eur',
       quantity: 1,
       shipping: 1000,
