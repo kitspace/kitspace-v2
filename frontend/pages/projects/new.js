@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { Grid, Divider, Input, Button, Modal} from 'semantic-ui-react'
+import { Grid, Divider, Input, Button, Modal } from 'semantic-ui-react'
 import path from 'path'
+import { useDropzone } from 'react-dropzone'
 
 import styles from './new.module.scss'
 import { Page } from '../../components/Page'
-
-const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 function New({ _csrf }) {
   return (
@@ -43,10 +42,11 @@ const UploadModal = () => {
       }
     >
       <Modal.Header>Upload image</Modal.Header>
-      <Modal.Content image>
+      <Modal.Content>
         <Modal.Description>
-          <p>Upload folder</p>
+          <p>Upload files</p>
         </Modal.Description>
+        <DropZone />
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setOpen(false)}>Cancel</Button>
@@ -57,9 +57,33 @@ const UploadModal = () => {
     </Modal>
   )
 }
+
+const DropZone = () => {
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone()
+
+  const files = acceptedFiles.map(file => (
+    <li key={file.name}>{file.name - file.size} bytes</li>
+  ))
+
+  return (
+    <section style={{}}>
+      <div {...getRootProps({ className: 'dropzone' })} style={{margin: '2rem 0'}}>
+        <input {...getInputProps()} />
+        <p>Drag 'n' drop some files here, or click to select files</p>
+      </div>
+      <aside>
+        <h4>Files</h4>
+        <ul>{files}</ul>
+      </aside>
+    </section>
+  )
+}
+
 const Sync = () => {
-  const [remoteRepo, setRemoteRepo] = useState('')
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
+  const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+
+  const [remoteRepo, setRemoteRepo] = useState('')
 
   const uid = window.session?.user?.id || null
 
