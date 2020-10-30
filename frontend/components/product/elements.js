@@ -5,7 +5,15 @@ import { formatPrice } from './utils'
 import styles from './style.module.scss'
 
 export const ProductImage = ({ src }) => {
-  return <Image style={{paddingRight: '2rem'}} src={src} fluid />
+  return (
+    <div className={styles.product__img}>
+      <Image
+        style={{ maxHeight: '400px', width: 'auto', margin: 'auto' }}
+        src={src}
+        fluid
+      />
+    </div>
+  )
 }
 
 export const Total = ({ val }) => {
@@ -19,12 +27,10 @@ export const Total = ({ val }) => {
 
 export const Shipping = ({ deliveryDate, price }) => {
   return (
-    <div className={styles.shipping} >
+    <div className={styles.shipping}>
       <div>
         <span>Shipping (Europe)</span>
-        <span className={styles.shipping__date}>
-          delivered by {deliveryDate}
-        </span>
+        <span className={styles.shipping__date}>delivered by {deliveryDate}</span>
       </div>
       <span className={styles.shipping__cost}>
         {formatPrice({

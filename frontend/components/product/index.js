@@ -71,35 +71,35 @@ const Product = ({
   }
   return (
     <div className={styles.product__grid}>
-        <div className={styles.product__divider}>
-          <ProductImage src={imgUri} />
-        </div>
-        <div className={styles.product__details}>
-          <h2 className={styles.product__title}>{name}</h2>
-          <p>
-            {description + ' '}
-            See full project details{' '}
-            <a href={projectLink} target="_blank">
-              here.
-            </a>
-          </p>
-          <Quantity state={state} dispatch={dispatch} />
-          <Shipping
-            price={10}
-            deliveryDate={new Date(
-              new Date().getTime() + 14 * 86400000,
-            ).toLocaleDateString()}
-          />
-          <Total val={state.price} />
-          <Button
-            fluid
-            primary
-            role="link"
-            onClick={handleClick}
-            disabled={state.loading}
-            content={state.loading || !state.price ? 'Loading' : 'Order'}
-          />
-        </div>
+      <div className={styles.product__divider}>
+        <ProductImage src={imgUri} />
+      </div>
+      <div className={styles.product__details}>
+        <h2 className={styles.product__title}>{name}</h2>
+        <p>
+          {description + ' '}
+          See full project details{' '}
+          <a href={projectLink} target="_blank">
+            here.
+          </a>
+        </p>
+        <Quantity state={state} dispatch={dispatch} />
+        <Shipping
+          price={10}
+          deliveryDate={new Date(
+            new Date().getTime() + 14 * 86400000,
+          ).toLocaleDateString()}
+        />
+        <Total val={state.price} />
+        <Button
+          fluid
+          primary
+          role="link"
+          onClick={handleClick}
+          disabled={state.loading}
+          content={state.loading || !state.price ? 'Loading' : 'Order'}
+        />
+      </div>
     </div>
   )
 }
