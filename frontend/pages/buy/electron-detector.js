@@ -8,7 +8,7 @@ const BuyPage = () => {
   return (
     <Page>
       <Product
-        name="Electron Detector"
+        name="Electron Detector Kit"
         description={
           <>
             <p>
