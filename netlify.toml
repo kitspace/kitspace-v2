@@ -2,9 +2,3 @@
   base="frontend/"
   command="next build && next export"
   publish="out/"
-
-[[redirects]]
-  from = "/"
-  to = "/buy/electron-detector/"
-  status = 302
-  force = true
