@@ -67,6 +67,8 @@ const DropZone = () => {
 }
 
 const Sync = () => {
+  const [loading, setLoading] = useState(false)
+
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
   const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -77,6 +79,8 @@ const Sync = () => {
   const _csrf = window.session._csrf
 
   const handleClick = async () => {
+    setLoading(true)
+
     const clone_addr = remoteRepo || remoteRepoPlaceHolder
     const repo_name = urlToName(clone_addr)
     const endpoint = `${gitea_public_url}/repos/migrate?_csrf=${_csrf}`
@@ -102,7 +106,14 @@ const Sync = () => {
       body: JSON.stringify(giteaOptions),
     })
 
-    console.log(res)
+    if(res.ok) {
+      const body = await res.json()
+      console.log(body)
+      setLoading(false)
+    } else {
+      console.log(res)
+      setLoading(false)
+    }
   }
 
   return (
@@ -119,7 +130,7 @@ const Sync = () => {
             value={remoteRepo}
           />
           <div className={styles.syncButton}>
-            <Button color="green" onClick={handleClick}>
+            <Button color="green" onClick={handleClick} loading={loading} disabled={loading}>
               Sync
             </Button>
           </div>
