@@ -1,12 +1,12 @@
-// TODO: import loadStripe in `Page`, and improve UI for mobile devices.
+// TODO: import loadStripe in `Page`
 import React, { useReducer } from 'react'
 import { string, number } from 'prop-types'
 import { Button } from 'semantic-ui-react'
 // noinspection ES6CheckImport
 import { loadStripe } from '@stripe/stripe-js'
 
-import { Total, Shipping, Quantity, ProductImage } from './elements'
-import { reducer, formatTotalPrice } from './utils'
+import { Total, Quantity, ProductImage } from './elements'
+import { reducer, formatTotalPrice, formatPrice } from './utils'
 import countries from './countries.json'
 import styles from './style.module.scss'
 
@@ -17,6 +17,7 @@ const Product = ({
   imgUri,
   priceId,
   price,
+  shippingName,
   shippingPrice,
   shippingPriceId,
   description,
@@ -78,20 +79,20 @@ const Product = ({
       </div>
       <div className={styles.product__details}>
         <h2 className={styles.product__title}>{name}</h2>
-        <p>
-          {description + ' '}
-          See full project details{' '}
-          <a href={projectLink} target="_blank">
-            here.
-          </a>
-        </p>
+        {description}
         <Quantity state={state} dispatch={dispatch} />
-        <Shipping
-          price={10}
-          deliveryDate={new Date(
-            new Date().getTime() + 14 * 86400000,
-          ).toLocaleDateString()}
-        />
+        <div className={styles.shipping}>
+          <div>
+            <span>{shippingName}</span>
+          </div>
+          <span className={styles.shipping__cost}>
+            {formatPrice({
+              amount: shippingPrice,
+              currency: 'eur',
+              quantity: 1,
+            })}
+          </span>
+        </div>
         <Total val={state.price} />
         <Button
           fluid
@@ -110,9 +111,11 @@ Product.propTypes = {
   name: string,
   imgUri: string,
   price: number,
+  priceId: string,
   shippingPrice: number,
+  shippingPriceId: string,
+  shippingName: string,
   description: string,
-  projectLink: string,
 }
 
 export default Product

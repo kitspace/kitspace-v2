@@ -30,24 +30,6 @@ export const Total = ({ val }) => {
   )
 }
 
-export const Shipping = ({ deliveryDate, price }) => {
-  return (
-    <div className={styles.shipping}>
-      <div>
-        <span>Shipping (Europe)</span>
-        <span className={styles.shipping__date}>delivered by {deliveryDate}</span>
-      </div>
-      <span className={styles.shipping__cost}>
-        {formatPrice({
-          amount: price * 100,
-          currency: 'eur',
-          quantity: 1,
-        })}
-      </span>
-    </div>
-  )
-}
-
 export const Quantity = ({ state, dispatch }) => {
   return (
     <div className={styles.quantity}>
