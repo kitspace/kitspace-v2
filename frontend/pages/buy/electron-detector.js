@@ -9,8 +9,8 @@ const BuyPage = () => {
         name="Electron detector"
         description="A complete kit to make your own Electron Detector."
         imgUri="https://files.stripe.com/links/fl_test_z6eUIKztTPiPOXQHe9EgRVIk"
-        price={30}
-        shippingPrice={10}
+        price={3000}
+        shippingPrice={1000}
         projectLink="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/"
       />
     </Page>
