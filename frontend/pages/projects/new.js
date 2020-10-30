@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Grid, Divider, Input, Button, Modal, Image } from 'semantic-ui-react'
+import { Grid, Divider, Input, Button, Modal} from 'semantic-ui-react'
 import path from 'path'
 
 import styles from './new.module.scss'
