@@ -26,7 +26,7 @@ const BuyPage = () => {
               <a href="https://github.com/ozel/DIY_particle_detector/wiki/Enclosures">
                 wiki
               </a>
-              ) and a 9v battery are not included.
+              ) and a 9V battery are not included.
             </p>
           </>
         }
