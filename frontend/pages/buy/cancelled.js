@@ -8,6 +8,11 @@ export default function CanceledPage() {
     <Page>
       <div className={styles.wrapper}>
         <span className={styles.message}>Your order did not go through :'(</span>
+        <span className={styles.retry}>
+          <a className={styles.link} href="/">
+            try again
+          </a>
+        </span>
       </div>
     </Page>
   )
