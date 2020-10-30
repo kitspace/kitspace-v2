@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, Image, Input } from 'semantic-ui-react'
 
 import { formatPrice } from './utils'
+import styles from './style.module.scss'
 
 export const ProductImage = ({ src }) => {
   return <Image src={src} fluid />
@@ -9,15 +10,7 @@ export const ProductImage = ({ src }) => {
 
 export const Total = ({ val }) => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingBottom: '1rem',
-        marginBottom: '1rem',
-      }}
-    >
+    <div className={styles.total}>
       <b>Total: </b>
       <b>{val}</b>
     </div>
@@ -26,23 +19,14 @@ export const Total = ({ val }) => {
 
 export const Shipping = ({ deliveryDate, price }) => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: 'solid #DFDFDF 1px',
-        paddingBottom: '1rem',
-        marginBottom: '1rem',
-      }}
-    >
+    <div className={styles.shipping} >
       <div>
         <span>Shipping (Europe)</span>
-        <span style={{ display: 'block', textEmphasis: 'italic', color: 'grey' }}>
+        <span className={styles.shipping__date}>
           delivered by {deliveryDate}
         </span>
       </div>
-      <span style={{ display: 'block' }}>
+      <span className={styles.shipping__cost}>
         {formatPrice({
           amount: price * 100,
           currency: 'eur',
@@ -55,18 +39,9 @@ export const Shipping = ({ deliveryDate, price }) => {
 
 export const Quantity = ({ state, dispatch }) => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: 'solid #DFDFDF 1px',
-        paddingBottom: '1rem',
-        marginBottom: '1rem',
-      }}
-    >
-      <span style={{ display: 'block', paddingRight: '1rem' }}>Quantity:</span>
-      <div style={{ display: 'inline-flex' }}>
+    <div className={styles.quantity}>
+      <span className={styles.quantity__label}>Quantity:</span>
+      <div className={styles.quantity__controllers}>
         <Button
           basic
           className="increment-btn"
@@ -91,13 +66,13 @@ export const Quantity = ({ state, dispatch }) => {
           +
         </Button>
       </div>
-      <p style={{ display: 'inline', paddingLeft: '1rem' }}>
+      <span className={styles.quantity__total}>
         {formatPrice({
           amount: state.basePrice,
           currency: state.currency,
           quantity: state.quantity,
         })}
-      </p>
+      </span>
     </div>
   )
 }
