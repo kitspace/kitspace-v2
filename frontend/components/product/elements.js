@@ -5,7 +5,7 @@ import { formatPrice } from './utils'
 import styles from './style.module.scss'
 
 export const ProductImage = ({ src }) => {
-  return <Image src={src} fluid />
+  return <Image style={{paddingRight: '2rem'}} src={src} fluid />
 }
 
 export const Total = ({ val }) => {

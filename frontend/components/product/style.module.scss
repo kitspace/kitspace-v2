@@ -1,10 +1,20 @@
 $border-color: #DFDFDF;
 $border-width: 1px;
 
-.light-segment {
+.product__grid {
   margin-top: 3rem;
-  border: none;
-  box-shadow: none;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+}
+.product__divider {
+  border-right: solid $border-color $border-width;
+}
+.product__title {
+  text-transform: capitalize;
+}
+
+.product__details {
+  padding-left: 3rem;
 }
 
 .total {

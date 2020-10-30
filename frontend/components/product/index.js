@@ -1,13 +1,14 @@
 // TODO: import loadStripe in `Page`, and improve UI for mobile devices.
 import React, { useReducer } from 'react'
 import { string, number } from 'prop-types'
-import { Button, Grid, Segment } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 // noinspection ES6CheckImport
 import { loadStripe } from '@stripe/stripe-js'
 
 import { Total, Shipping, Quantity, ProductImage } from './elements'
 import { reducer, formatTotalPrice } from './utils'
 import countries from './countries.json'
+import styles from './style.module.scss'
 
 const stripePromise = loadStripe('pk_test_Z1JtcYjtxxzggl4ExcHM2M29')
 
@@ -69,13 +70,12 @@ const Product = ({
     }
   }
   return (
-    <Segment style={{ border: 'none', boxShadow: 'none' }}>
-      <Grid columns={2}>
-        <Grid.Column style={{ borderRight: 'solid #DFDFDF 1px' }}>
+    <div className={styles.product__grid}>
+        <div className={styles.product__divider}>
           <ProductImage src={imgUri} />
-        </Grid.Column>
-        <Grid.Column style={{ paddingLeft: '3rem' }}>
-          <h2 style={{ textTransform: 'capitalize' }}>{name}</h2>
+        </div>
+        <div className={styles.product__details}>
+          <h2 className={styles.product__title}>{name}</h2>
           <p>
             {description + ' '}
             See full project details{' '}
@@ -99,9 +99,8 @@ const Product = ({
             disabled={state.loading}
             content={state.loading || !state.price ? 'Loading' : 'Order'}
           />
-        </Grid.Column>
-      </Grid>
-    </Segment>
+        </div>
+    </div>
   )
 }
 
