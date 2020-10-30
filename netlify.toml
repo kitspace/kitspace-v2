@@ -7,4 +7,4 @@
   from = "/"
   to = "/buy/electron-detector/"
   status = 302
-  force = false
+  force = true
