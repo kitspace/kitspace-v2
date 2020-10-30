@@ -32,10 +32,10 @@ const BuyPage = () => {
         }
         imgUri="https://files.stripe.com/links/fl_test_85nflsKKmm8PBTGZjt98zJSn"
         price={3000}
-        priceId="price_1HhIbjI6rpeFFqzwRGjSR0Z2"
+        priceId="price_1Hi40TI6rpeFFqzwPHRltaPl"
         shippingPrice={1500}
         shippingName="Worldwide Shipping"
-        shippingPriceId="price_1Hi1ItI6rpeFFqzw0Db3BgHh"
+        shippingPriceId="price_1Hi40LI6rpeFFqzwKKdjjpeK"
       />
     </Page>
   )

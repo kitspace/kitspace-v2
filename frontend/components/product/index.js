@@ -10,7 +10,7 @@ import { reducer, formatTotalPrice, formatPrice } from './utils'
 import countries from './countries.json'
 import styles from './style.module.scss'
 
-const stripePromise = loadStripe('pk_test_Z1JtcYjtxxzggl4ExcHM2M29')
+const stripePromise = loadStripe('pk_live_jYJD5bwTmzCMJuIKwK9rIIpk')
 
 const Product = ({
   name,
