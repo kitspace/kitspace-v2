@@ -1,13 +1,9 @@
 import React from 'react'
-import Link from 'next/link'
-import superagent from 'superagent'
 import { Grid, Divider, Input, Button } from 'semantic-ui-react'
 import path from 'path'
 
-import Head from '../../components/Head'
-import TitleBar from '../../components/TitleBar'
-
 import styles from './new.module.scss'
+import { Page } from '../../components/Page'
 
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -18,9 +14,7 @@ function New({ user, _csrf }) {
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
   const uid = user?.id
   return (
-    <>
-      <Head />
-      <TitleBar route="/projects/new" />
+    <Page title="new" reqSignIn>
       <div
         className={`${styles.projectsNew} ui two column stackable center aligned grid`}
       >
@@ -33,7 +27,7 @@ function New({ user, _csrf }) {
                   className={styles.urlInput}
                   style={{ maxHeight: 37 }}
                   fluid
-                  onChange={(e) => setRemoteRepo(e.target.value)}
+                  onChange={e => setRemoteRepo(e.target.value)}
                   placeholder={remoteRepoPlaceHolder}
                   value={remoteRepo}
                 />
@@ -87,13 +81,13 @@ function New({ user, _csrf }) {
                 mozdirectory=""
                 id="uploadInput"
                 style={{ display: 'none' }}
-                onChange={(e) => console.log(e.target.files)}
+                onChange={e => console.log(e.target.files)}
               />
             </div>
           </Grid.Column>
         </Grid.Row>
       </div>
-    </>
+    </Page>
   )
 }
 
