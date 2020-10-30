@@ -294,15 +294,17 @@ const Checkout = () => {
                   <Table.Cell colspan="2">
                     <div>Shipping (Europe)</div>
                     <div style={{ textEmphasis: 'italic', color: 'grey' }}>
-                      delivered by{' '}
-                      {new Date(
-                        new Date().getTime() + 14 * 86400000,
-                      ).toLocaleDateString(undefined, {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      <div>shipping to EU, EEA, GB or Switzerland </div>
+                      <div>
+                        delivered by {new Date(
+                          new Date().getTime() + 14 * 86400000,
+                        ).toLocaleDateString(undefined, {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </div>
                     </div>
                   </Table.Cell>
                   <Table.Cell>
