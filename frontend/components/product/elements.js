@@ -8,7 +8,12 @@ export const ProductImage = ({ src }) => {
   return (
     <div className={styles.product__img}>
       <Image
-        style={{ maxHeight: '400px', width: 'auto', margin: 'auto' }}
+        style={{
+          maxHeight: '400px',
+          width: 'auto',
+          margin: 'auto',
+          backgroundColor: '#525252',
+        }}
         src={src}
         fluid
       />
