@@ -101,6 +101,9 @@ function SiteMenuItems(props) {
       >
         {'1-click BOM'}
       </Menu.Item>
+      <Menu.Item as="a" href="/" active={true}>
+        {'Shop'}
+      </Menu.Item>
     </>
   )
 }
