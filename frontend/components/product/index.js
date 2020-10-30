@@ -15,20 +15,22 @@ const stripePromise = loadStripe('pk_test_Z1JtcYjtxxzggl4ExcHM2M29')
 const Product = ({
   name,
   imgUri,
+  priceId,
   price,
   shippingPrice,
+  shippingPriceId,
   description,
   projectLink,
 }) => {
   const [state, dispatch] = useReducer(
     reducer,
     {
-      priceId: 'price_1HhIbjI6rpeFFqzwRGjSR0Z2',
+      priceId,
       basePrice: price,
       currency: 'eur',
       quantity: 1,
-      shippingPriceId: 'price_1HhIekI6rpeFFqzwiaMFMUXv',
-      shippingPrice: shippingPrice,
+      shippingPriceId,
+      shippingPrice,
       price: formatTotalPrice({
         amount: price,
         currency: 'eur',
