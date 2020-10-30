@@ -5,6 +5,6 @@
 
 [[redirects]]
   from = "/"
-  to = "/buy/electron-detector-parts-only/"
+  to = "/buy/electron-detector/"
   status = 302
   force = false
