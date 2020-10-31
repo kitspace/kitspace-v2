@@ -217,7 +217,7 @@ const Checkout = () => {
           }}
         >
           <div>
-            <h1>Electron Detector Kit</h1>
+            <h1>Electron Detector Kit (parts only)</h1>
             <Image
               alt="Photo of the electron detector kit"
               src="https://files.stripe.com/links/fl_test_dPLbmgEZs94lABQLQm53IXBF"
@@ -230,7 +230,7 @@ const Checkout = () => {
               <a href="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/">
                 electron-detector
               </a>
-              . The PCB, battery and metal enclosure are not included in this kit.
+              . The circuit board, battery and metal enclosure are not included in this kit.
             </p>
           </div>
 
