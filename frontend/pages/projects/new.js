@@ -1,10 +1,23 @@
 import React, { useState, useCallback } from 'react'
-import { Grid, Divider, Input, Button, Modal } from 'semantic-ui-react'
+import {
+  Grid,
+  Divider,
+  Input,
+  Button,
+  Modal,
+  Segment,
+  Form,
+} from 'semantic-ui-react'
 import path from 'path'
 import { useDropzone } from 'react-dropzone'
 
 import styles from './new.module.scss'
 import { Page } from '../../components/Page'
+import useForm from '../../hooks/useForm'
+import { ProjectUploadForm } from '../../models/ProjectUploadForm'
+
+const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+
 
 const New = () => {
   return (
@@ -26,6 +39,14 @@ const New = () => {
 
 const UploadModal = () => {
   const [open, setOpen] = useState(false)
+  const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
+    ProjectUploadForm,
+  )
+
+  const submit = async e => {
+    e.preventDefault()
+    console.log(form)
+  }
 
   return (
     <Modal
@@ -43,12 +64,39 @@ const UploadModal = () => {
     >
       <Modal.Header>Upload design files</Modal.Header>
       <Modal.Content>
-        <DropZone />
+        <Form>
+          <Segment>
+            <Form.Field
+              fluid
+              required
+              control={Input}
+              label="Project name"
+              placeholder="Project name"
+              name="name"
+              value={form.name || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('name')}
+            />
+            <Form.Field
+              fluid
+              control={Input}
+              label="External link"
+              placeholder="e.g., www.myblog.com/awesome-project"
+              name="link"
+              value={form.link || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('link')}
+            />
+          </Segment>
+          <Segment>
+            <DropZone />
+          </Segment>
+        </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button onClick={() => setOpen(false)}>Cancel</Button>
-        <Button onClick={() => setOpen(false)} positive>
-          Ok
+        <Button  onClick={() => setOpen(false)}>Cancel</Button>
+        <Button disabled={!isValid} onClick={submit} positive>
+          Submit
         </Button>
       </Modal.Actions>
     </Modal>
@@ -97,8 +145,6 @@ const Sync = () => {
   const [loading, setLoading] = useState(false)
 
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
-  const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-
   const [remoteRepo, setRemoteRepo] = useState('')
 
   // TODO: the auth context should return the user not only the current authentication state.
@@ -133,7 +179,7 @@ const Sync = () => {
       body: JSON.stringify(giteaOptions),
     })
 
-    if(res.ok) {
+    if (res.ok) {
       const body = await res.json()
       console.log(body)
       setLoading(false)
@@ -157,7 +203,12 @@ const Sync = () => {
             value={remoteRepo}
           />
           <div className={styles.syncButton}>
-            <Button color="green" onClick={handleClick} loading={loading} disabled={loading}>
+            <Button
+              color="green"
+              onClick={handleClick}
+              loading={loading}
+              disabled={loading}
+            >
               Sync
             </Button>
           </div>
