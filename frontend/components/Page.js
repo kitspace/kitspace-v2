@@ -37,12 +37,7 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 export const Page = props => {
   return (
     <AuthProvider>
-      <Head
-        description={props.head?.description}
-        ogImage={props.head?.ogImage}
-        title={props.head?.title}
-        url={props.head?.url}
-      >
+      <Head>
         <title>{props.title}</title>
       </Head>
       <NavBar />
