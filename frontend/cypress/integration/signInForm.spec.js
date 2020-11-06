@@ -3,30 +3,25 @@ import faker from 'faker'
 import { SignInForm } from '../../models/SignInForm'
 
 describe('Log in form validation', () => {
-  before(() => {
-    cy.visit('/login')
-    cy.signOut()
-  })
-
   beforeEach(() => {
-    cy.visit('/login')
     cy.signOut()
+    cy.visit('/login')
   })
 
   afterEach(() => cy.get('button').contains('Login').should('be.disabled'))
 
-  it('routes to sign in form based on params', () => {
+  it('should route to sign in form based on params', () => {
     // The form is rendered on screen.
     cy.visit('/login')
     cy.contains('Log in')
   })
 
-  it('has the proper fields', () => {
+  it('should have the proper fields', () => {
     // The form contains all the fields from the `SingUpForm` model.
     cy.hasProperFields(SignInForm)
   })
 
-  it('validates username field', () => {
+  it('should validate username field', () => {
     // Try different invalid usernames.
     const invalidUsernames = ['abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
 
@@ -59,7 +54,7 @@ describe('Log in form submission', () => {
     cy.signOut()
   })
 
-  it('submits a valid form', () => {
+  it('should display username in homepage on submitting a valid form', () => {
     // create user and log him in.
     cy.createUser(username, email, password)
     cy.stubSignInReq(true, { LoggedInSuccessfully: true })
@@ -76,7 +71,7 @@ describe('Log in form submission', () => {
     cy.window().its('session.user.username').should('eq', username)
   })
 
-  it('submits form with wrong username', () => {
+  it('should display error message on submitting form with wrong username', () => {
     cy.stubSignInReq(false, {
       error: 'Not Found',
       message: 'Wrong username or password.',
@@ -85,7 +80,7 @@ describe('Log in form submission', () => {
     cy.get('.negative').should('include.text', 'Wrong username or password')
   })
 
-  it('submits form with wrong username', () => {
+  it('should display error message on submitting form with wrong username', () => {
     cy.stubSignInReq(false, {
       error: 'Not Found',
       message: 'Wrong username or password.',
@@ -94,7 +89,7 @@ describe('Log in form submission', () => {
     cy.get('.negative').should('include.text', 'Wrong username or password')
   })
 
-  it('submits form for inactive account', () => {
+  it('should display error message on submitting form for inactive account', () => {
     cy.stubSignInReq(false, {
       error: 'ActivationRequired',
       message: 'Activate your account.',
@@ -103,7 +98,7 @@ describe('Log in form submission', () => {
     cy.get('.negative').should('include.text', 'Activate your account.')
   })
 
-  it('submits form for prohibited user', () => {
+  it('should display error message on submitting form for prohibited user', () => {
     cy.stubSignInReq(false, {
       error: 'Prohibited',
       message: 'Prohibited login.',

@@ -20,18 +20,18 @@ describe('Sign up form validation', () => {
     cy.get('button').contains('Sign up').should('be.disabled')
   })
 
-  it('routes to sign up form based on params', () => {
+  it('should route to sign up form based on params', () => {
     // The form is rendered on screen.
     cy.visit('/login?sign_up')
     cy.contains('Create a new account')
   })
 
-  it('has the proper fields', () => {
+  it('should have the proper fields', () => {
     // The form contains all the fields from the `SingUpForm` model.
     cy.hasProperFields(SignUpForm)
   })
 
-  it('validates username field', () => {
+  it('should display error message on using invalid username', () => {
     // Try different invalid usernames.
     const invalidUsernames = [
       'a_b',
@@ -55,7 +55,7 @@ describe('Sign up form validation', () => {
     })
   })
 
-  it('validates email field', () => {
+  it('should display error message on using invalid email', () => {
     // Try different invalid emails.
     const invalidEmails = ['abc ', 'abc@', ' ', '^', 'www.google.com']
 
@@ -74,7 +74,7 @@ describe('Sign up form validation', () => {
     })
   })
 
-  it('validates password field', () => {
+  it('should display error message on using invalid password', () => {
     // Try different invalid password.
     cy.get('input[name=username]').clear().type('someone')
     cy.get('input[name=email]').clear().type('someone@example.com')
@@ -103,7 +103,7 @@ describe('Sign up form submission', () => {
     cy.signOut()
   })
 
-  it('submits a valid form', () => {
+  it('should display success message on submitting a valid form', () => {
     cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
 
     cy.signUp(username, email, password)
@@ -125,7 +125,7 @@ describe('Sign up form submission', () => {
     cy.get('tbody').get('tr').contains(username).should('be.visible')
   })
 
-  it('submits a from with used username', () => {
+  it('should display error message on submitting a from with used username', () => {
     cy.stubSignUpReq(false, { error: 'Conflict', message: 'User already exists.' })
 
     cy.signUp(username, email, password)
@@ -140,7 +140,7 @@ describe('Sign up form submission', () => {
     cy.get('@message').should('include.text', 'User already exists.')
   })
 
-  it('submits a from with used email', () => {
+  it('should display error message on submitting a from with used email', () => {
     cy.stubSignUpReq(false, { error: 'Conflict', message: 'Email already used.' })
 
     cy.signUp(username, email, password)
@@ -155,7 +155,7 @@ describe('Sign up form submission', () => {
     cy.get('@message').should('include.text', 'Email already used.')
   })
 
-  it('submits a from with reserved username', () => {
+  it('should display error message on submitting a from with reserved username', () => {
     cy.stubSignUpReq(false, { error: 'Conflict', message: 'Name is reserved.' })
 
     const reservedNames = ['admin', 'user'] // Not a full list of Gitea reserved names.

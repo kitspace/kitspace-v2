@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-describe('Validates authentication redirects', () => {
+describe('It validates authentication redirects', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
@@ -9,13 +9,13 @@ describe('Validates authentication redirects', () => {
     cy.visit('/')
     cy.createUser(username, email, password)
   })
-  it("Redirects unauthenticated users to '/login' when accessing reqSignIn page", () => {
+  it("should redirect unauthenticated users to '/login' when accessing reqSignIn page", () => {
     // `/project/new` is marked as `reqSignIn`.
     cy.visit('/projects/new')
     cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
-  it('Redirects authenticated users to homepage when accessing reqSignOut page', () => {
+  it('should redirects authenticated users to homepage when accessing reqSignOut page', () => {
     // sign the user in.
     cy.visit('/login')
     cy.stubSignInReq(true, { LoggedInSuccessfully: true })

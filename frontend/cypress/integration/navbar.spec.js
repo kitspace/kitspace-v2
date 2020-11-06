@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-describe('Validates `Add Project` behavior', () => {
+describe('It validates `Add Project` behavior', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
@@ -14,7 +14,7 @@ describe('Validates `Add Project` behavior', () => {
     cy.signOut()
   })
 
-  it('unauthenticated user', () => {
+  it('should redirect unauthenticated user to /login?redirect=/projects/new', () => {
     // The user is unauthenticated
     cy.window().its('session.user').should('eq', null)
 
@@ -24,7 +24,7 @@ describe('Validates `Add Project` behavior', () => {
     cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
-  it('authenticated user', () => {
+  it('should redirect authenticated user to /projects/new', () => {
     // sign the user in.
     cy.visit('/login')
     cy.stubSignInReq(true, { LoggedInSuccessfully: true })
@@ -36,7 +36,7 @@ describe('Validates `Add Project` behavior', () => {
   })
 })
 
-describe('Validates redirects after login', () => {
+describe('It validates redirects after login', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
@@ -49,7 +49,7 @@ describe('Validates redirects after login', () => {
   beforeEach(() => {
     cy.signOut()
   })
-  it('Redirect to homepage if there is no redirect query', () => {
+  it('should redirect to homepage if there is no redirect query', () => {
     cy.visit('/login')
 
     // sign the user in.
@@ -60,7 +60,7 @@ describe('Validates redirects after login', () => {
     cy.url().should('eq', 'http://kitspace.test:3000/')
   })
 
-  it('Redirect to correct page if there is a redirect query', () => {
+  it('should redirect to correct page if there is a redirect query', () => {
     const pageClickFrom = 'bom-builder'
 
     cy.visit(pageClickFrom)
