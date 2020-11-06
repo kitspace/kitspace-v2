@@ -86,7 +86,7 @@ export default function () {
           />
           <Form.Field
             control={Checkbox}
-            label="Remember ME"
+            label="Remember me"
             name="remember"
             onChange={onChange}
           />
