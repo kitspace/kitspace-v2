@@ -179,6 +179,16 @@ const UploadModal = () => {
 
 const DropZone = () => {
   const onDrop = useCallback(acceptedFiles => {
+    acceptedFiles.forEach(file => {
+      const reader = new FileReader()
+
+      reader.onload = () => {
+        const binaryStr = reader.result
+        // TODO: get the sha hash of the file
+        console.log(binaryStr)
+      }
+      reader.readAsArrayBuffer(file)
+    })
     console.log(acceptedFiles)
   }, [])
 
