@@ -13,14 +13,14 @@ export default function (schema) {
     }))
   }
   const { error } = schema.validate({ ...form })
-  const isValid = error === undefined
+  const isValid = error == null
 
   const errorDetails = error?.details[0]
   const errors = !isValid
     ? { field: errorDetails.context.key, msg: errorDetails.message }
     : {}
 
-  const isErrorField = field => errors.field === field && form[field] !== undefined
+  const isErrorField = field => errors.field === field && form[field] != null
 
   const formatErrorPrompt = field => {
     return isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null

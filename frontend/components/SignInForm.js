@@ -22,8 +22,8 @@ export default function () {
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(SignInForm)
   const [apiResponse, setApiResponse] = useState({})
 
-  const hasApiError = apiResponse.error !== undefined
-  const isSuccessfulLogin = apiResponse.login !== undefined
+  const hasApiError = apiResponse.error != null
+  const isSuccessfulLogin = apiResponse.login != null
 
   const submit = async () => {
     const response = await fetch(endpoint, {

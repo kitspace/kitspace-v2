@@ -23,7 +23,7 @@ export const NavBar = () => {
 }
 
 function BigBar({ isProjectRoute, isSubmitRoute }) {
-  /* This is the Navbar render on big screens */
+  /* This is the Navbar rendered on big screens */
   return (
     <>
       <div className={styles.bigSiteMenu}>
