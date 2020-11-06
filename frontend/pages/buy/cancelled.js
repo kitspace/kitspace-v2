@@ -3,9 +3,7 @@ import { Container } from 'semantic-ui-react'
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
 
-
-export default function CanceledPage({ user, _csrf }) {
-  const uid = user?.id
+export default function CanceledPage({ _csrf }) {
   return (
     <>
       <Head />
@@ -48,7 +46,6 @@ function getSession(req) {
 
 CanceledPage.getInitialProps = async ({ req, query }) => {
   const session = getSession(req)
-  const cookie = req?.headers?.cookie
   const _csrf = session._csrf
 
   return {

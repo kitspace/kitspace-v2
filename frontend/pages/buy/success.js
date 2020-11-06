@@ -3,9 +3,7 @@ import { Container } from 'semantic-ui-react'
 import Head from '../../components/Head'
 import TitleBar from '../../components/TitleBar'
 
-
 export default function SuccessPage({ user, _csrf }) {
-  const uid = user?.id
   return (
     <>
       <Head />

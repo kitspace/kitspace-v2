@@ -1,11 +1,5 @@
 import React, { useReducer } from 'react'
-import {
-  Container,
-  Input,
-  Button,
-  Image,
-  Table,
-} from 'semantic-ui-react'
+import { Container, Input, Button, Image, Table } from 'semantic-ui-react'
 import { loadStripe } from '@stripe/stripe-js'
 
 import Head from '../../components/Head'
