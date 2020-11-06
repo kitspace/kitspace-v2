@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { Grid, Divider, Input, Button } from 'semantic-ui-react'
+import { Grid, Divider, Input, Button, Modal } from 'semantic-ui-react'
 import path from 'path'
 import { useDropzone } from 'react-dropzone'
 
@@ -8,7 +8,7 @@ import { Page } from '../../components/Page'
 
 const New = () => {
   return (
-    <Page title="new" reqSignIn>
+    <Page title="new">
       <div
         className={`${styles.projectsNew} ui two column stackable center aligned grid`}
       >
@@ -17,10 +17,41 @@ const New = () => {
           <Divider className={styles.divider} vertical>
             Or
           </Divider>
-          <DropZone />
+          <UploadModal />
         </Grid.Row>
       </div>
     </Page>
+  )
+}
+
+const UploadModal = () => {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Modal
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
+      open={open}
+      trigger={
+        <Grid.Column className={styles.optionColumn}>
+          <div>
+            <p>Upload design files</p>
+            <Button content="Upload" color="green" name="upload" />
+          </div>
+        </Grid.Column>
+      }
+    >
+      <Modal.Header>Upload design files</Modal.Header>
+      <Modal.Content>
+        <DropZone />
+      </Modal.Content>
+      <Modal.Actions>
+        <Button onClick={() => setOpen(false)}>Cancel</Button>
+        <Button onClick={() => setOpen(false)} positive>
+          Ok
+        </Button>
+      </Modal.Actions>
+    </Modal>
   )
 }
 
@@ -41,28 +72,24 @@ const DropZone = () => {
   ))
 
   return (
-    <Grid.Column className={styles.optionColumn}>
-      <section style={{}}>
-        <div
-          {...getRootProps({ className: 'dropzone' })}
-          style={{ margin: '2rem 0' }}
-        >
-          <input {...getInputProps()} />
-          <p>Drop files here, or click to select files</p>
-          <Button content="Open file dialog" onClick={open} />
-        </div>
-        <aside
-          style={
-            acceptedFiles.length === 0
-              ? { display: 'none' }
-              : { display: 'initial' }
-          }
-        >
-          <h4>Files</h4>
-          <ul>{files}</ul>
-        </aside>
-      </section>
-    </Grid.Column>
+    <section style={{}}>
+      <div
+        {...getRootProps({ className: 'dropzone' })}
+        style={{ margin: '2rem 0' }}
+      >
+        <input {...getInputProps()} />
+        <p>Drop files here, or click to select files</p>
+        <Button content="Open file dialog" onClick={open} />
+      </div>
+      <aside
+        style={
+          acceptedFiles.length === 0 ? { display: 'none' } : { display: 'initial' }
+        }
+      >
+        <h4>Files</h4>
+        <ul>{files}</ul>
+      </aside>
+    </section>
   )
 }
 
@@ -83,7 +110,7 @@ const Sync = () => {
 
     const clone_addr = remoteRepo || remoteRepoPlaceHolder
     const repo_name = urlToName(clone_addr)
-    const endpoint = `${gitea_public_url}/repos/migrate?_csrf=${_csrf}`
+    const endpoint = `${gitea_public_url}/repos/migrate?_csrf= ${_csrf}`
     const giteaOptions = {
       clone_addr,
       uid,
