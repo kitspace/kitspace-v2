@@ -43,9 +43,7 @@ const UploadModal = () => {
     ProjectUploadForm,
   )
 
-  const submit = async e => {
-    e.preventDefault()
-
+  const createRepo = async () => {
     const endpoint = `${giteaApiUrl}/user/repos?_csrf=${form._csrf}`
     const giteaOptions = {
       _csrf: form._csrf,
@@ -64,13 +62,54 @@ const UploadModal = () => {
       method: 'POST',
       credentials: 'include',
       mode: 'cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(giteaOptions)
-
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(giteaOptions),
     })
 
     const body = await res.json()
     console.log(body)
+
+    return res.ok ? body['full_name'] : ''
+  }
+
+  const uploadFile = async (repo, path, content) => {
+    const user = window.session.user
+    const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${form._csrf}`
+
+    const reqBody = {
+      author: {
+        email: user.email,
+        name: user.login,
+      },
+      branch: 'master',
+      committer: {
+        email: user.email,
+        name: user.login,
+      },
+      content: content,
+      message: 'my cool commit',
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reqBody),
+    })
+
+    const body = await res.json()
+    console.log(body)
+
+    return res.ok
+  }
+
+  const submit = async e => {
+    e.preventDefault()
+    const repoName = await createRepo()
+    const hasUploadedFile = await uploadFile(repoName, 'file', 'some markdown')
+    console.log(repoName)
+    console.log(hasUploadedFile)
   }
 
   return (
