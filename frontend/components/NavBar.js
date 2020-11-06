@@ -78,17 +78,11 @@ function SmallBar({ isProjectRoute, isSubmitRoute }) {
 }
 
 function AddProjectButton() {
-  const { isAuthenticated } = useContext(AuthContext)
   const { push, pathname } = useRouter()
 
   const onClick = async e => {
     e.preventDefault()
-
-    if (isAuthenticated) {
-      await push('/projects/new')
-    } else {
-      await push('/login')
-    }
+    await push('/projects/new')
   }
 
   return pathname !== '/login' ? (

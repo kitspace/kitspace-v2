@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { string, object, bool } from 'prop-types'
 
 import Head from './Head'
@@ -8,14 +8,14 @@ import AuthProvider from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
-  const { push } = useRouter()
+  const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
     if (reqSignIn && !isAuthenticated) {
-      push('/login').then()
+      push(`/login?redirect=${pathname}`).then()
     } else if (reqSignOut && isAuthenticated) {
       push('/').then()
     } else {

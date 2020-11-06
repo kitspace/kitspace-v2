@@ -12,7 +12,7 @@ describe('Validates authentication redirects', () => {
   it("Redirects unauthenticated users to '/login' when accessing reqSignIn page", () => {
     // `/project/new` is marked as `reqSignIn`.
     cy.visit('/projects/new')
-    cy.url().should('eq', 'http://kitspace.test:3000/login')
+    cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
   it('Redirects authenticated users to homepage when accessing reqSignOut page', () => {

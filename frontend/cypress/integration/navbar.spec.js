@@ -19,8 +19,9 @@ describe('Validates `Add Project` behavior', () => {
     cy.window().its('session.user').should('eq', null)
 
     // Clicking `Add Project` redirects to the login page.
+    // and adds redirect query to `/projects/new/`
     cy.get('#add_project').click()
-    cy.url().should('eq', 'http://kitspace.test:3000/login')
+    cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
   it('authenticated user', () => {
