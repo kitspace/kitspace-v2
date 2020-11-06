@@ -215,9 +215,7 @@ function LogoutButton() {
     })
 
     if (response.ok) {
-      if (router.pathname !== '/') {
-        await router.push('/')
-      }
+      await router.push('/login')
       router.reload()
     }
   }
