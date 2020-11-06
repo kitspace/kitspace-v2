@@ -7,6 +7,7 @@ import {
   Modal,
   Segment,
   Form,
+  TextArea,
 } from 'semantic-ui-react'
 import path from 'path'
 import { useDropzone } from 'react-dropzone'
@@ -17,7 +18,6 @@ import useForm from '../../hooks/useForm'
 import { ProjectUploadForm } from '../../models/ProjectUploadForm'
 
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-
 
 const New = () => {
   return (
@@ -45,7 +45,43 @@ const UploadModal = () => {
 
   const submit = async e => {
     e.preventDefault()
-    console.log(form)
+
+    const endpoint = `${process.env.KITSPACE_GITEA_URL}/repo/create`
+    const giteaOptions = {
+      _csrf: form._csrf,
+      uid: window.session?.user.id,
+      repo_name: form.name,
+      description: form.description,
+      repo_template: '',
+      issue_labels: '',
+      gitignores: '',
+      license: 'MIT',
+      readme: 'Default',
+      auto_init: true,
+      default_branch: 'master',
+    }
+
+    const request = new XMLHttpRequest()
+    request.withCredentials = true
+
+    let params = ''
+    for (const option in giteaOptions) {
+      if (params === '') {
+        params = `${option}=${giteaOptions[option]}`
+      } else {
+        params = `${params}&${option}=${giteaOptions[option]}`
+      }
+    }
+    request.open('POST', endpoint, true)
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+
+    request.onreadystatechange =  ()  => {
+      if (request.readyState === 4 && request.status === 200) {
+        console.log(request)
+      }
+    }
+    request.send(params)
+    console.log(giteaOptions)
   }
 
   return (
@@ -78,6 +114,16 @@ const UploadModal = () => {
               error={formatErrorPrompt('name')}
             />
             <Form.Field
+              required
+              control={TextArea}
+              label="Project description"
+              placeholder="Project description"
+              name="description"
+              value={form.description || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('description')}
+            />
+            <Form.Field
               fluid
               control={Input}
               label="External link"
@@ -94,7 +140,7 @@ const UploadModal = () => {
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button  onClick={() => setOpen(false)}>Cancel</Button>
+        <Button onClick={() => setOpen(false)}>Cancel</Button>
         <Button disabled={!isValid} onClick={submit} positive>
           Submit
         </Button>
