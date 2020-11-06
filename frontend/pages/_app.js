@@ -20,6 +20,7 @@ import 'semantic-ui-css/components/segment.min.css'
 import 'semantic-ui-css/components/form.min.css'
 import 'semantic-ui-css/components/checkbox.min.css'
 import 'semantic-ui-css/components/header.min.css'
+import 'semantic-ui-css/components/loader.min.css'
 
 
 import './_app.scss'
