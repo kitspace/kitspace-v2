@@ -83,11 +83,11 @@ const UploadModal = () => {
       },
       branch: 'master',
       committer: {
-        email: user.email,
-        name: user.login,
+        email: 'admins@kitspace.org',
+        name: 'Kitspace',
       },
-      content: content,
-      message: 'my cool commit',
+      content: btoa(content),
+      message: `Automated commit on behalf of ${user.login}(${user.email})`,
     }
 
     const res = await fetch(endpoint, {
@@ -107,7 +107,7 @@ const UploadModal = () => {
   const submit = async e => {
     e.preventDefault()
     const repoName = await createRepo()
-    const hasUploadedFile = await uploadFile(repoName, 'file', 'some markdown')
+    const hasUploadedFile = await uploadFile(repoName, 'readme.md', '# some markdown')
     console.log(repoName)
     console.log(hasUploadedFile)
   }
