@@ -9,7 +9,6 @@ import {
   Form,
   TextArea,
 } from 'semantic-ui-react'
-import path from 'path'
 import { useDropzone } from 'react-dropzone'
 
 import styles from './new.module.scss'
@@ -17,8 +16,7 @@ import { Page } from '../../components/Page'
 import useForm from '../../hooks/useForm'
 import { ProjectUploadForm } from '../../models/ProjectUploadForm'
 import UploadContextProvider, { UploadContext } from '../../contexts/UploadContext'
-
-const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+import { createRepo, migrateRepo } from './_giteaApi'
 
 const New = () => {
   return (
@@ -48,45 +46,10 @@ const UploadModal = () => {
   )
   const { uploadFile } = useContext(UploadContext)
 
-  /**
-   * Creates a new public repo with the name and description of the
-   * project entered in the form
-   * @return repo name or empty string in case of failure
-   * @returns {Promise<*|string>}
-   */
-  const createRepo = async () => {
-    const endpoint = `${giteaApiUrl}/user/repos?_csrf=${form._csrf}`
-    const giteaOptions = {
-      _csrf: form._csrf,
-      name: form.name,
-      description: form.description,
-      repo_template: '',
-      issue_labels: '',
-      gitignores: '',
-      license: 'MIT',
-      readme: 'Default',
-      auto_init: true,
-      private: false,
-      default_branch: 'master',
-    }
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      credentials: 'include',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(giteaOptions),
-    })
-
-    const body = await res.json()
-    console.log(body)
-
-    return res.ok ? body['full_name'] : ''
-  }
-
   const submit = async e => {
     setLoading(true)
     e.preventDefault()
-    const repo = await createRepo()
+    const repo = await createRepo(form.name, form.description, form._csrf)
     const path = 'readme.md'
     const content = '# some markdown'
 
@@ -223,38 +186,10 @@ const Sync = () => {
 
   const handleClick = async () => {
     setLoading(true)
+    const repo = remoteRepo || remoteRepoPlaceHolder
+    const migrateSuccessfully = await migrateRepo(repo, uid, _csrf)
 
-    const clone_addr = remoteRepo || remoteRepoPlaceHolder
-    const repo_name = urlToName(clone_addr)
-    const endpoint = `${giteaApiUrl}/repos/migrate?_csrf= ${_csrf}`
-    const giteaOptions = {
-      clone_addr,
-      uid,
-      repo_name,
-      mirror: false,
-      wiki: false,
-      private: false,
-      pull_requests: false,
-      releases: true,
-    }
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(giteaOptions),
-    })
-
-    if (res.ok) {
-      const body = await res.json()
-      console.log(body)
-      setLoading(false)
-    } else {
-      console.log(res)
+    if (migrateSuccessfully) {
       setLoading(false)
     }
   }
@@ -286,11 +221,6 @@ const Sync = () => {
       </div>
     </Grid.Column>
   )
-}
-
-function urlToName(url) {
-  url = new URL(url)
-  return path.basename(url.pathname, path.extname(url.pathname))
 }
 
 export default New
