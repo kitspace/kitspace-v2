@@ -44,20 +44,29 @@ const UploadModal = () => {
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
   )
-  const { uploadFile } = useContext(UploadContext)
+  const { loadedFiles, uploadFile } = useContext(UploadContext)
 
   const submit = async e => {
-    setLoading(true)
     e.preventDefault()
+    setLoading(true)
+
     const repo = await createRepo(form.name, form.description, form._csrf)
-    const path = 'readme.md'
-    const content = '# some markdown'
 
-    const hasUploadedFile = await uploadFile(repo, path, content, form._csrf)
-    console.log(repo)
-    console.log(hasUploadedFile)
+    const commits = await Promise.all(
+      loadedFiles.map(async file => {
+        const reader = new FileReader()
+        reader.onload = async () => {
+          const path = file.name
+          const content = reader.result
+          const hasUploadedFile = await uploadFile(repo, path, content, form._csrf)
 
-    if (hasUploadedFile) {
+          console.log(hasUploadedFile)
+        }
+        reader.readAsBinaryString(file)
+      }),
+    )
+
+    if (loadedFiles.length !== 0) {
       setLoading(false)
     }
   }
