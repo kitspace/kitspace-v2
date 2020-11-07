@@ -41,9 +41,11 @@ docker-compose up
 
 5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login.
 
-6. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
+6. Make sure to close any proxy service you have, otherwise you won't be able to access the site.
+
+7. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
     
-7. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose build --no-cache frontend`.
+8. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose build --no-cache frontend`.
 
 # Running Integration Tests
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
