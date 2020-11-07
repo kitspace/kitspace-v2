@@ -51,7 +51,6 @@ const UploadModal = () => {
    * @returns {Promise<*|string>}
    */
   const createRepo = async () => {
-
     const endpoint = `${giteaApiUrl}/user/repos?_csrf=${form._csrf}`
     const giteaOptions = {
       _csrf: form._csrf,
@@ -117,11 +116,15 @@ const UploadModal = () => {
     setLoading(true)
     e.preventDefault()
     const repoName = await createRepo()
-    const hasUploadedFile = await uploadFile(repoName, 'readme.md', '# some markdown')
+    const hasUploadedFile = await uploadFile(
+      repoName,
+      'readme.md',
+      '# some markdown',
+    )
     console.log(repoName)
     console.log(hasUploadedFile)
 
-    if(hasUploadedFile) {
+    if (hasUploadedFile) {
       setLoading(false)
     }
   }
@@ -183,7 +186,12 @@ const UploadModal = () => {
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setOpen(false)}>Cancel</Button>
-        <Button disabled={!isValid || loading} onClick={submit} positive loading={loading} >
+        <Button
+          disabled={!isValid || loading}
+          onClick={submit}
+          positive
+          loading={loading}
+        >
           Submit
         </Button>
       </Modal.Actions>

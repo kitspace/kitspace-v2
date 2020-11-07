@@ -34,8 +34,18 @@
     "@types/stripe": "^7.13.25",
     "cypress": "^5.1.0",
     "faker": "^5.1.0",
+    "husky": ">=4",
+    "lint-staged": ">=10",
     "nodemon": "^2.0.2",
     "prettier": "^2.0.5",
     "prop-types": "^15.7.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
   }
 }
