@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
 import {
   Grid,
   Divider,
@@ -16,6 +16,7 @@ import styles from './new.module.scss'
 import { Page } from '../../components/Page'
 import useForm from '../../hooks/useForm'
 import { ProjectUploadForm } from '../../models/ProjectUploadForm'
+import UploadContextProvider, { UploadContext } from '../../contexts/UploadContext'
 
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -145,44 +146,46 @@ const UploadModal = () => {
     >
       <Modal.Header>Upload design files</Modal.Header>
       <Modal.Content>
-        <Form>
-          <Segment>
-            <Form.Field
-              fluid
-              required
-              control={Input}
-              label="Project name"
-              placeholder="Project name"
-              name="name"
-              value={form.name || ''}
-              onChange={onChange}
-              error={formatErrorPrompt('name')}
-            />
-            <Form.Field
-              required
-              control={TextArea}
-              label="Project description"
-              placeholder="Project description"
-              name="description"
-              value={form.description || ''}
-              onChange={onChange}
-              error={formatErrorPrompt('description')}
-            />
-            <Form.Field
-              fluid
-              control={Input}
-              label="External link"
-              placeholder="e.g., www.myblog.com/awesome-project"
-              name="link"
-              value={form.link || ''}
-              onChange={onChange}
-              error={formatErrorPrompt('link')}
-            />
-          </Segment>
-          <Segment>
-            <DropZone />
-          </Segment>
-        </Form>
+        <UploadContextProvider>
+          <Form>
+            <Segment>
+              <Form.Field
+                fluid
+                required
+                control={Input}
+                label="Project name"
+                placeholder="Project name"
+                name="name"
+                value={form.name || ''}
+                onChange={onChange}
+                error={formatErrorPrompt('name')}
+              />
+              <Form.Field
+                required
+                control={TextArea}
+                label="Project description"
+                placeholder="Project description"
+                name="description"
+                value={form.description || ''}
+                onChange={onChange}
+                error={formatErrorPrompt('description')}
+              />
+              <Form.Field
+                fluid
+                control={Input}
+                label="External link"
+                placeholder="e.g., www.myblog.com/awesome-project"
+                name="link"
+                value={form.link || ''}
+                onChange={onChange}
+                error={formatErrorPrompt('link')}
+              />
+            </Segment>
+            <Segment>
+              <DropZone />
+            </Segment>
+          </Form>
+        </UploadContextProvider>
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setOpen(false)}>Cancel</Button>
@@ -200,19 +203,9 @@ const UploadModal = () => {
 }
 
 const DropZone = () => {
-  const onDrop = useCallback(acceptedFiles => {
-    acceptedFiles.forEach(file => {
-      const reader = new FileReader()
+  const { loadFiles } = useContext(UploadContext)
 
-      reader.onload = () => {
-        const binaryStr = reader.result
-        // TODO: get the sha hash of the file
-        console.log(binaryStr)
-      }
-      reader.readAsArrayBuffer(file)
-    })
-    console.log(acceptedFiles)
-  }, [])
+  const onDrop = useCallback(acceptedFiles => loadFiles(acceptedFiles), [])
 
   const { acceptedFiles, getRootProps, getInputProps, open } = useDropzone({
     onDrop,
