@@ -110,16 +110,6 @@ const UploadModal = () => {
               onChange={onChange}
               error={formatErrorPrompt('description')}
             />
-            <Form.Field
-              fluid
-              control={Input}
-              label="External link"
-              placeholder="e.g., www.myblog.com/awesome-project"
-              name="link"
-              value={form.link || ''}
-              onChange={onChange}
-              error={formatErrorPrompt('link')}
-            />
           </Segment>
           <Segment>
             <DropZone />
