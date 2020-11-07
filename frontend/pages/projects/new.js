@@ -39,11 +39,19 @@ const New = () => {
 
 const UploadModal = () => {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
   )
 
+  /**
+   * Creates a new public repo with the name and description of the
+   * project entered in the form
+   * @return repo name or empty string in case of failure
+   * @returns {Promise<*|string>}
+   */
   const createRepo = async () => {
+
     const endpoint = `${giteaApiUrl}/user/repos?_csrf=${form._csrf}`
     const giteaOptions = {
       _csrf: form._csrf,
@@ -86,6 +94,7 @@ const UploadModal = () => {
         email: 'admins@kitspace.org',
         name: 'Kitspace',
       },
+      // content must be Base64 encoded
       content: btoa(content),
       message: `Automated commit on behalf of ${user.login}(${user.email})`,
     }
@@ -105,11 +114,16 @@ const UploadModal = () => {
   }
 
   const submit = async e => {
+    setLoading(true)
     e.preventDefault()
     const repoName = await createRepo()
     const hasUploadedFile = await uploadFile(repoName, 'readme.md', '# some markdown')
     console.log(repoName)
     console.log(hasUploadedFile)
+
+    if(hasUploadedFile) {
+      setLoading(false)
+    }
   }
 
   return (
@@ -169,7 +183,7 @@ const UploadModal = () => {
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setOpen(false)}>Cancel</Button>
-        <Button disabled={!isValid} onClick={submit} positive>
+        <Button disabled={!isValid || loading} onClick={submit} positive loading={loading} >
           Submit
         </Button>
       </Modal.Actions>
