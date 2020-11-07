@@ -22,7 +22,6 @@ export default function UploadContextProvider(props) {
    * @returns {Promise<boolean>}
    */
   const uploadFile = async (repo, path, content, csrf) => {
-    console.log({ repo, path, content, csrf })
     const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
     const user = window.session.user
     const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`

@@ -16,7 +16,7 @@ import { Page } from '../../components/Page'
 import useForm from '../../hooks/useForm'
 import { ProjectUploadForm } from '../../models/ProjectUploadForm'
 import UploadContextProvider, { UploadContext } from '../../contexts/UploadContext'
-import { createRepo, migrateRepo } from './_giteaApi'
+import { createRepo, migrateRepo } from '../../utils/giteaApi'
 
 const New = () => {
   return (
