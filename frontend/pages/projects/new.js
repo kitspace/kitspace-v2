@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from 'react'
+import React, { useState, useCallback, useContext, useEffect } from 'react'
 import {
   Grid,
   Divider,
@@ -31,7 +31,9 @@ const New = () => {
           <Divider className={styles.divider} vertical>
             Or
           </Divider>
-          <UploadModal />
+          <UploadContextProvider>
+            <UploadModal />
+          </UploadContextProvider>
         </Grid.Row>
       </div>
     </Page>
@@ -44,6 +46,7 @@ const UploadModal = () => {
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
   )
+  const { uploadFile } = useContext(UploadContext)
 
   /**
    * Creates a new public repo with the name and description of the
@@ -80,49 +83,15 @@ const UploadModal = () => {
     return res.ok ? body['full_name'] : ''
   }
 
-  const uploadFile = async (repo, path, content) => {
-    const user = window.session.user
-    const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${form._csrf}`
-
-    const reqBody = {
-      author: {
-        email: user.email,
-        name: user.login,
-      },
-      branch: 'master',
-      committer: {
-        email: 'admins@kitspace.org',
-        name: 'Kitspace',
-      },
-      // content must be Base64 encoded
-      content: btoa(content),
-      message: `Automated commit on behalf of ${user.login}(${user.email})`,
-    }
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      credentials: 'include',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reqBody),
-    })
-
-    const body = await res.json()
-    console.log(body)
-
-    return res.ok
-  }
-
   const submit = async e => {
     setLoading(true)
     e.preventDefault()
-    const repoName = await createRepo()
-    const hasUploadedFile = await uploadFile(
-      repoName,
-      'readme.md',
-      '# some markdown',
-    )
-    console.log(repoName)
+    const repo = await createRepo()
+    const path = 'readme.md'
+    const content = '# some markdown'
+
+    const hasUploadedFile = await uploadFile(repo, path, content, form._csrf)
+    console.log(repo)
     console.log(hasUploadedFile)
 
     if (hasUploadedFile) {
@@ -146,46 +115,44 @@ const UploadModal = () => {
     >
       <Modal.Header>Upload design files</Modal.Header>
       <Modal.Content>
-        <UploadContextProvider>
-          <Form>
-            <Segment>
-              <Form.Field
-                fluid
-                required
-                control={Input}
-                label="Project name"
-                placeholder="Project name"
-                name="name"
-                value={form.name || ''}
-                onChange={onChange}
-                error={formatErrorPrompt('name')}
-              />
-              <Form.Field
-                required
-                control={TextArea}
-                label="Project description"
-                placeholder="Project description"
-                name="description"
-                value={form.description || ''}
-                onChange={onChange}
-                error={formatErrorPrompt('description')}
-              />
-              <Form.Field
-                fluid
-                control={Input}
-                label="External link"
-                placeholder="e.g., www.myblog.com/awesome-project"
-                name="link"
-                value={form.link || ''}
-                onChange={onChange}
-                error={formatErrorPrompt('link')}
-              />
-            </Segment>
-            <Segment>
-              <DropZone />
-            </Segment>
-          </Form>
-        </UploadContextProvider>
+        <Form>
+          <Segment>
+            <Form.Field
+              fluid
+              required
+              control={Input}
+              label="Project name"
+              placeholder="Project name"
+              name="name"
+              value={form.name || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('name')}
+            />
+            <Form.Field
+              required
+              control={TextArea}
+              label="Project description"
+              placeholder="Project description"
+              name="description"
+              value={form.description || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('description')}
+            />
+            <Form.Field
+              fluid
+              control={Input}
+              label="External link"
+              placeholder="e.g., www.myblog.com/awesome-project"
+              name="link"
+              value={form.link || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('link')}
+            />
+          </Segment>
+          <Segment>
+            <DropZone />
+          </Segment>
+        </Form>
       </Modal.Content>
       <Modal.Actions>
         <Button onClick={() => setOpen(false)}>Cancel</Button>
@@ -203,7 +170,11 @@ const UploadModal = () => {
 }
 
 const DropZone = () => {
-  const { loadFiles } = useContext(UploadContext)
+  const { loadFiles, loadedFiles } = useContext(UploadContext)
+
+  useEffect(() => {
+    console.log(loadedFiles)
+  }, [loadedFiles])
 
   const onDrop = useCallback(acceptedFiles => loadFiles(acceptedFiles), [])
 
