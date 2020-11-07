@@ -8,6 +8,7 @@ export const UploadContext = createContext({
 
 export default function UploadContextProvider(props) {
   const [loadedFiles, setLoadedFiles] = useState([])
+  const [lastCalled, setLastCalled] = useState(0)
 
   const loadFiles = files => {
     setLoadedFiles(files)
@@ -38,7 +39,7 @@ export default function UploadContextProvider(props) {
       },
       // content must be Base64 encoded
       content: btoa(content),
-      message: `Automated commit on behalf of ${user.login}(${user.email})`,
+      message: `Automated commit on behalf of ${user.login} (${user.email})`,
     }
 
     const res = await fetch(endpoint, {

@@ -52,23 +52,23 @@ const UploadModal = () => {
 
     const repo = await createRepo(form.name, form.description, form._csrf)
 
-    const commits = await Promise.all(
-      loadedFiles.map(async file => {
+    // there's a race condition happens on gitea when making several request to the upload endpoint
+    // a hacky/awful solution to get around it is simulating a scheduler with setTimeout
+    const delay = 1000
+    await Promise.all(
+      loadedFiles.map(async (file, idx) => {
         const reader = new FileReader()
         reader.onload = async () => {
           const path = file.name
           const content = reader.result
-          const hasUploadedFile = await uploadFile(repo, path, content, form._csrf)
-
-          console.log(hasUploadedFile)
+          setTimeout(async () => {
+            return await uploadFile(repo, path, content, form._csrf)
+          }, delay * idx)
         }
         reader.readAsBinaryString(file)
       }),
     )
-
-    if (loadedFiles.length !== 0) {
-      setLoading(false)
-    }
+    setLoading(false)
   }
 
   return (
@@ -119,7 +119,7 @@ const UploadModal = () => {
       <Modal.Actions>
         <Button onClick={() => setOpen(false)}>Cancel</Button>
         <Button
-          disabled={!isValid || loading}
+          disabled={!isValid || loading || loadedFiles.length === 0}
           onClick={submit}
           positive
           loading={loading}
