@@ -8,6 +8,7 @@ import {
   Segment,
   Form,
   TextArea,
+  List,
 } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
 
@@ -146,9 +147,13 @@ const DropZone = () => {
   })
 
   const files = acceptedFiles.map(file => (
-    <li key={file.name}>
-      {file.name} - {file.size} bytes
-    </li>
+    <List.Item>
+      <List.Icon name="file" />
+      <List.Content>
+        <List.Header>{file.name}</List.Header>
+        <List.Description>{file.size} bytes</List.Description>
+      </List.Content>
+    </List.Item>
   ))
 
   return (
@@ -167,7 +172,7 @@ const DropZone = () => {
         }
       >
         <h4>Files</h4>
-        <ul>{files}</ul>
+        <List relaxed>{files}</List>
       </aside>
     </section>
   )
