@@ -44,6 +44,7 @@ const UploadModal = () => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [message, setMessage] = useState({ status: 'positive', body: '' , header: ''})
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
   )
@@ -55,6 +56,19 @@ const UploadModal = () => {
 
     const repo = await createRepo(form.name, form.description, form._csrf)
 
+    if(repo === '') {
+      // empty repo name means that it failed to create the repo
+      setMessage({
+        status: 'negative',
+        body: `You already have a project named ${form.name}!`,
+        header: 'Oops!',
+      })
+      setDone(true)
+      setLoading(false)
+      // skip uploading as there's no repo, the upload is guaranteed to fail
+      return
+    }
+
     // there's a race condition happens on gitea when making several request to the upload endpoint
     // a hacky/awful solution to get around it is simulating a scheduler with setTimeout
     const delay = 1000
@@ -65,14 +79,28 @@ const UploadModal = () => {
           const path = file.name
           const content = reader.result
           setTimeout(async () => {
-            return await uploadFile(repo, path, content, form._csrf)
+            const isSuccess = await uploadFile(repo, path, content, form._csrf)
+            if (!isSuccess) {
+              setMessage({
+                status: 'negative',
+                body: 'Something went wrong! Please, try again later.',
+                header: 'Oops!'
+              })
+              setDone(true)
+            }
+            return isSuccess
           }, delay * idx)
         }
         reader.readAsBinaryString(file)
       }),
     )
-    // TODO break this if some errors occurred during the upload process
+
     setLoading(false)
+    setMessage({
+      status: 'positive',
+      body: 'All files have been uploaded successfully.',
+      header: 'Success!'
+    })
     setDone(true)
   }
 
@@ -94,13 +122,14 @@ const UploadModal = () => {
       <Modal.Header>Upload design files</Modal.Header>
       <Modal.Content>
         <Message
-          positive
+          positive={message.status === 'positive'}
+          negative={message.status === 'negative'}
           style={{
-            display: done ? 'block' : 'none',
+            display: done && !loading ? 'block' : 'none',
           }}
         >
-          <Message.Header>Success!</Message.Header>
-          All files have been uploaded successfully.
+          <Message.Header>{message.header}</Message.Header>
+          {message.body}
         </Message>
         <Form>
           <Segment>
