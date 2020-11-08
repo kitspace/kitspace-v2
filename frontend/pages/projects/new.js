@@ -4,11 +4,11 @@ import {
   Divider,
   Input,
   Button,
-  Modal,
   Segment,
   Form,
   TextArea,
   List,
+  Header,
 } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
 
@@ -31,7 +31,7 @@ const New = () => {
             Or
           </Divider>
           <UploadContextProvider>
-            <UploadModal />
+            <UploadForm />
           </UploadContextProvider>
         </Grid.Row>
       </div>
@@ -39,8 +39,7 @@ const New = () => {
   )
 }
 
-const UploadModal = () => {
-  const [open, setOpen] = useState(false)
+const UploadForm = () => {
   const [loading, setLoading] = useState(false)
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
@@ -73,62 +72,45 @@ const UploadModal = () => {
   }
 
   return (
-    <Modal
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={
-        <Grid.Column className={styles.optionColumn}>
-          <div>
-            <p>Upload design files</p>
-            <Button content="Upload" color="green" name="upload" />
-          </div>
-        </Grid.Column>
-      }
-    >
-      <Modal.Header>Upload design files</Modal.Header>
-      <Modal.Content>
-        <Form>
-          <Segment>
-            <Form.Field
-              fluid
-              required
-              control={Input}
-              label="Project name"
-              placeholder="Project name"
-              name="name"
-              value={form.name || ''}
-              onChange={onChange}
-              error={formatErrorPrompt('name')}
-            />
-            <Form.Field
-              required
-              control={TextArea}
-              label="Project description"
-              placeholder="Project description"
-              name="description"
-              value={form.description || ''}
-              onChange={onChange}
-              error={formatErrorPrompt('description')}
-            />
-          </Segment>
-          <Segment>
-            <DropZone />
-          </Segment>
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button onClick={() => setOpen(false)}>Cancel</Button>
-        <Button
-          disabled={!isValid || loading || loadedFiles.length === 0}
-          onClick={submit}
-          positive
-          loading={loading}
-        >
-          Submit
-        </Button>
-      </Modal.Actions>
-    </Modal>
+    <Grid.Column className={styles.optionColumn}>
+      <Form size={'huge'}>
+      <Header as="h2" textAlign="center">
+        Upload project files
+      </Header>
+        <Segment>
+          <Form.Field
+            fluid
+            required
+            control={Input}
+            label="Project name"
+            placeholder="Project name"
+            name="name"
+            value={form.name || ''}
+            onChange={onChange}
+            error={formatErrorPrompt('name')}
+          />
+          <Form.Field
+            required
+            control={TextArea}
+            label="Project description"
+            placeholder="Project description"
+            name="description"
+            value={form.description || ''}
+            onChange={onChange}
+            error={formatErrorPrompt('description')}
+          />
+          <DropZone />
+          <Button
+            disabled={!isValid || loading || loadedFiles.length === 0}
+            onClick={submit}
+            positive
+            loading={loading}
+          >
+            Submit
+          </Button>
+        </Segment>
+      </Form>
+    </Grid.Column>
   )
 }
 
