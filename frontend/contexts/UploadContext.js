@@ -8,7 +8,6 @@ export const UploadContext = createContext({
 
 export default function UploadContextProvider(props) {
   const [loadedFiles, setLoadedFiles] = useState([])
-  const [lastCalled, setLastCalled] = useState(0)
 
   const loadFiles = files => {
     setLoadedFiles(files)

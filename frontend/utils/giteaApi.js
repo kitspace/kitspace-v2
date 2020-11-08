@@ -1,4 +1,5 @@
 import path from 'path'
+import slugify from 'slugify'
 
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
@@ -13,7 +14,7 @@ export const createRepo = async (name, description, csrf) => {
   const endpoint = `${giteaApiUrl}/user/repos?_csrf=${csrf}`
   const giteaOptions = {
     _csrf: csrf,
-    name: name,
+    name: slugify(name),
     description: description,
     repo_template: '',
     issue_labels: '',
