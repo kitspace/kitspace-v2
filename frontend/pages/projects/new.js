@@ -9,6 +9,7 @@ import {
   Form,
   TextArea,
   List,
+  Message,
 } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
 
@@ -42,6 +43,7 @@ const New = () => {
 const UploadModal = () => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
   )
@@ -69,11 +71,14 @@ const UploadModal = () => {
         reader.readAsBinaryString(file)
       }),
     )
+    // TODO break this if some errors occurred during the upload process
     setLoading(false)
+    setDone(true)
   }
 
   return (
     <Modal
+      size="small"
       onClose={() => setOpen(false)}
       onOpen={() => setOpen(true)}
       open={open}
@@ -88,6 +93,15 @@ const UploadModal = () => {
     >
       <Modal.Header>Upload design files</Modal.Header>
       <Modal.Content>
+        <Message
+          positive
+          style={{
+            display: done ? 'block' : 'none',
+          }}
+        >
+          <Message.Header>Success!</Message.Header>
+          All files have been uploaded successfully.
+        </Message>
         <Form>
           <Segment>
             <Form.Field
