@@ -1,13 +1,18 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import superagent from 'superagent'
 
 import { Page } from '../components/Page'
+import { AuthContext } from '../contexts/AuthContext'
 
-function Home({ name, _csrf, repos }) {
+const Home = repos => {
+  const { user, csrf } = useContext(AuthContext)
+
+  const username = user?.login || 'unknown user'
+
   return (
     <Page title="home">
       <div>
-        Hi there {name}, {_csrf}
+        Hi there {username}, {csrf}
         <pre>{JSON.stringify(repos, null, 2)}</pre>
       </div>
     </Page>
@@ -22,12 +27,12 @@ function getSession(req) {
   if (req != null) {
     return req.session
   }
-  if (typeof window !== 'undefined') {
+  if (process.browser) {
     return window.session
   }
 }
 
-Home.getInitialProps = async ({ req, query }) => {
+Home.getInitialProps = async ({ req }) => {
   let api = path => gitea_internal_url + path
   if (req == null) {
     api = path => gitea_public_url + path
@@ -59,11 +64,7 @@ Home.getInitialProps = async ({ req, query }) => {
     }),
   )
 
-  return {
-    name: session?.user?.username || 'unknown user',
-    _csrf,
-    repos,
-  }
+  return repos
 }
 
 export default Home
