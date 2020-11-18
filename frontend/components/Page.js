@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { string, object, bool } from 'prop-types'
 
 import Head from './Head'
 import NavBar from './NavBar'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
-import AuthProvider from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
@@ -36,7 +35,7 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 
 export const Page = props => {
   return (
-    <AuthProvider>
+    <>
       <Head
         description={props.head?.description}
         ogImage={props.head?.ogImage}
@@ -49,7 +48,7 @@ export const Page = props => {
       <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
         {props.children}
       </Content>
-    </AuthProvider>
+    </>
   )
 }
 
