@@ -19,6 +19,7 @@ import useForm from '../../hooks/useForm'
 import { ProjectUploadForm } from '../../models/ProjectUploadForm'
 import UploadContextProvider, { UploadContext } from '../../contexts/UploadContext'
 import { createRepo, migrateRepo } from '../../utils/giteaApi'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const New = () => {
   return (
@@ -227,13 +228,13 @@ const DropZone = () => {
 
 const Sync = () => {
   const [loading, setLoading] = useState(false)
+  const { csrf, user } = useContext(AuthContext)
 
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
   const [remoteRepo, setRemoteRepo] = useState('')
 
-  // TODO: the auth context should return the user not only the current authentication state.
-  const uid = window.session?.user?.id || null
-  const _csrf = window.session._csrf
+  const uid = user?.id
+  const _csrf = csrf
 
   const handleClick = async () => {
     setLoading(true)

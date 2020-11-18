@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
+import { AuthContext } from '../contexts/AuthContext'
 
 export default function (schema) {
   const [form, setForm] = useState({})
+  const { csrf } = useContext(AuthContext)
 
   const onChange = e => {
     e.persist()
     setForm(form => ({
-      _csrf: `${window.session._csrf}`,
+      _csrf: csrf,
       ...form,
       [e.target.name]:
         e.target.type === 'checkbox' ? e.target.checked : e.target.value,

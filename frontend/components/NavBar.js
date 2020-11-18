@@ -208,6 +208,7 @@ function LoginButton() {
 
 function LogoutButton() {
   const router = useRouter()
+  const { csrf } = useContext(AuthContext)
 
   const onClick = async () => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/logout`
@@ -216,7 +217,7 @@ function LogoutButton() {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       },
-      body: `_csrf=${window.session._csrf}`,
+      body: `_csrf=${csrf}`,
       credentials: 'include',
     })
 
