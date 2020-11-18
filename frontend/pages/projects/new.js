@@ -44,7 +44,11 @@ const UploadModal = () => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
-  const [message, setMessage] = useState({ status: 'positive', body: '' , header: ''})
+  const [message, setMessage] = useState({
+    status: 'positive',
+    body: '',
+    header: '',
+  })
   const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
     ProjectUploadForm,
   )
@@ -56,7 +60,7 @@ const UploadModal = () => {
 
     const repo = await createRepo(form.name, form.description, form._csrf)
 
-    if(repo === '') {
+    if (repo === '') {
       // empty repo name means that it failed to create the repo
       setMessage({
         status: 'negative',
@@ -84,7 +88,7 @@ const UploadModal = () => {
               setMessage({
                 status: 'negative',
                 body: 'Something went wrong! Please, try again later.',
-                header: 'Oops!'
+                header: 'Oops!',
               })
               setDone(true)
             }
@@ -99,7 +103,7 @@ const UploadModal = () => {
     setMessage({
       status: 'positive',
       body: 'All files have been uploaded successfully.',
-      header: 'Success!'
+      header: 'Success!',
     })
     setDone(true)
   }
