@@ -1,10 +1,9 @@
-import React, {useEffect, useCallback, useContext} from 'react'
+import React, { useEffect, useCallback, useContext } from 'react'
 
 import { UploadContext } from '../contexts/UploadContext'
 import { useDropzone } from 'react-dropzone'
 import { Button, Grid, List } from 'semantic-ui-react'
 import styles from '../pages/projects/new.module.scss'
-
 
 const DropZone = () => {
   const { loadFiles, loadedFiles } = useContext(UploadContext)
@@ -39,7 +38,7 @@ const DropZone = () => {
         >
           <input {...getInputProps()} />
           <p>Drop files here, or click to select files</p>
-          <Button color='green' content="Open file dialog" onClick={open} />
+          <Button color="green" content="Open file dialog" onClick={open} />
         </div>
         <aside
           style={

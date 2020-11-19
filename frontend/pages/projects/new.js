@@ -20,9 +20,9 @@ const New = () => {
           <Divider className={styles.divider} vertical>
             Or
           </Divider>
-            <Grid.Column className={styles.optionColumn}>
-              <DropZone />
-            </Grid.Column>
+          <Grid.Column className={styles.optionColumn}>
+            <DropZone />
+          </Grid.Column>
         </Grid.Row>
       </div>
     </Page>
@@ -50,29 +50,29 @@ const Sync = () => {
   }
 
   return (
-      <div>
-        <p>Sync an existing Git repository</p>
-        <div className={styles.syncSide}>
-          <Input
-            className={styles.urlInput}
-            style={{ maxHeight: 37 }}
-            fluid
-            onChange={e => setRemoteRepo(e.target.value)}
-            placeholder={remoteRepoPlaceHolder}
-            value={remoteRepo}
-          />
-          <div className={styles.syncButton}>
-            <Button
-              color="green"
-              onClick={handleClick}
-              loading={loading}
-              disabled={loading}
-            >
-              Sync
-            </Button>
-          </div>
+    <div>
+      <p>Sync an existing Git repository</p>
+      <div className={styles.syncSide}>
+        <Input
+          className={styles.urlInput}
+          style={{ maxHeight: 37 }}
+          fluid
+          onChange={e => setRemoteRepo(e.target.value)}
+          placeholder={remoteRepoPlaceHolder}
+          value={remoteRepo}
+        />
+        <div className={styles.syncButton}>
+          <Button
+            color="green"
+            onClick={handleClick}
+            loading={loading}
+            disabled={loading}
+          >
+            Sync
+          </Button>
         </div>
       </div>
+    </div>
   )
 }
 
