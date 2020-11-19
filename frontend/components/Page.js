@@ -5,6 +5,7 @@ import Head from './Head'
 import NavBar from './NavBar'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
+import UploadContextProvider from '../contexts/UploadContext'
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
   const { push } = useRouter()
@@ -35,7 +36,7 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 
 export const Page = props => {
   return (
-    <>
+    <UploadContextProvider>
       <Head
         description={props.head?.description}
         ogImage={props.head?.ogImage}
@@ -48,7 +49,7 @@ export const Page = props => {
       <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
         {props.children}
       </Content>
-    </>
+    </UploadContextProvider>
   )
 }
 
