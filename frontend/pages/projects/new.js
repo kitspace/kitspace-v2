@@ -4,8 +4,9 @@ import { Grid, Divider, Input, Button } from 'semantic-ui-react'
 import styles from './new.module.scss'
 import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
-import { AuthContext } from '../../contexts/AuthContext'
-import { migrateRepo } from '../../utils/giteaApi'
+import { AuthContext } from '@/contexts/AuthContext'
+import { migrateRepo, urlToName } from '@utils/giteaApi'
+import { useRouter } from 'next/router'
 
 const New = () => {
   return (
@@ -30,22 +31,25 @@ const New = () => {
 }
 
 const Sync = () => {
+  const { push } = useRouter()
   const [loading, setLoading] = useState(false)
   const { csrf, user } = useContext(AuthContext)
 
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
   const [remoteRepo, setRemoteRepo] = useState('')
 
-  const uid = user?.id
-  const _csrf = csrf
+  const uid = user.id
+  const username = user.login
 
   const handleClick = async () => {
     setLoading(true)
     const repo = remoteRepo || remoteRepoPlaceHolder
-    const migrateSuccessfully = await migrateRepo(repo, uid, _csrf)
+    const migrateSuccessfully = await migrateRepo(repo, uid, csrf)
 
     if (migrateSuccessfully) {
+      const repoName = urlToName(repo)
       setLoading(false)
+      await push(`/projects/update/${username}/${repoName}`)
     }
   }
 

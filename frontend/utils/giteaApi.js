@@ -75,7 +75,7 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
   return res.ok
 }
 
-const urlToName = url => {
+export const urlToName = url => {
   url = new URL(url)
   return path.basename(url.pathname, path.extname(url.pathname))
 }
