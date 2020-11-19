@@ -1,6 +1,6 @@
 import React from 'react'
-import Product from '../../components/product'
-import { Page } from '../../components/Page'
+import Product from '@/components/product'
+import { Page } from '@/components/Page'
 
 const BuyPage = () => {
   return (

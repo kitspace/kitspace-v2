@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import superagent from 'superagent'
 
-import { Page } from '../components/Page'
+import { Page } from '@/components/Page'
 import { AuthContext } from '../contexts/AuthContext'
+import { getSession } from '../utils/giteaApi'
 
 const Home = repos => {
   const { user, csrf } = useContext(AuthContext)
@@ -22,15 +23,6 @@ const Home = repos => {
 const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 const gitea_internal_url = 'http://gitea:3000/api/v1'
-
-function getSession(req) {
-  if (req != null) {
-    return req.session
-  }
-  if (process.browser) {
-    return window.session
-  }
-}
 
 Home.getInitialProps = async ({ req }) => {
   let api = path => gitea_internal_url + path

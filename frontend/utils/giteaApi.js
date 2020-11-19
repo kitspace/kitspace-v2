@@ -79,3 +79,12 @@ const urlToName = url => {
   url = new URL(url)
   return path.basename(url.pathname, path.extname(url.pathname))
 }
+
+export const getSession = req => {
+  if (req != null) {
+    return req.session
+  }
+  if (process.browser) {
+    return window.session
+  }
+}

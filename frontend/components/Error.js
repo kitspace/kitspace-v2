@@ -7,7 +7,7 @@ const statusCodes = {
   500: 'Internal Server Error',
 }
 /**
- * `Error` component used for handling errors. Derived fron Next.js internal error page. Copyright (c) 2019 ZEIT, Inc. Released under MIT.
+ * `Error` component used for handling errors. Derived from Next.js internal error page. Copyright (c) 2019 ZEIT, Inc. Released under MIT.
  */
 export default class Error extends React.Component {
   render() {

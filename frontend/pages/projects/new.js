@@ -14,12 +14,12 @@ import {
 import { useDropzone } from 'react-dropzone'
 
 import styles from './new.module.scss'
-import { Page } from '../../components/Page'
-import useForm from '../../hooks/useForm'
+import { Page } from '@/components/Page'
 import { ProjectUploadForm } from '../../models/ProjectUploadForm'
 import UploadContextProvider, { UploadContext } from '../../contexts/UploadContext'
-import { createRepo, migrateRepo } from '../../utils/giteaApi'
 import { AuthContext } from '../../contexts/AuthContext'
+import useForm from '../../hooks/useForm'
+import { createRepo, migrateRepo } from '../../utils/giteaApi'
 
 const New = () => {
   return (
