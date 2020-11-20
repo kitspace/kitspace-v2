@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react'
 
 export const UploadContext = createContext({
+  project: '',
+  setProject: () => {},
   loadedFiles: [],
   loadFiles: () => {},
   uploadFile: async () => {},
@@ -8,10 +10,11 @@ export const UploadContext = createContext({
 
 export default function UploadContextProvider(props) {
   const [loadedFiles, setLoadedFiles] = useState([])
+  const [project, setProject] = useState('')
 
   useEffect(() => {
     const storedFiles = JSON.parse(sessionStorage.getItem('loadedFiles'))
-    console.log({ storedFiles })
+    setLoadedFiles(storedFiles)
   }, [])
 
   const loadFiles = files => {
@@ -80,7 +83,9 @@ export default function UploadContextProvider(props) {
   }
 
   return (
-    <UploadContext.Provider value={{ loadedFiles, loadFiles, uploadFile }}>
+    <UploadContext.Provider
+      value={{ project, setProject, loadedFiles, loadFiles, uploadFile }}
+    >
       {props.children}
     </UploadContext.Provider>
   )

@@ -74,12 +74,31 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
 
   return res.ok
 }
+/**
+ * Get list of files in a gitea repo
+ * @param repo
+ * @param csrf
+ * @returns {Promise<Array|null>}
+ */
+export const getRepoFiles = async (repo, csrf) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=master&_csrf=${csrf}`
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    mode: 'cors',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  return res.ok ? await res.json() : null
+}
 
 export const urlToName = url => {
   url = new URL(url)
   return path.basename(url.pathname, path.extname(url.pathname))
 }
-
+export const projectNameFromPath = path => {
+  return path.split('/').slice(3).join('/')
+}
 export const getSession = req => {
   if (req != null) {
     return req.session

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouter } from 'next/router'
 
 import { UploadContext } from '@/contexts/UploadContext'
@@ -6,20 +6,43 @@ import { useDropzone } from 'react-dropzone'
 import { Button, Grid, List } from 'semantic-ui-react'
 import styles from '../pages/projects/new.module.scss'
 import { AuthContext } from '@/contexts/AuthContext'
+import { getRepoFiles, projectNameFromPath } from '@utils/giteaApi'
 
 const DropZone = () => {
-  const { loadFiles, loadedFiles } = useContext(UploadContext)
-  const { pathname, push } = useRouter()
-  const { user } = useContext(AuthContext)
+  const { loadFiles, loadedFiles, setProject, project } = useContext(UploadContext)
+  const { pathname, push, asPath } = useRouter()
+  const { user, csrf } = useContext(AuthContext)
+
+  const [repoFiles, setRepoFiles] = useState([])
+  const [allFiles, setAllFiles] = useState([])
+  const isNewProjectPage = RegExp('^/projects/new').test(pathname)
 
   useEffect(() => {
-    console.log(loadedFiles)
-  }, [loadedFiles])
+    const projectName = projectNameFromPath(asPath)
+    setProject(projectName)
+  }, [asPath])
+
+  useEffect(() => {
+    const getRemoteFiles = async () => {
+      const files = await getRepoFiles(project, csrf)
+      setRepoFiles(files)
+    }
+    if (!isNewProjectPage) {
+      getRemoteFiles().then()
+    }
+  }, [project])
+
+
+  useEffect(() => {
+    setAllFiles([...loadedFiles, ...repoFiles])
+  }, [loadedFiles, repoFiles])
+
 
   const onDrop = useCallback(async acceptedFiles => {
     loadFiles(acceptedFiles)
-    if (pathname === '/projects/new') {
-      await push(`/projects/update/${user.login}/newProject`)
+
+    if (isNewProjectPage) {
+      await push(`/projects/update/${user.login}/new`)
     }
   }, [])
 
@@ -28,7 +51,7 @@ const DropZone = () => {
     noClick: true,
   })
 
-  const files = acceptedFiles.map(file => (
+  const files = allFiles.map(file => (
     <List.Item key={file.name}>
       <List.Icon name="file" />
       <List.Content>
