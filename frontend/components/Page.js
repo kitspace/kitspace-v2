@@ -36,7 +36,7 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 
 export const Page = props => {
   return (
-    <UploadContextProvider>
+    <>
       <Head
         description={props.head?.description}
         ogImage={props.head?.ogImage}
@@ -49,7 +49,7 @@ export const Page = props => {
       <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
         {props.children}
       </Content>
-    </UploadContextProvider>
+    </>
   )
 }
 

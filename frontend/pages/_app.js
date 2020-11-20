@@ -6,6 +6,7 @@ import 'semantic-ui-css/semantic.min.css'
 
 import './_app.scss'
 import AuthProvider from '../contexts/AuthContext'
+import UploadContextProvider from '@/contexts/UploadContext'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setSession = session ? (
@@ -27,12 +28,14 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   }
   return (
     <AuthProvider>
-      <Head>
-        {setSession}
-        {setStaticFallback}}
-      </Head>
-      <Component {...pageProps} />
-      {isStaticFallback ? <ErrorMessage /> : null}
+      <UploadContextProvider>
+        <Head>
+          {setSession}
+          {setStaticFallback}}
+        </Head>
+        <Component {...pageProps} />
+        {isStaticFallback ? <ErrorMessage /> : null}
+      </UploadContextProvider>
     </AuthProvider>
   )
 }

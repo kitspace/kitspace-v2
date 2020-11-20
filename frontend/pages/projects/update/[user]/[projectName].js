@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
 
 import { useRouter } from 'next/router'
-import Error from 'next/error'
 import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
 import useForm from '@/hooks/useForm'
@@ -20,6 +19,7 @@ import {
 
 const UpdateProject = () => {
   const router = useRouter()
+  const { loadedFiles } = useContext(UploadContext)
   const { user, projectName } = router.query
   const [project, setProject] = useState({})
 
@@ -34,7 +34,7 @@ const UpdateProject = () => {
     getRepo().then()
   }, [])
 
-  return project != null ? (
+  return (
     <Page>
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
         <Header as="h2" textAlign="center">
@@ -43,9 +43,6 @@ const UpdateProject = () => {
         <UpdateForm />
       </div>
     </Page>
-  ) : (
-    // limit the rendering of this page for already existing repos
-    <Error statusCode={404} />
   )
 }
 

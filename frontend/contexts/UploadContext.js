@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 
 export const UploadContext = createContext({
   loadedFiles: [],
@@ -9,8 +9,32 @@ export const UploadContext = createContext({
 export default function UploadContextProvider(props) {
   const [loadedFiles, setLoadedFiles] = useState([])
 
+  useEffect(() => {
+    const storedFiles = JSON.parse(sessionStorage.getItem('loadedFiles'))
+    console.log({ storedFiles })
+  }, [])
+
   const loadFiles = files => {
-    setLoadedFiles(files)
+    if (files != null) {
+      // Store a list of loaded files in sessionStorage
+      const filesNames = files.map(file => file.name)
+      sessionStorage.setItem('loadedFiles', JSON.stringify(filesNames))
+
+      // Store a files' content in sessionStorage
+      files.map(file => {
+        const reader = new FileReader()
+        reader.onload = async () => {
+          const path = file.name
+          const content = reader.result
+          try {
+            sessionStorage.setItem(`loadedFile_${path}`, content)
+          } catch (e) {
+            console.error('Failed to persist files between pages redirection', e)
+          }
+        }
+        reader.readAsBinaryString(file)
+      })
+    }
   }
 
   /**

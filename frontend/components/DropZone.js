@@ -1,18 +1,27 @@
 import React, { useEffect, useCallback, useContext } from 'react'
+import { useRouter } from 'next/router'
 
-import { UploadContext } from '../contexts/UploadContext'
+import { UploadContext } from '@/contexts/UploadContext'
 import { useDropzone } from 'react-dropzone'
 import { Button, Grid, List } from 'semantic-ui-react'
 import styles from '../pages/projects/new.module.scss'
+import { AuthContext } from '@/contexts/AuthContext'
 
 const DropZone = () => {
   const { loadFiles, loadedFiles } = useContext(UploadContext)
+  const { pathname, push } = useRouter()
+  const { user } = useContext(AuthContext)
 
   useEffect(() => {
     console.log(loadedFiles)
   }, [loadedFiles])
 
-  const onDrop = useCallback(acceptedFiles => loadFiles(acceptedFiles), [])
+  const onDrop = useCallback(async acceptedFiles => {
+    loadFiles(acceptedFiles)
+    if (pathname === '/projects/new') {
+      await push(`/projects/update/${user.login}/newProject`)
+    }
+  }, [])
 
   const { acceptedFiles, getRootProps, getInputProps, open } = useDropzone({
     onDrop,
