@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { useRouter } from 'next/router'
 
+import _ from 'lodash'
+
 import { UploadContext } from '@/contexts/UploadContext'
 import { useDropzone } from 'react-dropzone'
 import { Button, Grid, List } from 'semantic-ui-react'
@@ -9,34 +11,44 @@ import { AuthContext } from '@/contexts/AuthContext'
 import { getRepoFiles, projectNameFromPath } from '@utils/giteaApi'
 
 const DropZone = () => {
-  const { loadFiles, loadedFiles, setProject, project } = useContext(UploadContext)
+  const { loadFiles, loadedFiles } = useContext(UploadContext)
   const { pathname, push, asPath } = useRouter()
   const { user, csrf } = useContext(AuthContext)
 
+  const [fetchedRemote, setFetchedRemote] = useState(false)
   const [repoFiles, setRepoFiles] = useState([])
   const [allFiles, setAllFiles] = useState([])
   const isNewProjectPage = RegExp('^/projects/new').test(pathname)
 
   useEffect(() => {
-    const projectName = projectNameFromPath(asPath)
-    setProject(projectName)
-  }, [asPath])
-
-  useEffect(() => {
     const getRemoteFiles = async () => {
-      const files = await getRepoFiles(project, csrf)
-      setRepoFiles(files)
+      const repo = projectNameFromPath(asPath)
+      const files = await getRepoFiles(repo, csrf)
+      const filesDetails = files.map(({name, size}) => ({name, size}))
+      setRepoFiles(filesDetails)
     }
-    if (!isNewProjectPage) {
+    if (!isNewProjectPage && !fetchedRemote) {
       getRemoteFiles().then()
+      setFetchedRemote(true)
     }
-  }, [project])
-
+  }, [])
 
   useEffect(() => {
-    setAllFiles([...loadedFiles, ...repoFiles])
-  }, [loadedFiles, repoFiles])
+    if (loadedFiles?.length) {
+      setAllFiles([...allFiles, ...loadedFiles])
+    }
 
+    if (repoFiles?.length) {
+      setAllFiles([...allFiles, ...repoFiles])
+    }
+  }, [repoFiles])
+
+  useEffect(() => {
+    if (loadedFiles?.length) {
+      const uniq = _.uniqBy([...allFiles, ...loadedFiles], 'name')
+      setAllFiles(uniq)
+    }
+  }, [loadedFiles])
 
   const onDrop = useCallback(async acceptedFiles => {
     loadFiles(acceptedFiles)

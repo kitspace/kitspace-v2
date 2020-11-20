@@ -1,8 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react'
 
 export const UploadContext = createContext({
-  project: '',
-  setProject: () => {},
   loadedFiles: [],
   loadFiles: () => {},
   uploadFile: async () => {},
@@ -12,16 +10,12 @@ export default function UploadContextProvider(props) {
   const [loadedFiles, setLoadedFiles] = useState([])
   const [project, setProject] = useState('')
 
-  useEffect(() => {
-    const storedFiles = JSON.parse(sessionStorage.getItem('loadedFiles'))
-    setLoadedFiles(storedFiles)
-  }, [])
-
   const loadFiles = files => {
     if (files != null) {
       // Store a list of loaded files in sessionStorage
-      const filesNames = files.map(file => file.name)
-      sessionStorage.setItem('loadedFiles', JSON.stringify(filesNames))
+      const filesDetails = files.map(({ name, size }) => ({ name, size }))
+      setLoadedFiles(filesDetails)
+      sessionStorage.setItem('loadedFiles', JSON.stringify(filesDetails))
 
       // Store a files' content in sessionStorage
       files.map(file => {
