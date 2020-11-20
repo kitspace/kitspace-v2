@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
-
 import { useRouter } from 'next/router'
+import Error from 'next/error'
+
 import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
 import useForm from '@/hooks/useForm'
@@ -19,7 +20,6 @@ import {
 
 const UpdateProject = () => {
   const router = useRouter()
-  const { loadedFiles } = useContext(UploadContext)
   const { user, projectName } = router.query
   const [project, setProject] = useState({})
 
@@ -34,19 +34,22 @@ const UpdateProject = () => {
     getRepo().then()
   }, [])
 
-  return (
+  return project != null ? (
     <Page>
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
         <Header as="h2" textAlign="center">
           Updating {projectName} by {user}
         </Header>
-        <UpdateForm />
+        <UpdateForm projectName={project.name} projectDescription={project.description}/>
       </div>
     </Page>
+  ) : (
+    // limit the rendering of this page for already existing repos
+    <Error statusCode={404} />
   )
 }
 
-const UpdateForm = () => {
+const UpdateForm = ({projectName, projectDescription}) => {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [message, setMessage] = useState({
@@ -135,7 +138,7 @@ const UpdateForm = () => {
             label="Project name"
             placeholder="Project name"
             name="name"
-            value={form.name || ''}
+            value={form.name || projectName|| ''}
             onChange={onChange}
             error={formatErrorPrompt('name')}
           />
@@ -145,7 +148,7 @@ const UpdateForm = () => {
             label="Project description"
             placeholder="Project description"
             name="description"
-            value={form.description || ''}
+            value={form.description || projectDescription || ''}
             onChange={onChange}
             error={formatErrorPrompt('description')}
           />
