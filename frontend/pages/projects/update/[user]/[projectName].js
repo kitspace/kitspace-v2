@@ -40,7 +40,7 @@ const UpdateProject = () => {
         <Header as="h2" textAlign="center">
           Updating {projectName} by {user}
         </Header>
-        <UpdateForm projectName={project.name} projectDescription={project.description}/>
+        <UpdateForm name={project.name} description={project.description}/>
       </div>
     </Page>
   ) : (
@@ -49,18 +49,23 @@ const UpdateProject = () => {
   )
 }
 
-const UpdateForm = ({projectName, projectDescription}) => {
+const UpdateForm = ({name, description}) => {
+  const { loadedFiles, uploadFile } = useContext(UploadContext)
+
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const {form, onChange, populate, isValid, formatErrorPrompt} = useForm(
+    ProjectUploadForm,
+  )
   const [message, setMessage] = useState({
     status: 'positive',
     body: '',
     header: '',
   })
-  const [form, onChange, isValid, errors, formatErrorPrompt] = useForm(
-    ProjectUploadForm,
-  )
-  const { loadedFiles, uploadFile } = useContext(UploadContext)
+
+  useEffect(() => {
+    populate({name,  description})
+  }, [])
 
   const submit = async e => {
     e.preventDefault()
@@ -138,7 +143,7 @@ const UpdateForm = ({projectName, projectDescription}) => {
             label="Project name"
             placeholder="Project name"
             name="name"
-            value={form.name || projectName|| ''}
+            value={form.name || ''}
             onChange={onChange}
             error={formatErrorPrompt('name')}
           />
@@ -148,7 +153,7 @@ const UpdateForm = ({projectName, projectDescription}) => {
             label="Project description"
             placeholder="Project description"
             name="description"
-            value={form.description || projectDescription || ''}
+            value={form.description || ''}
             onChange={onChange}
             error={formatErrorPrompt('description')}
           />
@@ -156,7 +161,7 @@ const UpdateForm = ({projectName, projectDescription}) => {
             fluid
             control={Button}
             content="Submit"
-            disabled={!isValid || loading || loadedFiles.length === 0}
+            disabled={!isValid || loading }
             onClick={submit}
             positive
             loading={loading}

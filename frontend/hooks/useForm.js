@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { AuthContext } from '../contexts/AuthContext'
+import { AuthContext } from '@/contexts/AuthContext'
 
 export default function (schema) {
   const [form, setForm] = useState({})
@@ -14,6 +14,11 @@ export default function (schema) {
         e.target.type === 'checkbox' ? e.target.checked : e.target.value,
     }))
   }
+
+  const populate = (data) => {
+    setForm({ _csrf: csrf, ...data, })
+  }
+
   const { error } = schema.validate({ ...form })
   const isValid = error === undefined
 
@@ -28,5 +33,5 @@ export default function (schema) {
     return isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
   }
 
-  return [form, onChange, isValid, errors, formatErrorPrompt]
+  return {form, onChange, populate, isValid, errors, formatErrorPrompt}
 }
