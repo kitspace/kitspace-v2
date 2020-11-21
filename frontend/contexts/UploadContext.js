@@ -14,7 +14,7 @@ export const UploadContext = createContext({
   allFiles: [],
   loadedFiles: [],
   loadFiles: () => {},
-  uploadFile: async () => {},
+  uploadFile: async (repo, path, content, csrf) => true,
 })
 
 export default function UploadContextProvider(props) {

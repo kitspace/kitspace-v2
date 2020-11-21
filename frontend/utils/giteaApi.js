@@ -40,6 +40,27 @@ export const createRepo = async (name, description, csrf) => {
 }
 
 /**
+ * Update a repo with new fields
+ * @param repo {string}
+ * @param updateFields{Object}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const updateRepo = async (repo, updateFields, csrf) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}?_csrf=${csrf}`
+
+  const res = await fetch(endpoint, {
+    method: 'PATCH',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updateFields),
+  })
+
+  return res.ok
+}
+
+/**
  * Mirror an existing remote git repo to a Gitea repo
  * @param remoteRepo: url of the remote repo
  * @param uid
@@ -90,6 +111,24 @@ export const getRepoFiles = async (repo, csrf) => {
     headers: { 'Content-Type': 'application/json' },
   })
 
+  return res.ok ? await res.json() : null
+}
+
+/**
+ * Get repo details
+ * @param fullname
+ * @returns {Promise<Object|null>}
+ */
+export const getRepo = async fullname => {
+  const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+  const repoUrl = `${giteaApiUrl}/repos/${fullname}`
+
+  const res = await fetch(repoUrl, {
+    method: 'GET',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'application/json' },
+  })
   return res.ok ? await res.json() : null
 }
 
