@@ -1,4 +1,14 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+
+import _ from 'lodash'
+
+import {
+  getRepoFiles,
+  projectNameFromPath,
+  uploadFile as uploadFileToGitea,
+} from '@utils/giteaApi'
+import { AuthContext } from '@/contexts/AuthContext'
 
 export const UploadContext = createContext({
   loadedFiles: [],
@@ -7,8 +17,42 @@ export const UploadContext = createContext({
 })
 
 export default function UploadContextProvider(props) {
+  const { asPath } = useRouter()
+  const { csrf } = useContext(AuthContext)
   const [loadedFiles, setLoadedFiles] = useState([])
+  const [repoFiles, setRepoFiles] = useState([])
+  const [allFiles, setAllFiles] = useState([])
+  const [isUpdateRoute, setIsUpdateRoute] = useState(false)
   const [project, setProject] = useState('')
+  const [fetchedRemote, setFetchedRemote] = useState(false)
+
+  useEffect(() => {
+    setIsUpdateRoute(RegExp('^/projects/update').test(asPath))
+  }, [asPath, allFiles])
+
+  // Fetch remote repo files
+  useEffect(() => {
+    const getRemoteFiles = async () => {
+      const repo = projectNameFromPath(asPath)
+      const files = await getRepoFiles(repo, csrf)
+      const filesDetails = files.map(({ name, size }) => ({ name, size }))
+      setRepoFiles(filesDetails)
+    }
+    if (isUpdateRoute && !fetchedRemote) {
+      getRemoteFiles().then()
+      setFetchedRemote(true)
+    }
+  }, [asPath, allFiles])
+
+  useEffect(() => {
+    const uniq = _.uniqBy([...allFiles, ...loadedFiles], 'name')
+    setAllFiles(uniq)
+  }, [loadedFiles])
+
+  useEffect(() => {
+    const uniq = _.uniqBy([...allFiles, ...repoFiles], 'name')
+    setAllFiles(uniq)
+  }, [repoFiles])
 
   const loadFiles = files => {
     if (files != null) {
@@ -34,47 +78,7 @@ export default function UploadContextProvider(props) {
     }
   }
 
-  /**
-   * uploads a file to an existing gitea repo
-   * @param repo: full repo name, i.e., {user}/{repoName}
-   * @param path
-   * @param content: must be Base64 encoded
-   * @param csrf
-   * @returns {Promise<boolean>}
-   */
-  const uploadFile = async (repo, path, content, csrf) => {
-    const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-    const user = window.session.user
-    const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
-
-    const reqBody = {
-      author: {
-        email: user.email,
-        name: user.login,
-      },
-      branch: 'master',
-      committer: {
-        email: 'admins@kitspace.org',
-        name: 'Kitspace',
-      },
-      // content must be Base64 encoded
-      content: btoa(content),
-      message: `Automated commit on behalf of ${user.login} (${user.email})`,
-    }
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      credentials: 'include',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reqBody),
-    })
-
-    const body = await res.json()
-    console.log(body)
-
-    return res.ok
-  }
+  const uploadFile = uploadFileToGitea
 
   return (
     <UploadContext.Provider

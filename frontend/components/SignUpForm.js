@@ -8,7 +8,7 @@ import { SignUpForm } from '../models/SignUpForm'
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
 export default function () {
-  const {form, onChange, isValid, errors, formatErrorPrompt} = useForm(SignUpForm)
+  const { form, onChange, isValid, errors, formatErrorPrompt } = useForm(SignUpForm)
   const [apiResponse, setApiResponse] = useState({})
 
   const submit = async () => {

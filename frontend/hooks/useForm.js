@@ -15,8 +15,8 @@ export default function (schema) {
     }))
   }
 
-  const populate = (data) => {
-    setForm({ _csrf: csrf, ...data, })
+  const populate = data => {
+    setForm({ _csrf: csrf, ...data })
   }
 
   const { error } = schema.validate({ ...form })
@@ -33,5 +33,5 @@ export default function (schema) {
     return isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
   }
 
-  return {form, onChange, populate, isValid, errors, formatErrorPrompt}
+  return { form, onChange, populate, isValid, errors, formatErrorPrompt }
 }

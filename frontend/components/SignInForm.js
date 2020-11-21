@@ -19,7 +19,7 @@ const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 export default function () {
   const router = useRouter()
 
-  const {form, onChange, isValid, formatErrorPrompt} = useForm(SignInForm)
+  const { form, onChange, isValid, formatErrorPrompt } = useForm(SignInForm)
   const [apiResponse, setApiResponse] = useState({})
 
   const hasApiError = apiResponse.error !== undefined

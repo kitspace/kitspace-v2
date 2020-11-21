@@ -6,7 +6,7 @@
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node server.js",
     "e2e": "cypress run",
-    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next)"
+    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)"
   },
   "license": "AGPL-3.0",
   "dependencies": {

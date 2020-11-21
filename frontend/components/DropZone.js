@@ -8,40 +8,14 @@ import { useDropzone } from 'react-dropzone'
 import { Button, Grid, List } from 'semantic-ui-react'
 import styles from '../pages/projects/new.module.scss'
 import { AuthContext } from '@/contexts/AuthContext'
-import { getRepoFiles, projectNameFromPath } from '@utils/giteaApi'
 
 const DropZone = () => {
   const { loadFiles, loadedFiles } = useContext(UploadContext)
-  const { pathname, push, asPath } = useRouter()
-  const { user, csrf } = useContext(AuthContext)
+  const { pathname, push } = useRouter()
+  const { user } = useContext(AuthContext)
 
-  const [fetchedRemote, setFetchedRemote] = useState(false)
-  const [repoFiles, setRepoFiles] = useState([])
   const [allFiles, setAllFiles] = useState([])
   const isNewProjectPage = RegExp('^/projects/new').test(pathname)
-
-  useEffect(() => {
-    const getRemoteFiles = async () => {
-      const repo = projectNameFromPath(asPath)
-      const files = await getRepoFiles(repo, csrf)
-      const filesDetails = files.map(({name, size}) => ({name, size}))
-      setRepoFiles(filesDetails)
-    }
-    if (!isNewProjectPage && !fetchedRemote) {
-      getRemoteFiles().then()
-      setFetchedRemote(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (loadedFiles?.length) {
-      setAllFiles([...allFiles, ...loadedFiles])
-    }
-
-    if (repoFiles?.length) {
-      setAllFiles([...allFiles, ...repoFiles])
-    }
-  }, [repoFiles])
 
   useEffect(() => {
     if (loadedFiles?.length) {

@@ -40,7 +40,7 @@ const UpdateProject = () => {
         <Header as="h2" textAlign="center">
           Updating {projectName} by {user}
         </Header>
-        <UpdateForm name={project.name} description={project.description}/>
+        <UpdateForm name={project.name} description={project.description} />
       </div>
     </Page>
   ) : (
@@ -49,12 +49,12 @@ const UpdateProject = () => {
   )
 }
 
-const UpdateForm = ({name, description}) => {
+const UpdateForm = ({ name, description }) => {
   const { loadedFiles, uploadFile } = useContext(UploadContext)
 
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
-  const {form, onChange, populate, isValid, formatErrorPrompt} = useForm(
+  const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUploadForm,
   )
   const [message, setMessage] = useState({
@@ -64,7 +64,7 @@ const UpdateForm = ({name, description}) => {
   })
 
   useEffect(() => {
-    populate({name,  description})
+    populate({ name, description })
   }, [])
 
   const submit = async e => {
@@ -161,7 +161,7 @@ const UpdateForm = ({name, description}) => {
             fluid
             control={Button}
             content="Submit"
-            disabled={!isValid || loading }
+            disabled={!isValid || loading}
             onClick={submit}
             positive
             loading={loading}
