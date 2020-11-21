@@ -11,6 +11,7 @@ import {
 import { AuthContext } from '@/contexts/AuthContext'
 
 export const UploadContext = createContext({
+  allFiles: [],
   loadedFiles: [],
   loadFiles: () => {},
   uploadFile: async () => {},
@@ -23,7 +24,6 @@ export default function UploadContextProvider(props) {
   const [repoFiles, setRepoFiles] = useState([])
   const [allFiles, setAllFiles] = useState([])
   const [isUpdateRoute, setIsUpdateRoute] = useState(false)
-  const [project, setProject] = useState('')
   const [fetchedRemote, setFetchedRemote] = useState(false)
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function UploadContextProvider(props) {
 
   return (
     <UploadContext.Provider
-      value={{ project, setProject, loadedFiles, loadFiles, uploadFile }}
+      value={{ loadedFiles, loadFiles, uploadFile, allFiles }}
     >
       {props.children}
     </UploadContext.Provider>

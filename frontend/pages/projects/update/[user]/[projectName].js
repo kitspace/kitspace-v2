@@ -17,6 +17,7 @@ import {
   Segment,
   TextArea,
 } from 'semantic-ui-react'
+import FilesPreview from '@/components/FilesPreview'
 
 const UpdateProject = () => {
   const router = useRouter()
@@ -136,6 +137,7 @@ const UpdateForm = ({ name, description }) => {
       <Form>
         <Segment>
           <DropZone />
+          <FilesPreview />
           <Form.Field
             fluid
             required
