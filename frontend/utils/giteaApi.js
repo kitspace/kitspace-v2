@@ -120,16 +120,33 @@ export const getRepoFiles = async (repo, csrf) => {
  * @returns {Promise<Object|null>}
  */
 export const getRepo = async fullname => {
-  const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-  const repoUrl = `${giteaApiUrl}/repos/${fullname}`
+  const endpoint = `${giteaApiUrl}/repos/${fullname}`
 
-  const res = await fetch(repoUrl, {
+  const res = await fetch(endpoint, {
     method: 'GET',
     credentials: 'include',
     mode: 'cors',
     headers: { 'Content-Type': 'application/json' },
   })
   return res.ok ? await res.json() : null
+}
+
+/**
+ * Get the repos own by the current authenticated user
+ * @param csrf{string}
+ * @returns {Promise<any|*[]>}
+ */
+export const getUserRepos = async csrf => {
+  const endpoint = `${giteaApiUrl}/user/repos?_csrf=${csrf}`
+
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    credentials: 'include',
+    mode: 'cors',
+    headers: { 'Content-Type': 'json/application' },
+  })
+
+  return res.ok ? await res.json() : []
 }
 
 /**
