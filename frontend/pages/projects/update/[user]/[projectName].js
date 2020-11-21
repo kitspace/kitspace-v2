@@ -51,7 +51,7 @@ const UpdateProject = () => {
 }
 
 const UpdateForm = ({ name, description }) => {
-  const { loadedFiles, uploadFile } = useContext(UploadContext)
+  const { allFiles, loadedFiles, uploadFile } = useContext(UploadContext)
 
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
@@ -65,8 +65,8 @@ const UpdateForm = ({ name, description }) => {
   })
 
   useEffect(() => {
-    populate({ name, description })
-  }, [])
+    populate({ name, description }, form.name == null)
+  }, [allFiles])
 
   const submit = async e => {
     e.preventDefault()
@@ -162,7 +162,7 @@ const UpdateForm = ({ name, description }) => {
           <Form.Field
             fluid
             control={Button}
-            content="Submit"
+            content="Update"
             disabled={!isValid || loading}
             onClick={submit}
             positive

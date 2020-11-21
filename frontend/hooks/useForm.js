@@ -15,8 +15,10 @@ export default function (schema) {
     }))
   }
 
-  const populate = data => {
-    setForm({ _csrf: csrf, ...data })
+  const populate = (data, predicate) => {
+    if (predicate) {
+      setForm({ _csrf: csrf, ...data })
+    }
   }
 
   const { error } = schema.validate({ ...form })
