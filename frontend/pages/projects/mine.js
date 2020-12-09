@@ -81,7 +81,7 @@ const Mine = () => {
   })
 
   return (
-    <Page>
+    <Page reqSignIn>
       <h1>My projects</h1>
       <div className={styles.projectsList}>
         <List divided relaxed>

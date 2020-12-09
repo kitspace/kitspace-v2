@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 
 const New = () => {
   return (
-    <Page title="new">
+    <Page title="new" reqSignIn>
       <div
         className={`${styles.projectsNew} ui two column stackable center aligned grid`}
       >
