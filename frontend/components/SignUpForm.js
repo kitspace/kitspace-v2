@@ -83,7 +83,7 @@ export default function () {
           <Form.Field
             fluid
             control={Input}
-            label="Email"
+            label="Password"
             placeholder="Password"
             type="password"
             name="password"
