@@ -95,6 +95,23 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
 
   return res.ok
 }
+/**
+ * delete the corresponding gitea repo for a project.
+ * @param repo {string}
+ * @param csrf {string}
+ * @returns {Promise<boolean>}
+ */
+export const deleteRepo = async (repo, csrf) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}?_csrf=${csrf}`
+  const res = await fetch(endpoint, {
+    method: 'DELETE',
+    mode: 'cors',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  return res.ok
+}
 
 /**
  * Get list of files in a gitea repo
