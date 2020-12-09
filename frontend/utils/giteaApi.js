@@ -113,7 +113,7 @@ export const deleteRepo = async (repo, csrf) => {
 }
 
 /**
- * Get list of files in a gitea repo
+ * Get list of files in a gitea repo.
  * @param repo {string}
  * @param csrf {string}
  * @returns {Promise<Array|null>}
@@ -127,7 +127,13 @@ export const getRepoFiles = async (repo, csrf) => {
     headers,
   })
 
-  return res.ok ? await res.json() : null
+  const body = await res.json()
+
+  if (body.hasOwnProperty('owner')) {
+    return []
+  } else {
+    return res.ok ? body : []
+  }
 }
 
 /**
