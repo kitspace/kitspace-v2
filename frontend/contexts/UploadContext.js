@@ -45,8 +45,14 @@ export default function UploadContextProvider(props) {
   }, [asPath, allFiles])
 
   useEffect(() => {
-    const uniq = _.uniqBy([...allFiles, ...loadedFiles], 'name')
-    setAllFiles(uniq)
+    setLoadedFiles(JSON.parse(sessionStorage.getItem('loadedFiles')))
+  }, [asPath])
+
+  useEffect(() => {
+    if (loadedFiles) {
+      const uniq = _.uniqBy([...allFiles, ...loadedFiles], 'name')
+      setAllFiles(uniq)
+    }
   }, [loadedFiles])
 
   useEffect(() => {

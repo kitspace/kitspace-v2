@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import Error from 'next/error'
 
 import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
@@ -35,7 +34,7 @@ const UpdateProject = () => {
     getProject().then()
   }, [])
 
-  return project != null ? (
+  return (
     <Page>
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
         <Header as="h2" textAlign="center">
@@ -43,14 +42,11 @@ const UpdateProject = () => {
         </Header>
         <UpdateForm
           owner={user}
-          name={project.name}
+          name={projectName}
           description={project.description}
         />
       </div>
     </Page>
-  ) : (
-    // limit the rendering of this page for already existing repos
-    <Error statusCode={404} />
   )
 }
 
@@ -72,7 +68,7 @@ const UpdateForm = ({ owner, name, description }) => {
   })
 
   useEffect(() => {
-    populate({ name, description }, form.name == null)
+    populate({ name, description }, form.name == null || form.description == null)
   }, [allFiles])
 
   const uploadLoadedFiles = async repo => {
