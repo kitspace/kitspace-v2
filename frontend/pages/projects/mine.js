@@ -11,11 +11,11 @@ import styles from './mine.module.scss'
 const DeleteModal = ({ projectName }) => {
   const { reload } = useRouter()
   const { csrf } = useContext(AuthContext)
-  console.log(projectName)
+
   return (
     <Modal
       trigger={<Button content="Delete" color="red" />}
-      heade="Heads up!"
+      header="Heads up!"
       content={`Are you sure you want to delete the ${projectName} project?`}
       actions={[
         'Cancel',
