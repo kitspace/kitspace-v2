@@ -8,19 +8,11 @@ import useForm from '@/hooks/useForm'
 import { ProjectUploadForm } from '@/models/ProjectUploadForm'
 import { UploadContext } from '@/contexts/UploadContext'
 import { getRepo, updateRepo } from '@utils/giteaApi'
-import {
-  Button,
-  Form,
-  Header,
-  Input,
-  Message,
-  Segment,
-  TextArea,
-} from 'semantic-ui-react'
+import { Button, Form, Header, Input, Segment, TextArea } from 'semantic-ui-react'
 
 const UpdateProject = () => {
   const router = useRouter()
-  const { user, projectName } = router.query
+  const { user, projectName, create } = router.query
   const { setPersistenceScope } = useContext(UploadContext)
   const [project, setProject] = useState({})
 
@@ -42,6 +34,7 @@ const UpdateProject = () => {
           Updating {projectName} by {user}
         </Header>
         <UpdateForm
+          isNew={create === 'true'}
           owner={user}
           name={projectName}
           description={project?.description}
@@ -51,52 +44,21 @@ const UpdateProject = () => {
   )
 }
 
-const UpdateForm = ({ owner, name, description }) => {
+const UpdateForm = ({ isNew, owner, name, description }) => {
   const fullname = `${owner}/${name}`
 
-  const { allFiles, loadedFiles, uploadFile, loadFiles } = useContext(UploadContext)
+  const { allFiles, loadedFiles, uploadLoadedFiles, loadFiles } = useContext(
+    UploadContext,
+  )
   const { push } = useRouter()
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUploadForm,
   )
   const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
-
-  const [message, setMessage] = useState({
-    status: 'positive',
-    body: '',
-    header: '',
-  })
 
   useEffect(() => {
     populate({ name, description }, form.name == null || form.description == null)
   }, [allFiles])
-
-  const uploadLoadedFiles = async repo => {
-    // there's a race condition happens on gitea when making several request to the upload endpoint
-    // a hacky/awful solution to get around it is simulating a scheduler with setTimeout
-    const delay = 1000
-    const res = await Promise.all(
-      loadedFiles.map(async (file, idx) => {
-        const content = sessionStorage.getItem(`loadedFile_${file.name}`)
-        console.log({ file, idx, content })
-        setTimeout(async () => {
-          const isSuccess = await uploadFile(repo, file.name, content, form._csrf)
-          if (!isSuccess) {
-            setMessage({
-              status: 'negative',
-              body: 'Something went wrong! Please, try again later.',
-              header: 'Oops!',
-            })
-            setDone(true)
-          }
-          return isSuccess
-        }, delay * idx)
-      }),
-    )
-
-    console.log(res)
-  }
 
   const submit = async e => {
     e.preventDefault()
@@ -123,16 +85,6 @@ const UpdateForm = ({ owner, name, description }) => {
 
   return (
     <>
-      <Message
-        positive={message.status === 'positive'}
-        negative={message.status === 'negative'}
-        style={{
-          display: done && !loading ? 'block' : 'none',
-        }}
-      >
-        <Message.Header>{message.header}</Message.Header>
-        {message.body}
-      </Message>
       <Form>
         <Segment>
           <DropZone onDrop={onDrop} />
@@ -160,7 +112,7 @@ const UpdateForm = ({ owner, name, description }) => {
           <Form.Field
             fluid
             control={Button}
-            content="Update"
+            content={isNew ? 'Create' : 'Update'}
             disabled={!isValid || loading}
             onClick={submit}
             positive
