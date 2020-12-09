@@ -8,9 +8,9 @@ import { AuthContext } from '@/contexts/AuthContext'
 import { deleteRepo } from 'utils/giteaApi'
 import styles from './mine.module.scss'
 
-const DeleteModal = ({ projectName}) => {
+const DeleteModal = ({ projectName }) => {
   const { reload } = useRouter()
-  const {csrf} = useContext(AuthContext)
+  const { csrf } = useContext(AuthContext)
   console.log(projectName)
   return (
     <Modal

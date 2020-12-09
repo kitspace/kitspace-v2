@@ -2,12 +2,15 @@ import path from 'path'
 import slugify from 'slugify'
 
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+const credentials = 'include'
+const mode = 'cors'
+const headers = { 'Content-Type': 'application/json' }
 
 /**
  * Create a new Gitea repo
- * @param name
- * @param description
- * @param csrf
+ * @param name {string}
+ * @param description {string}
+ * @param csrf {string}
  * @returns {Promise<*|string>}
  */
 export const createRepo = async (name, description, csrf) => {
@@ -27,14 +30,13 @@ export const createRepo = async (name, description, csrf) => {
   }
   const res = await fetch(endpoint, {
     method: 'POST',
-    credentials: 'include',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
+    credentials,
+    mode,
+    headers,
     body: JSON.stringify(giteaOptions),
   })
 
   const body = await res.json()
-  console.log(body)
 
   return res.ok ? body['full_name'] : ''
 }
@@ -51,9 +53,9 @@ export const updateRepo = async (repo, updateFields, csrf) => {
 
   const res = await fetch(endpoint, {
     method: 'PATCH',
-    credentials: 'include',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
+    credentials,
+    mode,
+    headers,
     body: JSON.stringify(updateFields),
   })
 
@@ -62,9 +64,9 @@ export const updateRepo = async (repo, updateFields, csrf) => {
 
 /**
  * Mirror an existing remote git repo to a Gitea repo
- * @param remoteRepo: url of the remote repo
- * @param uid
- * @param csrf
+ * @param remoteRepo {string} url of the remote repo
+ * @param uid {string}
+ * @param csrf {string}
  * @returns {Promise<boolean>}
  */
 export const migrateRepo = async (remoteRepo, uid, csrf) => {
@@ -84,12 +86,9 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
 
   const res = await fetch(endpoint, {
     method: 'POST',
-    mode: 'cors',
+    mode,
     credentials: 'include',
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-    },
+    headers,
     body: JSON.stringify(giteaOptions),
   })
 
@@ -105,9 +104,9 @@ export const deleteRepo = async (repo, csrf) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}?_csrf=${csrf}`
   const res = await fetch(endpoint, {
     method: 'DELETE',
-    mode: 'cors',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    mode,
+    credentials,
+    headers,
   })
 
   return res.ok
@@ -115,17 +114,17 @@ export const deleteRepo = async (repo, csrf) => {
 
 /**
  * Get list of files in a gitea repo
- * @param repo
- * @param csrf
+ * @param repo {string}
+ * @param csrf {string}
  * @returns {Promise<Array|null>}
  */
 export const getRepoFiles = async (repo, csrf) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=master&_csrf=${csrf}`
   const res = await fetch(endpoint, {
     method: 'GET',
-    mode: 'cors',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    mode,
+    credentials,
+    headers,
   })
 
   return res.ok ? await res.json() : null
@@ -141,9 +140,9 @@ export const getRepo = async fullname => {
 
   const res = await fetch(endpoint, {
     method: 'GET',
-    credentials: 'include',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
+    credentials,
+    mode,
+    headers,
   })
   return res.ok ? await res.json() : null
 }
@@ -158,9 +157,9 @@ export const getUserRepos = async csrf => {
 
   const res = await fetch(endpoint, {
     method: 'GET',
-    credentials: 'include',
-    mode: 'cors',
-    headers: { 'Content-Type': 'json/application' },
+    credentials,
+    mode,
+    headers,
   })
 
   return res.ok ? await res.json() : []
@@ -168,14 +167,13 @@ export const getUserRepos = async csrf => {
 
 /**
  * uploads a file to an existing gitea repo
- * @param repo: full repo name, i.e., {user}/{repoName}
+ * @param repo {string} full repo name, i.e., {user}/{repoName}
  * @param path
  * @param content: must be Base64 encoded
  * @param csrf
  * @returns {Promise<boolean>}
  */
 export const uploadFile = async (repo, path, content, csrf) => {
-  const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
   const user = window.session.user
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
 
@@ -196,9 +194,9 @@ export const uploadFile = async (repo, path, content, csrf) => {
 
   const res = await fetch(endpoint, {
     method: 'POST',
-    credentials: 'include',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
+    credentials,
+    mode,
+    headers,
     body: JSON.stringify(reqBody),
   })
 
