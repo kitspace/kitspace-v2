@@ -3,7 +3,7 @@ import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
 
 import { AuthContext } from '../contexts/AuthContext'
-import styles from './TitleBar.module.scss'
+import styles from './NavBar.module.scss'
 
 const logoSrc = '/static/logo.svg'
 
@@ -23,7 +23,7 @@ export const NavBar = () => {
 }
 
 function BigBar({ isProjectRoute, isSubmitRoute }) {
-  /* This is the Navbar render on big screens */
+  /* This is the Navbar rendered on big screens */
   return (
     <>
       <div className={styles.bigSiteMenu}>
@@ -78,17 +78,11 @@ function SmallBar({ isProjectRoute, isSubmitRoute }) {
 }
 
 function AddProjectButton() {
-  const { isAuthenticated } = useContext(AuthContext)
   const { push, pathname } = useRouter()
 
   const onClick = async e => {
     e.preventDefault()
-
-    if (isAuthenticated) {
-      await push('/projects/new')
-    } else {
-      await push('/login')
-    }
+    await push('/projects/new')
   }
 
   return pathname !== '/login' ? (
@@ -222,9 +216,7 @@ function LogoutButton() {
     })
 
     if (response.ok) {
-      if (router.pathname !== '/') {
-        await router.push('/')
-      }
+      await router.push('/login')
       router.reload()
     }
   }

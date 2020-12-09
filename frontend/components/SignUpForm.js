@@ -32,8 +32,8 @@ export default function () {
     }
   }
 
-  const hasApiError = apiResponse.error !== undefined
-  const isSuccessfulReg = apiResponse.duration !== undefined
+  const hasApiError = apiResponse.error != null
+  const isSuccessfulReg = apiResponse.duration != null
 
   return (
     <>

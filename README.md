@@ -54,8 +54,8 @@ docker-compose up
 
 3. Source the `.env` file with `set -a && source ../.env && set +a`
 
-3. Start the testing client with the `npx cypress open` command.
+4. Start the testing client with the `npx cypress open` command.
 
-4. The Cypress GUI should pop up.
+5. The Cypress GUI should pop up.
 
-5. To run all tests, press `Run all specs`.
+6. To run all tests, press `Run all specs`.

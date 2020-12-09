@@ -4,18 +4,19 @@ import { string, object, bool } from 'prop-types'
 import Head from './Head'
 import NavBar from './NavBar'
 import { Container, Dimmer, Loader } from 'semantic-ui-react'
+import AuthProvider from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 import UploadContextProvider from '../contexts/UploadContext'
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
-  const { push } = useRouter()
+  const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
     if (reqSignIn && !isAuthenticated) {
-      push('/login').then()
+      push(`/login?redirect=${pathname}`).then()
     } else if (reqSignOut && isAuthenticated) {
       push('/').then()
     } else {
@@ -25,9 +26,9 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 
   if (loading) {
     return (
-      <Dimmer active inverted>
-        <Loader>Loading...</Loader>
-      </Dimmer>
+      <Loader style={{ margin: 'auto' }} active>
+        Loading...
+      </Loader>
     )
   } else {
     return <Container style={{ marginTop: 30 }}>{children}</Container>
@@ -36,20 +37,15 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 
 export const Page = props => {
   return (
-    <>
-      <Head
-        description={props.head?.description}
-        ogImage={props.head?.ogImage}
-        title={props.head?.title}
-        url={props.head?.url}
-      >
+    <AuthProvider>
+      <Head>
         <title>{props.title}</title>
       </Head>
       <NavBar />
       <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
         {props.children}
       </Content>
-    </>
+    </AuthProvider>
   )
 }
 
