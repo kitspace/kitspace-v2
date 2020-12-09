@@ -21,6 +21,7 @@ import {
 const UpdateProject = () => {
   const router = useRouter()
   const { user, projectName } = router.query
+  const { setPersistenceScope } = useContext(UploadContext)
   const [project, setProject] = useState({})
 
   const fullname = `${user}/${projectName}`
@@ -30,7 +31,7 @@ const UpdateProject = () => {
       const project = await getRepo(fullname)
       setProject(project)
     }
-
+    setPersistenceScope(projectName)
     getProject().then()
   }, [])
 
@@ -43,7 +44,7 @@ const UpdateProject = () => {
         <UpdateForm
           owner={user}
           name={projectName}
-          description={project.description}
+          description={project?.description}
         />
       </div>
     </Page>

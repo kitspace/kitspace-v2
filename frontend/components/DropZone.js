@@ -15,8 +15,6 @@ const DropZone = () => {
   const isNewProjectPage = RegExp('^/projects/new').test(pathname)
 
   const onDrop = useCallback(async acceptedFiles => {
-    loadFiles(acceptedFiles)
-
     const acceptedFilesNames = acceptedFiles.map(f => f.name)
     // TODO: make this look for all PCB software generated files not just KiCad projects
     const kicadProject = acceptedFilesNames.find(f => f.endsWith('.pro'))
@@ -24,6 +22,7 @@ const DropZone = () => {
     const tempProjectName = slugify(projectWithExt.split('.')[0])
 
     if (isNewProjectPage) {
+      loadFiles(acceptedFiles, tempProjectName)
       await push(`/projects/update/${user.login}/${tempProjectName}`)
     }
   }, [])

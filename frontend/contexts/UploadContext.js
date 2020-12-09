@@ -15,11 +15,13 @@ export const UploadContext = createContext({
   loadedFiles: [],
   loadFiles: () => {},
   uploadFile: async (repo, path, content, csrf) => true,
+  setPersistenceScope: () => {},
 })
 
 export default function UploadContextProvider(props) {
   const { asPath } = useRouter()
   const { csrf } = useContext(AuthContext)
+  const [persistenceScope, setPersistenceScope] = useState('')
   const [loadedFiles, setLoadedFiles] = useState([])
   const [repoFiles, setRepoFiles] = useState([])
   const [allFiles, setAllFiles] = useState([])
@@ -45,8 +47,10 @@ export default function UploadContextProvider(props) {
   }, [asPath, allFiles])
 
   useEffect(() => {
-    setLoadedFiles(JSON.parse(sessionStorage.getItem('loadedFiles')))
-  }, [asPath])
+    setLoadedFiles(
+      JSON.parse(sessionStorage.getItem(`loadedFiles:${persistenceScope}`)),
+    )
+  }, [asPath, persistenceScope])
 
   useEffect(() => {
     if (loadedFiles) {
@@ -60,12 +64,12 @@ export default function UploadContextProvider(props) {
     setAllFiles(uniq)
   }, [repoFiles])
 
-  const loadFiles = files => {
+  const loadFiles = (files, project) => {
     if (files != null) {
       // Store a list of loaded files in sessionStorage
       const filesDetails = files.map(({ name, size }) => ({ name, size }))
       setLoadedFiles(filesDetails)
-      sessionStorage.setItem('loadedFiles', JSON.stringify(filesDetails))
+      sessionStorage.setItem(`loadedFiles:${project}`, JSON.stringify(filesDetails))
 
       // Store a files' content in sessionStorage
       files.map(file => {
@@ -88,7 +92,7 @@ export default function UploadContextProvider(props) {
 
   return (
     <UploadContext.Provider
-      value={{ loadedFiles, loadFiles, uploadFile, allFiles }}
+      value={{ loadedFiles, loadFiles, uploadFile, allFiles, setPersistenceScope }}
     >
       {props.children}
     </UploadContext.Provider>
