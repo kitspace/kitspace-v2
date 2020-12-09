@@ -1,14 +1,14 @@
 import React, { useState, useContext } from 'react'
 import { Grid, Divider, Input, Button } from 'semantic-ui-react'
-import slugify from 'slugify'
 
 import styles from './new.module.scss'
 import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
 import { AuthContext } from '@/contexts/AuthContext'
 import { UploadContext } from '@/contexts/UploadContext'
-import { migrateRepo, urlToName } from '@utils/giteaApi'
+import { createRepo, migrateRepo, urlToName } from '@utils/giteaApi'
 import { useRouter } from 'next/router'
+import { slugifiedNameFromFiles } from '@utils/index'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
@@ -33,18 +33,23 @@ const New = () => {
   )
 }
 
-const Upload = ({ user }) => {
+const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
   const { loadFiles } = useContext(UploadContext)
 
   const onDrop = async files => {
-    const acceptedFilesNames = files.map(f => f.name)
-    // TODO: make this look for all PCB software generated files not just KiCad projects
-    const kicadProject = acceptedFilesNames.find(f => f.endsWith('.pro'))
-    const projectWithExt = kicadProject || acceptedFilesNames[0]
-    const tempProjectName = slugify(projectWithExt.split('.')[0])
-    loadFiles(files, tempProjectName)
-    await push(`/projects/update/${user.login}/${tempProjectName}`)
+    const tempProjectName = slugifiedNameFromFiles(files)
+    const repo = await createRepo(tempProjectName, '', csrf)
+
+    if (repo === '') {
+      // In the case of failing to create the repo, i.e., it already exits.
+
+      // It should display a modal asking for overwriting the existing project
+      console.error('Repo already exists!')
+    } else {
+      loadFiles(files, tempProjectName)
+      await push(`/projects/update/${user}/${tempProjectName}`)
+    }
   }
 
   return <DropZone onDrop={onDrop} />

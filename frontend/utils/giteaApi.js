@@ -11,7 +11,7 @@ const headers = { 'Content-Type': 'application/json' }
  * @param name {string}
  * @param description {string}
  * @param csrf {string}
- * @returns {Promise<*|string>}
+ * @returns {Promise<string>}
  */
 export const createRepo = async (name, description, csrf) => {
   const endpoint = `${giteaApiUrl}/user/repos?_csrf=${csrf}`
