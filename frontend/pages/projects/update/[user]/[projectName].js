@@ -149,7 +149,6 @@ const UpdateForm = ({ owner, name, description }) => {
             error={formatErrorPrompt('name')}
           />
           <Form.Field
-            required
             control={TextArea}
             label="Project description"
             placeholder="Project description"

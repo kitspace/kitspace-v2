@@ -78,7 +78,6 @@ const Sync = ({ user, csrf }) => {
       <div className={styles.syncSide}>
         <Input
           className={styles.urlInput}
-          style={{ maxHeight: 37 }}
           fluid
           onChange={e => setRemoteRepo(e.target.value)}
           placeholder={remoteRepoPlaceHolder}
