@@ -35,7 +35,7 @@ export default function UploadContextProvider(props) {
     const getRemoteFiles = async () => {
       const repo = projectNameFromPath(asPath)
       const files = await getRepoFiles(repo, csrf)
-      const filesDetails = files.map(({ name, size }) => ({ name, size }))
+      const filesDetails = files?.map(({ name, size }) => ({ name, size })) || []
       setRepoFiles(filesDetails)
     }
     if (isUpdateRoute && !fetchedRemote) {
