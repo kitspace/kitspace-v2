@@ -48,7 +48,7 @@ const Upload = ({ user, csrf }) => {
       console.error('Repo already exists!')
     } else {
       loadFiles(files, tempProjectName)
-      await push(`/projects/update/${user}/${tempProjectName}`)
+      await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
     }
   }
 
