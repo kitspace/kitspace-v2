@@ -21,7 +21,7 @@ import 'semantic-ui-css/components/form.min.css'
 import 'semantic-ui-css/components/checkbox.min.css'
 import 'semantic-ui-css/components/header.min.css'
 import 'semantic-ui-css/components/loader.min.css'
-
+import 'semantic-ui-css/components/list.min.css'
 
 import './_app.scss'
 import AuthProvider from '../contexts/AuthContext'

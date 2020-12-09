@@ -54,7 +54,7 @@ const UpdateProject = () => {
 const UpdateForm = ({ owner, name, description }) => {
   const fullname = `${owner}/${name}`
 
-  const { allFiles, loadedFiles, uploadFile } = useContext(UploadContext)
+  const { allFiles, loadedFiles, uploadFile, loadFiles } = useContext(UploadContext)
   const { push } = useRouter()
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUploadForm,
@@ -117,6 +117,10 @@ const UpdateForm = ({ owner, name, description }) => {
     }
   }
 
+  const onDrop = async files => {
+    loadFiles(files, name)
+  }
+
   return (
     <>
       <Message
@@ -131,7 +135,7 @@ const UpdateForm = ({ owner, name, description }) => {
       </Message>
       <Form>
         <Segment>
-          <DropZone />
+          <DropZone onDrop={onDrop} />
           <FilesPreview />
           <Form.Field
             fluid

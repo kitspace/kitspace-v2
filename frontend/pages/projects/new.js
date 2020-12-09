@@ -1,4 +1,4 @@
-import React, { useState, useContext, useCallback } from 'react'
+import React, { useState, useContext } from 'react'
 import { Grid, Divider, Input, Button } from 'semantic-ui-react'
 import slugify from 'slugify'
 
@@ -19,13 +19,13 @@ const New = () => {
       >
         <Grid.Row>
           <Grid.Column className={styles.optionColumn}>
-            <Sync csrf={csrf} user={user}/>
+            <Sync csrf={csrf} user={user} />
           </Grid.Column>
           <Divider className={styles.divider} vertical>
             Or
           </Divider>
           <Grid.Column className={styles.optionColumn}>
-            <Upload csrf={csrf} user={user}/>
+            <Upload csrf={csrf} user={user} />
           </Grid.Column>
         </Grid.Row>
       </div>
@@ -33,10 +33,11 @@ const New = () => {
   )
 }
 
-const Upload = ({user, csrf}) => {
-  const {push} = useRouter()
-  const {loadFiles} = useContext(UploadContext)
-  const onDrop = async (files) => {
+const Upload = ({ user }) => {
+  const { push } = useRouter()
+  const { loadFiles } = useContext(UploadContext)
+
+  const onDrop = async files => {
     const acceptedFilesNames = files.map(f => f.name)
     // TODO: make this look for all PCB software generated files not just KiCad projects
     const kicadProject = acceptedFilesNames.find(f => f.endsWith('.pro'))
@@ -45,11 +46,11 @@ const Upload = ({user, csrf}) => {
     loadFiles(files, tempProjectName)
     await push(`/projects/update/${user.login}/${tempProjectName}`)
   }
-  return <DropZone onDrop={onDrop}/>
+
+  return <DropZone onDrop={onDrop} />
 }
 
-
-const Sync = ({user, csrf}) => {
+const Sync = ({ user, csrf }) => {
   const { push } = useRouter()
   const [loading, setLoading] = useState(false)
 

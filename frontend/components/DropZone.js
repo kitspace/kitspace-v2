@@ -1,11 +1,9 @@
-import React, { useCallback, useContext } from 'react'
+import React from 'react'
 
-import { UploadContext } from '@/contexts/UploadContext'
 import { useDropzone } from 'react-dropzone'
 import { Button } from 'semantic-ui-react'
 
-const DropZone = ({onDrop}) => {
-
+const DropZone = ({ onDrop }) => {
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     noClick: true,
