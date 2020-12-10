@@ -5,8 +5,17 @@ import { Page } from '../../components/Page'
 const BuyPage = () => {
   const projectLink =
     'https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/'
+  const image = 'https://files.stripe.com/links/fl_test_85nflsKKmm8PBTGZjt98zJSn'
   return (
-    <Page>
+    <Page
+      head={{
+        title: 'Electron Detector Kit',
+        ogImage: image,
+        url: 'https://shop.kitspace.org/buy/electron-detector',
+        description:
+          'A mobile low-cost detector for measuring ionising radiation like electrons.',
+      }}
+    >
       <Product
         name="Electron Detector Kit"
         description={
@@ -33,7 +42,7 @@ const BuyPage = () => {
             </p>
           </>
         }
-        imgUri="https://files.stripe.com/links/fl_test_85nflsKKmm8PBTGZjt98zJSn"
+        imgUri={image}
         price={3000}
         priceId="price_1Hi40TI6rpeFFqzwPHRltaPl"
         shippingPrice={1500}
