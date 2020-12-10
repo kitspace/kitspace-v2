@@ -5,7 +5,7 @@ import { Page } from '../../components/Page'
 const BuyPage = () => {
   const projectLink =
     'https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/'
-  const image = 'https://files.stripe.com/links/fl_test_85nflsKKmm8PBTGZjt98zJSn'
+  const image = "/static/electron_detector_kit.jpg"
   return (
     <Page
       head={{
