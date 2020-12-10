@@ -10,9 +10,9 @@ const BuyPage = () => {
     <Page
       head={{
         title: 'Electron Detector Kit',
-        ogImage: 'https://shop.kitspace.org' + image,
-        ogImageWidth: '1024',
-        ogImageHeight: '768',
+        ogImage: 'https://shop.kitspace.org/static/electron_detector_kit_meta.jpg',
+        ogImageWidth: '1200',
+        ogImageHeight: '900',
         url: 'https://shop.kitspace.org/buy/electron-detector',
         description:
           'A mobile low-cost detector for measuring ionising radiation like electrons.',
