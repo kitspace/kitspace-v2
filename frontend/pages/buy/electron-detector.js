@@ -5,12 +5,12 @@ import { Page } from '../../components/Page'
 const BuyPage = () => {
   const projectLink =
     'https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/'
-  const image = "/static/electron_detector_kit.jpg"
+  const image = '/static/electron_detector_kit.jpg'
   return (
     <Page
       head={{
         title: 'Electron Detector Kit',
-        ogImage: image,
+        ogImage: 'https://shop.kitspace.org' + image,
         url: 'https://shop.kitspace.org/buy/electron-detector',
         description:
           'A mobile low-cost detector for measuring ionising radiation like electrons.',
