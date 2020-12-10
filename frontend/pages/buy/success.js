@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Page } from '../../components/Page'
-import styles from './styles.module.scss'
+import * as styles from './styles.module.scss'
 
 export default function SuccessPage() {
   return (
