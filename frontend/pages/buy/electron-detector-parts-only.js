@@ -230,7 +230,8 @@ const Checkout = () => {
               <a href="https://kitspace.org/boards/github.com/ozel/diy_particle_detector/electron-detector/">
                 electron-detector
               </a>
-              . The circuit board, battery and metal enclosure are not included in this kit.
+              . The circuit board, battery and metal enclosure are not included in
+              this kit.
             </p>
           </div>
 
@@ -296,8 +297,9 @@ const Checkout = () => {
                     <div style={{ textEmphasis: 'italic', color: 'grey' }}>
                       <div>shipping to EU, EEA, GB or Switzerland </div>
                       <div>
-                        delivered by {new Date(
-                          new Date().getTime() + 14 * 86400000,
+                        estimated delivery by{' '}
+                        {new Date(
+                          new Date().getTime() + 7 * 86400000,
                         ).toLocaleDateString(undefined, {
                           weekday: 'long',
                           year: 'numeric',

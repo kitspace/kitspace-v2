@@ -12,7 +12,9 @@ function Home({ name, _csrf, repos }) {
           <Link href="/buy/electron-detector">Electron Detector</Link>
         </li>
         <li>
-          <Link href="/buy/electron-detector-parts-only">Electron Detector (parts only)</Link>
+          <Link href="/buy/electron-detector-parts-only">
+            Electron Detector (parts only)
+          </Link>
         </li>
       </ul>
     </Page>

@@ -47,7 +47,8 @@ const BuyPage = () => {
               month: 'long',
               day: 'numeric',
             },
-          ) + ")"
+          ) +
+          ')'
         }
         shippingPriceId="price_1Hi40LI6rpeFFqzwKKdjjpeK"
       />
