@@ -40,6 +40,8 @@ export const Page = props => {
       <Head
         description={props.head?.description}
         ogImage={props.head?.ogImage}
+        ogImageWidth={props.head?.ogImageWidth}
+        ogImageHeight={props.head?.ogImageHeight}
         title={props.head?.title}
         url={props.head?.url}
       >
