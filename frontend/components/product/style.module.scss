@@ -5,6 +5,7 @@ $border-width: 1px;
   margin-top: 3rem;
   display: grid;
   grid-template-columns: 1.2fr 1fr;
+  margin-bottom: 100px;
 
   @media (max-width: 1060px) {
     grid-template-columns: 1fr;
