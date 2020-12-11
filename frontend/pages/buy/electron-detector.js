@@ -23,6 +23,9 @@ const BuyPage = () => {
         description={
           <>
             <p>
+              A kit to make the electron detector variant of the DIY Particle Detector project.
+            </p>
+            <p>
               This open hardware project is a mobile low-cost detector for measuring
               ionising radiation like electrons from beta radiation (plus some gamma
               photons). It's an educational tool and citizen science device made for
