@@ -8,8 +8,8 @@ import styles from './index.module.scss'
 
 function Home({ name, _csrf, repos }) {
   return (
-    <Page title="home">
-      <Card.Group style={{marginTop: 50}}>
+    <Page head={{ title: 'Kitspace Shop' }}>
+      <Card.Group style={{ marginTop: 50 }}>
         <Link href="/buy/electron-detector">
           <Card className={styles.card}>
             <Image src="/static/electron_detector_kit_thumb.jpg" />
@@ -17,7 +17,8 @@ function Home({ name, _csrf, repos }) {
               <Card.Header>Electron Detector Kit</Card.Header>
               <Card.Meta>€45.00</Card.Meta>
               <Card.Description>
-                A kit to make your own particle detector, developed by Oliver Keller at CERN.
+                A kit to make your own particle detector, developed by Oliver Keller
+                at CERN.
               </Card.Description>
             </Card.Content>
           </Card>
