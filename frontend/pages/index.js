@@ -17,7 +17,7 @@ function Home({ name, _csrf, repos }) {
               <Card.Header>Electron Detector Kit</Card.Header>
               <Card.Meta>€45.00</Card.Meta>
               <Card.Description>
-                A kit to make your own electron detector, including the PCB.
+                A kit to make your own particle detector, developed by Oliver Keller at CERN.
               </Card.Description>
             </Card.Content>
           </Card>
