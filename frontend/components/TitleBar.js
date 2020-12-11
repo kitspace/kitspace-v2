@@ -28,7 +28,7 @@ export default function TitleBar(props) {
       <div className={styles.bigSocialMenu}>
         <Menu inverted pointing secondary>
           {isSubmitRoute ? null : <AddAProjectButton remoteDomain={remoteDomain} />}
-          <ContactMenu />
+          <ContactMenu remoteDomain={remoteDomain} />
         </Menu>
       </div>
       <div className={styles.smallMenu}>
@@ -51,6 +51,7 @@ export default function TitleBar(props) {
               remoteDomain={remoteDomain}
               route={props.route}
               isProjectRoute={isProjectRoute}
+              remoteDomain={remoteDomain}
             />
             <SocialMenuItems remoteDomain={remoteDomain} />
             {isSubmitRoute ? null : (
@@ -135,7 +136,7 @@ function SocialMenuItems(props) {
     </>
   )
 }
-function ContactMenu() {
+function ContactMenu({remoteDomain}) {
   return (
     <Popup
       trigger={
@@ -157,7 +158,7 @@ function ContactMenu() {
       color="blue"
     >
       <Menu secondary vertical>
-        <SocialMenuItems />
+        <SocialMenuItems remoteDomain={remoteDomain} />
       </Menu>
     </Popup>
   )
