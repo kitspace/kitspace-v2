@@ -52,12 +52,13 @@ const Product = ({
 
     // When the customer clicks on the button, redirect them to Checkout.
     const stripe = await stripePromise
+    const lineItems = [{ price: state.priceId, quantity: state.quantity }]
+    if (state.shippingPriceId != null) {
+      lineItems.push({ price: state.shippingPriceId, quantity: 1 })
+    }
     const { error } = await stripe.redirectToCheckout({
       mode: 'payment',
-      lineItems: [
-        { price: state.priceId, quantity: state.quantity },
-        { price: state.shippingPriceId, quantity: 1 },
-      ],
+      lineItems,
       successUrl: `${window.location.origin}/buy/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${window.location.origin}/buy/cancelled`,
       shippingAddressCollection: {

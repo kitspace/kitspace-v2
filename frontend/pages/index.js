@@ -15,21 +15,22 @@ function Home({ name, _csrf, repos }) {
             <Image src="/static/electron_detector_kit_thumb.jpg" />
             <Card.Content>
               <Card.Header>Electron Detector Kit</Card.Header>
-              <Card.Meta>€30.00</Card.Meta>
+              <Card.Meta>€45.00</Card.Meta>
               <Card.Description>
                 A kit to make your own electron detector, including the PCB.
               </Card.Description>
             </Card.Content>
           </Card>
         </Link>
-        <Link href="/buy/electron-detector-parts-only">
+        <Link href="/buy/ruler">
           <Card className={styles.card}>
-            <Image src="/static/electron_detector_kit_parts_thumb.jpg" />
+            <Image src="/static/ruler_thumb.jpg" />
             <Card.Content>
-              <Card.Header>Electron Detector Kit (parts only)</Card.Header>
-              <Card.Meta>€28.00</Card.Meta>
+              <Card.Header>Kitspace PCB Ruler</Card.Header>
+              <Card.Meta>€20.00</Card.Meta>
               <Card.Description>
-                A kit to make your own electron detector, without the PCB.
+                Support the Kitspace open source project by ordering our shiny PCB
+                ruler.
               </Card.Description>
             </Card.Content>
           </Card>
