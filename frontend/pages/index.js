@@ -9,7 +9,7 @@ import styles from './index.module.scss'
 function Home({ name, _csrf, repos }) {
   return (
     <Page title="home">
-      <Card.Group>
+      <Card.Group style={{marginTop: 50}}>
         <Link href="/buy/electron-detector">
           <Card className={styles.card}>
             <Image src="/static/electron_detector_kit_thumb.jpg" />
