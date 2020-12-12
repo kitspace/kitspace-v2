@@ -33,7 +33,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - '3333:3000'
+      - '3000:3000'
       - '2222:22'
     depends_on:
       - postgres
