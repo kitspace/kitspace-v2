@@ -58,6 +58,7 @@ services:
     depends_on:
       - frontend
       - gitea
+      - drone
 
   drone:
     volumes:
@@ -70,8 +71,10 @@ services:
       - 'DRONE_SERVER_HOST=${DRONE_SERVER_HOST}'
       - 'DRONE_SERVER_PROTO=${DRONE_SERVER_PROTO}'
     ports:
-      - '4444:80'
-    image: 'drone/drone:1'
+      - '4444:8080'
+    build:
+      context: drone/
+      dockerfile: Dockerfile
 
       #drone-runner:
       #  volumes:
