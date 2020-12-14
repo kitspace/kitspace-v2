@@ -69,18 +69,23 @@ const Upload = ({ user, csrf }) => {
       setModalOpen(true)
       console.error('Project already exists!')
     } else {
-      loadFiles(files, tempProjectName)
-      await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
+      loadFiles(files, projectName)
+      await push(`/projects/update/${user.login}/${projectName}?create=true`)
     }
   }
 
   const onDifferentName = async () => {
     // create repo with the new name and redirect to the update page which will have the loaded files
-    const repoName = slugify(form.name)
-    await createRepo(repoName, '', csrf)
+    setProjectName(slugify(form.name))
+    await createRepo(projectName, '', csrf)
 
-    loadFiles(files, repoName)
-    await push(`/projects/update/${user.login}/${repoName}?create=true`)
+    loadFiles(files, projectName)
+    await push(`/projects/update/${user.login}/${projectName}?create=true`)
+  }
+
+  const onUpdateExisting = async () => {
+    loadFiles(files, projectName)
+    await push(`/projects/update/${user.login}/${projectName}`)
   }
 
   const validateProjectName = async () => {
@@ -103,7 +108,7 @@ const Upload = ({ user, csrf }) => {
     } else {
       return !isValidProjectName
         ? {
-            content: `A project named "${projectName}" already exists!`,
+            content: `A project named "${form.name}" already exists!`,
             pointing: 'below',
           }
         : null
@@ -142,7 +147,7 @@ const Upload = ({ user, csrf }) => {
           <Button
             content="Update existing project"
             color="yellow"
-            onClick={() => {}}
+            onClick={onUpdateExisting}
           />
         </Modal.Actions>
       </Modal>
