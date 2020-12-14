@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Grid, Divider, Input, Button } from 'semantic-ui-react'
+import { Grid, Divider, Input, Button, Modal } from 'semantic-ui-react'
 
 import styles from './new.module.scss'
 import { Page } from '@/components/Page'
@@ -37,6 +37,8 @@ const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
   const { loadFiles } = useContext(UploadContext)
 
+  const [open, setOpen] = useState(false)
+
   const onDrop = async files => {
     const tempProjectName = slugifiedNameFromFiles(files)
     const repo = await createRepo(tempProjectName, '', csrf)
@@ -45,6 +47,7 @@ const Upload = ({ user, csrf }) => {
       // In the case of failing to create the repo, i.e., it already exits.
 
       // It should display a modal asking for overwriting the existing project
+      setOpen(true)
       console.error('Repo already exists!')
     } else {
       loadFiles(files, tempProjectName)
@@ -52,7 +55,18 @@ const Upload = ({ user, csrf }) => {
     }
   }
 
-  return <DropZone onDrop={onDrop} />
+  return (
+    <>
+      <DropZone onDrop={onDrop} />
+      <Modal
+        closeIcon
+        header="Heads up!"
+        content="You have an existing project with the same name, do you want to overwrite it?"
+        open={open}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  )
 }
 
 const Sync = ({ user, csrf }) => {

@@ -1,3 +1,5 @@
+import React from 'react'
+
 import App from 'next/app'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
@@ -22,6 +24,8 @@ import 'semantic-ui-css/components/checkbox.min.css'
 import 'semantic-ui-css/components/header.min.css'
 import 'semantic-ui-css/components/loader.min.css'
 import 'semantic-ui-css/components/list.min.css'
+import 'semantic-ui-css/components/modal.min.css'
+import 'semantic-ui-css/components/dimmer.min.css'
 
 import './_app.scss'
 import AuthProvider from '../contexts/AuthContext'
@@ -68,7 +72,7 @@ KitspaceApp.getInitialProps = async appContext => {
 
 function ErrorMessage() {
   return (
-    <div class="errorMessage">
+    <div className="errorMessage">
       <Message negative>
         <Message.Header>Server Error</Message.Header>
         <p>
