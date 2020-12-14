@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react'
-import { Grid, Divider, Input, Button, Modal } from 'semantic-ui-react'
+import React, { useState, useContext, useEffect } from 'react'
+import { Grid, Divider, Input, Button, Modal, Form } from 'semantic-ui-react'
 
 import styles from './new.module.scss'
 import { Page } from '@/components/Page'
@@ -9,6 +9,8 @@ import { UploadContext } from '@/contexts/UploadContext'
 import { createRepo, migrateRepo, urlToName } from '@utils/giteaApi'
 import { useRouter } from 'next/router'
 import { slugifiedNameFromFiles } from '@utils/index'
+import useForm from '@/hooks/useForm'
+import { ExistingProjectFrom } from '@/models/ExistingProjectForm'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
@@ -36,17 +38,23 @@ const New = () => {
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
   const { loadFiles } = useContext(UploadContext)
+  const {form, onChange, populate, isValid} = useForm(ExistingProjectFrom)
 
   const [open, setOpen] = useState(false)
+  const [projectName, setProjectName] = useState('')
+
+  useEffect(() => {
+    populate({ name: projectName }, true)
+  }, [projectName])
 
   const onDrop = async files => {
     const tempProjectName = slugifiedNameFromFiles(files)
     const repo = await createRepo(tempProjectName, '', csrf)
 
-    if (repo === '') {
-      // In the case of failing to create the repo, i.e., it already exits.
+    setProjectName(tempProjectName)
 
-      // It should display a modal asking for overwriting the existing project
+    // In the case of failing to create the repo, i.e., it already exits.
+    if (repo === '') {
       setOpen(true)
       console.error('Repo already exists!')
     } else {
@@ -55,16 +63,37 @@ const Upload = ({ user, csrf }) => {
     }
   }
 
+  const isValidProjectName = () => {
+    // should check if the new name is will also cause a conflict.
+    return isValid
+  }
+
   return (
     <>
       <DropZone onDrop={onDrop} />
-      <Modal
-        closeIcon
-        header="Heads up!"
-        content="You have an existing project with the same name, do you want to overwrite it?"
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      <Modal closeIcon open={open} onClose={() => setOpen(false)}>
+        <Modal.Header>Heads up!</Modal.Header>
+        <Modal.Content>
+          <p>
+            You have an existing project with the same name. You can either choose a
+            different name or update this file in the existing project.
+          </p>
+          <Form>
+            <Form.Field
+              fluid
+              control={Input}
+              label="Project name"
+              name="name"
+              value={form.name || ''}
+              onChange={onChange}
+            />
+          </Form>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button content="Choose different name" color="yellow" disabled={!isValidProjectName} />
+          <Button content="Update existing project" color="green" />
+        </Modal.Actions>
+      </Modal>
     </>
   )
 }
