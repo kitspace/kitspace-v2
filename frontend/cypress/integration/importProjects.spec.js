@@ -25,4 +25,11 @@ describe('Importing a project behavior validation', () => {
     cy.get('.ui.repository.list').children().get('.header').contains(repoName)
     cy.visit('/projects/mine')
   })
+
+  it("should redirect to upload page if there's no conflict", () => {
+    const fixtureFile = 'example.json'
+
+    cy.visit('/projects/new')
+    cy.get('.dropzone').attachFile(fixtureFile, { subjectType: 'drag-n-drop' })
+  })
 })

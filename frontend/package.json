@@ -34,6 +34,7 @@
     "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
     "cypress": "^5.1.0",
+    "cypress-file-upload": "^4.1.1",
     "faker": "^5.1.0",
     "husky": ">=4",
     "lint-staged": ">=10",

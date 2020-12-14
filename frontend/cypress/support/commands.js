@@ -1,6 +1,7 @@
+import 'cypress-file-upload'
+
 const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
-const signOutEndpoint = 'http://gitea.kitspace.test:3000/user/logout'
 
 Cypress.Commands.add('createUser', (username, email, password) => {
   cy.request({
