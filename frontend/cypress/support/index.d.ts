@@ -75,4 +75,13 @@ declare namespace Cypress {
      */
     hasProperFields(schema: Joi.ObjectSchema)
   }
+
+  interface Chainable<Subject> {
+    /**
+     * sync the test repo for the current test user
+     * @example
+     * syncTestRepo()
+     */
+    syncTestRepo()
+  }
 }

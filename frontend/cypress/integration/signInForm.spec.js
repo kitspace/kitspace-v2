@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-import { SignInForm } from '../../models/SignInForm'
+import { SignInForm } from '@/models/SignInForm'
 
 describe('Log in form validation', () => {
   beforeEach(() => {
