@@ -1,13 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Grid, Divider, Input, Button, Modal, Form } from 'semantic-ui-react'
 
+import slugify from 'slugify'
+import { useRouter } from 'next/router'
+
 import styles from './new.module.scss'
 import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
 import { AuthContext } from '@/contexts/AuthContext'
 import { UploadContext } from '@/contexts/UploadContext'
 import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
-import { useRouter } from 'next/router'
 import { slugifiedNameFromFiles } from '@utils/index'
 import useForm from '@/hooks/useForm'
 import { ExistingProjectFrom } from '@/models/ExistingProjectForm'
@@ -42,7 +44,8 @@ const Upload = ({ user, csrf }) => {
     ExistingProjectFrom,
   )
 
-  const [open, setOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [files, setFiles] = useState([])
   const [projectName, setProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
 
@@ -59,15 +62,25 @@ const Upload = ({ user, csrf }) => {
     const repo = await createRepo(tempProjectName, '', csrf)
 
     setProjectName(tempProjectName)
+    setFiles(files)
 
     // In the case of failing to create the repo, i.e., it already exits.
     if (repo === '') {
-      setOpen(true)
+      setModalOpen(true)
       console.error('Project already exists!')
     } else {
       loadFiles(files, tempProjectName)
       await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
     }
+  }
+
+  const onDifferentName = async () => {
+    // create repo with the new name and redirect to the update page which will have the loaded files
+    const repoName = slugify(form.name)
+    await createRepo(repoName, '', csrf)
+
+    loadFiles(files, repoName)
+    await push(`/projects/update/${user.login}/${repoName}?create=true`)
   }
 
   const validateProjectName = async () => {
@@ -100,7 +113,7 @@ const Upload = ({ user, csrf }) => {
   return (
     <>
       <DropZone onDrop={onDrop} />
-      <Modal closeIcon open={open} onClose={() => setOpen(false)}>
+      <Modal closeIcon open={modalOpen} onClose={() => setModalOpen(false)}>
         <Modal.Header>Heads up!</Modal.Header>
         <Modal.Content>
           <p>
@@ -122,10 +135,15 @@ const Upload = ({ user, csrf }) => {
         <Modal.Actions>
           <Button
             content="Choose different name"
-            color="yellow"
+            color="green"
             disabled={!isValidProjectName}
+            onClick={onDifferentName}
           />
-          <Button content="Update existing project" color="green" />
+          <Button
+            content="Update existing project"
+            color="yellow"
+            onClick={() => {}}
+          />
         </Modal.Actions>
       </Modal>
     </>
