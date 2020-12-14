@@ -6,7 +6,7 @@ import { Page } from '@/components/Page'
 import DropZone from '@/components/DropZone'
 import { AuthContext } from '@/contexts/AuthContext'
 import { UploadContext } from '@/contexts/UploadContext'
-import { createRepo, migrateRepo, urlToName } from '@utils/giteaApi'
+import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
 import { useRouter } from 'next/router'
 import { slugifiedNameFromFiles } from '@utils/index'
 import useForm from '@/hooks/useForm'
@@ -38,14 +38,21 @@ const New = () => {
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
   const { loadFiles } = useContext(UploadContext)
-  const {form, onChange, populate, isValid} = useForm(ExistingProjectFrom)
+  const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
+    ExistingProjectFrom,
+  )
 
   const [open, setOpen] = useState(false)
   const [projectName, setProjectName] = useState('')
+  const [isValidProjectName, setIsValidProjectName] = useState(false)
 
   useEffect(() => {
     populate({ name: projectName }, true)
   }, [projectName])
+
+  useEffect(() => {
+    validateProjectName().then()
+  }, [form.name])
 
   const onDrop = async files => {
     const tempProjectName = slugifiedNameFromFiles(files)
@@ -56,16 +63,38 @@ const Upload = ({ user, csrf }) => {
     // In the case of failing to create the repo, i.e., it already exits.
     if (repo === '') {
       setOpen(true)
-      console.error('Repo already exists!')
+      console.error('Project already exists!')
     } else {
       loadFiles(files, tempProjectName)
       await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
     }
   }
 
-  const isValidProjectName = () => {
-    // should check if the new name is will also cause a conflict.
-    return isValid
+  const validateProjectName = async () => {
+    // Check if the new name will also cause a conflict.
+    const project = await getRepo(`${user.login}/${form.name}`)
+
+    if (project == null) {
+      setIsValidProjectName(isValid)
+    } else {
+      setIsValidProjectName(false)
+    }
+  }
+
+  const formatProjectNameError = () => {
+    // disjoint form validation errors, e.g, maximum length, not empty, etc, with conflicting project name errors
+    const formErrors = formatErrorPrompt('name')
+
+    if (formErrors) {
+      return formErrors
+    } else {
+      return !isValidProjectName
+        ? {
+            content: `A project named "${projectName}" already exists!`,
+            pointing: 'below',
+          }
+        : null
+    }
   }
 
   return (
@@ -86,11 +115,16 @@ const Upload = ({ user, csrf }) => {
               name="name"
               value={form.name || ''}
               onChange={onChange}
+              error={formatProjectNameError()}
             />
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button content="Choose different name" color="yellow" disabled={!isValidProjectName} />
+          <Button
+            content="Choose different name"
+            color="yellow"
+            disabled={!isValidProjectName}
+          />
           <Button content="Update existing project" color="green" />
         </Modal.Actions>
       </Modal>
