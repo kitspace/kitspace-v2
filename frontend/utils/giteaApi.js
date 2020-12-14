@@ -188,11 +188,11 @@ export const uploadFile = async (repo, path, content, csrf) => {
       email: user.email,
       name: user.login,
     },
-    branch: 'master',
     committer: {
-      email: 'admins@kitspace.org',
-      name: 'Kitspace',
+      email: user.email,
+      name: user.email,
     },
+    branch: 'master',
     // content must be Base64 encoded
     content: btoa(content),
     message: `Automated commit on behalf of ${user.login} (${user.email})`,
