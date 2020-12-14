@@ -3,8 +3,16 @@
   "version": "0.0.1",
   "description": "Asset processor for kitspace-v2",
   "main": "index.js",
-  "license": "AGPLv3",
+  "license": "AGPL-3.0",
+  "scripts": {
+    "dev": "nodemon server.js --watch server.js",
+    "start": "node server.js",
+    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next -v node_modules)"
+  },
   "dependencies": {
     "gitea-webhook-handler": "^1.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
   }
 }

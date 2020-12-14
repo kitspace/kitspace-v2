@@ -11,4 +11,4 @@ RUN yarn install
 
 COPY . .
 
-CMD ["node", "server.js"]
+CMD ["yarn", "dev"]
