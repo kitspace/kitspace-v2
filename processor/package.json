@@ -5,14 +5,24 @@
   "main": "index.js",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev": "nodemon server.js --watch server.js",
+    "dev": "nodemon server.js --watch server.js --watch tasks",
     "start": "node server.js",
     "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next -v node_modules)"
   },
   "dependencies": {
-    "gitea-webhook-handler": "^1.0.6"
+    "gitea-webhook-handler": "^1.0.6",
+    "globule": "^1.0.0",
+    "js-yaml": "^3.3.1",
+    "jszip": "^3.1.1",
+    "whats-that-gerber": "4.0.0-next.13",
+    "pcb-stackup": "4.0.0-next.13",
+    "xml-element-string": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
+  },
+  "resolutions": {
+    "pcb-stackup-core": "4.0.0-next.13",
+    "whats-that-gerber": "4.0.0-next.13"
   }
 }

@@ -5,6 +5,8 @@ const handler = createHandler({
   secret: process.env.GITEA_WEBHOOK_SECRET,
 })
 
+const processGerbers = require('./tasks/processGerbers')
+
 const PORT = 5000
 
 http
@@ -17,6 +19,11 @@ http
   .listen(PORT)
 
 console.log('Kitspace asset processor listening on port', PORT)
+
+handler.on('*', event => {
+  console.log(event)
+})
+
 
 handler.on('error', err => {
   console.error('Error:', err.message)
