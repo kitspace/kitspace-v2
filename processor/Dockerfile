@@ -1,6 +1,9 @@
-FROM node:10.16.0-alpine
+FROM node:14-alpine
 
 ENV NODE_ENV=development
+
+RUN apk --no-cache add \
+    git
 
 RUN mkdir /app
 WORKDIR /app
