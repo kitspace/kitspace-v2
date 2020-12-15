@@ -1,14 +1,13 @@
 const fs = require('fs')
 const globule = require('globule')
 const path = require('path')
-const yaml = require('js-yaml')
 const cp = require('child_process')
 const Jszip = require('jszip')
 
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
 
-module.exports = (root, gerbers, targets) => {
+module.exports = (root, gerbers, targets, color) => {
   const {
     topSvgPath,
     bottomSvgPath,
@@ -58,25 +57,6 @@ module.exports = (root, gerbers, targets) => {
       }),
     )
 
-  let file, color
-  if (fs.existsSync(`${root}/kitnic.yaml`)) {
-    file = fs.readFileSync(`${root}/kitnic.yaml`)
-  } else if (fs.existsSync(`${root}/kitspace.yaml`)) {
-    file = fs.readFileSync(`${root}/kitspace.yaml`)
-  } else if (fs.existsSync(`${root}/kitspace.yml`)) {
-    file = fs.readFileSync(`${root}/kitspace.yml`)
-  }
-
-  const multiKey = path.relative(path.join('build', root), path.dirname(zipPath))
-
-  if (file != null) {
-    info = yaml.safeLoad(file)
-    if (info.multi && multiKey) {
-      color = info.multi[multiKey].color
-    } else {
-      color = info.color
-    }
-  }
   boardBuilder(stackupData, color || 'green', function (error, stackup) {
     if (error != null) {
       throw error
