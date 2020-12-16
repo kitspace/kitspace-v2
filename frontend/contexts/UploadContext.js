@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import _ from 'lodash'
 
 import {
+  getRepo,
   getRepoFiles,
   projectNameFromPath,
   uploadFile as uploadFileToGitea,
@@ -35,11 +36,16 @@ export default function UploadContextProvider(props) {
   // Fetch remote repo files
   useEffect(() => {
     const getRemoteFiles = async () => {
-      const repo = projectNameFromPath(asPath)
-      const files = await getRepoFiles(repo, csrf)
+      const projectName = projectNameFromPath(asPath)
+
+      const projectDetails = await getRepo(projectName)
+      const defaultBranch = projectDetails.default_branch
+
+      const files = await getRepoFiles(projectName, csrf, defaultBranch)
       const filesDetails = files?.map(({ name, size }) => ({ name, size })) || []
       setRepoFiles(filesDetails)
     }
+
     if (isUpdateRoute && !fetchedRemote) {
       getRemoteFiles().then()
       setFetchedRemote(true)
