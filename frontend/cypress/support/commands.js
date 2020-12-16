@@ -39,7 +39,7 @@ Cypress.Commands.add('signIn', (username, password) => {
 Cypress.Commands.add('signOut', () => {
   cy.wait(100)
   cy.window().then(win => {
-    if (win.session.user !== null) {
+    if (win.session?.user != null) {
       cy.get('#logout').click()
     }
   })
