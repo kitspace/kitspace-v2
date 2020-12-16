@@ -1,8 +1,17 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Grid, Divider, Input, Button, Modal, Form } from 'semantic-ui-react'
+import {
+  Grid,
+  Divider,
+  Input,
+  Button,
+  Modal,
+  Form,
+  Message,
+} from 'semantic-ui-react'
 
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
+import { isEmpty } from 'lodash'
 
 import styles from './new.module.scss'
 import { Page } from '@/components/Page'
@@ -13,6 +22,7 @@ import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
 import useForm from '@/hooks/useForm'
 import { ExistingProjectFrom } from '@/models/ExistingProjectForm'
+import { SyncRepoFrom } from '@/models/SyncRepoForm'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
@@ -157,23 +167,47 @@ const Upload = ({ user, csrf }) => {
 
 const Sync = ({ user, csrf }) => {
   const { push } = useRouter()
+  const { form, errors, onChange } = useForm(SyncRepoFrom)
+
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState({})
 
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
-  const [remoteRepo, setRemoteRepo] = useState('')
 
-  const uid = user.id
-  const username = user.login
+  const uid = user?.id
+  const username = user?.login
+
+  useEffect(() => {
+    if (!isEmpty(errors) && form.url !== '') {
+      setMessage({
+        content: `Please, enter a valid URL to a remote git repo e.g., ${remoteRepoPlaceHolder}`,
+        color: 'yellow',
+      })
+    } else {
+      setMessage({})
+    }
+  }, [form.url])
 
   const handleClick = async () => {
     setLoading(true)
-    const repo = remoteRepo || remoteRepoPlaceHolder
+    setMessage({
+      content: 'Processing the repository, this may take a while...',
+      color: 'green',
+    })
+
+    const repo = form.url || remoteRepoPlaceHolder
     const migrateSuccessfully = await migrateRepo(repo, uid, csrf)
 
     if (migrateSuccessfully) {
       const repoName = urlToName(repo)
-      setLoading(false)
+      setMessage({content: 'Migrated successfully, redirecting the project page...', color: 'green'})
       await push(`/projects/update/${username}/${repoName}`)
+    } else {
+      setMessage({
+        content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
+        color: 'red',
+      })
+      setLoading(false)
     }
   }
 
@@ -181,23 +215,32 @@ const Sync = ({ user, csrf }) => {
     <div>
       <p>Sync an existing Git repository</p>
       <div className={styles.syncSide}>
-        <Input
-          className={styles.urlInput}
-          fluid
-          onChange={e => setRemoteRepo(e.target.value)}
-          placeholder={remoteRepoPlaceHolder}
-          value={remoteRepo}
-        />
-        <div className={styles.syncButton}>
-          <Button
-            color="green"
-            onClick={handleClick}
-            loading={loading}
-            disabled={loading}
-          >
-            Sync
-          </Button>
-        </div>
+        <Form>
+          {!isEmpty(message) ? (
+            <Message color={message.color}>{message.content}</Message>
+          ) : null}
+          <Form.Group inline>
+            <Form.Field
+              fluid
+              control={Input}
+              className={styles.urlInput}
+              name="url"
+              placeholder={remoteRepoPlaceHolder}
+              onChange={onChange}
+              value={form.url || ''}
+            />
+            <div className={styles.syncButton}>
+              <Form.Field
+                control={Button}
+                content="Sync"
+                color="green"
+                loading={loading}
+                disabled={loading}
+                onClick={handleClick}
+              />
+            </div>
+          </Form.Group>
+        </Form>
       </div>
     </div>
   )
