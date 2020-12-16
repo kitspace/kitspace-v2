@@ -4,7 +4,7 @@ const debounce = require('lodash.debounce')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
-const yaml = require('js-yaml')
+const jsYaml = require('js-yaml')
 
 const processGerbers = require('./tasks/processGerbers')
 
@@ -27,7 +27,7 @@ async function run(dir) {
   const yamlFile = await Promise.all(
     filePaths.map(tryReadFile),
   ).then(([yaml, yml]) => (yaml ? yaml : yml))
-  const kitspaceYaml = yaml.safeLoad(yamlFile) || {}
+  const kitspaceYaml = jsYaml.safeLoad(yamlFile) || {}
   console.log(kitspaceYaml)
 }
 
@@ -43,7 +43,7 @@ function tryReadFile(filePath) {
 
 async function sync(dir, checkoutDir) {
   if (await exists(checkoutDir)) {
-    const x = await exec(`cd ${checkoutDir} && git pull`).catch(err => {
+    await exec(`cd ${checkoutDir} && git pull`).catch(err => {
       // repos with no branches yet will create this error
       if (
         err.stderr ===
