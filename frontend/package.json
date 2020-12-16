@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "file-loader": "^6.0.0",
     "joi": "^17.2.1",
+    "loadsh": "^0.0.4",
     "next": "^9.4.1",
     "node-sass": "^4.13.0",
     "raw-loader": "^4.0.0",

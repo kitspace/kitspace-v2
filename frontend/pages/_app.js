@@ -1,3 +1,5 @@
+import React from 'react'
+
 import App from 'next/app'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
@@ -21,7 +23,6 @@ import 'semantic-ui-css/components/form.min.css'
 import 'semantic-ui-css/components/checkbox.min.css'
 import 'semantic-ui-css/components/header.min.css'
 import 'semantic-ui-css/components/loader.min.css'
-
 
 import './_app.scss'
 

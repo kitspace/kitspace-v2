@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Button, Form, Header, Input, Message, Segment } from 'semantic-ui-react'
 
+import { isEmpty } from 'lodash'
+
 import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
 import { SignUpForm } from '../models/SignUpForm'
@@ -44,7 +46,8 @@ export default function () {
         negative={hasApiError}
         positive={isSuccessfulReg}
         style={{
-          display: hasApiError || isSuccessfulReg ? 'block' : 'none',
+          display:
+            (hasApiError || isSuccessfulReg) && isEmpty(errors) ? 'block' : 'none',
         }}
       >
         <Message.Header
