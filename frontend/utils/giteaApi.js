@@ -142,6 +142,19 @@ export const getRepoFiles = async (repo, csrf, branch) => {
 }
 
 /**
+ * get the files in repo's default branch
+ * @param repo {string}
+ * @param csrf {string}
+ * @returns {Promise<Array|null>}
+ */
+export const getDefaultBranchFiles = async (repo, csrf) => {
+  const repoDetails = await getRepo(repo)
+  const defaultBranch = repoDetails.default_branch
+
+  return getRepoFiles(repo, csrf, defaultBranch)
+}
+
+/**
  * Get repo details
  * @param fullname
  * @returns {Promise<Object|null>}
