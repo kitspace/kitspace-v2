@@ -1,12 +1,14 @@
 import React from 'react'
 
 import { useDropzone } from 'react-dropzone'
+import { fromEvent } from 'file-selector'
 import { Button } from 'semantic-ui-react'
 
 const DropZone = ({ onDrop }) => {
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     noClick: true,
+    getFilesFromEvent: e => fromEvent(e),
   })
 
   return (

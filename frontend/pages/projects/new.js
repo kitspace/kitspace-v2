@@ -70,7 +70,7 @@ const Upload = ({ user, csrf }) => {
       console.error('Project already exists!')
     } else {
       loadFiles(files, projectName)
-      await push(`/projects/update/${user.login}/${projectName}?create=true`)
+      await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
     }
   }
 
