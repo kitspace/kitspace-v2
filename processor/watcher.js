@@ -10,6 +10,7 @@ const processGerbers = require('./tasks/processGerbers')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
+const accessPromise = util.promisify(fs.access)
 
 function watch() {
   chokidar.watch('/repositories/*/*').on('addDir', dir => {
@@ -20,6 +21,7 @@ function watch() {
 
 async function run(dir) {
   const checkoutDir = path.join('/checkout', path.relative('/repositories', dir))
+  const filesDir = path.join('/files', path.relative('/repositories', dir))
   await sync(dir, checkoutDir)
   const filePaths = ['kitspace.yaml', 'kitspace.yml'].map(p =>
     path.join(checkoutDir, p),
@@ -28,7 +30,7 @@ async function run(dir) {
     filePaths.map(tryReadFile),
   ).then(([yaml, yml]) => (yaml ? yaml : yml))
   const kitspaceYaml = jsYaml.safeLoad(yamlFile) || {}
-  console.log(kitspaceYaml)
+  await processGerbers(checkoutDir, kitspaceYaml.gerbers, kitspaceYaml.color, filesDir)
 }
 
 function tryReadFile(filePath) {
@@ -63,8 +65,7 @@ async function sync(dir, checkoutDir) {
 }
 
 function exists(file) {
-  return fs.promises
-    .access(file, fs.constants.F_OK)
+  return accessPromise(file, fs.constants.F_OK)
     .then(x => x == null)
     .catch(err => {
       if (err.code === 'ENOENT') {
