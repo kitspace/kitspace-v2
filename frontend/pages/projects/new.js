@@ -64,7 +64,7 @@ const Upload = ({ user, csrf }) => {
   }, [projectName])
 
   useEffect(() => {
-    if(form.name) {
+    if (form.name) {
       validateProjectName().then()
     }
   }, [form.name])
@@ -202,7 +202,10 @@ const Sync = ({ user, csrf }) => {
 
     if (migrateSuccessfully) {
       const repoName = urlToName(repo)
-      setMessage({content: 'Migrated successfully, redirecting the project page...', color: 'green'})
+      setMessage({
+        content: 'Migrated successfully, redirecting the project page...',
+        color: 'green',
+      })
       await push(`/projects/update/${username}/${repoName}`)
     } else {
       setMessage({

@@ -11,6 +11,7 @@ declare namespace Cypress {
      */
     stubSignUpReq(ok: boolean, response: object): Chainable<any>
   }
+
   interface Chainable<Subject> {
       /**
      * stub all request to the Gitea `/user/kitspace/sign_in`
@@ -20,13 +21,23 @@ declare namespace Cypress {
     stubSignInReq(ok: boolean, response: object, path?: string): Chainable<any>
   }
 
-    interface Chainable<Subject> {
+  interface Chainable<Subject> {
     /**
      * Creat a user into Gitea
      * @example
      * cy.creatUser(username, email, password)
      */
     createUser(username: string, email: string, password: string): Chainable<any>
+  }
+
+  interface Chainable<Subject> {
+    /**
+     * stub request for the
+     * @param ok
+     * @param response
+     * @param projectName
+     */
+    stubUpdateProject(ok: boolean, response: object, projectName: string): Chainable<any>
   }
 
   interface Chainable<Subject> {

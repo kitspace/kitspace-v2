@@ -8,8 +8,8 @@ describe('Updating a project behavior validation', () => {
   before(() => {
     cy.clearCookies()
     // create a user and sign him in
-  const email = faker.internet.email()
-  const password = '123456'
+    const email = faker.internet.email()
+    const password = '123456'
     cy.createUser(username, email, password)
     cy.visit('/login?login')
     cy.signIn(username, password)
