@@ -64,7 +64,9 @@ const Upload = ({ user, csrf }) => {
   }, [projectName])
 
   useEffect(() => {
-    validateProjectName().then()
+    if(form.name) {
+      validateProjectName().then()
+    }
   }, [form.name])
 
   const onDrop = async files => {
