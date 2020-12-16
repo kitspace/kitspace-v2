@@ -125,6 +125,20 @@ describe('Sign up form submission', () => {
     cy.get('tbody').get('tr').contains(username).should('be.visible')
   })
 
+  it('should remove success message if there is any validation error', () => {
+    cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
+    cy.signUp(username, email, password)
+
+    // For valid submission the success message should be visible
+    cy.get('.positive').as('message')
+    cy.get('@message').should('be.visible')
+
+    // After deleting the password the there's a form validation error therefore
+    // the success message should disappear
+    cy.get('input[name=password]').clear()
+    cy.get('@message').should('not.be.visible')
+  })
+
   it('should display error message on submitting a from with used username', () => {
     cy.stubSignUpReq(false, { error: 'Conflict', message: 'User already exists.' })
 
