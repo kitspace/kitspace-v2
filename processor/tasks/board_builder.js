@@ -7,7 +7,7 @@ const options = {
     bare: '#C87533',
     gold: 'goldenrod',
     'Ni/Au': 'whitesmoke',
-    hasl: 'silver'
+    hasl: 'silver',
   },
 
   // soldermask
@@ -19,7 +19,7 @@ const options = {
     blue: 'rgba(  0,  30, 104, 0.90)',
     purple: 'rgba( 46,   0,  81, 0.90)',
     black: 'rgba(  0,   0,   0, 0.90)',
-    white: 'rgba(255, 255, 255, 0.90)'
+    white: 'rgba(255, 255, 255, 0.90)',
   },
 
   // silkscreen
@@ -29,61 +29,61 @@ const options = {
     green: 'green',
     blue: 'blue',
     black: 'black',
-    white: 'white'
-  }
+    white: 'white',
+  },
 }
 
-const styleToOption = ({copperFinish, solderMask, silkScreen}) => ({
+const styleToOption = ({ copperFinish, solderMask, silkScreen }) => ({
   fr4: '#4D542C',
   cu: 'lightgrey',
   cf: options.cf[copperFinish],
   sm: options.sm[solderMask],
   ss: options.ss[silkScreen],
   sp: 'rgba(0, 0, 0, 0.0)',
-  out: 'black'
+  out: 'black',
 })
 
 const colorToStyle = {
   green: {
     solderMask: 'green',
     copperFinish: 'gold',
-    silkScreen: 'white'
+    silkScreen: 'white',
   },
   red: {
     solderMask: 'red',
     copperFinish: 'gold',
-    silkScreen: 'white'
+    silkScreen: 'white',
   },
   blue: {
     solderMask: 'blue',
     copperFinish: 'hasl',
-    silkScreen: 'white'
+    silkScreen: 'white',
   },
   black: {
     solderMask: 'black',
     copperFinish: 'hasl',
-    silkScreen: 'white'
+    silkScreen: 'white',
   },
   white: {
     solderMask: 'white',
     copperFinish: 'gold',
-    silkScreen: 'black'
+    silkScreen: 'black',
   },
   orange: {
     solderMask: 'orange',
     copperFinish: 'hasl',
-    silkScreen: 'white'
+    silkScreen: 'white',
   },
   purple: {
     solderMask: 'purple',
     copperFinish: 'gold',
-    silkScreen: 'white'
+    silkScreen: 'white',
   },
   yellow: {
     solderMask: 'yellow',
     copperFinish: 'gold',
-    silkScreen: 'black'
-  }
+    silkScreen: 'black',
+  },
 }
 
 function styleString(options) {
@@ -96,17 +96,24 @@ function styleString(options) {
   .pcb-stackup_out {color: ${options.out};}/* ]]> */`
 }
 
-module.exports = (layers, color, callback, createElement) => {
-  return pcbStackup(
-    layers,
-    {
-      color: styleToOption(colorToStyle[color]),
-      outlineGapFill: 1.27,
-      id: 'pcb-stackup',
-      createElement: createElement || xmlElementString
-    },
-    callback
-  )
+module.exports = (layers, color, createElement) => {
+  return new Promise((resolve, reject) => {
+    pcbStackup(
+      layers,
+      {
+        color: styleToOption(colorToStyle[color]),
+        outlineGapFill: 1.27,
+        id: 'pcb-stackup',
+        createElement: createElement || xmlElementString,
+      },
+      (err, stackup) => {
+        if (err) {
+          return reject(err)
+        }
+        resolve(stackup)
+      },
+    )
+  })
 }
 
 module.exports.getStyle = function getStyle(color) {

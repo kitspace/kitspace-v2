@@ -31,23 +31,25 @@ async function run(gitDir) {
   const yamlFile = await Promise.all(
     filePaths.map(tryReadFile),
   ).then(([yaml, yml]) => (yaml ? yaml : yml))
-
-  const { stdout } = await exec(`cd '${checkoutDir}' && git rev-parse HEAD`)
-  const version = stdout.slice(0, -1)
-  const filesDir = path.join('/data/files', name, version)
-
   const kitspaceYaml = jsYaml.safeLoad(yamlFile) || {}
-  await processGerbers(
-    checkoutDir,
-    kitspaceYaml.gerbers,
-    kitspaceYaml.color,
-    filesDir,
-  )
 
+  const hash = await getGitHash(checkoutDir)
+  const filesDir = path.join('/data/files', name, hash)
+
+  const files = processGerbers(checkoutDir, kitspaceYaml.gerbers, kitspaceYaml.color, filesDir)
+
+  for await (const f of files) {
+    console.log({f})
+  }
   const headDir = path.join('/data/files', name, 'HEAD')
 
   await exec(`rm -r '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
   console.log(`linked '${filesDir}' to '${headDir}'`)
+}
+
+async function getGitHash(checkoutDir) {
+  const { stdout } = await exec(`cd '${checkoutDir}' && git rev-parse HEAD`)
+  return stdout.slice(0, -1)
 }
 
 function tryReadFile(filePath) {
