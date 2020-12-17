@@ -45,6 +45,10 @@ async function run(eventEmitter, gitDir) {
     eventEmitter.emit('done', path.join(name, hash, x))
     eventEmitter.emit('done', path.join(name, 'HEAD', x))
   })
+  gerberEventEmitter.on('failed', (x, e) => {
+    eventEmitter.emit('failed', path.join(name, hash, x), e)
+    eventEmitter.emit('failed', path.join(name, 'HEAD', x), e)
+  })
   processGerbers(gerberEventEmitter, checkoutDir, kitspaceYaml, filesDir)
 }
 

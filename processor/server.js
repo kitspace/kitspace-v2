@@ -16,6 +16,11 @@ eventEmitter.on('done', x => {
   console.info('done', x)
 })
 
+eventEmitter.on('failed', (x, e) => {
+  files[x] = ['failed', e]
+  console.info('failed', x, e)
+})
+
 const app = express()
 const port = 5000
 const staticFiles = express.static('/data/')
@@ -28,6 +33,10 @@ app.get('/files/*', (req, res, next) => {
     }
     if (files[x] === 'done') {
       return staticFiles(req, res, next)
+    }
+    if (files[x][0] === 'failed') {
+      res.status(424)
+      return res.send(files[x][1])
     }
   }
   return res.sendStatus(404)
