@@ -13,16 +13,17 @@ const readFile = util.promisify(fs.readFile)
 const accessPromise = util.promisify(fs.access)
 
 function watch() {
-  chokidar.watch('/repositories/*/*').on('addDir', dir => {
-    const debouncedRun = debounce(() => run(dir), 1000)
-    chokidar.watch(dir).on('all', debouncedRun)
+  chokidar.watch('/repositories/*/*').on('addDir', gitDir => {
+    const debouncedRun = debounce(() => run(gitDir), 1000)
+    chokidar.watch(gitDir).on('all', debouncedRun)
   })
 }
 
-async function run(dir) {
-  const checkoutDir = path.join('/checkout', path.relative('/repositories', dir))
-  const filesDir = path.join('/files', path.relative('/repositories', dir))
-  await sync(dir, checkoutDir)
+async function run(gitDir) {
+  const name = path.relative('/repositories', gitDir).slice(0, -4)
+  const checkoutDir = path.join('/data/checkout', name)
+  const filesDir = path.join('/data/files', name, 'HEAD')
+  await sync(gitDir, checkoutDir)
   const filePaths = ['kitspace.yaml', 'kitspace.yml'].map(p =>
     path.join(checkoutDir, p),
   )
@@ -43,7 +44,7 @@ function tryReadFile(filePath) {
   })
 }
 
-async function sync(dir, checkoutDir) {
+async function sync(gitDir, checkoutDir) {
   if (await exists(checkoutDir)) {
     await exec(`cd ${checkoutDir} && git pull`).catch(err => {
       // repos with no branches yet will create this error
@@ -59,7 +60,7 @@ async function sync(dir, checkoutDir) {
     })
     console.log('pulled into', checkoutDir)
   } else {
-    await exec(`git clone ${dir} ${checkoutDir}`)
+    await exec(`git clone ${gitDir} ${checkoutDir}`)
     console.log('cloned into', checkoutDir)
   }
 }

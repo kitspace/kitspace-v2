@@ -71,7 +71,6 @@ services:
       - 'GITEA_WEBHOOK_SECRET=${GITEA_WEBHOOK_SECRET}'
     volumes:
       - ./volumes/gitea/git/repositories:/repositories
-      - ./volumes/processor/checkout:/checkout
-      - ./volumes/processor/files:/files
+      - ./volumes/processor:/data
       - ./processor:/app
       - ./processor/node_modules:/app/node_modules
