@@ -7,6 +7,7 @@ const util = require('util')
 
 const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
+const readFile = util.promisify(fs.readFile)
 
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
@@ -18,8 +19,6 @@ async function* processGerbers(root, gerberDir, color, outputDir) {
   if (gerbers.length === 0) {
     return
   }
-
-  await exec('mkdir -p ' + path.join(outputDir, 'images'))
 
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   yield [topSvgPath, 'in_progress']
@@ -39,6 +38,8 @@ async function* processGerbers(root, gerberDir, color, outputDir) {
   const topWithBgndPath = path.join(outputDir, 'images/top-with-background.png')
   yield [topWithBgndPath, 'in_progress']
 
+  await exec('mkdir -p ' + path.join(outputDir, 'images'))
+
   if (gerbers.length === 1 && path.extname(gerbers[0]) === '.kicad_pcb') {
     const kicadPcbFile = gerbers[0]
     const gerberFolder = path.join('/tmp/kitspace', root, 'gerbers')
@@ -50,13 +51,12 @@ async function* processGerbers(root, gerberDir, color, outputDir) {
   }
   const zip = new Jszip()
 
-  let data
   const stackupData = []
+  const folderName = path.basename(zipPath, '.zip')
   for (const gerberPath of gerbers) {
-    data = fs.readFileSync(gerberPath, { encoding: 'utf8' })
+    const data = await readFile(gerberPath, { encoding: 'utf8' })
     stackupData.push({ filename: path.basename(gerberPath), gerber: data })
-    const folder_name = path.basename(zipPath, '.zip')
-    zip.file(path.join(folder_name, path.basename(gerberPath)), data)
+    zip.file(path.join(folderName, path.basename(gerberPath)), data)
   }
 
   yield zip
