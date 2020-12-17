@@ -87,7 +87,6 @@ async function sync(gitDir, checkoutDir) {
         throw err
       }
     })
-    console.log('pulled into', checkoutDir)
   } else {
     await exec(`git clone ${gitDir} ${checkoutDir}`)
     console.log('cloned into', checkoutDir)

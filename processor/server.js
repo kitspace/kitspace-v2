@@ -8,10 +8,12 @@ const files = {}
 
 eventEmitter.on('in_progress', x => {
   files[x] = 'in_progress'
+  console.info('in_progress', x)
 })
 
 eventEmitter.on('done', x => {
   files[x] = 'done'
+  console.info('done', x)
 })
 
 const app = express()
@@ -32,5 +34,5 @@ app.get('/files/*', (req, res, next) => {
 })
 
 app.listen(port, () => {
-  console.log(`processor listening on http://localhost:${port}`)
+  console.info(`processor listening on http://localhost:${port}`)
 })

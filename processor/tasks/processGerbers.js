@@ -69,15 +69,11 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
       compressionOptions: { level: 6 },
     })
     .then(content => writeFile(path.join(outputDir, zipPath), content))
-    .then(() => {
-      console.info('generated', zipPath)
-      eventEmitter.emit('done', zipPath)
-    })
+    .then(() => eventEmitter.emit('done', zipPath))
 
   stackup = await boardBuilder(stackupData, color)
 
   writeFile(path.join(outputDir, bottomSvgPath), stackup.bottom.svg).then(() => {
-    console.info('generated', bottomSvgPath)
     eventEmitter.emit('done', bottomSvgPath)
   })
 
@@ -91,7 +87,6 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   }
   if (stackup.top.units === 'in') {
     if (stackup.bottom.units !== 'in') {
-      console.log({ f })
       throw new Error(`We got a weird board with disparate units: ${root}`)
     }
     zipInfo.width *= 25.4
@@ -101,12 +96,10 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   zipInfo.height = Math.ceil(zipInfo.height)
 
   writeFile(path.join(outputDir, zipInfoPath), JSON.stringify(zipInfo)).then(() => {
-    console.info('generated', zipInfoPath)
     eventEmitter.emit('done', zipInfoPath)
   })
 
   await writeFile(path.join(outputDir, topSvgPath), stackup.top.svg).then(() => {
-    console.info('generated', topSvgPath)
     eventEmitter.emit('done', topSvgPath)
   })
 
@@ -118,7 +111,6 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     cmd += ' --export-height=180'
   }
   exec(cmd).then(() => {
-    console.info('generated', topPngPath)
     eventEmitter.emit('done', topPngPath)
   })
 
@@ -130,7 +122,6 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     cmd_large += ` --export-height=${180 * 3 - 128}`
   }
   exec(cmd_large).then(() => {
-    console.info('generated', topLargePngPath)
     eventEmitter.emit('done', topLargePngPath)
   })
 
@@ -151,7 +142,6 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   }
 
   await exec(cmd_meta).then(() => {
-    console.info('generated', topMetaPngPath)
     eventEmitter.emit('done', topMetaPngPath)
   })
 
@@ -160,7 +150,6 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     topMetaPngPath,
   )}' -extent 1000x524 '${path.join(outputDir, topWithBgndPath)}'`
   exec(cmd).then(() => {
-    console.info('generated', topWithBgndPath)
     eventEmitter.emit('done', topWithBgndPath)
   })
 }
