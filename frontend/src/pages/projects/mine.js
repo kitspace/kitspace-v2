@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import { List, Button, Modal } from 'semantic-ui-react'
 
-import { Page } from '@/components/Page'
+import { Page } from '@components/Page'
 import { getUserRepos } from '@utils/giteaApi'
-import { AuthContext } from '@/contexts/AuthContext'
-import { deleteRepo } from 'utils/giteaApi'
+import { AuthContext } from '@contexts/AuthContext'
+import { deleteRepo } from '@utils/giteaApi'
 import styles from './mine.module.scss'
 
 const DeleteModal = ({ projectName }) => {

@@ -8,7 +8,7 @@ import {
   projectNameFromPath,
   uploadFile as uploadFileToGitea,
 } from '@utils/giteaApi'
-import { AuthContext } from '@/contexts/AuthContext'
+import { AuthContext } from '@contexts/AuthContext'
 
 export const UploadContext = createContext({
   allFiles: [],

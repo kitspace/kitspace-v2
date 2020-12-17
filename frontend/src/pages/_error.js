@@ -1,8 +1,8 @@
 import React from 'react'
 
-import Head from '../components/Head'
-import NavBar from '../components/NavBar'
-import Error from '../components/Error'
+import Head from '@components/Head'
+import NavBar from '@components/NavBar'
+import Error from '@components/Error'
 
 const ErrorPage = ({ statusCode }) => {
   return (

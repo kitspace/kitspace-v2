@@ -2,9 +2,9 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import { Grid, Tab } from 'semantic-ui-react'
 
-import SignUpForm from '@/components/SignUpForm'
-import SignInForm from '@/components/SignInForm'
-import { Page } from '@/components/Page'
+import SignUpForm from '../components/SignUpForm'
+import SignInForm from '../components/SignInForm'
+import { Page } from '@components/Page'
 
 export default function () {
   const router = useRouter()

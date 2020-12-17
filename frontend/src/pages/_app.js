@@ -28,8 +28,8 @@ import 'semantic-ui-css/components/modal.min.css'
 import 'semantic-ui-css/components/dimmer.min.css'
 
 import './_app.scss'
-import AuthProvider from '../contexts/AuthContext'
-import UploadContextProvider from '@/contexts/UploadContext'
+import AuthProvider from '@contexts/AuthContext'
+import UploadContextProvider from '@contexts/UploadContext'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setSession = session ? (

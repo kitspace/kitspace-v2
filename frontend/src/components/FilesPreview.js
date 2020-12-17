@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 
-import { UploadContext } from '@/contexts/UploadContext'
+import { UploadContext } from '@contexts/UploadContext'
 import { List } from 'semantic-ui-react'
 
 const FilesPreview = () => {

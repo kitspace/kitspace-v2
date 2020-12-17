@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
 import superagent from 'superagent'
 
-import { Page } from '@/components/Page'
-import { AuthContext } from '@/contexts/AuthContext'
+import { Page } from '@components/Page'
+import { AuthContext } from '@contexts/AuthContext'
 import { getSession } from '@utils/giteaApi'
 
 const Home = repos => {

@@ -14,15 +14,15 @@ import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
 
 import styles from './new.module.scss'
-import { Page } from '@/components/Page'
-import DropZone from '@/components/DropZone'
-import { AuthContext } from '@/contexts/AuthContext'
-import { UploadContext } from '@/contexts/UploadContext'
+import { Page } from '@components/Page'
+import DropZone from '../../components/DropZone'
+import { AuthContext } from '@contexts/AuthContext'
+import { UploadContext } from '@contexts/UploadContext'
 import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
-import useForm from '@/hooks/useForm'
-import { ExistingProjectFrom } from '@/models/ExistingProjectForm'
-import { SyncRepoFrom } from '@/models/SyncRepoForm'
+import useForm from '../../hooks/useForm'
+import { ExistingProjectFrom } from '@models/ExistingProjectForm'
+import { SyncRepoFrom } from '@models/SyncRepoForm'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)

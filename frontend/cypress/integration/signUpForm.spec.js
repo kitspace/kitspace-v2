@@ -2,7 +2,7 @@
 
 import faker from 'faker'
 
-import { SignUpForm } from '@/models/SignUpForm'
+import { SignUpForm } from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
   before(() => {

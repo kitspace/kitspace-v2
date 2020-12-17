@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { AuthContext } from '@/contexts/AuthContext'
+import { AuthContext } from '@contexts/AuthContext'
 
 export default function (schema) {
   const [form, setForm] = useState({})

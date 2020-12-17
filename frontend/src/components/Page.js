@@ -3,10 +3,9 @@ import { string, object, bool } from 'prop-types'
 
 import Head from './Head'
 import NavBar from './NavBar'
-import { Container, Dimmer, Loader } from 'semantic-ui-react'
+import { Container, Loader } from 'semantic-ui-react'
 import AuthProvider from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
-import UploadContextProvider from '../contexts/UploadContext'
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
   const { push, pathname } = useRouter()

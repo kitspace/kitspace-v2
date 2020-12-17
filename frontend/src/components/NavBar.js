@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
 
-import { AuthContext } from '../contexts/AuthContext'
+import { AuthContext } from '@contexts/AuthContext'
 import styles from './NavBar.module.scss'
 
 const logoSrc = '/static/logo.svg'

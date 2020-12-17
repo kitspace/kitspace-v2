@@ -20,4 +20,17 @@ describe('Updating a project behavior validation', () => {
     cy.get('button').contains('Sync').click()
     cy.syncTestRepo()
   })
+
+  it('should render the update page', () => {
+    cy.stubUpdateProject(
+      true,
+      [
+        { name: 'test1', size: 1234 },
+        { name: 'test2', size: 12345 },
+        { name: 'test3', size: 123456 },
+      ],
+      testRepoName,
+    )
+    // cy.visit(`projects/update/${testRepoName}`)
+  })
 })

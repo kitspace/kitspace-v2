@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 
-import { Page } from '@/components/Page'
-import DropZone from '@/components/DropZone'
-import FilesPreview from '@/components/FilesPreview'
-import useForm from '@/hooks/useForm'
-import { ProjectUpdateForm } from '@/models/ProjectUpdateForm'
-import { UploadContext } from '@/contexts/UploadContext'
+import { Page } from '@components/Page'
+import DropZone from '@components/DropZone'
+import FilesPreview from '@components/FilesPreview'
+import useForm from '@hooks/useForm'
+import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
+import { UploadContext } from '@contexts/UploadContext'
 import { getRepo, updateRepo } from '@utils/giteaApi'
 import { Button, Form, Header, Input, Segment, TextArea } from 'semantic-ui-react'
 
