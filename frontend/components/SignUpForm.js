@@ -5,13 +5,15 @@ import { isEmpty } from 'lodash'
 
 import OAuthButtons from './OAuthButtons'
 import useForm from '../hooks/useForm'
-import { SignUpForm } from '../models/SignUpForm'
+import { SignUpForm } from '@/models/SignUpForm'
+import { useRouter } from 'next/router'
 
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
 export default function () {
   const { form, onChange, isValid, errors, formatErrorPrompt } = useForm(SignUpForm)
   const [apiResponse, setApiResponse] = useState({})
+  const { reload } = useRouter()
 
   const submit = async () => {
     const response = await fetch(endpoint, {
@@ -25,12 +27,29 @@ export default function () {
     if (response.ok) {
       const { email, ActiveCodeLives } = data
       setApiResponse({ email, duration: ActiveCodeLives })
+      await autoSignIn(form.username, form.password)
     } else {
       const { error, message } = data
       setApiResponse({
         error: error || 'API error',
         message: message || 'Something went wrong. Please, try again later.',
       })
+    }
+  }
+
+  const autoSignIn = async (username, password) => {
+    const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
+    const response = await fetch(signInEndpoint, {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+
+    if (response.ok) {
+      await reload()
+    } else {
+      console.error('Failed to auto sign in the user.')
     }
   }
 
@@ -58,8 +77,7 @@ export default function () {
           Success!
         </Message.Header>
         {errors.msg ||
-          apiResponse.message ||
-          `The activation email has been sent to ${apiResponse.email}, it'll be available for ${apiResponse.duration}.`}
+          apiResponse.message || 'Logging you in...'}
       </Message>
       <Form>
         <Segment>
