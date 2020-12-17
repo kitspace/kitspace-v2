@@ -27,6 +27,7 @@ git submodule update --init
 ```
 127.0.0.1	kitspace.test
 127.0.0.1	gitea.kitspace.test
+127.0.0.1	processor.kitspace.test
 ```
 
 3. Copy the example .env
@@ -44,12 +45,12 @@ docker-compose up
 6. Make sure to close any proxy service you have, otherwise you won't be able to access the site.
 
 7. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
-    
+
 8. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose build --no-cache frontend`.
 
 # Running Integration Tests
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
- 
+
 2. navigate to `frontend`: `cd frontend/`.
 
 3. Source the `.env` file with `set -a && source ../.env && set +a`
