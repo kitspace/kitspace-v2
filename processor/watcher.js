@@ -7,11 +7,11 @@ const util = require('util')
 const jsYaml = require('js-yaml')
 const EventEmitter = require('events')
 
+const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
-const accessPromise = util.promisify(fs.access)
 
 function watch() {
   const eventEmitter = new EventEmitter()
@@ -96,18 +96,6 @@ async function sync(gitDir, checkoutDir) {
     await exec(`git clone ${gitDir} ${checkoutDir}`)
     console.log('cloned into', checkoutDir)
   }
-}
-
-function exists(file) {
-  return accessPromise(file, fs.constants.F_OK)
-    .then(x => x == null)
-    .catch(err => {
-      if (err.code === 'ENOENT') {
-        return false
-      } else {
-        throw err
-      }
-    })
 }
 
 module.exports = { watch }

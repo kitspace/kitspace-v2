@@ -2,9 +2,10 @@ const express = require('express')
 const path = require('path')
 
 const watcher = require('./watcher')
-const eventEmitter = watcher.watch()
 
 const files = {}
+
+const eventEmitter = watcher.watch()
 
 eventEmitter.on('in_progress', x => {
   files[x] = 'in_progress'

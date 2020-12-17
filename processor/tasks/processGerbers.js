@@ -5,6 +5,7 @@ const cp = require('child_process')
 const Jszip = require('jszip')
 const util = require('util')
 
+const { exists } = require('../utils')
 const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
@@ -47,50 +48,70 @@ async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
     const gerberDir = kitspaceYaml.gerbers || ''
     const color = kitspaceYaml.color || 'green'
 
-    const files = globule.find(path.join(inputDir, '**'))
-
-    let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
-    if (gerbers.length === 0) {
-      gerbers = await plotKicad(inputDir, files, kitspaceYaml)
-    }
-
     await exec('mkdir -p ' + path.join(outputDir, 'images'))
 
-    const gerberData = await readGerbers(gerbers)
+    if (
+      !(await exists(path.join(outputDir, zipPath))) ||
+      !(await exists(path.join(outputDir, bottomSvgPath))) ||
+      !(await exists(path.join(outputDir, zipInfoPath))) ||
+      !(await exists(path.join(outputDir, topSvgPath))) ||
+      !(await exists(path.join(outputDir, topPngPath))) ||
+      !(await exists(path.join(outputDir, topLargePngPath))) ||
+      !(await exists(path.join(outputDir, topMetaPngPath))) ||
+      !(await exists(path.join(outputDir, topWithBgndPath)))
+    ) {
+      const files = globule.find(path.join(inputDir, '**'))
 
-    generateZip(path.join(outputDir, zipPath), gerberData)
-      .then(() => eventEmitter.emit('done', zipPath))
-      .catch(e => eventEmitter.emit('failed', zipPath, e))
+      let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
+      if (gerbers.length === 0) {
+        gerbers = await plotKicad(inputDir, files, kitspaceYaml)
+      }
 
-    const stackup = await boardBuilder(gerberData, color)
+      const gerberData = await readGerbers(gerbers)
 
-    writeFile(path.join(outputDir, bottomSvgPath), stackup.bottom.svg)
-      .then(() => eventEmitter.emit('done', bottomSvgPath))
-      .catch(e => eventEmitter.emit('failed', bottomSvgPath, e))
+      generateZip(path.join(outputDir, zipPath), gerberData)
+        .then(() => eventEmitter.emit('done', zipPath))
+        .catch(e => eventEmitter.emit('failed', zipPath, e))
 
-    generateZipInfo(outputDir, zipPath, stackup, zipInfoPath)
-      .then(() => eventEmitter.emit('done', zipInfoPath))
-      .catch(e => eventEmitter.emit('failed', zipInfoPath, e))
+      const stackup = await boardBuilder(gerberData, color)
 
-    await writeFile(path.join(outputDir, topSvgPath), stackup.top.svg)
-      .then(() => eventEmitter.emit('done', topSvgPath))
-      .catch(e => eventEmitter.emit('failed', topSvgPath, e))
+      writeFile(path.join(outputDir, bottomSvgPath), stackup.bottom.svg)
+        .then(() => eventEmitter.emit('done', bottomSvgPath))
+        .catch(e => eventEmitter.emit('failed', bottomSvgPath, e))
 
-    generateTopPng(outputDir, topSvgPath, stackup, topPngPath)
-      .then(() => eventEmitter.emit('done', topPngPath))
-      .catch(e => eventEmitter.emit('failed', topPngPath, e))
+      generateZipInfo(outputDir, zipPath, stackup, zipInfoPath)
+        .then(() => eventEmitter.emit('done', zipInfoPath))
+        .catch(e => eventEmitter.emit('failed', zipInfoPath, e))
 
-    generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath)
-      .then(() => eventEmitter.emit('done', topLargePngPath))
-      .catch(e => eventEmitter.emit('failed', topLargePngPath, e))
+      await writeFile(path.join(outputDir, topSvgPath), stackup.top.svg)
+        .then(() => eventEmitter.emit('done', topSvgPath))
+        .catch(e => eventEmitter.emit('failed', topSvgPath, e))
 
-    await generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath)
-      .then(() => eventEmitter.emit('done', topMetaPngPath))
-      .catch(e => eventEmitter.emit('failed', topMetaPngPath, e))
+      generateTopPng(outputDir, topSvgPath, stackup, topPngPath)
+        .then(() => eventEmitter.emit('done', topPngPath))
+        .catch(e => eventEmitter.emit('failed', topPngPath, e))
 
-    generateTopWithBgnd(outputDir, topMetaPngPath, topWithBgndPath)
-      .then(() => eventEmitter.emit('done', topWithBgndPath))
-      .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
+      generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath)
+        .then(() => eventEmitter.emit('done', topLargePngPath))
+        .catch(e => eventEmitter.emit('failed', topLargePngPath, e))
+
+      await generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath)
+        .then(() => eventEmitter.emit('done', topMetaPngPath))
+        .catch(e => eventEmitter.emit('failed', topMetaPngPath, e))
+
+      generateTopWithBgnd(outputDir, topMetaPngPath, topWithBgndPath)
+        .then(() => eventEmitter.emit('done', topWithBgndPath))
+        .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
+    } else {
+      eventEmitter.emit('done', zipPath)
+      eventEmitter.emit('done', bottomSvgPath)
+      eventEmitter.emit('done', zipInfoPath)
+      eventEmitter.emit('done', topSvgPath)
+      eventEmitter.emit('done', topPngPath)
+      eventEmitter.emit('done', topLargePngPath)
+      eventEmitter.emit('done', topMetaPngPath)
+      eventEmitter.emit('done', topWithBgndPath)
+    }
   } catch (e) {
     failAll(e)
   }
