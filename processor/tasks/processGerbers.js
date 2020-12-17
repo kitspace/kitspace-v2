@@ -22,7 +22,7 @@ const topLargePngPath = 'images/top-large.png'
 const topMetaPngPath = 'images/top-meta.png'
 const topWithBgndPath = 'images/top-with-background.png'
 
-async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
+async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
   eventEmitter.emit('in_progress', topSvgPath)
   eventEmitter.emit('in_progress', bottomSvgPath)
   eventEmitter.emit('in_progress', zipPath)
@@ -32,39 +32,53 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   eventEmitter.emit('in_progress', topMetaPngPath)
   eventEmitter.emit('in_progress', topWithBgndPath)
 
-  const files = globule.find(path.join(root, '**'))
-  const gerberDir = kitspaceYaml.gerbers || ''
-  const color = kitspaceYaml.color || 'green'
-
-  let gerbers = gerberFiles(files, path.join(root, gerberDir))
-  if (gerbers.length === 0) {
-    eventEmitter.emit('failed', topSvgPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', bottomSvgPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', zipPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', zipInfoPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', topPngPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', topLargePngPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', topMetaPngPath, { stderr: 'No PCB files found' })
-    eventEmitter.emit('failed', topWithBgndPath, { stderr: 'No PCB files found' })
-    return
+  const failAll = e => {
+    eventEmitter.emit('failed', topSvgPath, e)
+    eventEmitter.emit('failed', bottomSvgPath, e)
+    eventEmitter.emit('failed', zipPath, e)
+    eventEmitter.emit('failed', zipInfoPath, e)
+    eventEmitter.emit('failed', topPngPath, e)
+    eventEmitter.emit('failed', topLargePngPath, e)
+    eventEmitter.emit('failed', topMetaPngPath, e)
+    eventEmitter.emit('failed', topWithBgndPath, e)
   }
 
   try {
-    await exec('mkdir -p ' + path.join(outputDir, 'images'))
-
-    if (gerbers.length === 1 && path.extname(gerbers[0]) === '.kicad_pcb') {
-      const kicadPcbFile = gerbers[0]
-      const gerberFolder = path.join('/tmp/kitspace', root, 'gerbers')
-      await exec(`mkdir -p ${gerberFolder}`)
-      const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
-      const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
-      await exec(cmd_plot)
-      gerbers = globule.find(path.join(gerberFolder, '*'))
+    const files = globule.find(path.join(inputDir, '**'))
+    const gerberDir = kitspaceYaml.gerbers || ''
+    const color = kitspaceYaml.color || 'green'
+    let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
+    if (gerbers.length === 0) {
+      let kicadPcbFile
+      if (
+        kitspaceYaml.eda &&
+        kitspaceYaml.eda.type === 'kicad' &&
+        kitspaceYaml.eda.pcb
+      ) {
+        kicadPcbFile = path.join(inputDir, kitspaceYaml.eda.pcb)
+      } else {
+        kicadPcbFile = files.find(file => file.endsWith('.kicad_pcb'))
+      }
+      if (kicadPcbFile != null) {
+        const gerberFolder = path.join('/tmp/kitspace', inputDir, 'gerbers')
+        await exec(`mkdir -p ${gerberFolder}`)
+        const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
+        const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
+        await exec(cmd_plot)
+        gerbers = globule.find(path.join(gerberFolder, '*'))
+      } else {
+        failAll({ stderr: 'No PCB files found' })
+        return
+      }
     }
-    const zip = new Jszip()
+
+    await exec('mkdir -p ' + path.join(outputDir, 'images'))
 
     const stackupData = []
     const folderName = path.basename(zipPath, '.zip')
+
+    const zip = new Jszip()
+
     for (const gerberPath of gerbers) {
       const data = await readFile(gerberPath, { encoding: 'utf8' })
       stackupData.push({ filename: path.basename(gerberPath), gerber: data })
@@ -81,15 +95,7 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
       .then(() => eventEmitter.emit('done', zipPath))
       .catch(e => eventEmitter.emit('failed', zipPath, e))
 
-    const stackup = await boardBuilder(stackupData, color).catch(e => {
-      eventEmitter.emit('failed', topSvgPath, e)
-      eventEmitter.emit('failed', bottomSvgPath, e)
-      eventEmitter.emit('failed', zipInfoPath, e)
-      eventEmitter.emit('failed', topPngPath, e)
-      eventEmitter.emit('failed', topLargePngPath, e)
-      eventEmitter.emit('failed', topMetaPngPath, e)
-      eventEmitter.emit('failed', topWithBgndPath, e)
-    })
+    const stackup = await boardBuilder(stackupData, color)
 
     if (stackup == null) {
       return
@@ -111,7 +117,7 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     }
     if (stackup.top.units === 'in') {
       if (stackup.bottom.units !== 'in') {
-        throw new Error(`We got a weird board with disparate units: ${root}`)
+        throw new Error(`We got a weird board with disparate units: ${inputDir}`)
       }
       zipInfo.width *= 25.4
       zipInfo.height *= 25.4
@@ -177,14 +183,7 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
       .then(() => eventEmitter.emit('done', topWithBgndPath))
       .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
   } catch (e) {
-    eventEmitter.emit('failed', topSvgPath, e)
-    eventEmitter.emit('failed', bottomSvgPath, e)
-    eventEmitter.emit('failed', zipPath, e)
-    eventEmitter.emit('failed', zipInfoPath, e)
-    eventEmitter.emit('failed', topPngPath, e)
-    eventEmitter.emit('failed', topLargePngPath, e)
-    eventEmitter.emit('failed', topMetaPngPath, e)
-    eventEmitter.emit('failed', topWithBgndPath, e)
+    failAll(e)
   }
 }
 
