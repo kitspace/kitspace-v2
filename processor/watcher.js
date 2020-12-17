@@ -22,16 +22,32 @@ function watch() {
 async function run(gitDir) {
   const name = path.relative('/repositories', gitDir).slice(0, -4)
   const checkoutDir = path.join('/data/checkout', name)
-  const filesDir = path.join('/data/files', name, 'HEAD')
+
   await sync(gitDir, checkoutDir)
+
   const filePaths = ['kitspace.yaml', 'kitspace.yml'].map(p =>
     path.join(checkoutDir, p),
   )
   const yamlFile = await Promise.all(
     filePaths.map(tryReadFile),
   ).then(([yaml, yml]) => (yaml ? yaml : yml))
+
+  const { stdout } = await exec(`cd '${checkoutDir}' && git rev-parse HEAD`)
+  const version = stdout.slice(0, -1)
+  const filesDir = path.join('/data/files', name, version)
+
   const kitspaceYaml = jsYaml.safeLoad(yamlFile) || {}
-  await processGerbers(checkoutDir, kitspaceYaml.gerbers, kitspaceYaml.color, filesDir)
+  await processGerbers(
+    checkoutDir,
+    kitspaceYaml.gerbers,
+    kitspaceYaml.color,
+    filesDir,
+  )
+
+  const headDir = path.join('/data/files', name, 'HEAD')
+
+  await exec(`rm -r '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
+  console.log(`linked '${filesDir}' to '${headDir}'`)
 }
 
 function tryReadFile(filePath) {

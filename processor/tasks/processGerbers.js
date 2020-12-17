@@ -11,7 +11,7 @@ const writeFile = util.promisify(fs.writeFile)
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
 
-module.exports = async (root, gerberDir, color, outputDir) => {
+async function processGerbers(root, gerberDir, color, outputDir) {
   await exec('mkdir -p ' + path.join(outputDir, 'images'))
 
   const topSvgPath = path.join(outputDir, 'images/top.svg')
@@ -174,3 +174,5 @@ module.exports = async (root, gerberDir, color, outputDir) => {
     })
   })
 }
+
+module.exports = processGerbers
