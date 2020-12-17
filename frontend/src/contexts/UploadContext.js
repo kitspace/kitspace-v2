@@ -6,8 +6,8 @@ import _ from 'lodash'
 import {
   getDefaultBranchFiles,
   projectNameFromPath,
-  uploadFile as uploadFileToGitea,
 } from '@utils/giteaApi'
+import {uploadFileToGiteaServer} from '@utils/giteaInternalApi'
 import { AuthContext } from '@contexts/AuthContext'
 
 export const UploadContext = createContext({
@@ -92,18 +92,12 @@ export default function UploadContextProvider(props) {
   }
 
   const uploadLoadedFiles = async repo => {
-    // there's a race condition happens on gitea when making several request to the upload endpoint
-    // a hacky/awful solution to get around it is simulating a scheduler with setTimeout
-    const delay = 1000
     const res = await Promise.all(
-      loadedFiles.map(async (file, idx) => {
+      loadedFiles.map(async file => {
         const content = sessionStorage.getItem(`loadedFile_${file.name}`)
-        setTimeout(async () => {
-          return await uploadFileToGitea(repo, file.name, content, csrf)
-        }, delay * idx)
-      }),
+        return await uploadFileToGiteaServer(repo, content, csrf)
+      })
     )
-
     console.log(res)
   }
 

@@ -81,7 +81,7 @@ const Upload = ({ user, csrf }) => {
       setModalOpen(true)
       console.error('Project already exists!')
     } else {
-      loadFiles(files, projectName)
+      loadFiles(files, tempProjectName)
       await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
     }
   }
