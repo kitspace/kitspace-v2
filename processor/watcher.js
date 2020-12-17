@@ -31,6 +31,7 @@ async function run(eventEmitter, gitDir) {
   const hash = await getGitHash(checkoutDir)
   const filesDir = path.join('/data/files', name, hash)
   const headDir = path.join('/data/files', name, 'HEAD')
+  //link the HEAD dir to the hash we are currently processing
   await exec(`rm -r '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)

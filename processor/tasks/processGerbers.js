@@ -27,10 +27,11 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   const gerberDir = kitspaceYaml.gerbers || ''
   const color = kitspaceYaml.color || 'green'
 
-  let gerbers = gerberFiles(files, path.join(root, gerberDir || ''))
+  let gerbers = gerberFiles(files, path.join(root, gerberDir))
   if (gerbers.length === 0) {
     return
   }
+
   eventEmitter.emit('in_progress', topSvgPath)
   eventEmitter.emit('in_progress', bottomSvgPath)
   eventEmitter.emit('in_progress', zipPath)
