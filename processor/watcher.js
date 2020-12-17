@@ -14,13 +14,15 @@ const readFile = util.promisify(fs.readFile)
 const accessPromise = util.promisify(fs.access)
 
 function watch() {
+  const eventEmitter = new EventEmitter()
   chokidar.watch('/repositories/*/*').on('addDir', gitDir => {
-    const debouncedRun = debounce(() => run(gitDir), 1000)
+    const debouncedRun = debounce(() => run(eventEmitter, gitDir), 1000)
     chokidar.watch(gitDir).on('all', debouncedRun)
   })
+  return eventEmitter
 }
 
-async function run(gitDir) {
+async function run(eventEmitter, gitDir) {
   const name = path.relative('/repositories', gitDir).slice(0, -4)
   const checkoutDir = path.join('/data/checkout', name)
 
@@ -34,13 +36,6 @@ async function run(gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  const eventEmitter = new EventEmitter()
-  eventEmitter.on('in_progress', x => {
-    console.log('in_progress', x)
-  })
-  eventEmitter.on('done', x => {
-    console.log('done', x)
-  })
   processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
 }
 
