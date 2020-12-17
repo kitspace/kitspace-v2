@@ -44,32 +44,14 @@ async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
   }
 
   try {
-    const files = globule.find(path.join(inputDir, '**'))
     const gerberDir = kitspaceYaml.gerbers || ''
     const color = kitspaceYaml.color || 'green'
+
+    const files = globule.find(path.join(inputDir, '**'))
+
     let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
     if (gerbers.length === 0) {
-      let kicadPcbFile
-      if (
-        kitspaceYaml.eda &&
-        kitspaceYaml.eda.type === 'kicad' &&
-        kitspaceYaml.eda.pcb
-      ) {
-        kicadPcbFile = path.join(inputDir, kitspaceYaml.eda.pcb)
-      } else {
-        kicadPcbFile = files.find(file => file.endsWith('.kicad_pcb'))
-      }
-      if (kicadPcbFile != null) {
-        const gerberFolder = path.join('/tmp/kitspace', inputDir, 'gerbers')
-        await exec(`mkdir -p ${gerberFolder}`)
-        const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
-        const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
-        await exec(cmd_plot)
-        gerbers = globule.find(path.join(gerberFolder, '*'))
-      } else {
-        failAll({ stderr: 'No PCB files found' })
-        return
-      }
+      gerbers = await plotKicad(inputDir, files, kitspaceYaml)
     }
 
     await exec('mkdir -p ' + path.join(outputDir, 'images'))
@@ -185,6 +167,28 @@ async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
   } catch (e) {
     failAll(e)
   }
+}
+
+async function plotKicad(inputDir, files, kitspaceYaml) {
+  let kicadPcbFile
+  if (
+    kitspaceYaml.eda &&
+    kitspaceYaml.eda.type === 'kicad' &&
+    kitspaceYaml.eda.pcb
+  ) {
+    kicadPcbFile = path.join(inputDir, kitspaceYaml.eda.pcb)
+  } else {
+    kicadPcbFile = files.find(file => file.endsWith('.kicad_pcb'))
+  }
+  if (kicadPcbFile == null) {
+    throw Error('No PCB files found')
+  }
+  const gerberFolder = path.join('/tmp/kitspace', inputDir, 'gerbers')
+  await exec(`rm -rf ${gerberFolder} && mkdir -p ${gerberFolder}`)
+  const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
+  const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
+  await exec(cmd_plot)
+  return globule.find(path.join(gerberFolder, '*'))
 }
 
 module.exports = processGerbers
