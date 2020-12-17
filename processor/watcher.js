@@ -5,6 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 const jsYaml = require('js-yaml')
+const EventEmitter = require('events')
 
 const processGerbers = require('./tasks/processGerbers')
 
@@ -33,11 +34,14 @@ async function run(gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  const events = processGerbers(checkoutDir, kitspaceYaml, filesDir)
-
-  for await (const e of events) {
-    console.log(e)
-  }
+  const eventEmitter = new EventEmitter()
+  eventEmitter.on('in_progress', x => {
+    console.log('in_progress', x)
+  })
+  eventEmitter.on('done', x => {
+    console.log('done', x)
+  })
+  processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
 }
 
 async function getKitspaceYaml(checkoutDir) {
