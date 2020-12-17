@@ -6,6 +6,7 @@ const Jszip = require('jszip')
 const util = require('util')
 
 const exec = util.promisify(cp.exec)
+const writeFile = util.promisify(fs.writeFile)
 
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
@@ -36,8 +37,8 @@ module.exports = async (root, gerberDir, color, outputDir) => {
     const gerberFolder = path.join('/tmp/kitspace', root, 'gerbers')
     const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
     const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
-    cp.execSync(`mkdir -p ${gerberFolder}`)
-    cp.execSync(cmd_plot)
+    await exec(`mkdir -p ${gerberFolder}`)
+    await exec(cmd_plot)
     gerbers = globule.find(path.join(gerberFolder, '*'))
   }
   const zipInfo = {
@@ -60,15 +61,11 @@ module.exports = async (root, gerberDir, color, outputDir) => {
       compression: 'DEFLATE',
       compressionOptions: { level: 6 },
     })
-    .then(content =>
-      fs.writeFile(zipPath, content, function (err) {
-        if (err != null) {
-          console.error(`Could not write gerber zip for ${root}`)
-          throw err
-        }
-        console.log('generated', zipPath)
-      }),
-    )
+    .then(content => writeFile(zipPath, content))
+    .catch(err => {
+      console.error(`Could not write gerber zip for ${root}`)
+    })
+    .then(() => console.log('generated', zipPath))
 
   boardBuilder(stackupData, color || 'green', function (error, stackup) {
     if (error != null) {
