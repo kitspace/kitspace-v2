@@ -56,58 +56,19 @@ async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
 
     await exec('mkdir -p ' + path.join(outputDir, 'images'))
 
-    const stackupData = []
-    const folderName = path.basename(zipPath, '.zip')
+    const gerberData = await readGerbers(gerbers)
 
-    const zip = new Jszip()
-
-    for (const gerberPath of gerbers) {
-      const data = await readFile(gerberPath, { encoding: 'utf8' })
-      stackupData.push({ filename: path.basename(gerberPath), gerber: data })
-      zip.file(path.join(folderName, path.basename(gerberPath)), data)
-    }
-
-    zip
-      .generateAsync({
-        type: 'nodebuffer',
-        compression: 'DEFLATE',
-        compressionOptions: { level: 6 },
-      })
-      .then(content => writeFile(path.join(outputDir, zipPath), content))
+    generateZip(path.join(outputDir, zipPath), gerberData)
       .then(() => eventEmitter.emit('done', zipPath))
       .catch(e => eventEmitter.emit('failed', zipPath, e))
 
-    const stackup = await boardBuilder(stackupData, color)
-
-    if (stackup == null) {
-      return
-    }
+    const stackup = await boardBuilder(gerberData, color)
 
     writeFile(path.join(outputDir, bottomSvgPath), stackup.bottom.svg)
-      .then(() => {
-        eventEmitter.emit('done', bottomSvgPath)
-      })
+      .then(() => eventEmitter.emit('done', bottomSvgPath))
       .catch(e => eventEmitter.emit('failed', bottomSvgPath, e))
 
-    const zipInfo = {
-      zipPath: path.basename(zipPath),
-      folder: path.relative('build/', path.dirname(zipPath)),
-      width: Math.max(stackup.top.width, stackup.bottom.width),
-      height: Math.max(stackup.top.height, stackup.bottom.height),
-      // copper layers - tcu, bcu, icu
-      layers: stackup.layers.filter(layer => layer.type.includes('cu')).length,
-    }
-    if (stackup.top.units === 'in') {
-      if (stackup.bottom.units !== 'in') {
-        throw new Error(`We got a weird board with disparate units: ${inputDir}`)
-      }
-      zipInfo.width *= 25.4
-      zipInfo.height *= 25.4
-    }
-    zipInfo.width = Math.ceil(zipInfo.width)
-    zipInfo.height = Math.ceil(zipInfo.height)
-
-    writeFile(path.join(outputDir, zipInfoPath), JSON.stringify(zipInfo))
+    generateZipInfo(outputDir, zipPath, stackup, zipInfoPath)
       .then(() => eventEmitter.emit('done', zipInfoPath))
       .catch(e => eventEmitter.emit('failed', zipInfoPath, e))
 
@@ -115,58 +76,123 @@ async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
       .then(() => eventEmitter.emit('done', topSvgPath))
       .catch(e => eventEmitter.emit('failed', topSvgPath, e))
 
-    let cmd = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
-    cmd += ` --export-png='${path.join(outputDir, topPngPath)}'`
-    if (stackup.top.width > stackup.top.height + 0.05) {
-      cmd += ' --export-width=240'
-    } else {
-      cmd += ' --export-height=180'
-    }
-    exec(cmd)
+    generateTopPng(outputDir, topSvgPath, stackup, topPngPath)
       .then(() => eventEmitter.emit('done', topPngPath))
       .catch(e => eventEmitter.emit('failed', topPngPath, e))
 
-    let cmd_large = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
-    cmd_large += ` --export-png='${path.join(outputDir, topLargePngPath)}'`
-    if (stackup.top.width > stackup.top.height + 0.05) {
-      cmd_large += ` --export-width=${240 * 3 - 128}`
-    } else {
-      cmd_large += ` --export-height=${180 * 3 - 128}`
-    }
-    exec(cmd_large)
+    generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath)
       .then(() => eventEmitter.emit('done', topLargePngPath))
       .catch(e => eventEmitter.emit('failed', topLargePngPath, e))
 
-    let cmd_meta = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
-    cmd_meta += ` --export-png='${path.join(outputDir, topMetaPngPath)}'`
-    const width = 900
-    let height = 400
-    const ratioW = width / stackup.top.width
-    if (ratioW * stackup.top.height > height) {
-      let ratioH = height / stackup.top.height
-      while (ratioH * stackup.top.width > width) {
-        height -= 1
-        ratioH = height / stackup.top.height
-      }
-      cmd_meta += ` --export-height=${height}`
-    } else {
-      cmd_meta += ` --export-width=${width}`
-    }
-
-    await exec(cmd_meta)
+    await generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath)
       .then(() => eventEmitter.emit('done', topMetaPngPath))
       .catch(e => eventEmitter.emit('failed', topMetaPngPath, e))
 
-    cmd = `convert -background '#373737' -gravity center '${path.join(
-      outputDir,
-      topMetaPngPath,
-    )}' -extent 1000x524 '${path.join(outputDir, topWithBgndPath)}'`
-    exec(cmd)
+    generateTopWithBgnd(outputDir, topMetaPngPath, topWithBgndPath)
       .then(() => eventEmitter.emit('done', topWithBgndPath))
       .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
   } catch (e) {
     failAll(e)
   }
+}
+
+function generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath) {
+  let cmd_large = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
+  cmd_large += ` --export-png='${path.join(outputDir, topLargePngPath)}'`
+  if (stackup.top.width > stackup.top.height + 0.05) {
+    cmd_large += ` --export-width=${240 * 3 - 128}`
+  } else {
+    cmd_large += ` --export-height=${180 * 3 - 128}`
+  }
+  return exec(cmd_large)
+}
+
+function generateTopPng(outputDir, topSvgPath, stackup, topPngPath) {
+  let cmd = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
+  cmd += ` --export-png='${path.join(outputDir, topPngPath)}'`
+  if (stackup.top.width > stackup.top.height + 0.05) {
+    cmd += ' --export-width=240'
+  } else {
+    cmd += ' --export-height=180'
+  }
+  return exec(cmd)
+}
+
+function generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath) {
+  let cmd_meta = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
+  cmd_meta += ` --export-png='${path.join(outputDir, topMetaPngPath)}'`
+  const width = 900
+  let height = 400
+  const ratioW = width / stackup.top.width
+  if (ratioW * stackup.top.height > height) {
+    let ratioH = height / stackup.top.height
+    while (ratioH * stackup.top.width > width) {
+      height -= 1
+      ratioH = height / stackup.top.height
+    }
+    cmd_meta += ` --export-height=${height}`
+  } else {
+    cmd_meta += ` --export-width=${width}`
+  }
+
+  return exec(cmd_meta)
+}
+
+function generateTopWithBgnd(outputDir, topMetaPngPath, topWithBgndPath) {
+  const cmd = `convert -background '#373737' -gravity center '${path.join(
+    outputDir,
+    topMetaPngPath,
+  )}' -extent 1000x524 '${path.join(outputDir, topWithBgndPath)}'`
+  return exec(cmd)
+}
+
+function generateZipInfo(outputDir, zipPath, stackup, zipInfoPath) {
+  const zipInfo = {
+    zipPath: path.basename(zipPath),
+    width: Math.max(stackup.top.width, stackup.bottom.width),
+    height: Math.max(stackup.top.height, stackup.bottom.height),
+    // copper layers - tcu, bcu, icu
+    layers: stackup.layers.filter(layer => layer.type.includes('cu')).length,
+  }
+  if (stackup.top.units === 'in') {
+    if (stackup.bottom.units !== 'in') {
+      throw new Error('Disparate units in PCB files. Expecting in on bottom.')
+    }
+    zipInfo.width *= 25.4
+    zipInfo.height *= 25.4
+  } else {
+    if (stackup.bottom.units === 'in') {
+      throw new Error('Disparate units in PCB files. Expecting mm on bottom.')
+    }
+  }
+  zipInfo.width = Math.ceil(zipInfo.width)
+  zipInfo.height = Math.ceil(zipInfo.height)
+
+  return writeFile(path.join(outputDir, zipInfoPath), JSON.stringify(zipInfo))
+}
+
+function readGerbers(gerbers) {
+  return Promise.all(
+    gerbers.map(async gerberPath => {
+      const data = await readFile(gerberPath, { encoding: 'utf8' })
+      return { filename: path.basename(gerberPath), gerber: data }
+    }),
+  )
+}
+
+async function generateZip(zipPath, gerberData) {
+  const folderName = path.basename(zipPath, '.zip')
+  const zip = new Jszip()
+  for (const { filename, gerber } of gerberData) {
+    zip.file(path.join(folderName, path.basename(filename)), gerber)
+  }
+  return zip
+    .generateAsync({
+      type: 'nodebuffer',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 },
+    })
+    .then(content => writeFile(zipPath, content))
 }
 
 async function plotKicad(inputDir, files, kitspaceYaml) {
