@@ -12,6 +12,16 @@ const readFile = util.promisify(fs.readFile)
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
 
+const topSvgPath = 'images/top.svg'
+const bottomSvgPath = 'images/bottom.svg'
+// TODO name the zip properly
+const zipPath = 'gerbers.zip'
+const zipInfoPath = 'zip-info.json'
+const topPngPath = 'images/top.png'
+const topLargePngPath = 'images/top-large.png'
+const topMetaPngPath = 'images/top-meta.png'
+const topWithBgndPath = 'images/top-with-background.png'
+
 async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   const files = globule.find(path.join(root, '**'))
   const gerberDir = kitspaceYaml.gerbers || ''
@@ -21,23 +31,13 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   if (gerbers.length === 0) {
     return
   }
-
-  const topSvgPath = path.join(outputDir, 'images/top.svg')
   eventEmitter.emit('in_progress', topSvgPath)
-  const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')
   eventEmitter.emit('in_progress', bottomSvgPath)
-  // TODO name the zip properly
-  const zipPath = path.join(outputDir, 'gerbers.zip')
   eventEmitter.emit('in_progress', zipPath)
-  const zipInfoPath = path.join(outputDir, 'zip-info.json')
   eventEmitter.emit('in_progress', zipInfoPath)
-  const topPngPath = path.join(outputDir, 'images/top.png')
   eventEmitter.emit('in_progress', topPngPath)
-  const topLargePngPath = path.join(outputDir, 'images/top-large.png')
   eventEmitter.emit('in_progress', topLargePngPath)
-  const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
   eventEmitter.emit('in_progress', topMetaPngPath)
-  const topWithBgndPath = path.join(outputDir, 'images/top-with-background.png')
   eventEmitter.emit('in_progress', topWithBgndPath)
 
   await exec('mkdir -p ' + path.join(outputDir, 'images'))
@@ -67,7 +67,7 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
       compression: 'DEFLATE',
       compressionOptions: { level: 6 },
     })
-    .then(content => writeFile(zipPath, content))
+    .then(content => writeFile(path.join(outputDir, zipPath), content))
     .then(() => {
       console.info('generated', zipPath)
       eventEmitter.emit('done', zipPath)
@@ -75,7 +75,7 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
 
   stackup = await boardBuilder(stackupData, color)
 
-  writeFile(bottomSvgPath, stackup.bottom.svg).then(() => {
+  writeFile(path.join(outputDir, bottomSvgPath), stackup.bottom.svg).then(() => {
     console.info('generated', bottomSvgPath)
     eventEmitter.emit('done', bottomSvgPath)
   })
@@ -90,7 +90,7 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   }
   if (stackup.top.units === 'in') {
     if (stackup.bottom.units !== 'in') {
-    console.log({ f })
+      console.log({ f })
       throw new Error(`We got a weird board with disparate units: ${root}`)
     }
     zipInfo.width *= 25.4
@@ -99,18 +99,18 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
   zipInfo.width = Math.ceil(zipInfo.width)
   zipInfo.height = Math.ceil(zipInfo.height)
 
-  writeFile(zipInfoPath, JSON.stringify(zipInfo)).then(() => {
+  writeFile(path.join(outputDir, zipInfoPath), JSON.stringify(zipInfo)).then(() => {
     console.info('generated', zipInfoPath)
     eventEmitter.emit('done', zipInfoPath)
   })
 
-  await writeFile(topSvgPath, stackup.top.svg).then(() => {
+  await writeFile(path.join(outputDir, topSvgPath), stackup.top.svg).then(() => {
     console.info('generated', topSvgPath)
     eventEmitter.emit('done', topSvgPath)
   })
 
-  let cmd = `inkscape --without-gui '${topSvgPath}'`
-  cmd += ` --export-png='${topPngPath}'`
+  let cmd = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
+  cmd += ` --export-png='${path.join(outputDir, topPngPath)}'`
   if (stackup.top.width > stackup.top.height + 0.05) {
     cmd += ' --export-width=240'
   } else {
@@ -121,8 +121,8 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     eventEmitter.emit('done', topPngPath)
   })
 
-  let cmd_large = `inkscape --without-gui '${topSvgPath}'`
-  cmd_large += ` --export-png='${topLargePngPath}'`
+  let cmd_large = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
+  cmd_large += ` --export-png='${path.join(outputDir, topLargePngPath)}'`
   if (stackup.top.width > stackup.top.height + 0.05) {
     cmd_large += ` --export-width=${240 * 3 - 128}`
   } else {
@@ -133,8 +133,8 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     eventEmitter.emit('done', topLargePngPath)
   })
 
-  let cmd_meta = `inkscape --without-gui '${topSvgPath}'`
-  cmd_meta += ` --export-png='${topMetaPngPath}'`
+  let cmd_meta = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
+  cmd_meta += ` --export-png='${path.join(outputDir, topMetaPngPath)}'`
   const width = 900
   let height = 400
   const ratioW = width / stackup.top.width
@@ -154,7 +154,10 @@ async function processGerbers(eventEmitter, root, kitspaceYaml, outputDir) {
     eventEmitter.emit('done', topMetaPngPath)
   })
 
-  cmd = `convert -background '#373737' -gravity center '${topMetaPngPath}' -extent 1000x524 '${topWithBgndPath}'`
+  cmd = `convert -background '#373737' -gravity center '${path.join(
+    outputDir,
+    topMetaPngPath,
+  )}' -extent 1000x524 '${path.join(outputDir, topWithBgndPath)}'`
   exec(cmd).then(() => {
     console.info('generated', topWithBgndPath)
     eventEmitter.emit('done', topWithBgndPath)

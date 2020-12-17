@@ -32,11 +32,19 @@ async function run(eventEmitter, gitDir) {
   const filesDir = path.join('/data/files', name, hash)
   const headDir = path.join('/data/files', name, 'HEAD')
   await exec(`rm -r '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
-  console.log(`linked '${filesDir}' to '${headDir}'`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
+  const gerberEventEmitter = new EventEmitter()
+  gerberEventEmitter.on('in_progress', x => {
+    eventEmitter.emit('in_progress', path.join(name, hash, x))
+    eventEmitter.emit('in_progress', path.join(name, 'HEAD', x))
+  })
+  gerberEventEmitter.on('done', x => {
+    eventEmitter.emit('done', path.join(name, hash, x))
+    eventEmitter.emit('done', path.join(name, 'HEAD', x))
+  })
+  processGerbers(gerberEventEmitter, checkoutDir, kitspaceYaml, filesDir)
 }
 
 async function getKitspaceYaml(checkoutDir) {
