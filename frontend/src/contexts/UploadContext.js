@@ -3,11 +3,8 @@ import { useRouter } from 'next/router'
 
 import _ from 'lodash'
 
-import {
-  getDefaultBranchFiles,
-  projectNameFromPath,
-} from '@utils/giteaApi'
-import {uploadFileToGiteaServer} from '@utils/giteaInternalApi'
+import { getDefaultBranchFiles, projectNameFromPath } from '@utils/giteaApi'
+import { commitFiles } from '@utils/giteaInternalApi'
 import { AuthContext } from '@contexts/AuthContext'
 
 export const UploadContext = createContext({
@@ -92,12 +89,7 @@ export default function UploadContextProvider(props) {
   }
 
   const uploadLoadedFiles = async repo => {
-    const res = await Promise.all(
-      loadedFiles.map(async file => {
-        const content = sessionStorage.getItem(`loadedFile_${file.name}`)
-        return await uploadFileToGiteaServer(repo, content, csrf)
-      })
-    )
+    const res = await commitFiles({ repo, csrf, files: loadedFiles })
     console.log(res)
   }
 
