@@ -25,26 +25,29 @@ async function run(gitDir) {
 
   await sync(gitDir, checkoutDir)
 
+  const hash = await getGitHash(checkoutDir)
+  const filesDir = path.join('/data/files', name, hash)
+  const headDir = path.join('/data/files', name, 'HEAD')
+  await exec(`rm -r '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
+  console.log(`linked '${filesDir}' to '${headDir}'`)
+
+  const kitspaceYaml = await getKitspaceYaml(checkoutDir)
+
+  const events = processGerbers(checkoutDir, kitspaceYaml, filesDir)
+
+  for await (const e of events) {
+    console.log(e)
+  }
+}
+
+async function getKitspaceYaml(checkoutDir) {
   const filePaths = ['kitspace.yaml', 'kitspace.yml'].map(p =>
     path.join(checkoutDir, p),
   )
   const yamlFile = await Promise.all(
     filePaths.map(tryReadFile),
   ).then(([yaml, yml]) => (yaml ? yaml : yml))
-  const kitspaceYaml = jsYaml.safeLoad(yamlFile) || {}
-
-  const hash = await getGitHash(checkoutDir)
-  const filesDir = path.join('/data/files', name, hash)
-
-  const files = processGerbers(checkoutDir, kitspaceYaml.gerbers, kitspaceYaml.color, filesDir)
-
-  for await (const f of files) {
-    console.log({f})
-  }
-  const headDir = path.join('/data/files', name, 'HEAD')
-
-  await exec(`rm -r '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
-  console.log(`linked '${filesDir}' to '${headDir}'`)
+  return jsYaml.safeLoad(yamlFile) || {}
 }
 
 async function getGitHash(checkoutDir) {

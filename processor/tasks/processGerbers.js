@@ -12,8 +12,10 @@ const readFile = util.promisify(fs.readFile)
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
 
-async function* processGerbers(root, gerberDir, color, outputDir) {
+async function* processGerbers(root, kitspaceYaml, outputDir) {
   const files = globule.find(path.join(root, '**'))
+  const gerberDir = kitspaceYaml.gerbers || ''
+  const color = kitspaceYaml.color || 'green'
 
   let gerbers = gerberFiles(files, path.join(root, gerberDir || ''))
   if (gerbers.length === 0) {
