@@ -9,17 +9,14 @@ const eventEmitter = watcher.watch()
 
 eventEmitter.on('in_progress', x => {
   files[x] = 'in_progress'
-  console.info('in_progress', x)
 })
 
 eventEmitter.on('done', x => {
   files[x] = 'done'
-  console.info('done', x)
 })
 
 eventEmitter.on('failed', (x, e) => {
   files[x] = ['failed', e]
-  console.info('failed', x, e)
 })
 
 const app = express()
