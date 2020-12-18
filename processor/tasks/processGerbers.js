@@ -15,15 +15,22 @@ const boardBuilder = require('./board_builder')
 
 const topSvgPath = 'images/top.svg'
 const bottomSvgPath = 'images/bottom.svg'
-// TODO name the zip properly
-const zipPath = 'gerbers.zip'
 const zipInfoPath = 'zip-info.json'
 const topPngPath = 'images/top.png'
 const topLargePngPath = 'images/top-large.png'
 const topMetaPngPath = 'images/top-meta.png'
 const topWithBgndPath = 'images/top-with-background.png'
 
-async function processGerbers(eventEmitter, inputDir, kitspaceYaml, outputDir) {
+async function processGerbers(
+  eventEmitter,
+  inputDir,
+  kitspaceYaml,
+  outputDir,
+  hash,
+  name,
+) {
+  const zipPath = name.split('/')[1] + '-' + hash.slice(0, 7) + '-gerbers.zip'
+
   eventEmitter.emit('in_progress', topSvgPath)
   eventEmitter.emit('in_progress', bottomSvgPath)
   eventEmitter.emit('in_progress', zipPath)
