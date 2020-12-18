@@ -1,8 +1,14 @@
+/*
+* Committing multiple files to gitea is a two steps process:
+*  1. Upload the files to gitea which it turn returns a UUID for that file
+*  2. UUID returned from the previous step is used to make the actual commit request.
+*/
+
 /**
- *
- * @param repo
+ * Upload a file to gitea server, just upload it doesn't commit the files
+ * @param repo{string}
  * @param file
- * @param csrf
+ * @param csrf{string}
  * @returns {Promise<Object>}
  */
 export const uploadFileToGiteaServer = (repo, file, csrf) => {
@@ -15,6 +21,7 @@ export const uploadFileToGiteaServer = (repo, file, csrf) => {
     const req = new XMLHttpRequest()
     req.withCredentials = true
     req.open('POST', endpoint)
+
     req.onload = () => {
       if (req.status >= 200 && req.status < 300) {
         console.log(req.response)
@@ -38,6 +45,13 @@ export const uploadFileToGiteaServer = (repo, file, csrf) => {
   })
 }
 
+/**
+ * upload multiple files to gitea server, just upload it doesn't commit the files
+ * @param repo{string}
+ * @param files{[]}
+ * @param csrf{string}
+ * @returns {Promise<string[]>}
+ */
 const uploadFilesToGiteaServer = async (repo, files, csrf) => {
   const filesUUIDs = await Promise.all(
     files.map(async file => {
@@ -50,14 +64,14 @@ const uploadFilesToGiteaServer = async (repo, files, csrf) => {
 
 /**
  *
- * @param repo
- * @param files
- * @param commitSummary
- * @param commitMessage
- * @param commitChoice
- * @param treePath
- * @param newBranchName
- * @param csrf
+ * @param repo{string}
+ * @param files{[]}
+ * @param commitSummary{=string}
+ * @param commitMessage{=string}
+ * @param commitChoice{=string}
+ * @param treePath{=string}
+ * @param newBranchName{=string}
+ * @param csrf{string}
  * @returns {Promise<boolean>}
  */
 export const commitFiles = async ({
