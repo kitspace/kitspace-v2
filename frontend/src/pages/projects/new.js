@@ -88,11 +88,12 @@ const Upload = ({ user, csrf }) => {
 
   const onDifferentName = async () => {
     // create repo with the new name and redirect to the update page which will have the loaded files
-    setProjectName(slugify(form.name))
-    await createRepo(projectName, '', csrf)
+    const differentName = slugify(form.name)
+    setProjectName(differentName)
+    await createRepo(differentName, '', csrf)
 
-    loadFiles(files, projectName)
-    await push(`/projects/update/${user.login}/${projectName}?create=true`)
+    loadFiles(files, differentName)
+    await push(`/projects/update/${user.login}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
