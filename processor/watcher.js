@@ -54,12 +54,15 @@ async function run(eventEmitter, gitDir) {
 }
 
 async function getKitspaceYaml(checkoutDir) {
-  const filePaths = ['kitspace.yaml', 'kitspace.yml'].map(p =>
-    path.join(checkoutDir, p),
+  const filePaths = [
+    'kitspace.yaml',
+    'kitspace.yml',
+    'kitnic.yaml',
+    'kitnic.yml',
+  ].map(p => path.join(checkoutDir, p))
+  const yamlFile = await Promise.all(filePaths.map(tryReadFile)).then(
+    ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
   )
-  const yamlFile = await Promise.all(
-    filePaths.map(tryReadFile),
-  ).then(([yaml, yml]) => (yaml ? yaml : yml))
   return jsYaml.safeLoad(yamlFile) || {}
 }
 
