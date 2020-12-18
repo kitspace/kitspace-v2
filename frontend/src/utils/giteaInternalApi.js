@@ -72,21 +72,27 @@ export const commitFiles = async ({
 }) => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload/master?_csrf=${csrf}`
   const filesUUIDs = await uploadFilesToGiteaServer(repo, files, csrf)
-  const body = {
+
+  // The body of the request must be url encoded
+  const body = new URLSearchParams({
     _csrf: csrf,
-    tree_path: treePath,
-    files: filesUUIDs,
+    tree_path: treePath || '',
     commit_summary: commitSummary || 'commit files',
-    commit_message: commitMessage,
+    commit_message: commitMessage || '',
     commit_choice: commitChoice || 'direct',
     new_branch_name: newBranchName || 'patch-1',
-  }
+  })
+
+  // Files UUIDs aren't passed as an array; each file is passed as `&files={uuid}` in the request body
+  filesUUIDs.forEach(uuid => {
+    body.append('files', uuid)
+  })
 
   const res = await fetch(endpoint, {
     method: 'POST',
     credentials: 'include',
     mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
     body,
   })
 
