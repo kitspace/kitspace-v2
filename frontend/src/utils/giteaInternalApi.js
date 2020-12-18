@@ -1,8 +1,8 @@
 /*
-* Committing multiple files to gitea is a two steps process:
-*  1. Upload the files to gitea which it turn returns a UUID for that file
-*  2. UUID returned from the previous step is used to make the actual commit request.
-*/
+ * Committing multiple files to gitea is a two steps process:
+ *  1. Upload the files to gitea which it turn returns a UUID for that file
+ *  2. UUID returned from the previous step is used to make the actual commit request.
+ */
 
 /**
  * Upload a file to gitea server, just upload it doesn't commit the files
@@ -15,7 +15,8 @@ export const uploadFileToGiteaServer = (repo, file, csrf) => {
   const formData = new FormData()
   const fileContent = sessionStorage.getItem(`loadedFile_${file.name}`)
   const blobFromFile = new Blob([fileContent], { type: file.type })
-  formData.append('file', blobFromFile)
+
+  formData.append('file', blobFromFile, file.name)
 
   return new Promise((resolve, reject) => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file?_csrf=${csrf}`

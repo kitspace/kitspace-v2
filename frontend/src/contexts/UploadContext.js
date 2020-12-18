@@ -67,7 +67,11 @@ export default function UploadContextProvider(props) {
   const loadFiles = (files, project) => {
     if (files != null) {
       // Store a list of loaded files in sessionStorage
-      const filesDetails = files.map(({ name, size, type }) => ({ name, size, type }))
+      const filesDetails = files.map(({ name, size, type }) => ({
+        name,
+        size,
+        type,
+      }))
       setLoadedFiles(filesDetails)
       sessionStorage.setItem(`loadedFiles:${project}`, JSON.stringify(filesDetails))
 
