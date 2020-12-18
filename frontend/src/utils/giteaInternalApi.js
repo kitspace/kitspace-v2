@@ -13,7 +13,8 @@
  */
 export const uploadFileToGiteaServer = (repo, file, csrf) => {
   const formData = new FormData()
-  const blobFromFile = new Blob([file], { type: 'text/plain' })
+  const fileContent = sessionStorage.getItem(`loadedFile_${file.name}`)
+  const blobFromFile = new Blob([fileContent], { type: file.type })
   formData.append('file', blobFromFile)
 
   return new Promise((resolve, reject) => {
@@ -55,8 +56,7 @@ export const uploadFileToGiteaServer = (repo, file, csrf) => {
 const uploadFilesToGiteaServer = async (repo, files, csrf) => {
   const filesUUIDs = await Promise.all(
     files.map(async file => {
-      const content = sessionStorage.getItem(`loadedFile_${file.name}`)
-      return await uploadFileToGiteaServer(repo, content, csrf)
+      return await uploadFileToGiteaServer(repo, file, csrf)
     }),
   )
   return filesUUIDs.map(res => res.uuid)
