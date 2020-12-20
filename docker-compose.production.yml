@@ -7,6 +7,9 @@ services:
     restart: always
   gitea:
     restart: always
+    build:
+      context: gitea/
+      dockerfile: Dockerfile
   postgres:
     restart: always
   nginx:
