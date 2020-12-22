@@ -46,16 +46,18 @@ server {
 	server_name gitea.@KITSPACE_DOMAIN;
 
 	location ^~ / {
-		proxy_set_header    Host                $http_host;
-		proxy_set_header    X-Real-IP           $remote_addr;
-		proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
-		proxy_set_header    X-Forwarded-Proto   $scheme;
-		add_header 'Access-Control-Allow-Origin' '@KITSPACE_URL';
-		add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-		add_header 'Access-Control-Allow-Credentials' 'true';
-		add_header 'Access-Control-Allow-Headers' 'cache-control, pragma, user-agent';
-		proxy_cookie_path ~^(.+)$ "$1; domain=.@KITSPACE_DOMAIN";
-		proxy_set_header    Origin               gitea.@KITSPACE_DOMAIN;
+		proxy_set_header           Host                               $http_host;
+		proxy_set_header           X-Real-IP                          $remote_addr;
+		proxy_set_header           X-Forwarded-For                    $proxy_add_x_forwarded_for;
+		proxy_set_header           X-Forwarded-Proto                  $scheme;
+		add_header                 'Access-Control-Allow-Origin'      '@KITSPACE_URL' always;
+		add_header                 'Access-Control-Allow-Methods'     'GET, POST, PUT, PATCH, DELETE, OPTIONS';
+		add_header                 'Access-Control-Allow-Credentials' 'true';
+		add_header                 'Access-Control-Allow-Headers'     'cache-control, pragma, user-agent';
+		proxy_cookie_path          ~^(.+)$                            '$1; domain=.@KITSPACE_DOMAIN';
+		proxy_set_header           Origin                             gitea.@KITSPACE_DOMAIN;
+		proxy_pass_request_headers on;
+
 		if ($request_method = OPTIONS) {
 			add_header Content-Length 0;
 			add_header Content-Type text/plain;

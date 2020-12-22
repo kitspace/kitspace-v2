@@ -2,14 +2,14 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
-const defaultDescription = ''
-const defaultOGURL = ''
-const defaultOGImage = ''
+const defaultDescription = 'A site for sharing electronics projects.'
+const defaultOGURL = 'https://kitspace.org'
+const defaultOGImage = 'https://kitspace.org/images/logo_meta.png'
 
 const Head = props => (
   <NextHead>
     <meta charSet="UTF-8" />
-    <title>{props.title || ''}</title>
+    <title>{props.title || 'Kitspace'}</title>
     <meta name="description" content={props.description || defaultDescription} />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/static/favicon.png" />

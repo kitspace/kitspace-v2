@@ -38,3 +38,9 @@ a:hover {
   z-index: 100;
   max-height: 300px;
 }
+
+@media (max-width: 368px) {
+  #quantity-input {
+    margin: 1rem 0;
+  }
+}

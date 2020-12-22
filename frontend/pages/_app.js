@@ -1,20 +1,28 @@
+import React from 'react'
+
 import App from 'next/app'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
 
-import 'semantic-ui-css/components/reset.css'
-import 'semantic-ui-css/components/site.css'
-
-import 'semantic-ui-css/components/button.css'
-import 'semantic-ui-css/components/container.css'
-import 'semantic-ui-css/components/divider.css'
-import 'semantic-ui-css/components/grid.css'
-import 'semantic-ui-css/components/icon.css'
-import 'semantic-ui-css/components/image.css'
-import 'semantic-ui-css/components/input.css'
-import 'semantic-ui-css/components/menu.css'
-import 'semantic-ui-css/components/message.css'
-import 'semantic-ui-css/components/popup.css'
+import 'semantic-ui-css/components/reset.min.css'
+import 'semantic-ui-css/components/site.min.css'
+import 'semantic-ui-css/components/button.min.css'
+import 'semantic-ui-css/components/container.min.css'
+import 'semantic-ui-css/components/divider.min.css'
+import 'semantic-ui-css/components/grid.min.css'
+import 'semantic-ui-css/components/icon.min.css'
+import 'semantic-ui-css/components/image.min.css'
+import 'semantic-ui-css/components/input.min.css'
+import 'semantic-ui-css/components/menu.min.css'
+import 'semantic-ui-css/components/message.min.css'
+import 'semantic-ui-css/components/popup.min.css'
+import 'semantic-ui-css/components/label.min.css'
+import 'semantic-ui-css/components/card.min.css'
+import 'semantic-ui-css/components/segment.min.css'
+import 'semantic-ui-css/components/form.min.css'
+import 'semantic-ui-css/components/checkbox.min.css'
+import 'semantic-ui-css/components/header.min.css'
+import 'semantic-ui-css/components/loader.min.css'
 
 import './_app.scss'
 
@@ -48,7 +56,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   )
 }
 
-KitspaceApp.getInitialProps = async (appContext) => {
+KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
   const session = appContext.ctx.req ? appContext.ctx.req.session : null
   const { isStaticFallback } = appContext.ctx.query
