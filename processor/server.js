@@ -26,6 +26,27 @@ const app = express()
 const port = 5000
 const staticFiles = express.static('/data/')
 
+const ALLOWED_CORS_DOMAINS = ['http://kitspace.test:3000']
+
+app.use((req, res, next) => {
+  const origin = req.get('origin')
+  console.log({origin})
+  if (!origin) {
+    return next()
+  }
+  const allowed = ALLOWED_CORS_DOMAINS.reduce((prev, d) => {
+    return prev || RegExp(d).test(origin)
+  }, false)
+  if (allowed) {
+    res.header('Access-Control-Allow-Origin', origin)
+    res.header('Access-Control-Allow-Methods', 'GET,POST')
+    res.header('Access-Control-Allow-Headers', 'Content-Type')
+    res.header('Access-Control-Allow-Credentials', 'true')
+    return next()
+  }
+  return res.sendStatus(403)
+})
+
 app.get('/files/*', (req, res, next) => {
   const x = path.relative('/files/', req.path)
   if (x in files) {

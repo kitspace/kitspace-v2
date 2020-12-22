@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react'
-import superagent from 'superagent'
 
 import { Page } from '@components/Page'
 import { AuthContext } from '@contexts/AuthContext'
 import { getSession, getRepos } from '@utils/giteaApi'
+
+const processorUrl = `${process.env.KITSPACE_PROCESSOR_URL}/files/`
 
 const Home = ({ repos }) => {
   const { user, csrf } = useContext(AuthContext)
@@ -11,10 +12,25 @@ const Home = ({ repos }) => {
   const [projects, setProjects] = useState([])
 
   useEffect(() => {
-    if (csrf) {
-      getRepos(csrf).then(setProjects)
+    const getProjects = async () => {
+      let projects = await getRepos(csrf)
+      projects = await Promise.all(
+        projects.map(p => {
+          console.log({ p })
+          return fetch(processorUrl + p.full_name + '/HEAD/images/top.png', {
+            mode: 'cors',
+          }).then(r => ({
+            ...p,
+            thumbnail: { status: r.status },
+          }))
+        }),
+      )
+      setProjects(projects)
     }
-  }, [csrf])
+    getProjects()
+  }, [])
+
+  useEffect(() => {}, [projects])
 
   return (
     <Page title="home">
