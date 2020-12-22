@@ -6,17 +6,18 @@ import { Page } from '@components/Page'
 import { AuthContext } from '@contexts/AuthContext'
 import { getSession, getRepos } from '@utils/giteaApi'
 
-const processorUrl = `${process.env.KITSPACE_PROCESSOR_URL}/files/`
+const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
-const fetcher = (...args) => fetch(...args)
+const fetcher = (...args) => fetch(...args).then(r => r.json())
 
 const useThumbnail = name => {
-  const src = processorUrl + name + '/HEAD/images/top.png'
-  const { data, error } = useSWR(src, fetcher, { refreshInterval: 1000 })
-  const isError = error || data?.status >= 400
+  const img = `/${name}/HEAD/images/top.png`
+  const statusUrl = processorUrl + '/status/' + img
+  const { data, error } = useSWR(statusUrl, fetcher, { refreshInterval: 1000 })
+  const isError = error || data?.status === 'failed'
   return {
-    src,
-    isLoading: !isError && data?.status !== 200,
+    src: processorUrl + '/files/' + img,
+    isLoading: !isError && data?.status !== 'done',
     isError,
   }
 }

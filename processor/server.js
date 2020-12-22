@@ -8,17 +8,17 @@ const files = {}
 const eventEmitter = watcher.watch()
 
 eventEmitter.on('in_progress', x => {
-  files[x] = 'in_progress'
+  files[x] = { status: 'in_progress' }
   console.info('in_progress', x)
 })
 
 eventEmitter.on('done', x => {
-  files[x] = 'done'
+  files[x] = { status: 'done' }
   console.info('done', x)
 })
 
 eventEmitter.on('failed', (x, e) => {
-  files[x] = ['failed', e]
+  files[x] = { status: 'failed', error: e }
   console.info('failed', x, e)
 })
 
@@ -28,6 +28,7 @@ const port = 5000
 const allowedDomains = process.env.ALLOWED_CORS_DOMAINS.split(',')
 
 app.use((req, res, next) => {
+  console.info(req)
   const origin = req.get('origin')
   if (!origin) {
     return next()
@@ -44,18 +45,26 @@ app.use((req, res, next) => {
 
 const staticFiles = express.static('/data/')
 
+app.get('/status/*', (req, res, next) => {
+  const x = path.relative('/status/', req.path)
+  if (x in files) {
+    return res.send(files[x])
+  }
+  return res.sendStatus(404)
+})
+
 app.get('/files/*', (req, res, next) => {
   const x = path.relative('/files/', req.path)
   if (x in files) {
-    if (files[x] === 'in_progress') {
+    if (files[x].status === 'in_progress') {
       return res.sendStatus(202)
     }
-    if (files[x] === 'done') {
+    if (files[x].status === 'done') {
       return staticFiles(req, res, next)
     }
-    if (files[x][0] === 'failed') {
+    if (files[x].status === 'failed') {
       res.status(424)
-      return res.send(files[x][1])
+      return res.send(files[x].error)
     }
   }
   return res.sendStatus(404)
