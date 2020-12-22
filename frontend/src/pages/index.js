@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from 'react'
 import { Card, Image, Placeholder } from 'semantic-ui-react'
 import useSWR from 'swr'
 
+import styles from './index.module.scss'
+
 import { Page } from '@components/Page'
 import { AuthContext } from '@contexts/AuthContext'
 import { getSession, getRepos } from '@utils/giteaApi'
@@ -10,8 +12,8 @@ const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
-const useThumbnail = name => {
-  const img = `/${name}/HEAD/images/top.png`
+const useThumbnail = full_name => {
+  const img = `/${full_name}/HEAD/images/top.png`
   const statusUrl = processorUrl + '/status/' + img
   const { data, error } = useSWR(statusUrl, fetcher, { refreshInterval: 1000 })
   const isError = error || data?.status === 'failed'
@@ -22,17 +24,17 @@ const useThumbnail = name => {
   }
 }
 
-const ProjectCard = ({ name }) => {
-  const { src, isLoading, isError } = useThumbnail(name)
+const ProjectCard = ({ name, full_name, description, owner }) => {
+  const { src, isLoading, isError } = useThumbnail(full_name)
   return (
     <Card>
-      {isLoading || isError ? (
-        <div style={{ width: 200, height: 200, background: 'lightgrey' }} />
-      ) : (
-        <Image src={src} />
-      )}
+      <div className={styles.thumbnail}>
+        <div>{isLoading || isError ? null : <img src={src} />}</div>
+      </div>
       <Card.Content>
         <Card.Header>{name}</Card.Header>
+        <Card.Meta>{owner.username}</Card.Meta>
+        <Card.Description>{description}</Card.Description>
       </Card.Content>
     </Card>
   )
@@ -53,8 +55,8 @@ const Home = ({ repos }) => {
     <Page title="home">
       <div>Hi there {username}</div>
       <div>
-        {projects.map(({ full_name }) => (
-          <ProjectCard name={full_name} key={full_name} />
+        {projects.map(project => (
+          <ProjectCard {...project} key={project.id} />
         ))}
       </div>
     </Page>

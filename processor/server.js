@@ -28,7 +28,6 @@ const port = 5000
 const allowedDomains = process.env.ALLOWED_CORS_DOMAINS.split(',')
 
 app.use((req, res, next) => {
-  console.info(req)
   const origin = req.get('origin')
   if (!origin) {
     return next()
