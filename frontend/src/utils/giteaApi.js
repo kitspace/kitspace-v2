@@ -22,7 +22,6 @@ export const createRepo = async (name, description, csrf) => {
     repo_template: '',
     issue_labels: '',
     gitignores: '',
-    license: 'MIT',
     readme: 'Default',
     auto_init: true,
     private: false,
@@ -77,10 +76,10 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
     clone_addr,
     uid,
     repo_name,
-    mirror: false,
+    mirror: true,
     wiki: false,
     private: false,
-    pull_requests: false,
+    pull_requests: true,
     releases: true,
   }
 
