@@ -30,7 +30,6 @@ const ALLOWED_CORS_DOMAINS = ['http://kitspace.test:3000']
 
 app.use((req, res, next) => {
   const origin = req.get('origin')
-  console.log({origin})
   if (!origin) {
     return next()
   }
