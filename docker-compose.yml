@@ -69,7 +69,7 @@ services:
     ports:
       - '5000:5000'
     environment:
-      - 'GITEA_WEBHOOK_SECRET=${GITEA_WEBHOOK_SECRET}'
+      - 'ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
     volumes:
       - ./volumes/gitea/git/repositories:/repositories
       - ./volumes/processor:/data

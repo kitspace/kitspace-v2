@@ -24,27 +24,25 @@ eventEmitter.on('failed', (x, e) => {
 
 const app = express()
 const port = 5000
-const staticFiles = express.static('/data/')
 
-const ALLOWED_CORS_DOMAINS = ['http://kitspace.test:3000']
+const allowedDomains = process.env.ALLOWED_CORS_DOMAINS.split(',')
 
 app.use((req, res, next) => {
   const origin = req.get('origin')
   if (!origin) {
     return next()
   }
-  const allowed = ALLOWED_CORS_DOMAINS.reduce((prev, d) => {
-    return prev || RegExp(d).test(origin)
-  }, false)
-  if (allowed) {
+  if (allowedDomains.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin)
-    res.header('Access-Control-Allow-Methods', 'GET,POST')
+    res.header('Access-Control-Allow-Methods', 'GET,OPTIONS')
     res.header('Access-Control-Allow-Headers', 'Content-Type')
     res.header('Access-Control-Allow-Credentials', 'true')
     return next()
   }
   return res.sendStatus(403)
 })
+
+const staticFiles = express.static('/data/')
 
 app.get('/files/*', (req, res, next) => {
   const x = path.relative('/files/', req.path)
