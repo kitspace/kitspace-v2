@@ -39,15 +39,30 @@ cp .env.example .env
 docker-compose up
 ```
 
-5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login.
+5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login, this will be the admin user.
 
-6. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
-    
-7. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose build --no-cache frontend`.
 
-# Running Integration Tests
+## Frontend
+
+The frontend is a [NextJS](https://nextjs.org) server in the [frontend directory](frontend/). Making edits on the code should auto compile and reload at [kitspace.test:3000](http://kitspace.test:3000).
+
+Changing dependencies requires you to restart the development container:
+
+```
+yarn add <new dependency>
+docker-compose restart frontend
+```
+
+## Gitea
+
+This is built from a git submodule of [our fork of Gitea](https://github.com/kitspace/gitea).
+
+When it first builds the docker container it builds the whole Gitea project (`make clean-all build`). When you restart the container it recompiles only the backend and doesn't recompile unchanged files (`make backend`).
+
+## Running Integration Tests
+
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
- 
+
 2. navigate to `frontend`: `cd frontend/`.
 
 3. Source the `.env` file with `set -a && source ../.env && set +a`
