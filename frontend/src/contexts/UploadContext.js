@@ -87,7 +87,7 @@ export default function UploadContextProvider(props) {
             console.error('Failed to persist files between pages redirection', e)
           }
         }
-        reader.readAsBinaryString(file)
+        reader.readAsDataURL(file)
       })
     }
   }
