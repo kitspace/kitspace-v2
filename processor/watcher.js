@@ -15,10 +15,26 @@ const readFile = util.promisify(fs.readFile)
 
 function watch() {
   const eventEmitter = new EventEmitter()
-  chokidar.watch('/repositories/*/*').on('addDir', gitDir => {
+  let dirWatchers = []
+
+  // watch repositories for file-system events and process
+  const handleAddDir = gitDir => {
+    console.info('addDir', gitDir)
     const debouncedRun = debounce(() => run(eventEmitter, gitDir), 1000)
-    chokidar.watch(gitDir).on('all', debouncedRun)
-  })
+    dirWatchers.push(chokidar.watch(gitDir).on('all', debouncedRun))
+  }
+  let watcher = chokidar.watch('/repositories/*/*').on('addDir', handleAddDir)
+
+  // re-scan every minute in case we missed a file-system event
+  setInterval(() => {
+    watcher.close()
+    for (const w of dirWatchers) {
+      w.close()
+    }
+    dirWatchers = []
+    watcher = chokidar.watch('/repositories/*/*').on('addDir', handleAddDir)
+  }, 60000)
+
   return eventEmitter
 }
 
@@ -50,7 +66,14 @@ async function run(eventEmitter, gitDir) {
     eventEmitter.emit('failed', path.join(name, hash, x), e)
     eventEmitter.emit('failed', path.join(name, 'HEAD', x), e)
   })
-  processGerbers(gerberEventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processGerbers(
+    gerberEventEmitter,
+    checkoutDir,
+    kitspaceYaml,
+    filesDir,
+    hash,
+    name,
+  )
 }
 
 async function getKitspaceYaml(checkoutDir) {
