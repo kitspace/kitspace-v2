@@ -6,10 +6,8 @@ services:
     command: "/bin/bash -c 'yarn install && yarn build && yarn start'"
     restart: always
   gitea:
+    image: docker.pkg.github.com/kitspace/gitea/gitea-image:v1.7.4
     restart: always
-    build:
-      context: gitea/
-      dockerfile: Dockerfile
   postgres:
     restart: always
   nginx:
