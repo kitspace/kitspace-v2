@@ -7,7 +7,7 @@ import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
 import { UploadContext } from '@contexts/UploadContext'
-import { getRepo, updateRepo } from '@utils/giteaApi'
+import { getRepo as getProject, updateRepo } from '@utils/giteaApi'
 import { Button, Form, Header, Input, Segment, TextArea } from 'semantic-ui-react'
 
 const UpdateProject = () => {
@@ -19,12 +19,8 @@ const UpdateProject = () => {
   const fullname = `${user}/${projectName}`
 
   useEffect(() => {
-    const getProject = async () => {
-      const project = await getRepo(fullname)
-      setProject(project)
-    }
     setPersistenceScope(projectName)
-    getProject().then()
+    getProject(fullname).then(setProject)
   }, [])
 
   return (

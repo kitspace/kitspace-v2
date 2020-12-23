@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { List, Button, Modal } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
-import { getUserRepos } from '@utils/giteaApi'
+import { getUserRepos as getUserProjects} from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
 import { deleteRepo } from '@utils/giteaApi'
 import styles from './mine.module.scss'
@@ -39,13 +39,8 @@ const Mine = () => {
   const [projects, setProjects] = useState([])
 
   useEffect(() => {
-    const getUserProjects = async () => {
-      const repos = await getUserRepos(csrf)
-      setProjects(repos)
-    }
-
     if (csrf) {
-      getUserProjects().then()
+      getUserProjects(csrf).then(setProjects)
     }
   }, [csrf])
 
