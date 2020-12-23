@@ -60,23 +60,20 @@ async function run(eventEmitter, gitDir) {
   const filesDir = path.join('/data/files', name, hash)
   const headDir = path.join('/data/files', name, 'HEAD')
   await exec(`mkdir -p ${filesDir}`)
-  //link the HEAD dir to the hash we are currently processing
-  await exec(`rm -rf '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
   const gerberEventEmitter = new EventEmitter()
   gerberEventEmitter.on('in_progress', x => {
-    eventEmitter.emit('in_progress', path.join(name, hash, x))
-    eventEmitter.emit('in_progress', path.join(name, 'HEAD', x))
+    const p = path.join(name, hash, x)
+    eventEmitter.emit('in_progress', p)
+    eventEmitter.emit('link', path.join(name, 'HEAD', x), p)
   })
   gerberEventEmitter.on('done', x => {
     eventEmitter.emit('done', path.join(name, hash, x))
-    eventEmitter.emit('done', path.join(name, 'HEAD', x))
   })
   gerberEventEmitter.on('failed', (x, e) => {
     eventEmitter.emit('failed', path.join(name, hash, x), e)
-    eventEmitter.emit('failed', path.join(name, 'HEAD', x), e)
   })
   processGerbers(
     gerberEventEmitter,
