@@ -49,7 +49,9 @@ The frontend is a [NextJS](https://nextjs.org) server in the [frontend directory
 Changing dependencies requires you to restart the development container:
 
 ```
+cd frontend
 yarn add <new dependency>
+cd ..
 docker-compose restart frontend
 ```
 
