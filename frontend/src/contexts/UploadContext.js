@@ -82,7 +82,7 @@ export default function UploadContextProvider(props) {
           const path = file.name
           const content = reader.result
           try {
-            sessionStorage.setItem(`loadedFile_${path}`, content)
+            sessionStorage.setItem(`loadedFile:${project}:${path}`, content)
           } catch (e) {
             console.error('Failed to persist files between pages redirection', e)
           }

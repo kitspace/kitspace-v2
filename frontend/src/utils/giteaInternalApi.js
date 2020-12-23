@@ -14,12 +14,13 @@ import { b64toBlob } from '@utils/index'
  * @returns {Promise<Object>}
  */
 export const uploadFileToGiteaServer = async (repo, file, csrf) => {
-  const formData = new FormData()
+  const projectName = repo.split('/')[1]
   const fileContent = await b64toBlob(
-    sessionStorage.getItem(`loadedFile_${file.name}`),
+    sessionStorage.getItem(`loadedFile:${projectName}:${file.name}`),
   )
   const blobFromFile = new Blob([fileContent], { type: file.type })
 
+  const formData = new FormData()
   formData.append('file', blobFromFile, file.name)
 
   return new Promise((resolve, reject) => {
