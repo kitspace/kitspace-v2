@@ -24,7 +24,10 @@ eventEmitter.on('done', x => {
 })
 
 eventEmitter.on('failed', (x, e) => {
-  fileStatus[x] = { status: 'failed', error: e }
+  fileStatus[x] = {
+    status: 'failed',
+    error: e.message || e.stderr || 'Unknown error',
+  }
   console.info('failed', x, e)
 })
 
