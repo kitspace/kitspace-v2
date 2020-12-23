@@ -12,6 +12,7 @@ import {
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
+import { useMediaPredicate } from 'react-media-hook'
 
 import styles from './new.module.scss'
 import { Page } from '@components/Page'
@@ -26,23 +27,42 @@ import { SyncRepoFrom } from '@models/SyncRepoForm'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
+  const isBigScreen = useMediaPredicate('(min-width: 1200px)')
+  const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
+
   return (
     <Page title="new" reqSignIn>
-      <div
-        className={`${styles.projectsNew} ui two column stackable center aligned grid`}
-      >
-        <Grid.Row>
-          <Grid.Column className={styles.optionColumn}>
-            <Sync csrf={csrf} user={user} />
+      {isBigScreen ? (
+        <div
+          className={`${styles.projectsNew} ui two column stackable center aligned grid`}
+        >
+          <Grid.Row>
+            <Grid.Column className={styles.optionColumn}>
+              <Sync csrf={csrf} user={user} inline />
+            </Grid.Column>
+            <Divider className={styles.divider} vertical>
+              Or
+            </Divider>
+            <Grid.Column className={styles.optionColumn}>
+              <Upload csrf={csrf} user={user} />
+            </Grid.Column>
+          </Grid.Row>
+        </div>
+      ) : (
+        <div className={`${styles.projectsNew} ui one column  center aligned grid`}>
+          <Grid.Column>
+            <Grid.Row style={rowStyle}>
+              <Sync csrf={csrf} user={user} />
+            </Grid.Row>
+            <Divider className={styles.divider} horizontal>
+              Or
+            </Divider>
+            <Grid.Row style={rowStyle}>
+              <Upload csrf={csrf} user={user} />
+            </Grid.Row>
           </Grid.Column>
-          <Divider className={styles.divider} vertical>
-            Or
-          </Divider>
-          <Grid.Column className={styles.optionColumn}>
-            <Upload csrf={csrf} user={user} />
-          </Grid.Column>
-        </Grid.Row>
-      </div>
+        </div>
+      )}
     </Page>
   )
 }
@@ -130,7 +150,7 @@ const Upload = ({ user, csrf }) => {
 
   return (
     <>
-      <DropZone onDrop={onDrop} />
+      <DropZone onDrop={onDrop} style={{ maxWidth: '70%', margin: 'auto' }} />
       <Modal closeIcon open={modalOpen} onClose={() => setModalOpen(false)}>
         <Modal.Header>Heads up!</Modal.Header>
         <Modal.Content>
@@ -218,9 +238,9 @@ const Sync = ({ user, csrf }) => {
   }
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <p>Sync an existing Git repository</p>
-      <div className={styles.syncSide}>
+      <div style={{ maxWidth: '70%', margin: 'auto', display: 'flex' }}>
         <Form>
           {!isEmpty(message) ? (
             <Message color={message.color}>{message.content}</Message>
