@@ -240,7 +240,7 @@ const Sync = ({ user, csrf }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <p>Sync an existing Git repository</p>
-      <div style={{ maxWidth: '70%', margin: 'auto', display: 'flex' }}>
+      <div style={{ margin: 'auto', display: 'flex' }}>
         <Form>
           {!isEmpty(message) ? (
             <Message color={message.color}>{message.content}</Message>
@@ -263,6 +263,7 @@ const Sync = ({ user, csrf }) => {
                 loading={loading}
                 disabled={loading}
                 onClick={handleClick}
+                icon="sync"
               />
             </div>
           </Form.Group>
