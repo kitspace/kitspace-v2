@@ -8,13 +8,22 @@ import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
 import { UploadContext } from '@contexts/UploadContext'
 import { getRepo, updateRepo } from '@utils/giteaApi'
-import { Button, Form, Header, Input, Segment, TextArea } from 'semantic-ui-react'
+import {
+  Button,
+  Form,
+  Header,
+  Input,
+  Message,
+  Segment,
+  TextArea,
+} from 'semantic-ui-react'
 
 const UpdateProject = () => {
   const router = useRouter()
   const { user, projectName, create } = router.query
   const { setPersistenceScope } = useContext(UploadContext)
   const [project, setProject] = useState({})
+  const [isSynced, setIsSynced] = useState(false)
 
   const fullname = `${user}/${projectName}`
 
@@ -23,14 +32,29 @@ const UpdateProject = () => {
     getRepo(fullname).then(setProject)
   }, [])
 
+  useEffect(() => {
+    setIsSynced(project.mirror)
+  }, [project])
+
   return (
     <Page>
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
+        {isSynced ? (
+          <Message color="yellow">
+            <Message.Header>A mirrored repository</Message.Header>
+            <Message.Content>
+              Files upload isn't supported for synced repositories. Please commit
+              files to the original git repository and it will be synced
+              automatically.
+            </Message.Content>
+          </Message>
+        ) : null}
         <Header as="h2" textAlign="center">
           Updating {projectName} by {user}
         </Header>
         <UpdateForm
           isNew={create === 'true'}
+          withDropZone={!isSynced}
           owner={user}
           name={projectName}
           description={project?.description}
@@ -40,7 +64,7 @@ const UpdateProject = () => {
   )
 }
 
-const UpdateForm = ({ isNew, owner, name, description }) => {
+const UpdateForm = ({ isNew, withDropZone, owner, name, description }) => {
   const fullname = `${owner}/${name}`
 
   const { allFiles, loadedFiles, uploadLoadedFiles, loadFiles } = useContext(
@@ -83,7 +107,7 @@ const UpdateForm = ({ isNew, owner, name, description }) => {
     <>
       <Form>
         <Segment>
-          <DropZone onDrop={onDrop} />
+          {withDropZone ? <DropZone onDrop={onDrop} /> : null}
           <FilesPreview />
           <Form.Field
             fluid
