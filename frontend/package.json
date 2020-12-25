@@ -35,6 +35,7 @@
   "devDependencies": {
     "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
+    "babel-plugin-lodash": "^3.3.4",
     "cypress": "^5.1.0",
     "cypress-file-upload": "^4.1.1",
     "faker": "^5.1.0",
