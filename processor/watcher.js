@@ -14,15 +14,14 @@ const processBOM = require('./tasks/processBOM')
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
-function watch() {
-  const eventEmitter = new EventEmitter()
+function watch(eventEmitter, repoDir = '/repositories') {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
   const handleAddDir = gitDir => {
     console.info('addDir', gitDir)
     // we debounce the file-system event to only invoke once per change in the repo
-    const debouncedRun = debounce(() => run(eventEmitter, gitDir), 1000)
+    const debouncedRun = debounce(() => run(eventEmitter, repoDir, gitDir), 1000)
     dirWatchers[gitDir] = {}
     dirWatchers[gitDir].add = chokidar.watch(gitDir).on('add', debouncedRun)
     // if the repo is moved or deleted we clean up the watcher
@@ -35,7 +34,8 @@ function watch() {
       }
     })
   }
-  let watcher = chokidar.watch('/repositories/*/*').on('addDir', handleAddDir)
+  const repoWildcard = path.join(repoDir, '*', '*')
+  let watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
 
   // re-scan every minute in case we missed a file-system event
   setInterval(() => {
@@ -45,14 +45,13 @@ function watch() {
       dirWatchers[gitDir].unlinkDir.close()
     }
     dirWatchers = {}
-    watcher = chokidar.watch('/repositories/*/*').on('addDir', handleAddDir)
+    watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
   }, 60000)
-
-  return eventEmitter
 }
 
-async function run(eventEmitter, gitDir) {
-  const name = path.relative('/repositories', gitDir).slice(0, -4)
+async function run(eventEmitter, repoDir, gitDir) {
+  // /repositories/user/project.git -> user/project
+  const name = path.relative(repoDir, gitDir).slice(0, -4)
   const checkoutDir = path.join('/data/checkout', name)
 
   await sync(gitDir, checkoutDir)

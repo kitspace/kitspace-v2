@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev": "nodemon server.js --watch server.js --watch watcher.js --watch tasks",
+    "dev": "nodemon server.js --watch '*.js' --watch tasks",
     "start": "node server.js",
     "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next -v node_modules)"
   },
