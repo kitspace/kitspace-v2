@@ -5,7 +5,7 @@ const cp = require('child_process')
 const Jszip = require('jszip')
 const util = require('util')
 
-const { exists } = require('../utils')
+const { exists } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
