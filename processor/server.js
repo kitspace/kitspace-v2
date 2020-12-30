@@ -11,7 +11,8 @@ const eventEmitter = watcher.watch()
 eventEmitter.on('in_progress', x => {
   x = path.relative('/data/files', x)
   fileStatus[x] = { status: 'in_progress' }
-  links[getHeadPath(x)] = x
+  const headPath = getHeadPath(x)
+  links[headPath] = x
   console.info('in_progress', x)
 })
 
@@ -88,8 +89,8 @@ app.listen(port, () => {
 })
 
 function getHeadPath(x) {
-  // path is: /data/files/x/y/{hash}/... so we replace the hash with "HEAD"
+  // path is: user/project/${hash}/file so we replace the hash with "HEAD"
   const p = x.split('/')
-  p[5] = 'HEAD'
+  p[2] = 'HEAD'
   return p.join('/')
 }
