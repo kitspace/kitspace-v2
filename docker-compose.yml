@@ -15,6 +15,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    command: /bin/sh --verbose -c "yarn install && yarn dev"
 
   gitea:
     build:

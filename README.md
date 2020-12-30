@@ -27,7 +27,6 @@ git submodule update --init
 ```
 127.0.0.1	kitspace.test
 127.0.0.1	gitea.kitspace.test
-127.0.0.1	processor.kitspace.test
 ```
 
 3. Copy the example .env
@@ -40,15 +39,30 @@ cp .env.example .env
 docker-compose up
 ```
 
-5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login.
+5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login, this will be the admin user.
 
-6. Make sure to close any proxy service you have, otherwise you won't be able to access the site.
 
-7. Making edits on the code in `frontend/` should auto compile and hot-reload at [kitspace.test:3000](http://kitspace.test:3000).
+## Frontend
 
-8. If you add a dependency to `frontent/package.json`, rebuild the frontend image using `docker-compose build --no-cache frontend`.
+The frontend is a [NextJS](https://nextjs.org) server in the [frontend directory](frontend/). Making edits on the code should auto compile and reload at [kitspace.test:3000](http://kitspace.test:3000).
 
-# Running Integration Tests
+Changing dependencies requires you to restart the development container:
+
+```
+cd frontend
+yarn add <new dependency>
+cd ..
+docker-compose restart frontend
+```
+
+## Gitea
+
+This is built from a git submodule of [our fork of Gitea](https://github.com/kitspace/gitea).
+
+When it first builds the docker container it builds the whole Gitea project (`make clean-all build`). When you restart the container it recompiles only the backend and doesn't recompile unchanged files (`make backend`).
+
+## Running Integration Tests
+
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
 
 2. navigate to `frontend`: `cd frontend/`.
