@@ -7,6 +7,7 @@ const util = require('util')
 const jsYaml = require('js-yaml')
 const EventEmitter = require('events')
 
+const { DATA_DIR } = require('./env')
 const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
@@ -52,12 +53,12 @@ function watch(eventEmitter, repoDir = '/repositories') {
 async function run(eventEmitter, repoDir, gitDir) {
   // /repositories/user/project.git -> user/project
   const name = path.relative(repoDir, gitDir).slice(0, -4)
-  const checkoutDir = path.join('/data/checkout', name)
+  const checkoutDir = path.join(DATA_DIR, 'checkout', name)
 
   await sync(gitDir, checkoutDir)
 
   const hash = await getGitHash(checkoutDir)
-  const filesDir = path.join('/data/files', name, hash)
+  const filesDir = path.join(DATA_DIR, 'files', name, hash)
   await exec(`mkdir -p ${filesDir}`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)

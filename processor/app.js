@@ -4,7 +4,8 @@ const EventEmitter = require('events')
 
 const watcher = require('./watcher')
 
-const allowedDomains = process.env.ALLOWED_CORS_DOMAINS.split(',')
+const { ALLOWED_CORS_DOMAINS, DATA_DIR } = require('./env')
+const filesDir = path.join(DATA_DIR, 'files')
 
 function createApp(repoDir = '/repositories') {
   const fileStatus = {}
@@ -12,19 +13,19 @@ function createApp(repoDir = '/repositories') {
 
   const eventEmitter = new EventEmitter()
   eventEmitter.on('in_progress', x => {
-    x = path.relative('/data/files', x)
+    x = path.relative(filesDir, x)
     fileStatus[x] = { status: 'in_progress' }
     const headPath = getHeadPath(x)
     links[headPath] = x
     console.info('in_progress', x)
   })
   eventEmitter.on('done', x => {
-    x = path.relative('/data/files', x)
+    x = path.relative(filesDir, x)
     fileStatus[x] = { status: 'done' }
     console.info('done', x)
   })
   eventEmitter.on('failed', (x, e) => {
-    x = path.relative('/data/files', x)
+    x = path.relative(filesDir, x)
     const error = e.message || e.stderr || 'Unknown error'
     fileStatus[x] = { status: 'failed', error }
     console.info('failed', x, error)
@@ -38,7 +39,7 @@ function createApp(repoDir = '/repositories') {
     if (!origin) {
       return next()
     }
-    if (allowedDomains.includes(origin)) {
+    if (ALLOWED_CORS_DOMAINS.includes(origin)) {
       res.header('Access-Control-Allow-Origin', origin)
       res.header('Access-Control-Allow-Methods', 'GET,OPTIONS')
       res.header('Access-Control-Allow-Headers', 'Content-Type')
