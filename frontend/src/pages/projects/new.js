@@ -218,21 +218,32 @@ const Sync = ({ user, csrf }) => {
       color: 'green',
     })
 
-    const repo = form.url || remoteRepoPlaceHolder
-    const migrateSuccessfully = await migrateRepo(repo, uid, csrf)
+    const repoURL = form.url
+    const repoName = urlToName(repoURL)
+
+    const res = await migrateRepo(repoURL, uid, csrf)
+    const migrateSuccessfully = res.ok
+    const alreadySynced = res.status === 409
 
     if (migrateSuccessfully) {
-      const repoName = urlToName(repo)
       setMessage({
         content: 'Migrated successfully, redirecting the project page...',
         color: 'green',
       })
       await push(`/projects/update/${username}/${repoName}`)
     } else {
-      setMessage({
-        content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
-        color: 'red',
-      })
+      if (alreadySynced) {
+        setMessage({
+          content: 'Repository is already synced!',
+          color: 'red',
+        })
+      } else {
+        setMessage({
+          content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
+          color: 'red',
+        })
+      }
+
       setLoading(false)
     }
   }
@@ -242,9 +253,11 @@ const Sync = ({ user, csrf }) => {
       <p>Sync an existing Git repository</p>
       <div style={{ margin: 'auto', display: 'flex' }}>
         <Form>
-          {!isEmpty(message) ? (
-            <Message color={message.color}>{message.content}</Message>
-          ) : null}
+          <Form.Group>
+            {!isEmpty(message) ? (
+              <Message color={message.color}>{message.content}</Message>
+            ) : null}
+          </Form.Group>
           <Form.Group inline>
             <Form.Field
               fluid

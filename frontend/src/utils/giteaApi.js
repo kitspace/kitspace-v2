@@ -66,7 +66,7 @@ export const updateRepo = async (repo, updateFields, csrf) => {
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
  * @param csrf {string}
- * @returns {Promise<boolean>}
+ * @returns {Promise<Response>}
  */
 export const migrateRepo = async (remoteRepo, uid, csrf) => {
   const clone_addr = remoteRepo
@@ -83,15 +83,13 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
     releases: true,
   }
 
-  const res = await fetch(endpoint, {
+  return await fetch(endpoint, {
     method: 'POST',
     mode,
     credentials: 'include',
     headers,
     body: JSON.stringify(giteaOptions),
   })
-
-  return res.ok
 }
 /**
  * delete the corresponding gitea repo for a project.
