@@ -14,4 +14,11 @@ function exists(file) {
     })
 }
 
-module.exports = { exists }
+function existsAll(paths) {
+  return paths.reduce(
+    async (prev, p) => (await prev) && (await exists(p)),
+    Promise.resolve(true),
+  )
+}
+
+module.exports = { exists, existsAll }

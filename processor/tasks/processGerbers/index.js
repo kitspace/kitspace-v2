@@ -5,21 +5,13 @@ const cp = require('child_process')
 const Jszip = require('jszip')
 const util = require('util')
 
-const { exists } = require('../../utils')
+const { existsAll } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
 
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
-
-const topSvgPath = 'images/top.svg'
-const bottomSvgPath = 'images/bottom.svg'
-const zipInfoPath = 'zip-info.json'
-const topPngPath = 'images/top.png'
-const topLargePngPath = 'images/top-large.png'
-const topMetaPngPath = 'images/top-meta.png'
-const topWithBgndPath = 'images/top-with-background.png'
 
 async function processGerbers(
   eventEmitter,
@@ -29,26 +21,36 @@ async function processGerbers(
   hash,
   name,
 ) {
-  const zipPath = name.split('/')[1] + '-' + hash.slice(0, 7) + '-gerbers.zip'
+  const zipFileName = name.split('/')[1] + '-' + hash.slice(0, 7) + '-gerbers.zip'
+  const zipPath = path.join(outputDir, zipFileName)
+  const topSvgPath = path.join(outputDir, 'images/top.svg')
+  const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')
+  const zipInfoPath = path.join(outputDir, 'zip-info.json')
+  const topPngPath = path.join(outputDir, 'images/top.png')
+  const topLargePngPath = path.join(outputDir, 'images/top-large.png')
+  const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
+  const topWithBgndPath = path.join(outputDir, 'images/top-with-background.png')
 
-  eventEmitter.emit('in_progress', topSvgPath)
-  eventEmitter.emit('in_progress', bottomSvgPath)
-  eventEmitter.emit('in_progress', zipPath)
-  eventEmitter.emit('in_progress', zipInfoPath)
-  eventEmitter.emit('in_progress', topPngPath)
-  eventEmitter.emit('in_progress', topLargePngPath)
-  eventEmitter.emit('in_progress', topMetaPngPath)
-  eventEmitter.emit('in_progress', topWithBgndPath)
+  const filePaths = [
+    zipPath,
+    bottomSvgPath,
+    zipInfoPath,
+    topSvgPath,
+    topPngPath,
+    topLargePngPath,
+    topMetaPngPath,
+    topWithBgndPath,
+  ]
 
-  const failAll = e => {
-    eventEmitter.emit('failed', topSvgPath, e)
-    eventEmitter.emit('failed', bottomSvgPath, e)
-    eventEmitter.emit('failed', zipPath, e)
-    eventEmitter.emit('failed', zipInfoPath, e)
-    eventEmitter.emit('failed', topPngPath, e)
-    eventEmitter.emit('failed', topLargePngPath, e)
-    eventEmitter.emit('failed', topMetaPngPath, e)
-    eventEmitter.emit('failed', topWithBgndPath, e)
+  for (const f of filePaths) {
+    eventEmitter.emit('in_progress', f)
+  }
+
+  if (await existsAll(filePaths)) {
+    for (const f of filePaths) {
+      eventEmitter.emit('done', f)
+    }
+    return
   }
 
   try {
@@ -57,76 +59,58 @@ async function processGerbers(
 
     await exec('mkdir -p ' + path.join(outputDir, 'images'))
 
-    if (
-      !(await exists(path.join(outputDir, zipPath))) ||
-      !(await exists(path.join(outputDir, bottomSvgPath))) ||
-      !(await exists(path.join(outputDir, zipInfoPath))) ||
-      !(await exists(path.join(outputDir, topSvgPath))) ||
-      !(await exists(path.join(outputDir, topPngPath))) ||
-      !(await exists(path.join(outputDir, topLargePngPath))) ||
-      !(await exists(path.join(outputDir, topMetaPngPath))) ||
-      !(await exists(path.join(outputDir, topWithBgndPath)))
-    ) {
-      const files = globule.find(path.join(inputDir, '**'))
+    const files = globule.find(path.join(inputDir, '**'))
 
-      let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
-      if (gerbers.length === 0) {
-        gerbers = await plotKicad(inputDir, files, kitspaceYaml)
-      }
-
-      const gerberData = await readGerbers(gerbers)
-
-      generateZip(path.join(outputDir, zipPath), gerberData)
-        .then(() => eventEmitter.emit('done', zipPath))
-        .catch(e => eventEmitter.emit('failed', zipPath, e))
-
-      const stackup = await boardBuilder(gerberData, color)
-
-      writeFile(path.join(outputDir, bottomSvgPath), stackup.bottom.svg)
-        .then(() => eventEmitter.emit('done', bottomSvgPath))
-        .catch(e => eventEmitter.emit('failed', bottomSvgPath, e))
-
-      generateZipInfo(outputDir, zipPath, stackup, zipInfoPath)
-        .then(() => eventEmitter.emit('done', zipInfoPath))
-        .catch(e => eventEmitter.emit('failed', zipInfoPath, e))
-
-      await writeFile(path.join(outputDir, topSvgPath), stackup.top.svg)
-        .then(() => eventEmitter.emit('done', topSvgPath))
-        .catch(e => eventEmitter.emit('failed', topSvgPath, e))
-
-      generateTopPng(outputDir, topSvgPath, stackup, topPngPath)
-        .then(() => eventEmitter.emit('done', topPngPath))
-        .catch(e => eventEmitter.emit('failed', topPngPath, e))
-
-      generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath)
-        .then(() => eventEmitter.emit('done', topLargePngPath))
-        .catch(e => eventEmitter.emit('failed', topLargePngPath, e))
-
-      await generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath)
-        .then(() => eventEmitter.emit('done', topMetaPngPath))
-        .catch(e => eventEmitter.emit('failed', topMetaPngPath, e))
-
-      generateTopWithBgnd(outputDir, topMetaPngPath, topWithBgndPath)
-        .then(() => eventEmitter.emit('done', topWithBgndPath))
-        .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
-    } else {
-      eventEmitter.emit('done', zipPath)
-      eventEmitter.emit('done', bottomSvgPath)
-      eventEmitter.emit('done', zipInfoPath)
-      eventEmitter.emit('done', topSvgPath)
-      eventEmitter.emit('done', topPngPath)
-      eventEmitter.emit('done', topLargePngPath)
-      eventEmitter.emit('done', topMetaPngPath)
-      eventEmitter.emit('done', topWithBgndPath)
+    let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
+    if (gerbers.length === 0) {
+      gerbers = await plotKicad(inputDir, files, kitspaceYaml)
     }
+
+    const gerberData = await readGerbers(gerbers)
+
+    generateZip(zipPath, gerberData)
+      .then(() => eventEmitter.emit('done', zipPath))
+      .catch(e => eventEmitter.emit('failed', zipPath, e))
+
+    const stackup = await boardBuilder(gerberData, color)
+
+    writeFile(bottomSvgPath, stackup.bottom.svg)
+      .then(() => eventEmitter.emit('done', bottomSvgPath))
+      .catch(e => eventEmitter.emit('failed', bottomSvgPath, e))
+
+    generateZipInfo(zipPath, stackup, zipInfoPath)
+      .then(() => eventEmitter.emit('done', zipInfoPath))
+      .catch(e => eventEmitter.emit('failed', zipInfoPath, e))
+
+    await writeFile(topSvgPath, stackup.top.svg)
+      .then(() => eventEmitter.emit('done', topSvgPath))
+      .catch(e => eventEmitter.emit('failed', topSvgPath, e))
+
+    generateTopPng(topSvgPath, stackup, topPngPath)
+      .then(() => eventEmitter.emit('done', topPngPath))
+      .catch(e => eventEmitter.emit('failed', topPngPath, e))
+
+    generateTopLargePng(topSvgPath, stackup, topLargePngPath)
+      .then(() => eventEmitter.emit('done', topLargePngPath))
+      .catch(e => eventEmitter.emit('failed', topLargePngPath, e))
+
+    await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
+      .then(() => eventEmitter.emit('done', topMetaPngPath))
+      .catch(e => eventEmitter.emit('failed', topMetaPngPath, e))
+
+    generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
+      .then(() => eventEmitter.emit('done', topWithBgndPath))
+      .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
   } catch (e) {
-    failAll(e)
+    for (const f of filePaths) {
+      eventEmitter.emit('failed', f, e)
+    }
   }
 }
 
-function generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath) {
-  let cmd_large = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
-  cmd_large += ` --export-png='${path.join(outputDir, topLargePngPath)}'`
+function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
+  let cmd_large = `inkscape --without-gui '${topSvgPath}'`
+  cmd_large += ` --export-png='${topLargePngPath}'`
   if (stackup.top.width > stackup.top.height + 0.05) {
     cmd_large += ` --export-width=${240 * 3 - 128}`
   } else {
@@ -135,9 +119,9 @@ function generateTopLargePng(outputDir, topSvgPath, stackup, topLargePngPath) {
   return exec(cmd_large)
 }
 
-function generateTopPng(outputDir, topSvgPath, stackup, topPngPath) {
-  let cmd = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
-  cmd += ` --export-png='${path.join(outputDir, topPngPath)}'`
+function generateTopPng(topSvgPath, stackup, topPngPath) {
+  let cmd = `inkscape --without-gui '${topSvgPath}'`
+  cmd += ` --export-png='${topPngPath}'`
   if (stackup.top.width > stackup.top.height + 0.05) {
     cmd += ' --export-width=240'
   } else {
@@ -146,9 +130,9 @@ function generateTopPng(outputDir, topSvgPath, stackup, topPngPath) {
   return exec(cmd)
 }
 
-function generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath) {
-  let cmd_meta = `inkscape --without-gui '${path.join(outputDir, topSvgPath)}'`
-  cmd_meta += ` --export-png='${path.join(outputDir, topMetaPngPath)}'`
+function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath) {
+  let cmd_meta = `inkscape --without-gui '${topSvgPath}'`
+  cmd_meta += ` --export-png='${topMetaPngPath}'`
   const width = 900
   let height = 400
   const ratioW = width / stackup.top.width
@@ -166,15 +150,12 @@ function generateTopMetaPng(outputDir, topSvgPath, stackup, topMetaPngPath) {
   return exec(cmd_meta)
 }
 
-function generateTopWithBgnd(outputDir, topMetaPngPath, topWithBgndPath) {
-  const cmd = `convert -background '#373737' -gravity center '${path.join(
-    outputDir,
-    topMetaPngPath,
-  )}' -extent 1000x524 '${path.join(outputDir, topWithBgndPath)}'`
+function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
+  const cmd = `convert -background '#373737' -gravity center '${topMetaPngPath}' -extent 1000x524 '${topWithBgndPath}'`
   return exec(cmd)
 }
 
-function generateZipInfo(outputDir, zipPath, stackup, zipInfoPath) {
+function generateZipInfo(zipPath, stackup, zipInfoPath) {
   const zipInfo = {
     zipPath: path.basename(zipPath),
     width: Math.max(stackup.top.width, stackup.bottom.width),
@@ -196,7 +177,7 @@ function generateZipInfo(outputDir, zipPath, stackup, zipInfoPath) {
   zipInfo.width = Math.ceil(zipInfo.width)
   zipInfo.height = Math.ceil(zipInfo.height)
 
-  return writeFile(path.join(outputDir, zipInfoPath), JSON.stringify(zipInfo))
+  return writeFile(path.join(zipInfoPath), JSON.stringify(zipInfo))
 }
 
 function readGerbers(gerbers) {
