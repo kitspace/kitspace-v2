@@ -8,22 +8,21 @@ const links = {}
 
 const eventEmitter = watcher.watch()
 
-eventEmitter.on('link', (x, y) => {
-  links[x] = y
-  console.info('link', x, y)
-})
-
 eventEmitter.on('in_progress', x => {
+  x = path.relative('/data/files', x)
   fileStatus[x] = { status: 'in_progress' }
+  links[getHeadPath(x)] = x
   console.info('in_progress', x)
 })
 
 eventEmitter.on('done', x => {
+  x = path.relative('/data/files', x)
   fileStatus[x] = { status: 'done' }
   console.info('done', x)
 })
 
 eventEmitter.on('failed', (x, e) => {
+  x = path.relative('/data/files', x)
   fileStatus[x] = {
     status: 'failed',
     error: e.message || e.stderr || 'Unknown error',
@@ -87,3 +86,10 @@ app.get('/files/*', (req, res, next) => {
 app.listen(port, () => {
   console.info(`processor listening on http://localhost:${port}`)
 })
+
+function getHeadPath(x) {
+  // path is: /data/files/x/y/{hash}/... so we replace the hash with "HEAD"
+  const p = x.split('/')
+  p[5] = 'HEAD'
+  return p.join('/')
+}
