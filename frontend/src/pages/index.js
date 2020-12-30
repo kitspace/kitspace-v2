@@ -1,62 +1,66 @@
-import React, { useContext } from 'react'
-import superagent from 'superagent'
+import React, { useContext, useState, useEffect } from 'react'
+import { Card, Image, Placeholder } from 'semantic-ui-react'
+import useSWR from 'swr'
+
+import styles from './index.module.scss'
 
 import { Page } from '@components/Page'
 import { AuthContext } from '@contexts/AuthContext'
-import { getSession } from '@utils/giteaApi'
+import { getSession, getRepos } from '@utils/giteaApi'
 
-const Home = repos => {
-  const { user, csrf } = useContext(AuthContext)
+const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
-  const username = user?.login || 'unknown user'
+const fetcher = (...args) => fetch(...args).then(r => r.json())
 
+const useThumbnail = full_name => {
+  const img = `/${full_name}/HEAD/images/top.png`
+  const statusUrl = processorUrl + '/status/' + img
+  const { data, error } = useSWR(statusUrl, fetcher, { refreshInterval: 1000 })
+  const isError = error || data?.status === 'failed'
+  return {
+    src: processorUrl + '/files/' + img,
+    isLoading: !isError && data?.status !== 'done',
+    isError,
+  }
+}
+
+const ProjectCard = ({ name, full_name, description, owner }) => {
+  const { src, isLoading, isError } = useThumbnail(full_name)
   return (
-    <Page title="home">
-      <div>
-        Hi there {username}, {csrf}
-        <pre>{JSON.stringify(repos, null, 2)}</pre>
+    <Card>
+      <div className={styles.thumbnail}>
+        <div>{isLoading || isError ? null : <img src={src} />}</div>
       </div>
-    </Page>
+      <Card.Content>
+        <Card.Header>{name}</Card.Header>
+        <Card.Meta>{owner.username}</Card.Meta>
+        <Card.Description>{description}</Card.Description>
+      </Card.Content>
+    </Card>
   )
 }
 
-const gitea_public_url = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+const Home = ({ repos }) => {
+  const { user, csrf } = useContext(AuthContext)
+  const username = user?.login || 'unknown user'
+  const [projects, setProjects] = useState([])
 
-const gitea_internal_url = 'http://gitea:3000/api/v1'
+  useEffect(() => {
+    if (csrf) {
+      getRepos(csrf).then(setProjects)
+    }
+  }, [csrf])
 
-Home.getInitialProps = async ({ req }) => {
-  let api = path => gitea_internal_url + path
-  if (req == null) {
-    api = path => gitea_public_url + path
-  }
-  const session = getSession(req) || {}
-  const cookie = req?.headers?.cookie
-  const _csrf = session._csrf
-  let repos = await superagent
-    .get(api('/repos/search'))
-    .query({ sort: 'updated', order: 'desc' })
-    .query({ _csrf })
-    .set(cookie ? { cookie } : {})
-    .then(r => r.body.data)
-
-  repos = await Promise.all(
-    repos.map(async repo => {
-      let head = null
-      if (!repo.empty) {
-        const branch = repo.default_branch
-        const refs = await superagent
-          .get(api(`/repos/${repo.full_name}/git/refs`))
-          .query({ _csrf })
-          .set(cookie ? { cookie } : {})
-          .then(r => r.body)
-        const ref = refs.find(r => r.ref === `refs/heads/${branch}`)
-        head = ref && ref.object.sha
-      }
-      return { head, ...repo }
-    }),
+  return (
+    <Page title="home">
+      <div>Hi there {username}</div>
+      <div>
+        {projects.map(project => (
+          <ProjectCard {...project} key={project.id} />
+        ))}
+      </div>
+    </Page>
   )
-
-  return repos
 }
 
 export default Home
