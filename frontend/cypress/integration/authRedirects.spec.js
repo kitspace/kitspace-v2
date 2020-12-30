@@ -9,6 +9,7 @@ describe('It validates authentication redirects', () => {
     cy.visit('/')
     cy.createUser(username, email, password)
   })
+
   it("should redirect unauthenticated users to '/login' when accessing reqSignIn page", () => {
     // `/project/new` is marked as `reqSignIn`.
     cy.visit('/projects/new')
