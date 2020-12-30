@@ -200,51 +200,47 @@ const Sync = ({ user, csrf }) => {
   const uid = user?.id
   const username = user?.login
 
-  useEffect(() => {
-    if (!isEmpty(errors) && form.url !== '') {
+  const handleClick = async () => {
+    if (isEmpty(errors)) {
+      setLoading(true)
+      setMessage({
+        content: 'Processing the repository, this may take a while...',
+        color: 'green',
+      })
+
+      const repoURL = form.url
+      const repoName = urlToName(repoURL)
+
+      const res = await migrateRepo(repoURL, uid, csrf)
+      const migrateSuccessfully = res.ok
+      const alreadySynced = res.status === 409
+
+      if (migrateSuccessfully) {
+        setMessage({
+          content: 'Migrated successfully, redirecting the project page...',
+          color: 'green',
+        })
+        await push(`/projects/update/${username}/${repoName}`)
+      } else {
+        if (alreadySynced) {
+          setMessage({
+            content: 'Repository is already synced!',
+            color: 'red',
+          })
+        } else {
+          setMessage({
+            content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
+            color: 'red',
+          })
+        }
+
+        setLoading(false)
+      }
+    } else {
       setMessage({
         content: `Please, enter a valid URL to a remote git repo e.g., ${remoteRepoPlaceHolder}`,
         color: 'yellow',
       })
-    } else {
-      setMessage({})
-    }
-  }, [form.url])
-
-  const handleClick = async () => {
-    setLoading(true)
-    setMessage({
-      content: 'Processing the repository, this may take a while...',
-      color: 'green',
-    })
-
-    const repoURL = form.url
-    const repoName = urlToName(repoURL)
-
-    const res = await migrateRepo(repoURL, uid, csrf)
-    const migrateSuccessfully = res.ok
-    const alreadySynced = res.status === 409
-
-    if (migrateSuccessfully) {
-      setMessage({
-        content: 'Migrated successfully, redirecting the project page...',
-        color: 'green',
-      })
-      await push(`/projects/update/${username}/${repoName}`)
-    } else {
-      if (alreadySynced) {
-        setMessage({
-          content: 'Repository is already synced!',
-          color: 'red',
-        })
-      } else {
-        setMessage({
-          content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
-          color: 'red',
-        })
-      }
-
-      setLoading(false)
     }
   }
 
