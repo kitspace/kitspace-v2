@@ -245,22 +245,17 @@ const Sync = ({ user, csrf }) => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <p>Sync an existing Git repository</p>
-      <div style={{ margin: 'auto', display: 'flex' }}>
+      <div>
         <Form>
-          <Form.Group>
-            {!isEmpty(message) ? (
-              <Message color={message.color}>{message.content}</Message>
-            ) : null}
-          </Form.Group>
           <Form.Group inline>
             <Form.Field
               fluid
               control={Input}
               className={styles.urlInput}
               name="url"
-              placeholder={remoteRepoPlaceHolder}
+              placeholder={`e.g., ${remoteRepoPlaceHolder}`}
               onChange={onChange}
               value={form.url || ''}
             />
@@ -270,7 +265,7 @@ const Sync = ({ user, csrf }) => {
                 content="Sync"
                 color="green"
                 loading={loading}
-                disabled={loading}
+                disabled={loading || form.url == null}
                 onClick={handleClick}
                 icon="sync"
               />
@@ -278,6 +273,11 @@ const Sync = ({ user, csrf }) => {
           </Form.Group>
         </Form>
       </div>
+      {!isEmpty(message) ? (
+        <Message style={{ maxWidth: '70%' }} color={message.color}>
+          {message.content}
+        </Message>
+      ) : null}
     </div>
   )
 }
