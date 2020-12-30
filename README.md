@@ -22,11 +22,12 @@ git submodule update --init
 ```
 
 1. Install [Docker](https://www.docker.com/get-started) and [docker-compose](https://pypi.org/project/docker-compose/) (on Ubuntu: `snap install docker` and `apt install docker-compose`)
-2. Add the following to `/etc/hosts` (or your platform's equivalent)
+2. Add the following to `/etc/hosts` (If you are not using Linux this won't work, please open an issue and we'll figure out how to support non-Linux development).
 
 ```
-127.0.0.1	kitspace.test
-127.0.0.1	gitea.kitspace.test
+172.17.0.1    kitspace.test
+172.17.0.1    gitea.kitspace.test
+172.17.0.1    processor.kitspace.test
 ```
 
 3. Copy the example .env
@@ -60,6 +61,12 @@ docker-compose restart frontend
 This is built from a git submodule of [our fork of Gitea](https://github.com/kitspace/gitea).
 
 When it first builds the docker container it builds the whole Gitea project (`make clean-all build`). When you restart the container it recompiles only the backend and doesn't recompile unchanged files (`make backend`).
+
+
+## Processor
+
+This is a NodeJS and [Express](https://expressjs.com/) server that processes all the assets. As with the frontend, changing dependencies requires you to restart the development container.
+
 
 ## Running Integration Tests
 

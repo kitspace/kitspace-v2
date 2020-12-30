@@ -9,6 +9,7 @@ const EventEmitter = require('events')
 
 const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
+const processBOM = require('./tasks/processBOM')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
@@ -63,6 +64,7 @@ async function run(eventEmitter, gitDir) {
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
   processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
 }
 
 async function getKitspaceYaml(checkoutDir) {
