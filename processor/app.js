@@ -69,12 +69,14 @@ function createApp(repoDir = '/repositories') {
     }
     if (x in fileStatus) {
       if (fileStatus[x].status === 'in_progress') {
+        // send a 202, "Accepted" status when the asset processing is in progress
         return res.sendStatus(202)
       }
       if (fileStatus[x].status === 'done') {
         return staticFiles(req, res, next)
       }
       if (fileStatus[x].status === 'failed') {
+        // send a 424, "Failed Dependency" error when the asset processing failed
         res.status(424)
         return res.send(fileStatus[x].error)
       }
