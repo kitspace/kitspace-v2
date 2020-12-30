@@ -24,11 +24,9 @@ eventEmitter.on('done', x => {
 
 eventEmitter.on('failed', (x, e) => {
   x = path.relative('/data/files', x)
-  fileStatus[x] = {
-    status: 'failed',
-    error: e.message || e.stderr || 'Unknown error',
-  }
-  console.info('failed', x, e)
+  const error = e.message || e.stderr || 'Unknown error'
+  fileStatus[x] = { status: 'failed', error }
+  console.info('failed', x, error)
 })
 
 const app = express()
