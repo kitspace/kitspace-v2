@@ -49,8 +49,6 @@ function createApp(repoDir = '/repositories') {
     return res.sendStatus(403)
   })
 
-  const staticFiles = express.static('/data/')
-
   app.get('/status/*', (req, res, next) => {
     let x = path.relative('/status/', req.path)
     if (x in links) {
@@ -61,6 +59,8 @@ function createApp(repoDir = '/repositories') {
     }
     return res.sendStatus(404)
   })
+
+  const staticFiles = express.static(DATA_DIR)
 
   app.get('/files/*', (req, res, next) => {
     const x = path.relative('/files/', req.path)
