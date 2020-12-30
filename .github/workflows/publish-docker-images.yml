@@ -28,16 +28,16 @@ jobs:
         name: Push frontend to GitHub Container Registry
         uses: docker/build-push-action@v2
         with:
-          context: ./frontend
-          file: ./Dockerfile
+          context: .
+          file: ./frontend/Dockerfile
           push: true          
           tags: ghcr.io/kitspace/frontend
   
       - name: Push processor to GitHub Container Registry
         uses: docker/build-push-action@v2
         with:
-          context: /processor
-          file: ./Dockerfile
+          context: .
+          file: ./processor/Dockerfile
           push: true          
           tags: ghcr.io/kitspace/frontend
 
