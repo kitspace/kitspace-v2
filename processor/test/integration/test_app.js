@@ -19,18 +19,23 @@ describe('app', () => {
     this.app = createApp(repoDir)
     this.supertest = supertest(this.app)
   })
+
   it('creates app', async () => {
     assert(this.app != null)
   })
+
   it('404s root', async () => {
     await this.supertest.get('/').expect(404)
   })
+
   it('404s a file', async () => {
     await this.supertest.get('/files/user/project/HEAD/top.png').expect(404)
   })
+
   it('404s status', async () => {
     await this.supertest.get('/files/user/project/HEAD/top.png').expect(404)
   })
+
   it('reports status of failed processing', async () => {
     // make a simple git repo without the right files
     await exec(`mkdir -p ${sourceRepo}`)
@@ -68,11 +73,10 @@ describe('app', () => {
       .redirects()
     assert(r.status === 424, `expected 424 but got ${r.status}`)
   })
-  it('processes the kitspace ruler project', async () => {
+
+  const testRuler = hash => async () => {
     // first we reset HEAD/master to an exact version of the ruler repo
     // so future changes of the repo don't affect this test
-    //const hash = '2af1eef430b2382d22d3c8a95abe18ccc1ee5dc7'
-    const hash = 'f8bdf1d0c358f88b70a8306c6855538ac933914e'
     const tmpBare = path.join(tmpDir, 'ruler.git')
     await exec(`git clone --bare https://github.com/kitspace/ruler ${tmpBare}`)
     await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
@@ -126,7 +130,13 @@ describe('app', () => {
         `expected '${r.req.path}' to include '${hash}'`,
       )
     }
-  })
+  }
+
+  const kicadHash = '2af1eef430b2382d22d3c8a95abe18ccc1ee5dc7'
+  const nonKicadHash = 'f8bdf1d0c358f88b70a8306c6855538ac933914e'
+  it('processes the kitspace ruler project', testRuler(nonKicadHash))
+  it('processes the kitspace ruler project with eda: kicad', testRuler(kicadHash))
+
   afterEach(async () => {
     this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
