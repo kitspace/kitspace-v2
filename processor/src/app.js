@@ -30,9 +30,11 @@ function createApp(repoDir = '/repositories') {
     fileStatus[x] = { status: 'failed', error }
     console.info('failed', x, error)
   })
-  watcher.watch(eventEmitter, repoDir)
+  const unwatch = watcher.watch(eventEmitter, repoDir)
 
   const app = express()
+
+  app.stop = unwatch
 
   app.use((req, res, next) => {
     const origin = req.get('origin')

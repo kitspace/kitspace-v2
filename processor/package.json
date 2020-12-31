@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.js --watch src/",
     "start": "node src/server.js",
+    "test": "mocha test/integration",
     "fmt": "prettier --write *.js *.json $(find src/ test/ -name '*.js')"
   },
   "dependencies": {
@@ -24,8 +25,9 @@
     "xml-element-string": "^1.0.0"
   },
   "devDependencies": {
-    "supertest": "^6.0.1",
-    "nodemon": "^2.0.6"
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
   },
   "resolutions": {
     "pcb-stackup-core": "4.0.0-next.13",
