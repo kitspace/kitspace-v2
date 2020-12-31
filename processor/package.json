@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.js --watch src/",
     "start": "node src/server.js",
-    "test": "mocha test/integration",
+    "test": "DATA_DIR=/tmp/kitspace-processor-test/data mocha test/integration --timeout=60000",
     "fmt": "prettier --write *.js *.json $(find src/ test/ -name '*.js')"
   },
   "dependencies": {
