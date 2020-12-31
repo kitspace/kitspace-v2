@@ -40,7 +40,7 @@ describe('app', () => {
     // make a simple git repo without the right files
     await exec(`mkdir -p ${sourceRepo}`)
     await exec(
-      `cd ${sourceRepo} && git init && touch test-file && git add test-file && git commit -m 'Initial commit'`,
+      `cd ${sourceRepo} && git init && git config user.email "your@example.com" && git config user.name "Your Name" && touch test-file && git add test-file && git commit -m 'Initial commit'`,
     )
     // gitea uses bare repos, so we clone it into one
     await exec(

@@ -1,7 +1,6 @@
 FROM ubuntu:18.04
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV NODE_ENV=production
 
 RUN apt-get update && apt-get install -y software-properties-common curl
 RUN add-apt-repository -y ppa:kicad/kicad-5.1-releases
