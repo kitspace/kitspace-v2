@@ -76,5 +76,5 @@ services:
       - ./volumes/gitea/git/repositories:/repositories
       - ./volumes/processor:/data
       - ./processor:/app
-      - ./processor/node_modules:/app/node_modules
+      - /app/node_modules
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
