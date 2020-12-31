@@ -5,9 +5,9 @@
   "main": "index.js",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev": "nodemon server.js --watch '*.js' --watch tasks",
-    "start": "node server.js",
-    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next -v node_modules)"
+    "dev": "nodemon src/server.js --watch src/",
+    "start": "node src/server.js",
+    "fmt": "prettier --write *.js *.json $(find src/ test/ -name '*.js')"
   },
   "dependencies": {
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#78df7bb0ebfbdb7beee99d13514b3737f010508f",
