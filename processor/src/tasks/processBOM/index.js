@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const util = require('util')
 const cp = require('child_process')
+const getPartinfo = require('./get_partinfo')
 
 const { exists, existsAll } = require('../../utils')
 
@@ -74,10 +75,10 @@ async function processBOM(
     bom.parts = await getPartinfo(bom.lines)
 
     const site = kitspaceYaml.site || ''
-    const info = { site, bom, parts }
-    writeFile(infoPath, JSON.stringify(info))
-      .then(() => eventEmitter.emit('done', infoPath))
-      .catch(e => eventEmitter.emit('failed', infoPath, e))
+    const info = { site, bom }
+    writeFile(infoJsonPath, JSON.stringify(info))
+      .then(() => eventEmitter.emit('done', infoJsonPath))
+      .catch(e => eventEmitter.emit('failed', infoJsonPath, e))
   } catch (e) {
     for (const f of filePaths) {
       eventEmitter.emit('failed', f, e)

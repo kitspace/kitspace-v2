@@ -69,41 +69,63 @@ describe('app', () => {
     assert(r.status === 424, `expected 424 but got ${r.status}`)
   })
   it('processes the kitspace ruler project', async () => {
+    // first we reset HEAD/master to an exact version of the ruler repo
+    // so future changes of the repo don't affect this test
+    //const hash = '2af1eef430b2382d22d3c8a95abe18ccc1ee5dc7'
+    const hash = 'f8bdf1d0c358f88b70a8306c6855538ac933914e'
     const tmpBare = path.join(tmpDir, 'ruler.git')
     await exec(`git clone --bare https://github.com/kitspace/ruler ${tmpBare}`)
-    await exec(
-      `cd ${tmpBare} && git update-ref HEAD 2af1eef430b2382d22d3c8a95abe18ccc1ee5dc7`,
-    )
+    await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
     await exec(
       `git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace/ruler.git')}`,
     )
-    // at first it may not be processing yet so we get a 404
-    let r = await this.supertest.get('/status/kitspace/ruler/HEAD/images/top.png')
-    while (r.status === 404) {
-      r = await this.supertest.get('/status/kitspace/ruler/HEAD/images/top.png')
+
+    const files = [
+      `ruler-${hash.slice(0, 7)}-gerbers.zip`,
+      'zip-info.json',
+      'images/bottom.svg',
+      'images/top.svg',
+      'images/top.png',
+      'images/top-large.png',
+      'images/top-meta.png',
+      'images/top-with-background.png',
+      '1-click-BOM.tsv',
+      'info.json',
+    ]
+
+    for (const f of files) {
+      // at first it may not be processing yet so we get a 404
+      let r = await this.supertest.get(`/status/kitspace/ruler/HEAD/${f}`)
+      while (r.status === 404) {
+        r = await this.supertest.get(`/status/kitspace/ruler/HEAD/${f}`)
+      }
+
+      // after a while it should report something
+      assert(r.status === 200)
+      // but it's probably 'in_progress'
+      while (r.body.status === 'in_progress') {
+        r = await this.supertest.get(`/status/kitspace/ruler/HEAD/${f}`)
+      }
+
+      // at some point it should notice it succeeded
+      assert(r.status === 200)
+      assert(
+        r.body.status === 'done',
+        `expecting body.status to be 'done' but got '${r.body.status}'`,
+      )
+
+      // getting the file from HEAD should re-direct to the exact hash
+      r = await this.supertest.get(`/files/kitspace/ruler/HEAD/${f}`)
+      assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
+
+      // it serves up the file
+      r = await this.supertest.get(`/files/kitspace/ruler/HEAD/${f}`).redirects()
+      assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
+      assert(
+        r.req.path.includes(hash),
+        `expected '${r.req.path}' to include '${hash}'`,
+      )
     }
-
-    // after a while it should report something
-    assert(r.status === 200)
-    // but it's probably 'in_progress'
-    while (r.body.status === 'in_progress') {
-      r = await this.supertest.get('/status/kitspace/ruler/HEAD/images/top.png')
-    }
-
-    // at some point it should notice it succeeded
-    assert(r.status === 200)
-    assert(r.body.status === 'done')
-
-    // getting the file from HEAD should re-direct to the exact hash
-    r = await this.supertest.get('/files/kitspace/ruler/HEAD/images/top.png')
-    assert(r.status === 302, `expected 302 but got ${r.status}`)
-
-    // it serves up the file
-    r = await this.supertest
-      .get('/files/kitspace/ruler/HEAD/images/top.png')
-      .redirects()
-    assert(r.status === 200, `expected 200 but got ${r.status}`)
-
   })
   afterEach(async () => {
     this.app.stop()
