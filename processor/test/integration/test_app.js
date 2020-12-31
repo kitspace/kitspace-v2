@@ -11,7 +11,6 @@ const { createApp } = require('../../src/app')
 const tmpDir = '/tmp/kitspace-processor-test'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
-process.env.DATA_DIR = path.join(tmpDir, 'data')
 
 describe('app', () => {
   beforeEach(async () => {
@@ -48,15 +47,27 @@ describe('app', () => {
     while (r.status === 404) {
       r = await this.supertest.get('/status/user/project/HEAD/images/top.png')
     }
-    // after a while the status should be ready
+
+    // after a while it should report something
     assert(r.status === 200)
     // but it's probably 'in_progress'
     while (r.body.status === 'in_progress') {
       r = await this.supertest.get('/status/user/project/HEAD/images/top.png')
     }
+
     // at some point it should notice it failed
     assert(r.status === 200)
     assert(r.body.status === 'failed')
+
+    // getting the file from HEAD should re-direct to the exact hash
+    r = await this.supertest.get('/files/user/project/HEAD/images/top.png')
+    assert(r.status === 302, `expected 302 but got ${r.status}`)
+
+    // the file should report a 424 http error
+    r = await this.supertest
+      .get('/files/user/project/HEAD/images/top.png')
+      .redirects()
+    assert(r.status === 424, `expected 424 but got ${r.status}`)
   })
   afterEach(async () => {
     this.app.stop()
