@@ -3,23 +3,30 @@ const path = require('path')
 
 const watcher = require('./watcher')
 
-const files = {}
+const fileStatus = {}
+const links = {}
 
 const eventEmitter = watcher.watch()
 
 eventEmitter.on('in_progress', x => {
-  files[x] = { status: 'in_progress' }
+  x = path.relative('/data/files', x)
+  fileStatus[x] = { status: 'in_progress' }
+  const headPath = getHeadPath(x)
+  links[headPath] = x
   console.info('in_progress', x)
 })
 
 eventEmitter.on('done', x => {
-  files[x] = { status: 'done' }
+  x = path.relative('/data/files', x)
+  fileStatus[x] = { status: 'done' }
   console.info('done', x)
 })
 
 eventEmitter.on('failed', (x, e) => {
-  files[x] = { status: 'failed', error: e }
-  console.info('failed', x, e)
+  x = path.relative('/data/files', x)
+  const error = e.message || e.stderr || 'Unknown error'
+  fileStatus[x] = { status: 'failed', error }
+  console.info('failed', x, error)
 })
 
 const app = express()
@@ -45,25 +52,31 @@ app.use((req, res, next) => {
 const staticFiles = express.static('/data/')
 
 app.get('/status/*', (req, res, next) => {
-  const x = path.relative('/status/', req.path)
-  if (x in files) {
-    return res.send(files[x])
+  let x = path.relative('/status/', req.path)
+  if (x in links) {
+    x = links[x]
+  }
+  if (x in fileStatus) {
+    return res.send(fileStatus[x])
   }
   return res.sendStatus(404)
 })
 
 app.get('/files/*', (req, res, next) => {
   const x = path.relative('/files/', req.path)
-  if (x in files) {
-    if (files[x].status === 'in_progress') {
+  if (x in links) {
+    return res.redirect(302, path.join('/files/', links[x]))
+  }
+  if (x in fileStatus) {
+    if (fileStatus[x].status === 'in_progress') {
       return res.sendStatus(202)
     }
-    if (files[x].status === 'done') {
+    if (fileStatus[x].status === 'done') {
       return staticFiles(req, res, next)
     }
-    if (files[x].status === 'failed') {
+    if (fileStatus[x].status === 'failed') {
       res.status(424)
-      return res.send(files[x].error)
+      return res.send(fileStatus[x].error)
     }
   }
   return res.sendStatus(404)
@@ -72,3 +85,10 @@ app.get('/files/*', (req, res, next) => {
 app.listen(port, () => {
   console.info(`processor listening on http://localhost:${port}`)
 })
+
+function getHeadPath(x) {
+  // path is: user/project/${hash}/file so we replace the hash with "HEAD"
+  const p = x.split('/')
+  p[2] = 'HEAD'
+  return p.join('/')
+}

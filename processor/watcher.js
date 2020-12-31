@@ -9,16 +9,45 @@ const EventEmitter = require('events')
 
 const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
+const processBOM = require('./tasks/processBOM')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
 function watch() {
   const eventEmitter = new EventEmitter()
-  chokidar.watch('/repositories/*/*').on('addDir', gitDir => {
+  let dirWatchers = {}
+
+  // watch repositories for file-system events and process the project
+  const handleAddDir = gitDir => {
+    console.info('addDir', gitDir)
+    // we debounce the file-system event to only invoke once per change in the repo
     const debouncedRun = debounce(() => run(eventEmitter, gitDir), 1000)
-    chokidar.watch(gitDir).on('all', debouncedRun)
-  })
+    dirWatchers[gitDir] = {}
+    dirWatchers[gitDir].add = chokidar.watch(gitDir).on('add', debouncedRun)
+    // if the repo is moved or deleted we clean up the watcher
+    dirWatchers[gitDir].unlinkDir = chokidar.watch(gitDir).on('unlinkDir', dir => {
+      if (dir === gitDir) {
+        console.info('deleting', gitDir)
+        dirWatchers[gitDir].add.close()
+        dirWatchers[gitDir].unlinkDir.close()
+        delete dirWatchers[gitDir]
+      }
+    })
+  }
+  let watcher = chokidar.watch('/repositories/*/*').on('addDir', handleAddDir)
+
+  // re-scan every minute in case we missed a file-system event
+  setInterval(() => {
+    watcher.close()
+    for (const gitDir in dirWatchers) {
+      dirWatchers[gitDir].add.close()
+      dirWatchers[gitDir].unlinkDir.close()
+    }
+    dirWatchers = {}
+    watcher = chokidar.watch('/repositories/*/*').on('addDir', handleAddDir)
+  }, 60000)
+
   return eventEmitter
 }
 
@@ -30,27 +59,12 @@ async function run(eventEmitter, gitDir) {
 
   const hash = await getGitHash(checkoutDir)
   const filesDir = path.join('/data/files', name, hash)
-  const headDir = path.join('/data/files', name, 'HEAD')
   await exec(`mkdir -p ${filesDir}`)
-  //link the HEAD dir to the hash we are currently processing
-  await exec(`rm -rf '${headDir}' && ln -s --relative '${filesDir}' '${headDir}'`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  const gerberEventEmitter = new EventEmitter()
-  gerberEventEmitter.on('in_progress', x => {
-    eventEmitter.emit('in_progress', path.join(name, hash, x))
-    eventEmitter.emit('in_progress', path.join(name, 'HEAD', x))
-  })
-  gerberEventEmitter.on('done', x => {
-    eventEmitter.emit('done', path.join(name, hash, x))
-    eventEmitter.emit('done', path.join(name, 'HEAD', x))
-  })
-  gerberEventEmitter.on('failed', (x, e) => {
-    eventEmitter.emit('failed', path.join(name, hash, x), e)
-    eventEmitter.emit('failed', path.join(name, 'HEAD', x), e)
-  })
-  processGerbers(gerberEventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
 }
 
 async function getKitspaceYaml(checkoutDir) {

@@ -24,6 +24,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-dropzone": "^11.2.3",
+    "react-media-hook": "^0.4.9",
     "react-social-login-buttons": "^3.1.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
@@ -34,21 +35,13 @@
   "devDependencies": {
     "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
+    "babel-plugin-lodash": "^3.3.4",
     "cypress": "^5.1.0",
     "cypress-file-upload": "^4.1.1",
     "faker": "^5.1.0",
-    "husky": ">=4",
     "lint-staged": ">=10",
     "nodemon": "^2.0.2",
     "prettier": "^2.0.5",
     "prop-types": "^15.7.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn fmt"
-    }
-  },
-  "lint-staged": {
-    "*.{js,css,md}": "prettier --write"
   }
 }

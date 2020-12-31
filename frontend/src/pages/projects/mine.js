@@ -39,13 +39,8 @@ const Mine = () => {
   const [projects, setProjects] = useState([])
 
   useEffect(() => {
-    const getUserProjects = async () => {
-      const repos = await getUserRepos(csrf)
-      setProjects(repos)
-    }
-
     if (csrf) {
-      getUserProjects().then()
+      getUserRepos(csrf).then(setProjects)
     }
   }, [csrf])
 
