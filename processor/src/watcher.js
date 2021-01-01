@@ -75,8 +75,8 @@ async function run(eventEmitter, repoDir, gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  //processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
-  //processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
   processIBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
 }
 
