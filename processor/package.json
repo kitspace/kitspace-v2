@@ -5,9 +5,9 @@
   "main": "index.js",
   "license": "AGPL-3.0",
   "scripts": {
-    "dev": "nodemon src/server.js --watch src/",
-    "start": "node src/server.js",
-    "test": "DATA_DIR=/tmp/kitspace-processor-test/data mocha test/integration --timeout=60000",
+    "dev": "xvfb-run nodemon src/server.js --watch src/",
+    "start": "xvfb-run node src/server.js",
+    "test": "DATA_DIR=/tmp/kitspace-processor-test/data xvfb-run mocha test/integration --timeout=60000",
     "fmt": "prettier --write '*.json' $(find src/ test/ -name '*.js')"
   },
   "dependencies": {

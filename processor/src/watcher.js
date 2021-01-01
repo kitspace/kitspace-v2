@@ -11,6 +11,7 @@ const { DATA_DIR } = require('./env')
 const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
+const processIBOM = require('./tasks/processIBOM')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
@@ -75,7 +76,8 @@ async function run(eventEmitter, repoDir, gitDir) {
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
   processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
-  processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
+  processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  processIBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
 }
 
 async function getKitspaceYaml(checkoutDir) {

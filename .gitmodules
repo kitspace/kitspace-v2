@@ -1,3 +1,6 @@
 [submodule "gitea"]
 	path = gitea
 	url = https://github.com/kitspace/gitea
+[submodule "processor/src/tasks/processIBOM/InteractiveHtmlBom"]
+	path = processor/src/tasks/processIBOM/InteractiveHtmlBom
+	url = https://github.com/kitspace/InteractiveHtmlBom.git
