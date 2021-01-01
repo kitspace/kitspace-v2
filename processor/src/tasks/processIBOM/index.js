@@ -4,6 +4,8 @@ const fs = require('fs')
 const path = require('path')
 const globule = require('globule')
 
+const { exists } = require('../../utils')
+
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
@@ -17,6 +19,12 @@ async function processIBOM(
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   eventEmitter.emit('in_progress', ibomOutputPath)
+
+  if (await exists(ibomOutputPath)) {
+    eventEmitter.emit('done', ibomOutputPath)
+    return
+  }
+
   const summary = kitspaceYaml.summary || ''
 
   let pcbFile
