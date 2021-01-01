@@ -15,7 +15,6 @@ async function processIBOM(
   hash,
   name,
 ) {
-  console.log('processing IBOM')
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   eventEmitter.emit('in_progress', ibomOutputPath)
   const summary = kitspaceYaml.summary || ''
@@ -39,15 +38,10 @@ async function processIBOM(
     return
   }
 
-  console.log('DISPLAY=', process.env.DISPLAY)
   const run_ibom = path.join(__dirname, 'run_ibom')
-  const output = await exec(
-    `${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`,
-  )
-    .then((...args) => ({ ...args }, eventEmitter.emit('done', ibomOutputPath)))
-    .catch(e => (e, eventEmitter.emit('failed', ibomOutputPath, e)))
-
-  console.log('run_ibom output', output)
+  await exec(`${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`)
+    .then(() => eventEmitter.emit('done', ibomOutputPath))
+    .catch(e => eventEmitter.emit('failed', ibomOutputPath, e))
 }
 
 async function findBoardFile(path, ext, check) {
