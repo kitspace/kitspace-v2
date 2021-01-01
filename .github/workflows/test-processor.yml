@@ -9,4 +9,4 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-      - run: 'cp .env.example .env && docker-compose run -e DISPLAY=:99 processor /bin/bash -c "Xvfb :99 -ac -nolisten tcp & yarn test"'
+      - run: 'cp .env.example .env && docker-compose run processor yarn test'

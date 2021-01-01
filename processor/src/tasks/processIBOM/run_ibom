@@ -23,9 +23,6 @@ title = sys.argv[2]
 summary = sys.argv[3]
 out_file = os.path.abspath(sys.argv[4])
 
-BASEDIR = os.path.dirname(sys.argv[0])
-IBOM_CONFIG = os.path.join(BASEDIR, 'ibom_config.ini')
-
 os.chdir(os.path.dirname(board_file))
 
 logger = ibom.Logger(cli=True)
@@ -45,11 +42,12 @@ if ext == '.brd':
     board = pcbnew.LoadBoard(tmpfile)
     shutil.rmtree(tmpdir, ignore_errors=True)
 
-print('python DISPLAY=', os.getenv("DISPLAY"))
 
 config = Config(version)
-config.config_file = IBOM_CONFIG
-config.load_from_ini()
+config.open_browser = False
+config.bom_name_format = 'interactive_bom'
+config.include_tracks = True
+config.include_nets = True
 
 if board is None:
     parser = get_parser_by_extension(board_file, config, logger)
