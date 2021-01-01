@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
-RUN yarn --prune-lockfile
+RUN yarn install
 
 COPY . .
 
