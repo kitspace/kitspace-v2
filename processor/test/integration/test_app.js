@@ -95,6 +95,7 @@ describe('app', () => {
       'images/top-with-background.png',
       '1-click-BOM.tsv',
       'info.json',
+      'interactive_bom.json',
     ]
 
     for (const f of files) {
