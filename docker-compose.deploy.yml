@@ -66,6 +66,4 @@ services:
     volumes:
       - ./volumes/gitea/git/repositories:/repositories
       - ./volumes/processor:/data
-      - ./processor:/app
-      - ./processor/node_modules:/app/node_modules
     restart: always
