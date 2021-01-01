@@ -43,6 +43,8 @@ if ext == '.brd':
     board = pcbnew.LoadBoard(tmpfile)
     shutil.rmtree(tmpdir, ignore_errors=True)
 
+print('python DISPLAY=', os.getenv("DISPLAY"))
+
 app = wx.App()
 
 config = Config(version)

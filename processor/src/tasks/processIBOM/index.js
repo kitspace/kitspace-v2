@@ -39,8 +39,7 @@ async function processIBOM(
     return
   }
 
-  console.log({ pcbFile })
-
+  console.log('DISPLAY=', process.env.DISPLAY)
   const run_ibom = path.join(__dirname, 'run_ibom')
   await exec(`${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`)
     .then(() => eventEmitter.emit('done', ibomOutputPath))
