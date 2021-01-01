@@ -6,8 +6,10 @@ import os
 import os.path
 import shutil
 import tempfile
-import wx
 import pcbnew
+
+# Tell ibom we don't want to use the screen
+os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = ''
 
 from InteractiveHtmlBom.InteractiveHtmlBom.core import ibom
 from InteractiveHtmlBom.InteractiveHtmlBom.core.config import Config
@@ -44,8 +46,6 @@ if ext == '.brd':
     shutil.rmtree(tmpdir, ignore_errors=True)
 
 print('python DISPLAY=', os.getenv("DISPLAY"))
-
-app = wx.App()
 
 config = Config(version)
 config.config_file = IBOM_CONFIG
