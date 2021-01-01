@@ -11,6 +11,6 @@ RUN yarn --prune-lockfile
 
 COPY . .
 
-RUN yarn build
+RUN yarn build-fallback
 
-CMD ["yarn", "dev"]
+CMD ["yarn", "start"]
