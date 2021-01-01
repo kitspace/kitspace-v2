@@ -41,14 +41,13 @@ async function processIBOM(
 
   console.log('DISPLAY=', process.env.DISPLAY)
   const run_ibom = path.join(__dirname, 'run_ibom')
-  const { stdout, stderr } = await exec(
+  const output = await exec(
     `${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`,
   )
-    .then(() => eventEmitter.emit('done', ibomOutputPath))
-    .catch(e => eventEmitter.emit('failed', ibomOutputPath, e))
+    .then((...args) => ({ ...args }, eventEmitter.emit('done', ibomOutputPath)))
+    .catch(e => (e, eventEmitter.emit('failed', ibomOutputPath, e)))
 
-  console.log({ stdout })
-  console.log({ stderr })
+  console.log('run_ibom output', output)
 }
 
 async function findBoardFile(path, ext, check) {
