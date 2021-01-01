@@ -1,0 +1,11 @@
+name: Test processor
+
+on: [push]
+
+jobs:
+  test_processor:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: 'cp .env.example .env && docker-compose run processor yarn test'
+

@@ -1,6 +1,7 @@
+import 'cypress-file-upload'
+
 const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
-const signOutEndpoint = 'http://gitea.kitspace.test:3000/user/logout'
 
 Cypress.Commands.add('createUser', (username, email, password) => {
   cy.request({
@@ -70,6 +71,19 @@ Cypress.Commands.add('stubSignInReq', (ok, response, path) => {
   })
 })
 
+Cypress.Commands.add('stubUpdateProject', (ok, response, projectName) => {
+  cy.visit(`/projects/update/${projectName}`, {
+    onBeforeLoad(win) {
+      cy.stub(win, 'fetch')
+        .withArgs(`http://gitea.kitspace.test:3000/api/v1/repos/${projectName}`)
+        .resolves({
+          ok,
+          json: () => response,
+        })
+    },
+  })
+})
+
 Cypress.Commands.add('goToUsersAdminPanel', () => {
   // Users database are at `{gitea}/admin/users`
   // Kitspace user interaction should appear there.
@@ -91,4 +105,28 @@ Cypress.Commands.add('hasProperFields', schema => {
       cy.get(`input[name=${field}]`)
     }
   })
+})
+
+Cypress.Commands.add('syncTestRepo', () => {
+  cy.window().then(win => {
+    const csrf = win.session._csrf
+    const uid = win.session.user.id
+
+    const body = {
+      clone_addr: 'https://github.com/AbdulrhmnGhanem/light-test-repo',
+      mirror: true,
+      private: false,
+      pull_requests: false,
+      releases: true,
+      repo_name: 'light-test-repo',
+      uid,
+      wiki: false,
+    }
+    cy.request({
+      url: `http://gitea.kitspace.test:3000/api/v1/repos/migrate?_csrf=${csrf}`,
+      method: 'POST',
+      body,
+    })
+  })
+  Cypress.Commands.add('getUpdatePage', projectName => {})
 })

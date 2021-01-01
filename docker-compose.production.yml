@@ -15,7 +15,7 @@ services:
   nginx:
     environment:
       - "RUN_CERTBOT=true"
-      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN}
+      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     volumes:
       - /etc/letsencrypt

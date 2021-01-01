@@ -1,6 +1,7 @@
 module.exports = {
   env: {
     KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
+    KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
   },
   webpack(config) {
     config.module.rules.push({
