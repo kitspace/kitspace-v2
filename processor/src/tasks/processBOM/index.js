@@ -68,17 +68,18 @@ async function processBOM(
     }
     bom.tsv = oneClickBOM.writeTSV(bom.lines)
 
-    writeFile(bomOutputPath, bom.tsv)
-      .then(() => eventEmitter.emit('done', bomOutputPath))
-      .catch(e => eventEmitter.emit('failed', bomOutputPath, e))
-
     bom.parts = await getPartinfo(bom.lines)
 
     const site = kitspaceYaml.site || ''
     const info = { site, bom }
-    writeFile(infoJsonPath, JSON.stringify(info))
-      .then(() => eventEmitter.emit('done', infoJsonPath))
-      .catch(e => eventEmitter.emit('failed', infoJsonPath, e))
+    await Promise.all([
+      writeFile(infoJsonPath, JSON.stringify(info))
+        .then(() => eventEmitter.emit('done', infoJsonPath))
+        .catch(e => eventEmitter.emit('failed', infoJsonPath, e)),
+      writeFile(bomOutputPath, bom.tsv)
+        .then(() => eventEmitter.emit('done', bomOutputPath))
+        .catch(e => eventEmitter.emit('failed', bomOutputPath, e)),
+    ])
   } catch (e) {
     for (const f of filePaths) {
       eventEmitter.emit('failed', f, e)
