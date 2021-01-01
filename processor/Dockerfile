@@ -15,7 +15,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     nodejs \
     yarn \
     xvfb \
+    python3-pip \
+    libgtk-3-dev \
+    libsdl2-2.0-0 \
     git
+
+RUN pip3 install \
+    -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04 \
+    wxPython==4.1.1
 
 RUN mkdir /app
 WORKDIR /app
