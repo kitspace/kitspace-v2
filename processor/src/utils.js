@@ -14,11 +14,12 @@ function exists(file) {
     })
 }
 
-function existsAll(paths) {
-  return paths.reduce(
-    async (prev, p) => (await prev) && (await exists(p)),
-    Promise.resolve(true),
-  )
+async function existsAll(paths) {
+  let allDoExist = true
+  for (const path of paths) {
+    allDoExist = allDoExist && (await exists(path))
+  }
+  return allDoExist
 }
 
 module.exports = { exists, existsAll }
