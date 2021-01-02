@@ -1,7 +1,7 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-# ge the latest updates
+# get the latest updates
 git pull
 
 sudo docker system prune -f
