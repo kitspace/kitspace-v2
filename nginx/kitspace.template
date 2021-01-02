@@ -55,7 +55,7 @@ server {
 
 
 	location = /api/v1/repos/migrate {
-	    # this path is handled differently to increase the timeout for response
+        # this path is handled differently to increase the timeout for response
         # as migration for repos may take longer than the default timeout
 
 		proxy_read_timeout 180s;
