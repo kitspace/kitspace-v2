@@ -5,18 +5,32 @@ services:
     ports:
       - '1234:3000'
     environment:
-      - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
-      - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
-    depends_on:
-      - gitea
-    restart: always
+      - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
+      - KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
     command: /bin/sh --verbose -c "yarn build && yarn start"
     volumes:
       - next:/app/.next/
       - public:/app/public/
+    depends_on:
+      - gitea
+    restart: always
+
+  processor:
+    image: 'ghcr.io/kitspace/processor-v2:latest'
+    ports:
+      - '5000:5000'
+    environment:
+      - ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
+    volumes:
+      - ./volumes/gitea/git/repositories:/repositories
+      - ./volumes/processor:/data
+    restart: always
 
   gitea:
     image: 'ghcr.io/kitspace/gitea:latest'
+    ports:
+      - '3333:3000'
+      - '2222:22'
     environment:
       - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
@@ -31,9 +45,6 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - ./gitea:/go/src/code.gitea.io/gitea
-    ports:
-      - '3333:3000'
-      - '2222:22'
     depends_on:
       - postgres
     restart: always
@@ -50,32 +61,25 @@ services:
 
   nginx:
     image: 'kitspace/nginx-certbot-plugin:latest'
-    command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
-    depends_on:
-      - frontend
-      - gitea
-      - processor
+    ports:
+      - '80:80'
+      - '443:443'
     environment:
-      - 'RUN_CERTBOT=true'
+      - RUN_CERTBOT=true
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+    command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
     volumes:
       - /etc/letsencrypt
       - ./nginx:/etc/nginx/conf.d
       - public:/srv/frontend/public
       - next:/srv/frontend/.next
-    ports:
-      - '80:80'
-      - '443:443'
+    depends_on:
+      - frontend
+      - gitea
+      - processor
     restart: always
 
-  processor:
-    image: 'ghcr.io/kitspace/processor-v2:latest'
-    ports:
-      - '5000:5000'
-    environment:
-      - 'ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
-    volumes:
-      - ./volumes/gitea/git/repositories:/repositories
-      - ./volumes/processor:/data
-    restart: always
+volumes:
+  public:
+  next:
