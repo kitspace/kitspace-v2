@@ -9,6 +9,8 @@ import { AuthContext } from '@contexts/AuthContext'
 import { getSession, getRepos } from '@utils/giteaApi'
 
 const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
@@ -38,6 +40,30 @@ const ProjectCard = ({ name, full_name, description, owner }) => {
       </Card.Content>
     </Card>
   )
+}
+
+export const getStaticProps = async () => {
+  const res = await fetch(`${giteaApiUrl}/repos/search`, {
+    method: 'GET',
+    mode: 'cors',
+    sort: 'updated',
+    order: 'desc',
+    q: undefined,
+  })
+
+  if (res.ok) {
+    return {
+      props: {
+        repos: res.data,
+      },
+    }
+  } else {
+    return {
+      props: {
+        repos: [],
+      },
+    }
+  }
 }
 
 const Home = ({ repos }) => {
