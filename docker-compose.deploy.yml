@@ -2,7 +2,18 @@ version: '2'
 services:
   frontend:
     image: 'ghcr.io/kitspace/frontend-v2:latest'
+    ports:
+      - '1234:3000'
+    environment:
+      - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+      - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+    depends_on:
+      - gitea
     restart: always
+    command: /bin/sh --verbose -c "yarn build && yarn start"
+    volumes:
+      - next:/app/.next/
+      - public:/app/public/
 
   gitea:
     image: 'ghcr.io/kitspace/gitea:latest'
@@ -50,8 +61,9 @@ services:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     volumes:
       - /etc/letsencrypt
-      - './nginx:/etc/nginx/conf.d'
-      - './frontend:/srv/frontend'
+      - ./nginx:/etc/nginx/conf.d
+      - public:/srv/frontend/public
+      - next:/srv/frontend/.next
     ports:
       - '80:80'
       - '443:443'
