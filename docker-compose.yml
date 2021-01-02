@@ -20,7 +20,7 @@ services:
   gitea:
     build:
       context: gitea
-      dockerfile: ../Dockerfile.gitea.dev
+      dockerfile: Dockerfile.gitea.dev
     environment:
       - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
