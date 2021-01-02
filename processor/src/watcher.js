@@ -11,10 +11,12 @@ const { DATA_DIR } = require('./env')
 const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
+const processIBOM = require('./tasks/processIBOM')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
+const running = {}
 function watch(eventEmitter, repoDir = '/repositories') {
   let dirWatchers = {}
 
@@ -22,7 +24,15 @@ function watch(eventEmitter, repoDir = '/repositories') {
   const handleAddDir = gitDir => {
     console.info('addDir', gitDir)
     // we debounce the file-system event to only invoke once per change in the repo
-    const debouncedRun = debounce(() => run(eventEmitter, repoDir, gitDir), 1000)
+    // additionally we ignore any invocations that happen while it's already running
+    // to prevent it from trying to overwrite files that are already being written to
+    const debouncedRun = debounce(async () => {
+      if (!running[gitDir]) {
+        running[gitDir] = true
+        await run(eventEmitter, repoDir, gitDir)
+        running[gitDir] = false
+      }
+    }, 1000)
     dirWatchers[gitDir] = {}
     dirWatchers[gitDir].add = chokidar.watch(gitDir).on('add', debouncedRun)
     // if the repo is moved or deleted we clean up the watcher
@@ -74,8 +84,11 @@ async function run(eventEmitter, repoDir, gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name)
-  processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir)
+  await Promise.all([
+    processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processIBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name),
+  ])
 }
 
 async function getKitspaceYaml(checkoutDir) {

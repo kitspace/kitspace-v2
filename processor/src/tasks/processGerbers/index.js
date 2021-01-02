@@ -68,39 +68,54 @@ async function processGerbers(
 
     const gerberData = await readGerbers(gerbers)
 
-    generateZip(zipPath, gerberData)
-      .then(() => eventEmitter.emit('done', zipPath))
-      .catch(e => eventEmitter.emit('failed', zipPath, e))
+    const promises = []
+    promises.push(
+      generateZip(zipPath, gerberData)
+        .then(() => eventEmitter.emit('done', zipPath))
+        .catch(e => eventEmitter.emit('failed', zipPath, e)),
+    )
 
     const stackup = await boardBuilder(gerberData, color)
 
-    writeFile(bottomSvgPath, stackup.bottom.svg)
-      .then(() => eventEmitter.emit('done', bottomSvgPath))
-      .catch(e => eventEmitter.emit('failed', bottomSvgPath, e))
+    promises.push(
+      writeFile(bottomSvgPath, stackup.bottom.svg)
+        .then(() => eventEmitter.emit('done', bottomSvgPath))
+        .catch(e => eventEmitter.emit('failed', bottomSvgPath, e)),
+    )
 
-    generateZipInfo(zipPath, stackup, zipInfoPath)
-      .then(() => eventEmitter.emit('done', zipInfoPath))
-      .catch(e => eventEmitter.emit('failed', zipInfoPath, e))
+    promises.push(
+      generateZipInfo(zipPath, stackup, zipInfoPath)
+        .then(() => eventEmitter.emit('done', zipInfoPath))
+        .catch(e => eventEmitter.emit('failed', zipInfoPath, e)),
+    )
 
     await writeFile(topSvgPath, stackup.top.svg)
       .then(() => eventEmitter.emit('done', topSvgPath))
       .catch(e => eventEmitter.emit('failed', topSvgPath, e))
 
-    generateTopPng(topSvgPath, stackup, topPngPath)
-      .then(() => eventEmitter.emit('done', topPngPath))
-      .catch(e => eventEmitter.emit('failed', topPngPath, e))
+    promises.push(
+      generateTopPng(topSvgPath, stackup, topPngPath)
+        .then(() => eventEmitter.emit('done', topPngPath))
+        .catch(e => eventEmitter.emit('failed', topPngPath, e)),
+    )
 
-    generateTopLargePng(topSvgPath, stackup, topLargePngPath)
-      .then(() => eventEmitter.emit('done', topLargePngPath))
-      .catch(e => eventEmitter.emit('failed', topLargePngPath, e))
+    promises.push(
+      generateTopLargePng(topSvgPath, stackup, topLargePngPath)
+        .then(() => eventEmitter.emit('done', topLargePngPath))
+        .catch(e => eventEmitter.emit('failed', topLargePngPath, e)),
+    )
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
       .then(() => eventEmitter.emit('done', topMetaPngPath))
       .catch(e => eventEmitter.emit('failed', topMetaPngPath, e))
 
-    generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
-      .then(() => eventEmitter.emit('done', topWithBgndPath))
-      .catch(e => eventEmitter.emit('failed', topWithBgndPath, e))
+    promises.push(
+      generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
+        .then(() => eventEmitter.emit('done', topWithBgndPath))
+        .catch(e => eventEmitter.emit('failed', topWithBgndPath, e)),
+    )
+
+    await Promise.all(promises)
   } catch (e) {
     for (const f of filePaths) {
       eventEmitter.emit('failed', f, e)

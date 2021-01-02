@@ -35,12 +35,9 @@ function post(mpn) {
         mpn,
       },
     })
+    .timeout(60000)
     .then(res => {
       return res.body.data.part
-    })
-    .catch(err => {
-      console.error(err)
-      return {}
     })
 }
 
