@@ -10,13 +10,12 @@ services:
     environment:
       - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+    network_mode: host
     depends_on:
       - gitea
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    networks:
-      - frontend
     command: /bin/sh --verbose -c "yarn install && yarn dev"
 
   gitea:
@@ -42,9 +41,6 @@ services:
       - '2222:22'
     depends_on:
       - postgres
-    networks:
-      - gitea
-      - db
     command: /bin/bash --verbose -c "cd /go/src/code.gitea.io/gitea/ && make backend && cp gitea /app/gitea/ && /usr/bin/entrypoint"
 
   postgres:
@@ -55,8 +51,6 @@ services:
       - POSTGRES_DB=gitea
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
-    networks:
-      - db
 
   nginx:
     image: 'kitspace/nginx-certbot-plugin:latest'
@@ -69,10 +63,6 @@ services:
     depends_on:
       - frontend
       - gitea
-    networks:
-      - frontend
-      - gitea
-      - processor
 
   processor:
     build:
@@ -89,11 +79,3 @@ services:
       - ./processor:/app
       - /app/node_modules
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
-    networks:
-      - processor
-
-networks:
-  frontend:
-  gitea:
-  db:
-  processor:
