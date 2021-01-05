@@ -1,25 +1,38 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useRouter } from 'next/router'
-import dynamic from "next/dynamic";
-import { List, Button } from 'semantic-ui-react'
+import dynamic from 'next/dynamic'
+import { List, Button, Loader } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
 import { getUserRepos } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
 import styles from './mine.module.scss'
+import useSWR from 'swr'
 
 const DeleteModal = dynamic(() => import('@components/DeleteProjectModal'))
+
+const useAuthUserProjects = user => {
+  const { data, error } = useSWR(user, getUserRepos)
+
+  return {
+    projects: data,
+    isLoading: !(error || data),
+    isError: error,
+  }
+}
 
 const Mine = () => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
-  const [projects, setProjects] = useState([])
+  const { projects, isLoading } = useAuthUserProjects(user?.login)
 
-  useEffect(() => {
-    // The user is object isn't available while page loading.
-    if(user?.login)
-    getUserRepos(user.login).then(setProjects)
-  }, [user])
+  if (isLoading) {
+    return (
+      <Page>
+        <Loader active/>
+      </Page>
+    )
+  }
 
   const projectsList = projects.map(p => {
     const projectFullName = p.full_name
