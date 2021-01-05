@@ -1,10 +1,10 @@
 import React from 'react'
+import useSWR from 'swr'
 import { List } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
 import { getAllRepos, getUserRepos } from '@utils/giteaApi'
 import styles from './mine.module.scss'
-
 
 export const getStaticPaths = async () => {
   const allRepos = await getAllRepos()
@@ -19,13 +19,17 @@ export const getStaticProps = async ({ params }) => {
   return {
     props: {
       userRepos,
-      username: params.user
+      username: params.user,
     },
   }
 }
 
 const User = ({ userRepos, username }) => {
-  const projectsList = userRepos.map(p => {
+  const { data: projects } = useSWR(username, getUserRepos, {
+    initialData: userRepos,
+  })
+
+  const projectsList = projects.map(p => {
     const lastUpdateDate = new Date(p.updated_at)
 
     return (
