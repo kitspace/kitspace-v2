@@ -1,10 +1,9 @@
 import React from 'react'
 
-import { Button, Modal } from "semantic-ui-react";
-import { deleteRepo } from "@utils/giteaApi";
+import { Button, Modal } from 'semantic-ui-react'
+import { deleteRepo } from '@utils/giteaApi'
 
 const DeleteModal = ({ projectName, csrf }) => {
-
   return (
     <Modal
       trigger={<Button content="Delete" color="red" />}

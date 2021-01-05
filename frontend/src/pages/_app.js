@@ -2,7 +2,7 @@ import React from 'react'
 
 import App from 'next/app'
 import Head from 'next/head'
-import { Message } from 'sem  antic-ui-react'
+import { Message } from 'semantic-ui-react'
 
 import 'semantic-ui-css/components/reset.min.css'
 import 'semantic-ui-css/components/site.min.css'
