@@ -41,11 +41,10 @@ const UpdateProject = () => {
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
         {isSynced ? (
           <Message color="yellow">
-            <Message.Header>A mirrored repository</Message.Header>
+            <Message.Header>A synced repository!</Message.Header>
             <Message.Content>
-              Files upload isn't supported for synced repositories. Please commit
-              files to the original git repository and it will be synced
-              automatically.
+              <p>Files uploading isn't supported for synced repositories.</p>
+              Please commit  files to the original git repository and it will be synced automatically.
             </Message.Content>
           </Message>
         ) : null}
