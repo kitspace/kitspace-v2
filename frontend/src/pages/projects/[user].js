@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useContext } from 'react'
 import useSWR from 'swr'
 import { List } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
+import { AuthContext } from '@contexts/AuthContext'
 import { getAllRepos, getUserRepos } from '@utils/giteaApi'
 import styles from './mine.module.scss'
+import { useRouter } from 'next/router'
 
 export const getStaticPaths = async () => {
   const allRepos = await getAllRepos()
@@ -25,6 +27,16 @@ export const getStaticProps = async ({ params }) => {
 }
 
 const User = ({ userRepos, username }) => {
+  const { user } = useContext(AuthContext)
+  const { replace } = useRouter()
+
+  useEffect(() => {
+    // Redirect the user to `projects/mine` on accessing `project/{their username}` page.
+    if (username === user.login) {
+      replace('/projects/mine')
+    }
+  }, [])
+
   const { data: projects } = useSWR(username, getUserRepos, {
     initialData: userRepos,
   })
