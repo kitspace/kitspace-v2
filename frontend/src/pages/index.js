@@ -45,8 +45,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      repos
-    }
+      repos,
+    },
   }
 }
 
@@ -54,15 +54,14 @@ const Home = ({ repos }) => {
   const { user } = useContext(AuthContext)
   const username = user?.login || 'unknown user'
 
-  useEffect(() => {
-    console.log(repos)
-  }, [])
+  const { data: projects } = useSWR('home', getAllRepos, { initialData: repos })
 
   return (
     <Page title="home">
       <div>Hi there {username}</div>
+      // TODO: handle the failure case i.e., projects is empty.
       <div>
-        {repos.map(project => (
+        {projects.map(project => (
           <ProjectCard {...project} key={project.id} />
         ))}
       </div>

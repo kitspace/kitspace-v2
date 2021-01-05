@@ -1,6 +1,6 @@
 import slugify from 'slugify'
 
-import { urlToName } from "@utils/index";
+import { urlToName } from '@utils/index'
 
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
@@ -148,7 +148,7 @@ export const getRepoFiles = async (repo, csrf, branch = 'master') => {
  */
 export const getDefaultBranchFiles = async (repo, csrf) => {
   const repoDetails = await getRepo(repo)
-  const defaultBranch = repoDetails.default_branch
+  const { default_branch: defaultBranch } = repoDetails
 
   return getRepoFiles(repo, csrf, defaultBranch)
 }
