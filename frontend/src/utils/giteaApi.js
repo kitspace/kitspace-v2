@@ -205,12 +205,12 @@ export const searchRepos = async (sort = 'updated', order = 'desc', q) => {
 }
 
 /**
- * Get the repos owned by the current authenticated user.
- * @param csrf{string}
- * @returns {Promise<any|*[]>}
+ * Get the repos owned by a user.
+ * @param username{string}
+ * @returns {Promise<[Object]>}
  */
-export const getUserRepos = async csrf => {
-  const endpoint = `${giteaApiUrl}/user/repos?_csrf=${csrf}`
+export const getUserRepos = async username => {
+  const endpoint = `${giteaApiUrl}/users/${username}/repos`
 
   const res = await fetch(endpoint, {
     method: 'GET',
