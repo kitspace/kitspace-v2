@@ -1,16 +1,14 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { Card, Image, Placeholder } from 'semantic-ui-react'
+import React, { useContext, useEffect } from 'react'
+import { Card } from 'semantic-ui-react'
 import useSWR from 'swr'
 
 import styles from './index.module.scss'
 
 import { Page } from '@components/Page'
 import { AuthContext } from '@contexts/AuthContext'
-import { getSession, getRepos } from '@utils/giteaApi'
+import { getAllRepos } from '@utils/giteaApi'
 
 const processorUrl = process.env.KITSPACE_PROCESSOR_URL
-const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
@@ -43,25 +41,11 @@ const ProjectCard = ({ name, full_name, description, owner }) => {
 }
 
 export const getStaticProps = async () => {
-  const res = await fetch(`${giteaApiUrl}/repos/search`, {
-    method: 'GET',
-    sort: 'updated',
-    order: 'desc',
-    q: undefined,
-  })
+  const repos = await getAllRepos()
 
-  if (res.ok) {
-    const body = await res.json()
-    return {
-      props: {
-        repos: body.data
-      },
-    }
-  } else {
-    return {
-      props: {
-        repos: [],
-      },
+  return {
+    props: {
+      repos
     }
   }
 }

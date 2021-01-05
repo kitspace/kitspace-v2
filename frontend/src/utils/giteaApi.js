@@ -172,21 +172,19 @@ export const getRepo = async fullname => {
 
 /**
  * Get all repos
- * @param csrf{string}
- * @returns {Promise<any|*[]>}
+ * @returns {Promise<[Object]>}
  */
-export const getAllRepos = csrf => searchRepos(csrf)
+export const getAllRepos = () => searchRepos()
 
 /**
  * Search all repos
- * @param csrf{string}
  * @param sort{string}
  * @param order{string}
  * @param q{string=}: search query, leave undefined to return all repos
- * @returns {Promise<any|*[]>}
+ * @returns {Promise<[Object]>}
  */
-export const searchRepos = async (csrf, sort = 'updated', order = 'desc', q) => {
-  const endpoint = `${giteaApiUrl}/repos/search?_csrf=${csrf}`
+export const searchRepos = async (sort = 'updated', order = 'desc', q) => {
+  const endpoint = `${giteaApiUrl}/repos/search`
 
   const res = await fetch(endpoint, {
     method: 'GET',
