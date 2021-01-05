@@ -1,4 +1,5 @@
 import slugify from 'slugify'
+import path from 'path'
 
 /**
  * Look in project files and choose a file name for the project from it,
@@ -19,3 +20,22 @@ export const slugifiedNameFromFiles = files => {
  * @returns {Promise<Promise<Blob>>}
  */
 export const b64toBlob = base64 => fetch(base64).then(res => res.blob())
+
+/**
+ * Get the repo name from its url
+ * @param url
+ * @returns {string}
+ */
+export const urlToName = url => {
+  url = new URL(url)
+  return path.basename(url.pathname, path.extname(url.pathname))
+}
+
+/**
+ * Get the project name from the `path` object in `next.router`.
+ * @param path
+ * @returns {*}
+ */
+export const projectNameFromPath = path => {
+  return path.split('/').slice(3).join('/')
+}

@@ -16,12 +16,12 @@ import { useMediaPredicate } from 'react-media-hook'
 
 import styles from './new.module.scss'
 import { Page } from '@components/Page'
-import DropZone from '../../components/DropZone'
+import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
 import { UploadContext } from '@contexts/UploadContext'
-import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
-import { slugifiedNameFromFiles } from '@utils/index'
-import useForm from '../../hooks/useForm'
+import { createRepo, getRepo, mirrorRepo } from '@utils/giteaApi'
+import { slugifiedNameFromFiles, urlToName } from '@utils/index'
+import useForm from '@hooks/useForm'
 import { ExistingProjectFrom } from '@models/ExistingProjectForm'
 import { SyncRepoFrom } from '@models/SyncRepoForm'
 
@@ -211,7 +211,7 @@ const Sync = ({ user, csrf }) => {
       const repoURL = form.url
       const repoName = urlToName(repoURL)
 
-      const res = await migrateRepo(repoURL, uid, csrf)
+      const res = await mirrorRepo(repoURL, uid, csrf)
       const migrateSuccessfully = res.ok
       const alreadySynced = res.status === 409
 

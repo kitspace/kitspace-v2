@@ -3,8 +3,9 @@ import { useRouter } from 'next/router'
 
 import _ from 'lodash'
 
-import { getDefaultBranchFiles, projectNameFromPath } from '@utils/giteaApi'
+import { getDefaultBranchFiles } from '@utils/giteaApi'
 import { commitFiles } from '@utils/giteaInternalApi'
+import { projectNameFromPath } from '@utils/index'
 import { AuthContext } from '@contexts/AuthContext'
 
 export const UploadContext = createContext({
