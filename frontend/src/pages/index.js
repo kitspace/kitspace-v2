@@ -45,16 +45,16 @@ const ProjectCard = ({ name, full_name, description, owner }) => {
 export const getStaticProps = async () => {
   const res = await fetch(`${giteaApiUrl}/repos/search`, {
     method: 'GET',
-    mode: 'cors',
     sort: 'updated',
     order: 'desc',
     q: undefined,
   })
 
   if (res.ok) {
+    const body = await res.json()
     return {
       props: {
-        repos: res.data,
+        repos: body.data
       },
     }
   } else {
@@ -67,21 +67,18 @@ export const getStaticProps = async () => {
 }
 
 const Home = ({ repos }) => {
-  const { user, csrf } = useContext(AuthContext)
+  const { user } = useContext(AuthContext)
   const username = user?.login || 'unknown user'
-  const [projects, setProjects] = useState([])
 
   useEffect(() => {
-    if (csrf) {
-      getRepos(csrf).then(setProjects)
-    }
-  }, [csrf])
+    console.log(repos)
+  }, [])
 
   return (
     <Page title="home">
       <div>Hi there {username}</div>
       <div>
-        {projects.map(project => (
+        {repos.map(project => (
           <ProjectCard {...project} key={project.id} />
         ))}
       </div>
