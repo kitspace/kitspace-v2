@@ -1,46 +1,25 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
-import { List, Button, Modal } from 'semantic-ui-react'
+import dynamic from "next/dynamic";
+import { List, Button } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
 import { getUserRepos } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
-import { deleteRepo } from '@utils/giteaApi'
 import styles from './mine.module.scss'
 
-const DeleteModal = ({ projectName }) => {
-  const { reload } = useRouter()
-  const { csrf } = useContext(AuthContext)
-  console.log(projectName)
-  return (
-    <Modal
-      trigger={<Button content="Delete" color="red" />}
-      heade="Heads up!"
-      content={`Are you sure you want to delete the ${projectName} project?`}
-      actions={[
-        'Cancel',
-        {
-          key: 'delete',
-          content: 'Delete',
-          negative: true,
-          onClick: async () => {
-            await deleteRepo(projectName, csrf)
-            await reload()
-          },
-        },
-      ]}
-    />
-  )
-}
+const DeleteModal = dynamic(() => import('@components/DeleteProjectModal'))
 
 const Mine = () => {
-  const { csrf, user } = useContext(AuthContext)
+  const { user } = useContext(AuthContext)
   const { push } = useRouter()
   const [projects, setProjects] = useState([])
 
   useEffect(() => {
+    // The user is object isn't available while page loading.
+    if(user?.login)
     getUserRepos(user.login).then(setProjects)
-  }, [csrf])
+  }, [user])
 
   const projectsList = projects.map(p => {
     const projectFullName = p.full_name
