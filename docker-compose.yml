@@ -16,7 +16,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /etc/hosts:/etc/hosts
-    command: /bin/sh --verbose -c "yarn install && yarn dev"
+    command: /bin/sh --verbose -c "yarn build && yarn dev"
 
   gitea:
     build:
