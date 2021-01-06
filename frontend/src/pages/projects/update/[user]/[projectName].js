@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
+import useSWR from 'swr'
 
 import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
@@ -13,6 +14,7 @@ import {
   Form,
   Header,
   Input,
+  Loader,
   Message,
   Segment,
   TextArea,
@@ -24,19 +26,24 @@ const UpdateProject = () => {
   const router = useRouter()
   const { user, projectName, create } = router.query
   const { setPersistenceScope } = useContext(UploadContext)
-  const [project, setProject] = useState({})
   const [isSynced, setIsSynced] = useState(false)
 
-  const fullname = `${user}/${projectName}`
+  const fullName = `${user}/${projectName}`
+
+  const { project, isLoading } = useUpdateFrom(fullName)
 
   useEffect(() => {
     setPersistenceScope(projectName)
-    getRepo(fullname).then(setProject)
-  }, [])
-
-  useEffect(() => {
-    setIsSynced(project.mirror)
+    setIsSynced(project?.mirror)
   }, [project])
+
+  if (isLoading) {
+    return (
+      <Page>
+        <Loader active />
+      </Page>
+    )
+  }
 
   return (
     <Page>
@@ -78,10 +85,10 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUpdateForm,
   )
-  // this needs swr
+
   useEffect(() => {
-    populate({ name, description }, form.name == null || form.description == null)
-  }, [allFiles])
+    populate({ name, description }, true)
+  }, [allFiles, name, description])
 
   const submit = async e => {
     e.preventDefault()
@@ -149,6 +156,17 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       </Form>
     </>
   )
+}
+
+const useUpdateFrom = projectName => {
+  console.log('swr for update project')
+  const { data, error } = useSWR(projectName, getRepo)
+
+  return {
+    project: data,
+    isLoading: !(error || data),
+    isError: error,
+  }
 }
 
 export default UpdateProject
