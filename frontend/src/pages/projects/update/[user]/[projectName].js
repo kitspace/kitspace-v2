@@ -159,7 +159,6 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
 }
 
 const useUpdateFrom = projectName => {
-  console.log('swr for update project')
   const { data, error } = useSWR(projectName, getRepo)
 
   return {
