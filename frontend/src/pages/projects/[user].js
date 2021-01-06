@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from 'react'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
+import _ from 'lodash'
 import { List } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
@@ -10,7 +11,9 @@ import styles from './mine.module.scss'
 
 export const getStaticPaths = async () => {
   const allRepos = await getAllRepos()
-  const paths = allRepos.map(p => ({ params: { user: p.owner.login } }))
+  // Fetch all the repos and get the unique usernames from it
+  const paths =
+    _.uniq(allRepos?.map(p => ({ params: { user: p.owner.login } }))) || []
 
   return { paths, fallback: true }
 }
