@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import useSWR, { mutate } from 'swr'
 
 import _ from 'lodash'
 
@@ -7,7 +8,6 @@ import { getDefaultBranchFiles } from '@utils/giteaApi'
 import { commitFiles } from '@utils/giteaInternalApi'
 import { projectNameFromPath } from '@utils/index'
 import { AuthContext } from '@contexts/AuthContext'
-import useSWR from 'swr'
 
 export const UploadContext = createContext({
   allFiles: [],
@@ -15,6 +15,7 @@ export const UploadContext = createContext({
   loadFiles: () => {},
   uploadLoadedFiles: () => {},
   setPersistenceScope: () => {},
+  invalidateCache: () => {},
 })
 
 export default function UploadContextProvider(props) {
@@ -85,7 +86,9 @@ export default function UploadContextProvider(props) {
     console.log(res)
   }
 
-  const invalidateCache = () => {}
+  const invalidateCache = async () => {
+    await mutate(`update/${projectName}`)
+  }
 
   return (
     <UploadContext.Provider
@@ -95,6 +98,7 @@ export default function UploadContextProvider(props) {
         uploadLoadedFiles,
         allFiles,
         setPersistenceScope,
+        invalidateCache,
       }}
     >
       {props.children}
@@ -103,7 +107,7 @@ export default function UploadContextProvider(props) {
 }
 
 /**
- *
+ * Fetch the files in the gitea repo associated with project being updated
  * @param repo{string}
  * @param shouldFetch{boolean}
  * @returns {{isLoading: boolean, isError: boolean, files: any | Array | null}}
