@@ -29,7 +29,7 @@ const Mine = () => {
   if (isLoading) {
     return (
       <Page>
-        <Loader active/>
+        <Loader active />
       </Page>
     )
   }

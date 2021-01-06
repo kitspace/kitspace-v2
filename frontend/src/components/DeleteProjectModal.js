@@ -1,9 +1,10 @@
-import React, {useContext} from 'react'
+import React, { useContext } from 'react'
+import { string } from 'prop-types'
 import { mutate } from 'swr'
 
 import { Button, Modal } from 'semantic-ui-react'
 import { deleteRepo } from '@utils/giteaApi'
-import { AuthContext } from "@contexts/AuthContext";
+import { AuthContext } from '@contexts/AuthContext'
 
 const DeleteModal = ({ projectName }) => {
   const { csrf, user } = useContext(AuthContext)
@@ -29,4 +30,9 @@ const DeleteModal = ({ projectName }) => {
     />
   )
 }
+
+DeleteModal.propTypes = {
+  projectName: string,
+}
+
 export default DeleteModal

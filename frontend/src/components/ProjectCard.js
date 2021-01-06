@@ -1,7 +1,9 @@
+import React from 'react'
+import { string, object } from 'prop-types'
 import useSWR from 'swr'
+
 import { Card } from 'semantic-ui-react'
 import styles from './ProjectCard.module.scss'
-import React from 'react'
 
 const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
@@ -33,6 +35,13 @@ const ProjectCard = ({ name, full_name, description, owner }) => {
       </Card.Content>
     </Card>
   )
+}
+
+ProjectCard.propTypes = {
+  name: string,
+  full_name: string,
+  description: string,
+  owner: object,
 }
 
 export default ProjectCard
