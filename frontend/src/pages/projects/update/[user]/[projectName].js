@@ -76,9 +76,13 @@ const UpdateProject = () => {
 const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const fullname = `${owner}/${name}`
 
-  const { allFiles, loadedFiles, uploadLoadedFiles, loadFiles, invalidateCache} = useContext(
-    UploadContext,
-  )
+  const {
+    allFiles,
+    loadedFiles,
+    uploadLoadedFiles,
+    loadFiles,
+    invalidateCache,
+  } = useContext(UploadContext)
 
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()

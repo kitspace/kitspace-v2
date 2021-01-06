@@ -115,7 +115,7 @@ export default function UploadContextProvider(props) {
 const useFetchRemoteRepoFiles = (repo, shouldFetch) => {
   const fetcher = () => getDefaultBranchFiles(repo)
 
-  const { data, error } = useSWR(shouldFetch ? `update/${repo}`: null, fetcher)
+  const { data, error } = useSWR(shouldFetch ? `update/${repo}` : null, fetcher)
 
   return {
     files: data,

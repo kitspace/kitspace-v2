@@ -39,12 +39,12 @@ const User = ({ userRepos, username }) => {
 
   useEffect(() => {
     // Redirect the user to `projects/mine` on accessing `project/{their username}` page.
-    if (username === user.login) {
+    if (username === user?.login) {
       replace('/projects/mine')
     }
   }, [user])
 
-  const projectsList = projects.map(p => {
+  const projectsList = projects?.map(p => {
     const lastUpdateDate = new Date(p.updated_at)
 
     return (
