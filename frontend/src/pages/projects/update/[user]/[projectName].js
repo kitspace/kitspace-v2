@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import useSWR from 'swr'
 
 import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
 import { UploadContext } from '@contexts/UploadContext'
-import { getRepo, updateRepo } from '@utils/giteaApi'
+import { useRepo, updateRepo } from '@utils/giteaApi'
 import {
   Button,
   Form,
@@ -164,11 +163,11 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
 }
 
 const useUpdateFrom = projectName => {
-  const { data, error } = useSWR(projectName, getRepo)
+  const { repo, error } = useRepo(projectName)
 
   return {
-    project: data,
-    isLoading: !(error || data),
+    project: repo,
+    isLoading: !(error || repo),
     isError: error,
   }
 }

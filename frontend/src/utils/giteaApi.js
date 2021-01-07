@@ -1,4 +1,5 @@
 import slugify from 'slugify'
+import useSWR from 'swr'
 
 import { urlToName } from '@utils/index'
 
@@ -6,6 +7,13 @@ const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
 const mode = 'cors'
 const headers = { 'Content-Type': 'application/json' }
+
+const fetcher = url =>
+  fetch(url, {
+    method: 'GET',
+    mode,
+    headers,
+  }).then(r => r.json())
 
 /**
  * Create a new Gitea repo
@@ -92,6 +100,7 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     body: JSON.stringify(giteaOptions),
   })
 }
+
 /**
  * Delete the corresponding gitea repo for a project.
  * @param repo {string}
@@ -145,7 +154,7 @@ export const getRepoFiles = async (repo, branch = 'master') => {
  * @returns {Promise<Array|null>}
  */
 export const getDefaultBranchFiles = async repo => {
-  const repoDetails = await getRepo(repo)
+  const { repo: repoDetails } = await useRepo(repo)
   const { default_branch: defaultBranch } = repoDetails
 
   return getRepoFiles(repo, defaultBranch)
@@ -154,18 +163,17 @@ export const getDefaultBranchFiles = async repo => {
 /**
  * Get repo details
  * @param fullname
- * @returns {Promise<Object|null>}
+ * @returns {{repo: Object, isLoading: boolean, isError: boolean}}
  */
-export const getRepo = async fullname => {
+export const useRepo = fullname => {
   const endpoint = `${giteaApiUrl}/repos/${fullname}`
+  const { data, error } = useSWR(endpoint, fetcher)
 
-  const res = await fetch(endpoint, {
-    method: 'GET',
-    credentials,
-    mode,
-    headers,
-  })
-  return res.ok ? await res.json() : null
+  return {
+    repo: data,
+    isLoading: !(data || error),
+    isError: error,
+  }
 }
 
 /**
