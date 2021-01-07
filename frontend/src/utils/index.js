@@ -1,5 +1,5 @@
-import slugify from "slugify";
-import path from "path";
+import slugify from 'slugify'
+import path from 'path'
 
 /**
  * Look in project files and choose a file name for the project from it.
