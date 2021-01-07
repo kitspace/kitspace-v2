@@ -17,7 +17,7 @@ server {
 		log_not_found off;
 		expires       -1;
 		proxy_pass    http://frontend:3000;
-    }
+	}
 
 	location ~ ^/_next/static/(.*)$ {
 		root /srv/frontend/;
