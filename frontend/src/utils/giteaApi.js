@@ -8,11 +8,12 @@ const credentials = 'include'
 const mode = 'cors'
 const headers = { 'Content-Type': 'application/json' }
 
-const fetcher = url =>
+const fetcher = (url, options = {}) =>
   fetch(url, {
     method: 'GET',
     mode,
     headers,
+    ...options,
   }).then(r => r.json())
 
 /**
@@ -180,7 +181,7 @@ export const useRepo = fullname => {
  * Get all repos
  * @returns {Promise<[Object]>}
  */
-export const getAllRepos = () => searchRepos()
+export const getAllRepos = async () => searchRepos()
 
 /**
  * Search all repos
@@ -207,6 +208,37 @@ export const searchRepos = async (sort = 'updated', order = 'desc', q) => {
     return body.data
   } else {
     return []
+  }
+}
+
+/**
+ * Get all repos hook
+ * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean}}
+ */
+export const useAllRepos = initialData => useSearchRepos(initialData)
+
+/**
+ * Search all repos hook
+ * @param sort{string}
+ * @param order{string}
+ * @param initialData{[Object]}
+ * @param q{string=}: search query, leave undefined to return all repos
+ * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean}}
+ */
+export const useSearchRepos = (
+  initialData,
+  sort = 'updated',
+  order = 'desc',
+  q,
+) => {
+  const endpoint = `${giteaApiUrl}/repos/search?sort`
+  const { data, error } = useSWR([endpoint, { sort, order, q }], fetcher, {
+    initialData,
+  })
+  return {
+    repos: data || [],
+    isLoading: !(data || error),
+    isError: error,
   }
 }
 

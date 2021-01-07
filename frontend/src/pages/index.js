@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { Page } from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { AuthContext } from '@contexts/AuthContext'
-import { getAllRepos } from '@utils/giteaApi'
+import { getAllRepos, useAllRepos } from '@utils/giteaApi'
 
 export const getStaticProps = async () => {
   const repos = await getAllRepos()
@@ -20,14 +20,13 @@ const Home = ({ repos }) => {
   const { user } = useContext(AuthContext)
   const username = user?.login || 'unknown user'
 
-  const { data: projects } = useSWR('/', getAllRepos, { initialData: repos })
+  const { repos: projects } = useAllRepos(repos)
 
-  // TODO: handle the failure case i.e., projects is empty.
   return (
     <Page title="home">
       <div>Hi there {username}</div>
       <div>
-        {projects.map(project => (
+        {projects?.map(project => (
           <ProjectCard {...project} key={project.id} />
         ))}
       </div>
