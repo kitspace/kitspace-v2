@@ -171,6 +171,17 @@ export const getRepo = async fullname => {
 }
 
 /**
+ * Check if a repo exists
+ * @param fullname{string}
+ * @returns {Promise<boolean>}
+ */
+export const repoExists = async fullname => {
+  const repo = await getRepo(fullname)
+
+  return repo != null;
+}
+
+/**
  * Get all repos
  * @returns {Promise<[Object]>}
  */

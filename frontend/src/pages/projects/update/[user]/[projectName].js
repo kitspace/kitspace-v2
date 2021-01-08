@@ -7,7 +7,8 @@ import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
 import { UploadContext } from '@contexts/UploadContext'
-import { useRepo, updateRepo } from '@utils/giteaApi'
+import { updateRepo } from '@utils/giteaApi'
+import { useRepo } from '@hooks/Gitea'
 import {
   Button,
   Form,
@@ -29,7 +30,7 @@ const UpdateProject = () => {
 
   const fullName = `${user}/${projectName}`
 
-  const { project, isLoading } = useUpdateFrom(fullName)
+  const { project, isLoading } = useRepo(fullName)
 
   useEffect(() => {
     setPersistenceScope(projectName)
@@ -160,16 +161,6 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       </Form>
     </>
   )
-}
-
-const useUpdateFrom = projectName => {
-  const { repo, error } = useRepo(projectName)
-
-  return {
-    project: repo,
-    isLoading: !(error || repo),
-    isError: error,
-  }
 }
 
 export default UpdateProject

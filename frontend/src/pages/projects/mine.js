@@ -4,27 +4,16 @@ import dynamic from 'next/dynamic'
 import { List, Button, Loader } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
-import { getUserRepos } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
 import styles from './mine.module.scss'
-import useSWR from 'swr'
+import { useUserRepos } from '@hooks/Gitea'
 
 const DeleteModal = dynamic(() => import('@components/DeleteProjectModal'))
-
-const useAuthUserProjects = user => {
-  const { data, error } = useSWR(user, getUserRepos)
-
-  return {
-    projects: data,
-    isLoading: !(error || data),
-    isError: error,
-  }
-}
 
 const Mine = () => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
-  const { projects, isLoading } = useAuthUserProjects(user?.login)
+  const { projects, isLoading } = useUserRepos(user?.login)
 
   if (isLoading) {
     return (

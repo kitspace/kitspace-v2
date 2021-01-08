@@ -89,8 +89,7 @@ export const useSearchRepos = (
     swrOpts,
   )
   return {
-    // the response from gitea has a field `data` which contains the search result
-    repos: data.data || [],
+    repos: data || [],
     isLoading: !(data || error),
     isError: error,
     mutate,

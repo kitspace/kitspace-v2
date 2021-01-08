@@ -19,7 +19,7 @@ import { Page } from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
 import { UploadContext } from '@contexts/UploadContext'
-import { createRepo, useRepo, mirrorRepo } from '@utils/giteaApi'
+import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
 import { ExistingProjectFrom } from '@models/ExistingProjectForm'
@@ -123,9 +123,9 @@ const Upload = ({ user, csrf }) => {
 
   const validateProjectName = async () => {
     // Check if the new name will also cause a conflict.
-    const { repo: project } = useRepo(`${user.login}/${form.name}`)
+    const repoFullname = `${user.login}/${form.name}`
 
-    if (project == null) {
+    if (! await repoExists(repoFullname)) {
       setIsValidProjectName(isValid)
     } else {
       setIsValidProjectName(false)

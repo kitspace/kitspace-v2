@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
-import useSWR from 'swr'
 
 import { Page } from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { AuthContext } from '@contexts/AuthContext'
-import { getAllRepos, useAllRepos } from '@utils/giteaApi'
+import { getAllRepos } from '@utils/giteaApi'
+import { useAllRepos } from '@hooks/Gitea'
 
 export const getStaticProps = async () => {
   const repos = await getAllRepos()
@@ -20,7 +20,7 @@ const Home = ({ repos }) => {
   const { user } = useContext(AuthContext)
   const username = user?.login || 'unknown user'
 
-  const { repos: projects } = useAllRepos(repos)
+  const { repos: projects } = useAllRepos({ initialData: repos })
 
   return (
     <Page title="home">
