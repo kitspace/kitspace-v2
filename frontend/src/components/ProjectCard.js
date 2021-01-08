@@ -1,25 +1,9 @@
 import React from 'react'
 import { string, object } from 'prop-types'
-import useSWR from 'swr'
 
 import { Card } from 'semantic-ui-react'
+import useThumbnail from '@hooks/useThumbnail'
 import styles from './ProjectCard.module.scss'
-
-const processorUrl = process.env.KITSPACE_PROCESSOR_URL
-
-const fetcher = (...args) => fetch(...args).then(r => r.json())
-
-const useThumbnail = full_name => {
-  const img = `/${full_name}/HEAD/images/top.png`
-  const statusUrl = processorUrl + '/status/' + img
-  const { data, error } = useSWR(statusUrl, fetcher, { refreshInterval: 1000 })
-  const isError = error || data?.status === 'failed'
-  return {
-    src: processorUrl + '/files/' + img,
-    isLoading: !isError && data?.status !== 'done',
-    isError,
-  }
-}
 
 const ProjectCard = ({ name, full_name, description, owner }) => {
   const { src, isLoading, isError } = useThumbnail(full_name)

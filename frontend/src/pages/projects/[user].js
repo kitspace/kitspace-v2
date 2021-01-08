@@ -28,7 +28,7 @@ export const getStaticProps = async ({ params }) => {
     },
     // Regenerate the static version each day.
     // Even If there was an update `useUserRepos` will grab the latest update on mount.
-    revalidate: Number(process.env.USER_ISR_INTERVAL)|| 86400
+    revalidate: Number(process.env.USER_ISR_INTERVAL) || 86400,
   }
 }
 
