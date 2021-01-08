@@ -178,7 +178,7 @@ export const getRepo = async fullname => {
 export const repoExists = async fullname => {
   const repo = await getRepo(fullname)
 
-  return repo != null;
+  return repo != null
 }
 
 /**

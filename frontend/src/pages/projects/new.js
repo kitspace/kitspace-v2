@@ -125,7 +125,7 @@ const Upload = ({ user, csrf }) => {
     // Check if the new name will also cause a conflict.
     const repoFullname = `${user.login}/${form.name}`
 
-    if (! await repoExists(repoFullname)) {
+    if (!(await repoExists(repoFullname))) {
       setIsValidProjectName(isValid)
     } else {
       setIsValidProjectName(false)
