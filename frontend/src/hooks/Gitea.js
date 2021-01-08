@@ -3,27 +3,26 @@ import useSWR from 'swr'
 /**
  * @typedef {Object} swrOptions: Configuration options for swr
  * @link {https://swr.vercel.app/docs/options}
- * @property {boolean} suspense = false: enable React Suspense mode
- * @property {function} fetcher = window.fetch(url).then(res => res.json()): the fetcher function
- * @property {any} initialData: initial data to be returned
- * @property {boolean} revalidateOnMount: enable or disable automatic revalidation when component is mounted
- * @property {boolean} revalidateOnFocus = true: auto revalidate when window gets focused
- * @property {boolean} revalidateOnReconnect = true: automatically revalidate when the browser regains a network connection
- * @property {number} refreshInterval = 0: polling interval
- * @property {boolean} refreshWhenHidden = false: polling when the window is invisible (if refreshInterval is enabled)
- * @property {boolean} refreshWhenOffline = false: polling when the browser is offline
- * @property {boolean} shouldRetryOnError = true: retry when fetcher has an error
- * @property {number} dedupingInterval = 2000: dedupe requests with the same key in this time span
- * @property {number} focusThrottleInterval = 5000: only revalidate once during a time span
- * @property {number} loadingTimeout = 3000: timeout to trigger the onLoadingSlow event
- * @property {number} errorRetryInterval = 5000: error retry interval
- * @property {number} errorRetryCount: max error retry count
- * @property {function(key, config)} onLoadingSlow(key, config): callback function when a request takes too long to load
- * @property {function(data, key, config)} onSuccess(data, key, config): callback function when a request finishes successfully
- * @property {function(err, key, config)} onError(err, key, config): callback function when a request returns an error
- * @property {function(err, key, config, revalidate, revalidateOps)} onErrorRetry(err, key, config, revalidate, revalidateOps): handler for error retry
- * @property {function(a, b)} compare(a, b): comparison function used to detect when returned data has changed,
- *           to avoid spurious rerenders. By default, [dequal](https://github.com/lukeed/dequal) is used.
+ * @property {boolean} [suspense] = false: enable React Suspense mode
+ * @property {function} [fetcher] = window.fetch(url).then(res => res.json()): the fetcher function
+ * @property {any} [initialData]: initial data to be returned
+ * @property {boolean} [revalidateOnMount]: enable or disable automatic revalidation when component is mounted
+ * @property {boolean} [revalidateOnFocus] = true: auto revalidate when window gets focused
+ * @property {boolean} [revalidateOnReconnect] = true: automatically revalidate when the browser regains a network connection
+ * @property {number} [refreshInterval] = 0: polling interval
+ * @property {boolean} [refreshWhenHidden] = false: polling when the window is invisible (if refreshInterval is enabled)
+ * @property {boolean} [refreshWhenOffline] = false: polling when the browser is offline
+ * @property {boolean} [shouldRetryOnError] = true: retry when fetcher has an error
+ * @property {number} [dedupingInterval] = 2000: dedupe requests with the same key in this time span
+ * @property {number} [focusThrottleInterval] = 5000: only revalidate once during a time span
+ * @property {number} [loadingTimeout] = 3000: timeout to trigger the onLoadingSlow event
+ * @property {number} [errorRetryInterval] = 5000: error retry interval
+ * @property {number} [errorRetryCount]: max error retry count
+ * @property {function(key, config)} [onLoadingSlow(key, config)]: callback function when a request takes too long to load
+ * @property {function(data, key, config)} [onSuccess(data, key, config)]: callback function when a request finishes successfully
+ * @property {function(err, key, config)} [onError(err, key, config)]: callback function when a request returns an error
+ * @property {function(err, key, config, revalidate, revalidateOps)} [onErrorRetry(err, key, config, revalidate, revalidateOps)]: handler for error retry
+ * @property {function(a, b)} [compare(a, b)]: comparison function used to detect when returned data has changed, to avoid spurious rerenders. By default, [dequal](https://github.com/lukeed/dequal) is used.
  **/
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const mode = 'cors'
