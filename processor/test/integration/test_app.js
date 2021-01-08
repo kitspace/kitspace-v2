@@ -130,6 +130,13 @@ describe('app', () => {
         r.req.path.includes(hash),
         `expected '${r.req.path}' to include '${hash}'`,
       )
+
+      // uppercase user and project name shouldn't matter
+      r = await this.supertest.get(`/files/KITSPACE/RULER/HEAD/${f}`).redirects()
+      assert(
+        r.status === 200,
+        `expected 200 but got ${r.status} for KITSPACE/RULER/${f}`,
+      )
     }
   }
 

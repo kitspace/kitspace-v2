@@ -53,6 +53,7 @@ function createApp(repoDir = '/repositories') {
 
   app.get('/status/*', (req, res, next) => {
     let x = path.relative('/status/', req.path)
+    x = lowerCaseProject(x)
     if (x in links) {
       x = links[x]
     }
@@ -65,7 +66,9 @@ function createApp(repoDir = '/repositories') {
   const staticFiles = express.static(DATA_DIR)
 
   app.get('/files/*', (req, res, next) => {
-    const x = path.relative('/files/', req.path)
+    let x = path.relative('/files/', req.path)
+    x = lowerCaseProject(x)
+
     if (x in links) {
       return res.redirect(302, path.join('/files/', links[x]))
     }
@@ -87,6 +90,14 @@ function createApp(repoDir = '/repositories') {
   })
 
   return app
+}
+
+function lowerCaseProject(x) {
+  // USER/PROJECT/FOLDER/FILE.TXT -> user/project/FOLDER/FILE.TXT
+  const p = x.split('/')
+  p[0] = p[0].toLowerCase()
+  p[1] = p[1].toLowerCase()
+  return p.join('/')
 }
 
 function getHeadPath(x) {

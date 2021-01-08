@@ -18,7 +18,6 @@ module.exports = {
     })
     return config
   },
-  exportTrailingSlash: true,
   exportPathMap(map) {
     for (const key in map) {
       map[key].query = map[key].query || {}
