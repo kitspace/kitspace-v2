@@ -1,5 +1,4 @@
 import slugify from 'slugify'
-import useSWR from 'swr'
 
 import { urlToName } from '@utils/index'
 
@@ -7,14 +6,6 @@ const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
 const mode = 'cors'
 const headers = { 'Content-Type': 'application/json' }
-
-const fetcher = (url, options = {}) =>
-  fetch(url, {
-    method: 'GET',
-    mode,
-    headers,
-    ...options,
-  }).then(r => r.json())
 
 /**
  * Create a new Gitea repo
@@ -138,7 +129,8 @@ export const getRepoFiles = async (repo, branch = 'master') => {
   if (res.ok) {
     const body = await res.json()
 
-    // For some reason if the repo is empty the gitea api returns the repo details instead of empty array!
+    // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
+    // Check if it returned repo details and replace it with an empty array.
     if (body.hasOwnProperty('owner')) {
       return []
     } else {
@@ -155,7 +147,7 @@ export const getRepoFiles = async (repo, branch = 'master') => {
  * @returns {Promise<Array|null>}
  */
 export const getDefaultBranchFiles = async repo => {
-  const { repo: repoDetails } = await useRepo(repo)
+  const repoDetails = await getRepo(repo)
   const { default_branch: defaultBranch } = repoDetails
 
   return getRepoFiles(repo, defaultBranch)
@@ -164,24 +156,25 @@ export const getDefaultBranchFiles = async repo => {
 /**
  * Get repo details
  * @param fullname
- * @returns {{repo: Object, isLoading: boolean, isError: boolean}}
+ * @returns {Promise<Object|null>}
  */
-export const useRepo = fullname => {
+export const getRepo = async fullname => {
   const endpoint = `${giteaApiUrl}/repos/${fullname}`
-  const { data, error } = useSWR(endpoint, fetcher)
 
-  return {
-    repo: data,
-    isLoading: !(data || error),
-    isError: error,
-  }
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    credentials,
+    mode,
+    headers,
+  })
+  return res.ok ? await res.json() : null
 }
 
 /**
  * Get all repos
  * @returns {Promise<[Object]>}
  */
-export const getAllRepos = async () => searchRepos()
+export const getAllRepos = () => searchRepos()
 
 /**
  * Search all repos
@@ -208,37 +201,6 @@ export const searchRepos = async (sort = 'updated', order = 'desc', q) => {
     return body.data
   } else {
     return []
-  }
-}
-
-/**
- * Get all repos hook
- * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean}}
- */
-export const useAllRepos = initialData => useSearchRepos(initialData)
-
-/**
- * Search all repos hook
- * @param sort{string}
- * @param order{string}
- * @param initialData{[Object]}
- * @param q{string=}: search query, leave undefined to return all repos
- * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean}}
- */
-export const useSearchRepos = (
-  initialData,
-  sort = 'updated',
-  order = 'desc',
-  q,
-) => {
-  const endpoint = `${giteaApiUrl}/repos/search?sort`
-  const { data, error } = useSWR([endpoint, { sort, order, q }], fetcher, {
-    initialData,
-  })
-  return {
-    repos: data || [],
-    isLoading: !(data || error),
-    isError: error,
   }
 }
 
