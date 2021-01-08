@@ -2,6 +2,7 @@ import React from 'react'
 
 import App from 'next/app'
 import Head from 'next/head'
+import { SWRConfig } from 'swr'
 import { Message } from 'semantic-ui-react'
 
 import 'semantic-ui-css/components/reset.min.css'
@@ -51,14 +52,20 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   }
   return (
     <AuthProvider>
-      <UploadContextProvider>
-        <Head>
-          {setSession}
-          {setStaticFallback}}
-        </Head>
-        <Component {...pageProps} />
-        {isStaticFallback ? <ErrorMessage /> : null}
-      </UploadContextProvider>
+      <SWRConfig
+        value={{
+          revalidateOnMount: true,
+        }}
+      >
+        <UploadContextProvider>
+          <Head>
+            {setSession}
+            {setStaticFallback}}
+          </Head>
+          <Component {...pageProps} />
+          {isStaticFallback ? <ErrorMessage /> : null}
+        </UploadContextProvider>
+      </SWRConfig>
     </AuthProvider>
   )
 }

@@ -10,6 +10,8 @@ services:
     environment:
       - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+      - 'INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}'
+      - 'USER_ISR_INTERVAL=${USER_ISR_INTERVAL}'
     depends_on:
       - gitea
     volumes:

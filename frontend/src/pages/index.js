@@ -13,6 +13,9 @@ export const getStaticProps = async () => {
     props: {
       repos,
     },
+    // Regenerate the static version each hour.
+    // Even If there was an update `useAllRepos` will grab the latest update on mount.
+    revalidate: Number(process.env.INDEX_ISR_INTERVAL) || 3600,
   }
 }
 
