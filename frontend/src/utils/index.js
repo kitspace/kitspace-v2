@@ -57,3 +57,19 @@ export const projectNameFromPath = path => {
   // In case if there's a query string remove it
   return pathWithQuery.split('?')[0]
 }
+
+/**
+ * A promise based file reader, reads a file as DataURL{string}
+ * @param file
+ * @returns {Promise<string>}
+ */
+export const readFileContent = file => {
+  return new Promise(resolve => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const content = reader.result
+      resolve(content)
+    }
+    reader.readAsDataURL(file)
+  })
+}

@@ -4,7 +4,7 @@
  *  2. UUID returned from the previous step is used to make the actual commit request.
  */
 
-import { b64toBlob } from '@utils/index'
+import { b64toBlob, readFileContent } from '@utils/index'
 
 /**
  * Upload a file to gitea server, just upload it doesn't commit the files
@@ -14,11 +14,8 @@ import { b64toBlob } from '@utils/index'
  * @returns {Promise<Object>}
  */
 export const uploadFileToGiteaServer = async (repo, file, csrf) => {
-  const projectName = repo.split('/')[1]
-  const fileContent = await b64toBlob(
-    sessionStorage.getItem(`loadedFile:${projectName}:${file.name}`),
-  )
-  const blobFromFile = new Blob([fileContent], { type: file.type })
+  const fileContentBlob = await b64toBlob(await readFileContent(file))
+  const blobFromFile = new Blob([fileContentBlob], { type: file.type })
 
   const formData = new FormData()
   formData.append('file', blobFromFile, file.name)
