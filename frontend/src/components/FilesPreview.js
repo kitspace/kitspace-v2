@@ -14,7 +14,7 @@ const FilesPreview = ({ files }) => {
   ))
 
   return (
-    <div style={files.length === 0 ? { display: 'none' } : { display: 'initial' }}>
+    <div style={files?.length === 0 ? { display: 'none' } : { display: 'initial' }}>
       <h4>Files</h4>
       <List relaxed>{filesList}</List>
     </div>

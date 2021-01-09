@@ -6,9 +6,8 @@ import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
-import { UploadContext } from '@contexts/UploadContext'
 import { updateRepo } from '@utils/giteaApi'
-import { useRepo } from '@hooks/Gitea'
+import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   Button,
   Form,
@@ -27,7 +26,6 @@ const DropZone = dynamic(() => import('@components/DropZone'))
 const UpdateProject = () => {
   const router = useRouter()
   const { user, projectName, create } = router.query
-  const { setPersistenceScope } = useContext(UploadContext)
   const [isSynced, setIsSynced] = useState(false)
 
   const fullName = `${user}/${projectName}`
@@ -35,7 +33,6 @@ const UpdateProject = () => {
   const { project, isLoading } = useRepo(fullName)
 
   useEffect(() => {
-    setPersistenceScope(projectName)
     setIsSynced(project?.mirror)
   }, [project])
 
@@ -77,9 +74,10 @@ const UpdateProject = () => {
 
 const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const projectFullname = `${owner}/${name}`
-
-  const { allFiles, invalidateCache } = useContext(UploadContext)
-
+  // The files in the Gitea repo associated with this project and the newly loaded files
+  const { files: remoteFiles, isLoading, mutate } = useDefaultBranchFiles(
+    projectFullname,
+  )
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
   const { csrf } = useContext(AuthContext)
@@ -89,8 +87,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
 
   useEffect(() => {
     populate({ name, description }, true)
-    invalidateCache()
-  }, [allFiles, name, description])
+  }, [remoteFiles, name, description])
 
   const submit = async e => {
     e.preventDefault()
@@ -114,15 +111,17 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       files,
       csrf,
     })
-    await invalidateCache()
+    await mutate()
   }
+
+  if (isLoading) return <Loader active />
 
   return (
     <>
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
-          <FilesPreview files={allFiles} />
+          <FilesPreview files={remoteFiles} />
         </Segment>
         <Segment>
           <Form.Field
