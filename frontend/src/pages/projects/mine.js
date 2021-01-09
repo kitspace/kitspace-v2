@@ -14,7 +14,7 @@ const Mine = () => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
 
-  const { repos: projects, isLoading } = useUserRepos(user.username)
+  const { repos: projects, isLoading } = useUserRepos(user?.username)
 
   if (isLoading || !user) {
     return (

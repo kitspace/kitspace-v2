@@ -18,7 +18,7 @@ import styles from './new.module.scss'
 import { Page } from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
-import { UploadContext } from '@contexts/UploadContext'
+import { commitFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
@@ -69,7 +69,6 @@ const New = () => {
 
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
-  const { loadFiles } = useContext(UploadContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ExistingProjectFrom,
   )
@@ -77,6 +76,7 @@ const Upload = ({ user, csrf }) => {
   const [modalOpen, setModalOpen] = useState(false)
   const [files, setFiles] = useState([])
   const [projectName, setProjectName] = useState('')
+  const [originalProjectName, setOriginalProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
 
   useEffect(() => {
@@ -94,15 +94,20 @@ const Upload = ({ user, csrf }) => {
     const repo = await createRepo(tempProjectName, '', csrf)
 
     setProjectName(tempProjectName)
+    setOriginalProjectName(tempProjectName)
     setFiles(files)
 
-    // In the case of failing to create the repo, i.e., it already exits.
     if (repo === '') {
+      // In the case of failing to create the repo, i.e., it already exits.
       setModalOpen(true)
       console.error('Project already exists!')
     } else {
-      loadFiles(files, tempProjectName)
-      await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
+      await commitFiles({
+        files,
+        repo: `${user.username}/${tempProjectName}`,
+        csrf,
+      })
+      await push(`/projects/update/${user.username}/${tempProjectName}?create=true`)
     }
   }
 
@@ -112,18 +117,18 @@ const Upload = ({ user, csrf }) => {
     setProjectName(differentName)
     await createRepo(differentName, '', csrf)
 
-    loadFiles(files, differentName)
-    await push(`/projects/update/${user.login}/${differentName}?create=true`)
+    await commitFiles({ files, repo: `${user.username}/${differentName}`, csrf })
+    await push(`/projects/update/${user.username}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
-    loadFiles(files, projectName)
-    await push(`/projects/update/${user.login}/${projectName}`)
+    await commitFiles({ files, repo: `${user.username}/${projectName}`, csrf })
+    await push(`/projects/update/${user.username}/${projectName}`)
   }
 
   const validateProjectName = async () => {
     // Check if the new name will also cause a conflict.
-    const repoFullname = `${user.login}/${form.name}`
+    const repoFullname = `${user.username}/${form.name}`
 
     if (!(await repoExists(repoFullname))) {
       setIsValidProjectName(isValid)
@@ -181,6 +186,8 @@ const Upload = ({ user, csrf }) => {
             content="Update existing project"
             color="yellow"
             onClick={onUpdateExisting}
+            // When the modal pops if they change the project name, disable the `Update existing project` button
+            disabled={originalProjectName !== form.name}
           />
         </Modal.Actions>
       </Modal>
@@ -198,7 +205,7 @@ const Sync = ({ user, csrf }) => {
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
 
   const uid = user?.id
-  const username = user?.login
+  const username = user?.username
 
   const handleClick = async () => {
     if (isEmpty(errors)) {
