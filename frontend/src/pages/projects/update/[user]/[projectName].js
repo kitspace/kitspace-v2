@@ -122,7 +122,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
-          <FilesPreview />
+          <FilesPreview files={allFiles} />
         </Segment>
         <Segment>
           <Form.Field
