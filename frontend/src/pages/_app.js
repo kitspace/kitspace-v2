@@ -52,11 +52,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   }
   return (
     <AuthProvider>
-      <SWRConfig
-        value={{
-          revalidateOnMount: true,
-        }}
-      >
+      <SWRConfig value={{}}>
         <UploadContextProvider>
           <Head>
             {setSession}

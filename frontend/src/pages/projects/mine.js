@@ -13,9 +13,10 @@ const DeleteModal = dynamic(() => import('@components/DeleteProjectModal'))
 const Mine = () => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
-  const { projects, isLoading } = useUserRepos(user?.login)
 
-  if (isLoading) {
+  const { repos: projects, isLoading } = useUserRepos(user.username)
+
+  if (isLoading || !user) {
     return (
       <Page>
         <Loader active />
@@ -23,7 +24,7 @@ const Mine = () => {
     )
   }
 
-  const projectsList = projects.map(p => {
+  const projectsList = projects?.map(p => {
     const projectFullName = p.full_name
     const lastUpdateDate = new Date(p.updated_at)
 
