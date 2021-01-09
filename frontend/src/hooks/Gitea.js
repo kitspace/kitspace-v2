@@ -105,7 +105,11 @@ export const useSearchRepos = (
 export const useUserRepos = (username, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/users/${username}/repos`
 
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
+  const { data, error, mutate } = useSWR(
+    username ? endpoint : null,
+    fetcher,
+    swrOpts,
+  )
 
   return {
     repos: data || [],
