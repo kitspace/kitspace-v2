@@ -6,7 +6,7 @@ import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
-import { updateRepo } from '@utils/giteaApi'
+import { repoExists, updateRepo } from "@utils/giteaApi";
 import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   Button,
@@ -18,14 +18,17 @@ import {
   Segment,
   TextArea,
 } from 'semantic-ui-react'
-import { commitFiles } from '@utils/giteaInternalApi'
+import {
+  commitFilesWithUUIDs,
+  uploadFilesToGiteaServer,
+} from '@utils/giteaInternalApi'
 import { AuthContext } from '@contexts/AuthContext'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
 const UpdateProject = () => {
-  const router = useRouter()
-  const { user, projectName, create } = router.query
+  const { query } = useRouter()
+  const { user, projectName, create } = query
   const [isSynced, setIsSynced] = useState(false)
 
   const fullName = `${user}/${projectName}`
@@ -78,6 +81,9 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const { files: remoteFiles, isLoading, mutate } = useDefaultBranchFiles(
     projectFullname,
   )
+  // UUIDs for files dropped in the update page, the files gets committed on submit
+  const [newlyUploaded, setNewlyUploaded] = useState([])
+  const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
   const { csrf } = useContext(AuthContext)
@@ -89,6 +95,12 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     populate({ name, description }, true)
   }, [remoteFiles, name, description])
 
+  useEffect(() => {
+    if (form.name) {
+      // noinspection JSIgnoredPromiseFromCall
+      validateProjectName()
+    }
+  }, [form.name])
   const submit = async e => {
     e.preventDefault()
     setLoading(true)
@@ -99,20 +111,61 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       csrf,
     )
 
+    await commitFilesWithUUIDs({
+      repo: projectFullname,
+      filesUUIDs: newlyUploaded,
+      csrf,
+    })
+    await mutate()
+
+    // If the user changed the project name redirect to the new project page
     if (updatedSuccessfully) {
-      await push(`/projects/update/${owner}/${form.name}`)
+      if (name !== `${owner}/${form.name}`) {
+        await push(`/projects/update/${owner}/${form.name}`)
+      }
+      setLoading(false)
     }
   }
 
   const onDrop = async files => {
     // Commit files directly to gitea server on drop
-    await commitFiles({
-      repo: projectFullname,
-      files,
-      csrf,
-    })
-    await mutate()
+    const UUIDs = await uploadFilesToGiteaServer(projectFullname, files, csrf)
+    setNewlyUploaded(UUIDs)
   }
+
+  const validateProjectName = async () => {
+    // Check if the new name will cause a conflict.
+    const repoFullname = `${owner}/${form.name}`
+
+    // If the project name hasn't changed it's valid
+    if(repoFullname === `${owner}/${name}`) {
+      setIsValidProjectName(isValid)
+    } else {
+      // Otherwise check if there's no repo with same name
+      if (!(await repoExists(repoFullname))) {
+      setIsValidProjectName(isValid)
+    } else {
+      setIsValidProjectName(false)
+    }
+    }
+  }
+
+  const formatProjectNameError = () => {
+    // disjoint form validation errors, e.g, maximum length, not empty, etc, with conflicting project name errors
+    const formErrors = formatErrorPrompt('name')
+
+    if (formErrors) {
+      return formErrors
+    } else {
+      return !isValidProjectName
+        ? {
+            content: `A project named "${form.name}" already exists!`,
+            pointing: 'below',
+          }
+        : null
+    }
+  }
+
 
   if (isLoading) return <Loader active />
 
@@ -134,7 +187,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             name="name"
             value={form.name || ''}
             onChange={onChange}
-            error={formatErrorPrompt('name')}
+            error={formatProjectNameError('name')}
           />
           <Form.Field
             readOnly={previewOnly}
