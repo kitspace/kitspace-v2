@@ -19,6 +19,8 @@ import {
   Segment,
   TextArea,
 } from 'semantic-ui-react'
+import { commitFiles } from '@utils/giteaInternalApi'
+import { AuthContext } from '@contexts/AuthContext'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -74,18 +76,13 @@ const UpdateProject = () => {
 }
 
 const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
-  const fullname = `${owner}/${name}`
+  const projectFullname = `${owner}/${name}`
 
-  const {
-    allFiles,
-    loadedFiles,
-    uploadLoadedFiles,
-    loadFiles,
-    invalidateCache,
-  } = useContext(UploadContext)
+  const { allFiles, invalidateCache } = useContext(UploadContext)
 
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
+  const { csrf } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUpdateForm,
   )
@@ -99,14 +96,10 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     e.preventDefault()
     setLoading(true)
 
-    if (loadedFiles?.length) {
-      await uploadLoadedFiles(fullname)
-    }
-
     const updatedSuccessfully = await updateRepo(
-      fullname,
+      projectFullname,
       { name: form.name, description: form.description },
-      form._csrf,
+      csrf,
     )
 
     if (updatedSuccessfully) {
@@ -115,7 +108,13 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   }
 
   const onDrop = async files => {
-    loadFiles(files, name)
+    // Commit files directly to gitea server on drop
+    await commitFiles({
+      repo: projectFullname,
+      files,
+      csrf,
+    })
+    await invalidateCache()
   }
 
   return (

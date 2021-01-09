@@ -1,26 +1,22 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import useSWR, { mutate } from 'swr'
 
 import _ from 'lodash'
 
 import { getDefaultBranchFiles } from '@utils/giteaApi'
-import { commitFiles } from '@utils/giteaInternalApi'
 import { projectNameFromPath } from '@utils/index'
-import { AuthContext } from '@contexts/AuthContext'
 
 export const UploadContext = createContext({
   allFiles: [],
   loadedFiles: [],
   loadFiles: () => {},
-  uploadLoadedFiles: () => {},
   setPersistenceScope: () => {},
   invalidateCache: () => {},
 })
 
 export default function UploadContextProvider(props) {
   const { asPath } = useRouter()
-  const { csrf } = useContext(AuthContext)
   const [persistenceScope, setPersistenceScope] = useState('')
   const [loadedFiles, setLoadedFiles] = useState([])
   const [allFiles, setAllFiles] = useState([])
@@ -56,34 +52,10 @@ export default function UploadContextProvider(props) {
   const loadFiles = (files, project) => {
     if (files != null) {
       // Store a list of loaded files in sessionStorage
-      const filesDetails = files.map(({ name, size, type }) => ({
-        name,
-        size,
-        type,
-      }))
-      setLoadedFiles(filesDetails)
-      sessionStorage.setItem(`loadedFiles:${project}`, JSON.stringify(filesDetails))
-
-      // Store a files' content in sessionStorage
-      files.map(file => {
-        const reader = new FileReader()
-        reader.onload = async () => {
-          const path = file.name
-          const content = reader.result
-          try {
-            sessionStorage.setItem(`loadedFile:${project}:${path}`, content)
-          } catch (e) {
-            console.error('Failed to persist files between pages redirection', e)
-          }
-        }
-        reader.readAsDataURL(file)
-      })
+      // It only stores the details of the files not the content
+      setLoadedFiles(files)
+      sessionStorage.setItem(`loadedFiles:${project}`, JSON.stringify(files))
     }
-  }
-
-  const uploadLoadedFiles = async repo => {
-    const res = await commitFiles({ repo, csrf, files: loadedFiles })
-    console.log(res)
   }
 
   const invalidateCache = async () => {
@@ -95,7 +67,6 @@ export default function UploadContextProvider(props) {
       value={{
         loadedFiles,
         loadFiles,
-        uploadLoadedFiles,
         allFiles,
         setPersistenceScope,
         invalidateCache,

@@ -102,6 +102,7 @@ const Upload = ({ user, csrf }) => {
       setModalOpen(true)
       console.error('Project already exists!')
     } else {
+      // Commit files to gitea server on drop
       await commitFiles({
         files,
         repo: `${user.username}/${tempProjectName}`,
