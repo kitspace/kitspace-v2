@@ -6,8 +6,8 @@ import { Button, Modal } from 'semantic-ui-react'
 import { deleteRepo } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
 
-const DeleteModal = ({ projectName }) => {
-  const { csrf, user } = useContext(AuthContext)
+const DeleteModal = ({ projectName, invalidateCache }) => {
+  const { csrf } = useContext(AuthContext)
 
   return (
     <Modal
@@ -22,8 +22,8 @@ const DeleteModal = ({ projectName }) => {
           negative: true,
           onClick: async () => {
             await deleteRepo(projectName, csrf)
-            // invalidate swr cache
-            await mutate(user.login)
+            // invalidate swr cache for `projects/mine` page.
+            await invalidateCache()
           },
         },
       ]}

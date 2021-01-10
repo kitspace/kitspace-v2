@@ -14,7 +14,7 @@ const Mine = () => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
 
-  const { repos: projects, isLoading } = useUserRepos(user?.username)
+  const { repos: projects, isLoading, mutate } = useUserRepos(user?.username)
 
   if (isLoading || !user) {
     return (
@@ -49,7 +49,7 @@ const Mine = () => {
           >
             Update
           </Button>
-          <DeleteModal projectName={projectFullName} />
+          <DeleteModal projectName={projectFullName} invalidateCache={mutate} />
         </List.Content>
       </List.Item>
     )
