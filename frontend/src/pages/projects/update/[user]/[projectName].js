@@ -114,14 +114,15 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   }, [form.name])
 
   const submit = async e => {
+    /**
+     * The update must be done in this order.
+     *  i. Commit the files
+     *  ii. update project details
+     * If this order were reversed uploading new files and changing the project name wouldn't work;
+     * The files would be committed to the old repo it won't be under the project with new name
+     */
     e.preventDefault()
     setLoading(true)
-
-    const updatedSuccessfully = await updateRepo(
-      projectFullname,
-      { name: form.name, description: form.description },
-      csrf,
-    )
 
     await commitFilesWithUUIDs({
       repo: projectFullname,
@@ -129,6 +130,12 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       csrf,
     })
     await mutate()
+
+    const updatedSuccessfully = await updateRepo(
+      projectFullname,
+      { name: form.name, description: form.description },
+      csrf,
+    )
 
     // If the user changed the project name redirect to the new project page
     if (updatedSuccessfully) {
