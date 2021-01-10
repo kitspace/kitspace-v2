@@ -12,6 +12,7 @@ services:
       - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - 'INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}'
       - 'USER_ISR_INTERVAL=${USER_ISR_INTERVAL}'
+      -  'MAX_FILE_SIZE=${MAX_FILE_SIZE}'
     depends_on:
       - gitea
     volumes:
@@ -61,7 +62,7 @@ services:
     volumes:
       - './nginx:/etc/nginx/conf.d'
       - './frontend:/srv/frontend'
-    command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
+    command: /bin/bash --verbose -c "sed -e 's/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g' -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
     depends_on:
       - frontend
       - gitea
