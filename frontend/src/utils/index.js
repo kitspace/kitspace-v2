@@ -73,3 +73,17 @@ export const readFileContent = file => {
     reader.readAsDataURL(file)
   })
 }
+
+/**
+ * Convert Megabytes to bytes
+ * @param megs{string}
+ * @example
+ * // returns 1048576
+ * MBytesToBytes('1M')
+ */
+export const MBytesToBytes = megs => {
+  const num = Number(megs.split('M')[0])
+
+  // 1 Megabyte = 1048576 Bytes.
+  return 1048576 * num
+}
