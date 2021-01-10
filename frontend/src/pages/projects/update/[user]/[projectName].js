@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
+import _ from 'lodash'
 import dynamic from 'next/dynamic'
 
 import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
-import { repoExists, updateRepo } from "@utils/giteaApi";
+import { repoExists, updateRepo } from '@utils/giteaApi'
 import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   Button,
@@ -82,7 +83,10 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     projectFullname,
   )
   // UUIDs for files dropped in the update page, the files gets committed on submit
-  const [newlyUploaded, setNewlyUploaded] = useState([])
+  const [newlyUploadedUUIDs, setNewlyUploadedUUIDs] = useState([])
+  // Details(name, path, last_modified, etc...) for files dropped in the update page
+  const [newlyUploadedDetails, setNewlyUploadedDetails] = useState([])
+  const [allFiles, setAllFiles] = useState([])
   const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
@@ -91,9 +95,16 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     ProjectUpdateForm,
   )
 
+  // Set values of the form as the values of the project stored in the Gitea repo
   useEffect(() => {
     populate({ name, description }, true)
   }, [remoteFiles, name, description])
+
+  // A disjoint between the newly uploaded files(waiting for submission) and the files
+  // on the Gitea repo for this project
+  useEffect(() => {
+    setAllFiles(_.uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
+  }, [remoteFiles, newlyUploadedUUIDs])
 
   useEffect(() => {
     if (form.name) {
@@ -101,6 +112,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       validateProjectName()
     }
   }, [form.name])
+
   const submit = async e => {
     e.preventDefault()
     setLoading(true)
@@ -113,7 +125,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
 
     await commitFilesWithUUIDs({
       repo: projectFullname,
-      filesUUIDs: newlyUploaded,
+      filesUUIDs: newlyUploadedUUIDs,
       csrf,
     })
     await mutate()
@@ -130,7 +142,9 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const onDrop = async files => {
     // Commit files directly to gitea server on drop
     const UUIDs = await uploadFilesToGiteaServer(projectFullname, files, csrf)
-    setNewlyUploaded(UUIDs)
+
+    setNewlyUploadedDetails(files)
+    setNewlyUploadedUUIDs(UUIDs)
   }
 
   const validateProjectName = async () => {
@@ -138,15 +152,15 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     const repoFullname = `${owner}/${form.name}`
 
     // If the project name hasn't changed it's valid
-    if(repoFullname === `${owner}/${name}`) {
+    if (repoFullname === `${owner}/${name}`) {
       setIsValidProjectName(isValid)
     } else {
       // Otherwise check if there's no repo with same name
       if (!(await repoExists(repoFullname))) {
-      setIsValidProjectName(isValid)
-    } else {
-      setIsValidProjectName(false)
-    }
+        setIsValidProjectName(isValid)
+      } else {
+        setIsValidProjectName(false)
+      }
     }
   }
 
@@ -166,7 +180,6 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     }
   }
 
-
   if (isLoading) return <Loader active />
 
   return (
@@ -174,7 +187,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
-          <FilesPreview files={remoteFiles} />
+          <FilesPreview files={allFiles} />
         </Segment>
         <Segment>
           <Form.Field
