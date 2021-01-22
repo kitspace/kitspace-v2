@@ -1,4 +1,5 @@
 import React from 'react'
+import { object, func } from 'prop-types'
 
 import { useDropzone } from 'react-dropzone'
 import { fromEvent } from 'file-selector'
@@ -53,6 +54,11 @@ const DropZone = ({ onDrop, style }) => {
       </div>
     </div>
   )
+}
+
+DropZone.propTypes = {
+  onDrop: func,
+  style: object,
 }
 
 export default DropZone

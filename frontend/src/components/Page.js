@@ -4,7 +4,6 @@ import { string, object, bool } from 'prop-types'
 import Head from './Head'
 import NavBar from './NavBar'
 import { Container, Loader } from 'semantic-ui-react'
-import AuthProvider from '../contexts/AuthContext'
 import { useRouter } from 'next/router'
 
 const Content = ({ reqSignIn, reqSignOut, children }) => {
@@ -36,7 +35,7 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
 
 export const Page = props => {
   return (
-    <AuthProvider>
+    <>
       <Head>
         <title>{props.title}</title>
       </Head>
@@ -44,7 +43,7 @@ export const Page = props => {
       <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
         {props.children}
       </Content>
-    </AuthProvider>
+    </>
   )
 }
 

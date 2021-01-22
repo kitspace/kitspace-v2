@@ -16,14 +16,22 @@ import { useMediaPredicate } from 'react-media-hook'
 
 import styles from './new.module.scss'
 import { Page } from '@components/Page'
-import DropZone from '../../components/DropZone'
+import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
 import { UploadContext } from '@contexts/UploadContext'
-import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
-import { slugifiedNameFromFiles } from '@utils/index'
-import useForm from '../../hooks/useForm'
+import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
+import { slugifiedNameFromFiles, urlToName } from '@utils/index'
+import useForm from '@hooks/useForm'
 import { ExistingProjectFrom } from '@models/ExistingProjectForm'
 import { SyncRepoFrom } from '@models/SyncRepoForm'
+
+// Explicitly mark as static.
+// Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
+export const getStaticProps = () => {
+  return {
+    props: {},
+  }
+}
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
@@ -123,9 +131,9 @@ const Upload = ({ user, csrf }) => {
 
   const validateProjectName = async () => {
     // Check if the new name will also cause a conflict.
-    const project = await getRepo(`${user.login}/${form.name}`)
+    const repoFullname = `${user.login}/${form.name}`
 
-    if (project == null) {
+    if (!(await repoExists(repoFullname))) {
       setIsValidProjectName(isValid)
     } else {
       setIsValidProjectName(false)
@@ -211,7 +219,7 @@ const Sync = ({ user, csrf }) => {
       const repoURL = form.url
       const repoName = urlToName(repoURL)
 
-      const res = await migrateRepo(repoURL, uid, csrf)
+      const res = await mirrorRepo(repoURL, uid, csrf)
       const migrateSuccessfully = res.ok
       const alreadySynced = res.status === 409
 
