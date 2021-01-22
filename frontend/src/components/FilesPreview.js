@@ -7,7 +7,7 @@ const FilesPreview = ({ files }) => {
     <List.Item key={file.name}>
       <List.Icon name="file" />
       <List.Content>
-        <List.Header>{file.name}</List.Header>
+        <List.Header data-cy="file-name">{file.name}</List.Header>
         <List.Description>{file.size} bytes</List.Description>
       </List.Content>
     </List.Item>

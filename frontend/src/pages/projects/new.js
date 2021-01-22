@@ -158,7 +158,12 @@ const Upload = ({ user, csrf }) => {
   return (
     <>
       <DropZone onDrop={onDrop} style={{ maxWidth: '70%', margin: 'auto' }} />
-      <Modal data-cy="collision-modal" closeIcon open={modalOpen} onClose={() => setModalOpen(false)}>
+      <Modal
+        data-cy="collision-modal"
+        closeIcon
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
         <Modal.Header>Heads up!</Modal.Header>
         <Modal.Content>
           <p>
@@ -179,14 +184,14 @@ const Upload = ({ user, csrf }) => {
         </Modal.Content>
         <Modal.Actions>
           <Button
-            data-cy='collision-different-name'
+            data-cy="collision-different-name"
             content="Choose different name"
             color="green"
             disabled={!isValidProjectName}
             onClick={onDifferentName}
           />
           <Button
-            data-cy='collision-update'
+            data-cy="collision-update"
             content="Update existing project"
             color="yellow"
             onClick={onUpdateExisting}
