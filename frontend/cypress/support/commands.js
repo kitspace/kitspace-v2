@@ -113,7 +113,9 @@ Cypress.Commands.add(
     cy.window().then(win => {
       const blob = Cypress.Blob.base64StringToBlob(file)
       const fileContent = new win.File([blob], fileName)
-      cy.wrap(subject).trigger('drop', { dataTransfer: { files: [fileContent] , types: ['Files']} })
+      cy.wrap(subject).trigger('drop', {
+        dataTransfer: { files: [fileContent], types: ['Files'] },
+      })
     })
   },
 )
