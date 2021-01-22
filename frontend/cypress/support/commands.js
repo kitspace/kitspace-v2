@@ -107,14 +107,16 @@ Cypress.Commands.add('hasProperFields', schema => {
 
 // credits https://gist.github.com/ZwaarContrast/00101934954980bcaa4ae70ac9930c60
 Cypress.Commands.add(
-  'dropFile',
+  'dropFiles',
   { prevSubject: 'element' },
-  (subject, file, fileName) => {
+  (subject, files, fileNames) => {
     cy.window().then(win => {
-      const blob = Cypress.Blob.base64StringToBlob(file)
-      const fileContent = new win.File([blob], fileName)
+      const filesContent = files.map((f, idx) => {
+        const blob = Cypress.Blob.base64StringToBlob(f)
+        return new win.File([blob], fileNames[idx])
+      })
       cy.wrap(subject).trigger('drop', {
-        dataTransfer: { files: [fileContent], types: ['Files'] },
+        dataTransfer: { files: filesContent, types: ['Files'] },
       })
     })
   },

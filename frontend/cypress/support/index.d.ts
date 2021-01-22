@@ -89,14 +89,13 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
-     * @author Zwaar Contrast <postduif@zwaarcontrast.nl>
+     * Credits Zwaar Contrast <postduif@zwaarcontrast.nl>
      * Create a drop event with file on the parent subject
-     * @param file
-     * @param fileName
-     * @example
+     * @param files
+     * @param fileNames
      * cy.get('.dropzone').dropFile(file, 'example.txt')
      */
-      dropFile(file, fileName): Chainable<any>
+      dropFiles(files, fileNames): Chainable<any>
   }
 
   interface Chainable<Subject> {
