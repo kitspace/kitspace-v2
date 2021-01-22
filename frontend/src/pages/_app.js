@@ -58,6 +58,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
         </Head>
         <Component {...pageProps} />
         {isStaticFallback ? <ErrorMessage /> : null}
+
       </SWRConfig>
     </AuthProvider>
   )

@@ -2,11 +2,19 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import { Grid, Tab } from 'semantic-ui-react'
 
-import SignUpForm from '../components/SignUpForm'
-import SignInForm from '../components/SignInForm'
+import SignUpForm from '@components/SignUpForm'
+import SignInForm from '@components/SignInForm'
 import { Page } from '@components/Page'
 
-export default function () {
+export const getStaticProps = () => {
+  return {
+    props: {},
+  }
+}
+
+// Explicitly mark as static.
+// Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
+const Login = () => {
   const router = useRouter()
 
   let defaultActiveIndex
@@ -33,3 +41,5 @@ export default function () {
     </Page>
   )
 }
+
+export default Login

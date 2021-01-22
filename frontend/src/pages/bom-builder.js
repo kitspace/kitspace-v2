@@ -1,6 +1,15 @@
 import React from 'react'
+import Link from 'next/link'
 
 import { Page } from '@components/Page'
+
+// Explicitly mark as static.
+// Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
+export const getStaticProps = () => {
+  return {
+    props: {},
+  }
+}
 
 export default function BomBuilder() {
   return (
@@ -10,7 +19,9 @@ export default function BomBuilder() {
         The BOM Builder allows you to automatically find in-stock components and
         alternatives across distributors and lets you add entire bill of materials
         directly to shopping carts by connecting up to{' '}
-        <a href="/1-click-bom">1-click BOM</a>.
+        <Link href="/1-click-bom">
+          <a>1-click BOM</a>
+        </Link>
       </p>
       <p>
         In our experience this can cut the purchasing time down from a few hours to
