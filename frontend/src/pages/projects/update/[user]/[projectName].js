@@ -98,7 +98,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   // Set values of the form as the values of the project stored in the Gitea repo
   useEffect(() => {
     populate({ name, description }, true)
-  }, [remoteFiles, name, description])
+  }, [])
 
   // A disjoint between the newly uploaded files(waiting for submission) and the files
   // on the Gitea repo for this project
