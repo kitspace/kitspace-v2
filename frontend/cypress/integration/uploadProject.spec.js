@@ -17,6 +17,13 @@ describe('Upload project', () => {
     cy.visit('/login')
     cy.signIn(username, password)
 
+    cy.request({
+      url: 'http://gitea.kitspace.test:3000/user/kitspace/sign_in',
+      method: 'POST',
+      body: { username, password },
+      failOnStatusCode: false,
+    })
+
     cy.preFileDrop(username)
   })
 

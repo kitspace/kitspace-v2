@@ -92,12 +92,12 @@ describe('Sign up form submission', () => {
 
   before(() => {
     cy.clearCookies()
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   beforeEach(() => {
     cy.visit('/login?sign_up')
     cy.clearCookies()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should display success message on submitting a valid form', () => {

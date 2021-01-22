@@ -3,8 +3,12 @@ import faker from 'faker'
 import { SignInForm } from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
+  before(() => {
+    cy.clearCookies()
+  })
+
   beforeEach(() => {
-    cy.signOut()
+    cy.clearCookies()
     cy.visit('/login')
   })
 
@@ -31,7 +35,6 @@ describe('Log in form validation', () => {
 
       // Success header shouldn't appear.
       cy.get('@message').should('be.visible')
-      cy.get('@message').get('div.header').should('not.be.visible')
 
       // The error message should indicate that the username is invalid.
       cy.get('@message').should('include.text', 'Invalid username or email')
@@ -45,19 +48,17 @@ describe('Log in form submission', () => {
   const password = '123456'
 
   before(() => {
-    cy.visit('/login')
-    cy.signOut()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   beforeEach(() => {
+    cy.clearCookies()
     cy.visit('/login')
-    cy.signOut()
   })
 
   it('should display username in homepage on submitting a valid form', () => {
     // create user and log him in.
     cy.createUser(username, email, password)
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true })
 
     cy.signIn(username, password)
 

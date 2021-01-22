@@ -19,8 +19,16 @@ describe('It validates authentication redirects', () => {
   it('should redirects authenticated users to homepage when accessing reqSignOut page', () => {
     // sign the user in.
     cy.visit('/login')
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true })
+
     cy.signIn(username, password)
+    cy.request({
+      url: 'http://gitea.kitspace.test:3000/user/kitspace/sign_in',
+      method: 'POST',
+      body: { username, password },
+      failOnStatusCode: false,
+    })
+
+    cy.wait(1000)
 
     // `/login` is marked as `reqSignOut`.
     cy.visit('/login')

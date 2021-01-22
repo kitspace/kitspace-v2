@@ -20,13 +20,6 @@ Cypress.Commands.add('signUp', (username, email, password) => {
 })
 
 Cypress.Commands.add('signIn', (username, password) => {
-  cy.request({
-    url: signInEndpoint,
-    method: 'POST',
-    body: { username, password },
-    failOnStatusCode: false,
-  })
-
   cy.get('input[name=username]').clear().type(username)
   cy.get('input[name=password]').clear().type(password)
 
