@@ -2,7 +2,6 @@ const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
 const giteaApiUrl = 'http://gitea.kitspace.test:3000/api/v1'
 
-
 Cypress.Commands.add('createUser', (username, email, password) => {
   cy.request({
     url: signUpEndpoint,
@@ -13,8 +12,6 @@ Cypress.Commands.add('createUser', (username, email, password) => {
 })
 
 Cypress.Commands.add('signUp', (username, email, password) => {
-  cy.createUser(username, email, password)
-
   cy.get('input[name=username]').clear().type(username)
   cy.get('input[name=email]').clear().type(email)
   cy.get('input[name=password]').clear().type(password)
@@ -88,6 +85,7 @@ Cypress.Commands.add('goToUsersAdminPanel', () => {
   // Users database are at `{gitea}/admin/users`
   // Kitspace user interaction should appear there.
 
+  cy.clearCookies()
   cy.visit('http://gitea.kitspace.test:3000/user/login')
   cy.get('input#user_name').type(Cypress.env('GITEA_ADMIN_USERNAME'))
   cy.get('input#password').type(Cypress.env('GITEA_ADMIN_PASSWORD'))
@@ -125,14 +123,14 @@ Cypress.Commands.add(
 )
 
 Cypress.Commands.add('preFileDrop', username => {
-    // This will match any request made by `utils/giteaApi.createRepo`,
-    // The `**` for matching the csrf query param.
-    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
+  // This will match any request made by `utils/giteaApi.createRepo`,
+  // The `**` for matching the csrf query param.
+  cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
 
-    // This will match any request for `utils/giteaApi.getRepo`
-    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
+  // This will match any request for `utils/giteaApi.getRepo`
+  cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
 
-    cy.visit('/projects/new')
+  cy.visit('/projects/new')
 })
 
 Cypress.Commands.add('syncTestRepo', () => {

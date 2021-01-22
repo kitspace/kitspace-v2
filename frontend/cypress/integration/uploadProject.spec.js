@@ -75,7 +75,7 @@ describe('Upload project', () => {
   })
 
   it('Should create a project and redirect to its update route on `Choose different name`', () => {
-     // Dropping a single file with the same name as an existing project(example)
+    // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
     // Simulate dropping a single file('example.png') in the dropzone.

@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-describe('Importing a project behavior validation', () => {
+describe('Syncing a project behavior validation', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
@@ -24,12 +24,5 @@ describe('Importing a project behavior validation', () => {
     cy.visit(`http://gitea.kitspace.test:3000/${username}`)
     cy.get('.ui.repository.list').children().get('.header').contains(repoName)
     cy.visit('/projects/mine')
-  })
-
-  it("should redirect to upload page if there's no conflict", () => {
-    const fixtureFile = 'example.json'
-
-    cy.visit('/projects/new')
-    cy.get('.dropzone').attachFile(fixtureFile, { subjectType: 'drag-n-drop' })
   })
 })

@@ -5,14 +5,9 @@ import faker from 'faker'
 import { SignUpForm } from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
-  before(() => {
-    cy.signOut()
-    cy.visit('/login?sign_up')
-  })
-
   beforeEach(() => {
+    cy.clearCookies()
     cy.visit('/login?sign_up')
-    cy.signOut()
   })
 
   afterEach(() => {
@@ -94,18 +89,18 @@ describe('Sign up form submission', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
-  const duration = '3 hours'
 
-  before(() => cy.signOut())
+  before(() => {
+    cy.clearCookies()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
+  })
 
   beforeEach(() => {
     cy.visit('/login?sign_up')
-    cy.signOut()
+    cy.clearCookies()
   })
 
   it('should display success message on submitting a valid form', () => {
-    cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
-
     cy.signUp(username, email, password)
 
     cy.get('.positive').as('message')
@@ -114,29 +109,23 @@ describe('Sign up form submission', () => {
     cy.get('@message').should('be.visible')
     cy.get('@message').get('div.header').should('be.visible')
 
-    // Success message should indicate that an email has been sent the the user.
-    cy.get('@message').should('include.text', email)
-
-    // Success message should indicate the allowed duration to activate the account.
-    cy.get('@message').should('include.text', duration)
-
     // User information should appear in Gitea admin dashboard.
     cy.goToUsersAdminPanel()
     cy.get('tbody').get('tr').contains(username).should('be.visible')
   })
 
-  it('should remove success message if there is any validation error', () => {
-    cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
-    cy.signUp(username, email, password)
+  it('should automatically sign the user in after submitting a valid form', () => {
+    const newUsername = faker.name.firstName()
+    const newEmail = faker.internet.email()
+    const newPassword = '123456'
 
-    // For valid submission the success message should be visible
-    cy.get('.positive').as('message')
-    cy.get('@message').should('be.visible')
+    cy.signUp(newUsername, newEmail, newPassword)
 
-    // After deleting the password the there's a form validation error therefore
-    // the success message should disappear
-    cy.get('input[name=password]').clear()
-    cy.get('@message').should('not.be.visible')
+    // the user should be signed in, i.e., the `session.user` object won't be null
+    cy.wait(1000)
+    cy.window().then(win => {
+      assert(win.session.user)
+    })
   })
 
   it('should display error message on submitting a from with used username', () => {
