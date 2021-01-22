@@ -30,7 +30,9 @@ describe('Syncing a project behavior validation', () => {
     cy.visit(`http://gitea.kitspace.test:3000/${username}`)
     cy.get('.ui.repository.list').children().get('.header').contains(repoName)
 
-    cy.intercept(`http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`).as('getRepos')
+    cy.intercept(
+      `http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`,
+    ).as('getRepos')
 
     // assert the repo is on `{frontend}/projects/mine`
     cy.visit('/projects/mine')
