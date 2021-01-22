@@ -1,6 +1,5 @@
 import faker from 'faker'
 
-const giteaApiUrl = 'http://gitea.kitspace.test:3000/api/v1'
 const updateProjectUrl = 'http://kitspace.test:3000/projects/update'
 
 describe('Upload project', () => {
@@ -17,18 +16,11 @@ describe('Upload project', () => {
     cy.clearCookies()
     cy.visit('/login')
     cy.signIn(username, password)
+
+    cy.preFileDrop(username)
   })
 
   it('Should create a project and redirect to its update route on file drop', () => {
-    // This will match any request made by `utils/giteaApi.createRepo`,
-    // The `**` for matching the csrf query param.
-    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
-
-    // This will match any request for `utils/giteaApi.getRepo`
-    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-
-    cy.visit('/projects/new')
-
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -42,18 +34,6 @@ describe('Upload project', () => {
   })
 
   it('Should show modal on project names collision', () => {
-    // Dropping a single file with the same name as an existing project(example)
-    // will trigger a name collision
-
-    // This will match any request made by `utils/giteaApi.createRepo`,
-    // The `**` for matching the csrf query param.
-    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
-
-    // This will match any request for `utils/giteaApi.getRepo`
-    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-
-    cy.visit('/projects/new')
-
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -72,15 +52,6 @@ describe('Upload project', () => {
   it('Should commit files to the same project on `Update existing project`', () => {
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
-
-    // This will match any request made by `utils/giteaApi.createRepo`,
-    // The `**` for matching the csrf query param.
-    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
-
-    // This will match any request for `utils/giteaApi.getRepo`
-    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-
-    cy.visit('/projects/new')
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(f1 => {
@@ -104,17 +75,8 @@ describe('Upload project', () => {
   })
 
   it('Should create a project and redirect to its update route on `Choose different name`', () => {
-       // Dropping a single file with the same name as an existing project(example)
+     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
-
-    // This will match any request made by `utils/giteaApi.createRepo`,
-    // The `**` for matching the csrf query param.
-    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
-
-    // This will match any request for `utils/giteaApi.getRepo`
-    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-
-    cy.visit('/projects/new')
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(f1 => {

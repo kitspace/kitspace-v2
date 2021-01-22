@@ -100,6 +100,16 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
+     * Good to file uploading route and prepare call all necessary network intercepts
+     * @param username
+     * @example
+     *
+     */
+    preFileDrop(username: string): Chainable<any>
+  }
+
+  interface Chainable<Subject> {
+    /**
      * sync the test repo for the current test user
      * @example
      * syncTestRepo()
