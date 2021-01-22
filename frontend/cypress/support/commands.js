@@ -1,5 +1,3 @@
-import 'cypress-file-upload'
-
 const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
 
@@ -106,6 +104,19 @@ Cypress.Commands.add('hasProperFields', schema => {
     }
   })
 })
+
+// credits https://gist.github.com/ZwaarContrast/00101934954980bcaa4ae70ac9930c60
+Cypress.Commands.add(
+  'dropFile',
+  { prevSubject: 'element' },
+  (subject, file, fileName) => {
+    cy.window().then(win => {
+      const blob = Cypress.Blob.base64StringToBlob(file)
+      const fileContent = new win.File([blob], fileName)
+      cy.wrap(subject).trigger('drop', { dataTransfer: { files: [fileContent] , types: ['Files']} })
+    })
+  },
+)
 
 Cypress.Commands.add('syncTestRepo', () => {
   cy.window().then(win => {
