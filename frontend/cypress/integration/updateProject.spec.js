@@ -18,6 +18,8 @@ describe('Updating a project behavior validation', () => {
     cy.visit('/login')
     cy.signIn(username, password)
 
+    // waiting prevents random test failures due to jittering in response
+    cy.wait(1000)
     // sync the test repo
     cy.visit('/projects/new/')
     // Simulate dropping a single file('example.png') in the dropzone.
@@ -40,11 +42,12 @@ describe('Updating a project behavior validation', () => {
     cy.visit('/login')
     cy.signIn(username, password)
 
-    cy.visit(updatePageRoute)
     cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
+    cy.visit(updatePageRoute)
   })
 
   it('should render the update page with correct project name', () => {
+    cy.visit(updatePageRoute)
     cy.get('[data-cy=update-form-name] > input').should('have.value', testRepoName)
   })
 
@@ -53,15 +56,16 @@ describe('Updating a project behavior validation', () => {
     cy.intercept(
       `http://gitea.kitspace.test:3000/${testRepoFullName}/upload-file**`,
     ).as('upload')
+
     cy.preFileDrop(username)
     cy.fixture('example2.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example2.png'])
     })
 
+    // waiting prevents random test failures due to jittering in response
+    cy.wait(1000)
     // Dropping a file should make it appear in the preview component
     cy.get('[data-cy=file-name]').contains('example2.png')
-
-    cy.wait('@upload')
 
     // Commit files to the repo
     cy.get('[data-cy=update-form-submit]').click()
@@ -103,13 +107,20 @@ describe('Updating a project behavior validation', () => {
       cy.get('.dropzone').dropFiles([file], ['example3.png'])
     })
 
+    cy.wait('@upload')
     // Submit the update form
     cy.get('[data-cy=update-form-submit]').click()
 
-     // Should redirect to the new update page
+    // Should redirect to the new update page
     cy.url().should('contain', `/projects/update/${username}/${newName}`)
 
     // `example3.png` should be in the preview
     cy.get('[data-cy=file-name]').contains('example3.png')
+  })
+})
+
+describe('Update project form validation', () => {
+  it('should prevent conflicting project names', () => {
+    assert(false, 'NotImplemented')
   })
 })
