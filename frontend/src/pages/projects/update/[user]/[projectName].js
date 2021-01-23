@@ -226,7 +226,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             fluid
             control={Button}
             content={isNew ? 'Create' : 'Update'}
-            disabled={previewOnly || !isValid || loading}
+            disabled={previewOnly || !isValidProjectName || loading}
             onClick={submit}
             positive
             loading={loading}
