@@ -13,8 +13,11 @@ describe('Syncing a project behavior validation', () => {
   })
 
   beforeEach(() => {
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+
     cy.visit('/login')
     cy.signIn(username, password)
+    cy.wait('@sign_in')
   })
 
   it('should sync a repo on gitea', () => {
