@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "puppeteer": "^5.5.0"
+  },
+  "scripts": {
+    "install-gitea": "set -a && source ../.env && set +a && node install_gitea.js"
+  }
+}
