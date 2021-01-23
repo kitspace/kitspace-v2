@@ -165,6 +165,12 @@ describe('Update project form validation', () => {
     cy.wait(['@createRepo', '@getRepo'])
   })
 
+  beforeEach(() => {
+    cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/${username}/**`).as(
+      'getRepo',
+    )
+  })
+
   it('should prevent conflicting project names', () => {
     // Go to the update page for the project created by uploading files
     cy.visit(`projects/update/${username}/${uploadedRepoName}`)
@@ -174,6 +180,27 @@ describe('Update project form validation', () => {
 
     // The form should show that a project with the same name already exists
     cy.get('.prompt[role=alert]').should('contain.text', syncedRepoName)
+
+    // Prevent submitting the update
+    cy.get('[data-cy=update-form-submit]').should('be.disabled')
+  })
+
+  it('should prevent names longer than 60 characters', () => {
+    const maximumLength = 60
+    // Note: longName.length == 61
+    const longName = new Array(maximumLength + 2).join('a')
+
+    // Go to the update page for the project created by uploading files
+    cy.visit(`projects/update/${username}/${uploadedRepoName}`)
+
+    // Change the project name 61+ name which is beyond the maximum allowable
+    cy.get('[data-cy=update-form-name] > input').clear().type(longName)
+
+    // The form should show that a project with the same name already exists
+    cy.get('.prompt[role=alert]').should(
+      'contain.text',
+      'must be less than or equal to 60 characters long',
+    )
 
     // Prevent submitting the update
     cy.get('[data-cy=update-form-submit]').should('be.disabled')
