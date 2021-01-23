@@ -198,6 +198,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
         </Segment>
         <Segment>
           <Form.Field
+            data-cy='update-form-name'
             fluid
             required
             readOnly={previewOnly}
@@ -210,6 +211,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             error={formatProjectNameError('name')}
           />
           <Form.Field
+            data-cy='update-form-description'
             readOnly={previewOnly}
             control={TextArea}
             label="Project description"
@@ -220,6 +222,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             error={formatErrorPrompt('description')}
           />
           <Form.Field
+            data-cy="update-form-submit"
             fluid
             control={Button}
             content={isNew ? 'Create' : 'Update'}
