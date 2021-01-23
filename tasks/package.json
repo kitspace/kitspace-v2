@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "puppeteer": "^5.5.0"
+  },
+  "scripts": {}
+}
