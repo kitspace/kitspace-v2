@@ -24,6 +24,7 @@ describe('Upload project', () => {
       failOnStatusCode: false,
     })
 
+    cy.visit('/project/new')
     cy.preFileDrop(username)
   })
 

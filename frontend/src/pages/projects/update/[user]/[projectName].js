@@ -34,11 +34,11 @@ const UpdateProject = () => {
 
   const fullName = `${user}/${projectName}`
 
-  const { project, isLoading } = useRepo(fullName)
+  const { repo: project, isLoading } = useRepo(fullName)
 
   useEffect(() => {
     setIsSynced(project?.mirror)
-  }, [project])
+  }, [isLoading, project])
 
   if (isLoading) {
     return (
@@ -198,7 +198,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
         </Segment>
         <Segment>
           <Form.Field
-            data-cy='update-form-name'
+            data-cy="update-form-name"
             fluid
             required
             readOnly={previewOnly}
@@ -211,7 +211,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             error={formatProjectNameError('name')}
           />
           <Form.Field
-            data-cy='update-form-description'
+            data-cy="update-form-description"
             readOnly={previewOnly}
             control={TextArea}
             label="Project description"

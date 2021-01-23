@@ -122,8 +122,6 @@ Cypress.Commands.add('preFileDrop', username => {
 
   // This will match any request for `utils/giteaApi.getRepo`
   cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-
-  cy.visit('/projects/new')
 })
 
 Cypress.Commands.add('syncTestRepo', () => {
