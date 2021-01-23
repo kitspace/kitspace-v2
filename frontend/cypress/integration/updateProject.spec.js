@@ -2,11 +2,12 @@ import faker from 'faker'
 
 describe('Updating a project behavior validation', () => {
   const username = faker.name.firstName()
+  const email = faker.internet.email()
+  const password = '123456'
+
   const testRepoName = 'example'
   const testRepoFullName = `${username}/${testRepoName}`
   const updatePageRoute = `/projects/update/${testRepoFullName}`
-  const email = faker.internet.email()
-  const password = '123456'
 
   before(() => {
     cy.clearCookies()
@@ -120,7 +121,61 @@ describe('Updating a project behavior validation', () => {
 })
 
 describe('Update project form validation', () => {
+  const username = faker.name.firstName()
+  const email = faker.internet.email()
+  const password = '123456'
+
+  const syncedRepoName = 'light-test-repo'
+  const uploadedRepoName = 'example'
+
+  before(() => {
+    // Create a user
+    cy.clearCookies()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+
+    cy.createUser(username, email, password)
+    // sign in, and migrate `light-test-repo`
+    cy.visit('/login')
+    cy.signIn(username, password)
+
+    cy.wait('@sign_in')
+
+    // migrate `light-test-repo`
+    const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
+
+    cy.visit('/projects/new')
+    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('button').contains('Sync').click()
+    cy.syncTestRepo()
+
+    cy.intercept(
+      `http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`,
+    ).as('getRepos')
+
+    // Create a repo by uploading files
+    cy.visit('projects/new')
+    cy.preFileDrop(username)
+
+    // Simulate dropping a single file('example.png') in the dropzone.
+    cy.fixture('example.png', 'base64').then(file => {
+      cy.get('.dropzone').dropFiles([file], ['example.png'])
+    })
+
+    // Wait until getting a response from the server then validate a redirection has happened
+    cy.wait(['@createRepo', '@getRepo'])
+  })
+
   it('should prevent conflicting project names', () => {
-    assert(false, 'NotImplemented')
+    // Go to the update page for the project created by uploading files
+    cy.visit(`projects/update/${username}/${uploadedRepoName}`)
+
+    // Change the project name to the name of the synced repo which will cause conflict
+    cy.get('[data-cy=update-form-name] > input').clear().type(syncedRepoName)
+
+    // The form should show that a project with the same name already exists
+    cy.get('.prompt[role=alert]').should('contain.text', syncedRepoName)
+
+    // Prevent submitting the update
+    cy.get('[data-cy=update-form-submit]').should('be.disabled')
   })
 })
