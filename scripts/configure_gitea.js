@@ -2,12 +2,13 @@
  * Installs gitea in default configuration and creates admin
  */
 
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer');
 
 ;(async () => {
   const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage()
-  await page.goto('http://gitea.kitspace.test:3000/install')
+  const url = `http://gitea.${process.env.KITSPACE_DOMAIN}${process.env.KITSPACE_EXTERNAL_PORT}/install`
+  await page.goto(url)
 
   try {
     await page.type('#admin_name', process.env.CYPRESS_GITEA_ADMIN_USERNAME)
