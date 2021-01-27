@@ -107,5 +107,7 @@ jobs:
       - name: Install Gitea
         shell: bash
         timeout-minutes: 5
-        run: scripts/install_gitea.sh
-  
+        run: |
+          cat /etc/hosts
+          scripts/install_gitea.sh
+     
