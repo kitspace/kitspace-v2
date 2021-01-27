@@ -6,10 +6,10 @@ set -Eeuo pipefail
 
 docker-compose -f docker-compose.deploy.yml up &
 
-# Look(retry every 3s) in the logs for sign that gitea is ready
-until docker logs kitspace_gitea_1 | grep 'Preparing to run install page' ; do sleep 3s; done
+# Look(retry every 20s) in the logs for sign that gitea is ready
+until docker logs kitspace_gitea_1 | grep 'Preparing to run install page' ; do sleep 20s; done
 
-sleep 5s
+sleep 10s
 
 # Make a GET request to installation page, as if visiting '/index'
 http --session=/tmp/session.json --headers gitea.kitspace.test:3000
