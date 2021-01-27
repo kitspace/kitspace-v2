@@ -89,7 +89,7 @@ jobs:
 
       - name: Build docker-compose stack 
         shell: bash
-        run: docker-compose -f docker-compose.deploy.yml
+        run: docker-compose -f docker-compose.deploy.yml build
     
       - name: Install Gitea
         shell: bash
