@@ -10,6 +10,19 @@ jobs:
   push_to_registry:
     name: Push Docker images to GitHub Container Register
     runs-on: ubuntu-20.04
+    env:
+      POSTGRES_PASSWORD: change_me
+      KITSPACE_DOMAIN: kitspace.test
+      KITSPACE_SCHEME: http
+      KITSPACE_DEV_PORT: 3000
+      KITSPACE_EXTERNAL_PORT: ':3000'
+      CERTBOT_EMAIL: you@example.com
+      COMPOSE_PROJECT_NAME: kitspace
+      CYPRESS_GITEA_ADMIN_USERNAME: __admin
+      CYPRESS_GITEA_ADMIN_PASSWORD: 123456
+      INDEX_ISR_INTERVAL: 3600
+      USER_ISR_INTERVAL: 86400
+      MAX_FILE_SIZE: 6M
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
