@@ -82,4 +82,16 @@ jobs:
         run: | 
           sed  -Ei "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
           cat docker-compose.deploy.yml
+      
+      - name: Install httpie
+        shell: bash
+        run: sudo apt install httpie
 
+      - name: Build docker-compose stack 
+        shell: bash
+        run: docker-compose -f docker-compose.deploy.yml
+    
+      - name: Install Gitea
+        shell: bash
+        run: scripts/install_gitea.sh
+  
