@@ -7,6 +7,9 @@ services:
     environment:
       - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
+      - INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}
+      - USER_ISR_INTERVAL=${USER_ISR_INTERVAL}
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE}
     command: /bin/sh --verbose -c "yarn build && yarn start"
     volumes:
       - next:/app/.next/
