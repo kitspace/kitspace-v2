@@ -115,13 +115,13 @@ jobs:
       - name: e2e
         uses: cypress-io/github-action@v2
         with:
+          record: true
           start: docker-compose -f ../docker-compose.deploy.yml up
           command: yarn e2e
           working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           wait-on-timeout: 120
-          record: true
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
