@@ -115,9 +115,8 @@ jobs:
       - name: e2e
         uses: cypress-io/github-action@v2
         with:
-          record: true
           start: docker-compose -f ../docker-compose.deploy.yml up
-          command: yarn e2e
+          command: yarn e2e --record
           working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
