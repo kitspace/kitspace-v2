@@ -89,11 +89,13 @@ jobs:
           echo "172.17.0.1    gitea.kitspace.test" | sudo tee -a /etc/hosts
           echo "172.17.0.1    processor.kitspace.test" | sudo tee -a /etc/hosts
       
-      # replace the `latest` tag with `SHA` 
+      # i. replace the `latest` tag with `SHA`
+      # ii. forward Nginx port 80 to internal port 3000. Keep the indentation!
       - name: Patch `docker-compose.deploy.yml`
         shell: bash
         run: | 
           sed  -Ei "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
+          sed -i "/'443:443'/a\      - \'${KITSPACE_DEV_PORT}:80\'" docker-compose.deploy.yml
           cat docker-compose.deploy.yml
       
       - name: Install httpie

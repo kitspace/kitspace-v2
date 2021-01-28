@@ -64,7 +64,6 @@ services:
     ports:
       - '80:80'
       - '443:443'
-      - '${KITSPACE_DEV_PORT}:80'
     environment:
       - RUN_CERTBOT=true
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
