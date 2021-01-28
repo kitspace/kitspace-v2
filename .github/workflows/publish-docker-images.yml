@@ -121,3 +121,9 @@ jobs:
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           wait-on-timeout: 120
+          record: true
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }
