@@ -113,7 +113,8 @@ jobs:
       - name: e2e
         uses: cypress-io/github-action@v2
         with:
-          start: docker-compose -f docker-compose.deploy.yml build
+          start: pwd && docker-compose -f docker-compose.deploy.yml build
           command: cd frontend && yarn e2e
+          working-directory: frontend/cypress
 
 
