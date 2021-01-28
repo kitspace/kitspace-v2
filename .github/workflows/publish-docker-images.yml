@@ -108,6 +108,12 @@ jobs:
         shell: bash
         timeout-minutes: 5
         run: |
-          cat /etc/hosts
           scripts/install_gitea.sh
-     
+  
+      - name: e2e
+        uses: cypress-io/github-action@v2
+        with:
+          start: docker-compose -f docker-compose.deploy.yml build
+          command: cd frontend && yarn e2e
+
+
