@@ -71,7 +71,7 @@ services:
       - RUN_CERTBOT=true
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
-    command: /bin/bash --verbose -c "sed -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
+    command: /bin/bash --verbose -c "sed -e 's/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g' -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
     volumes:
       - /etc/letsencrypt
       - ./nginx:/etc/nginx/conf.d
