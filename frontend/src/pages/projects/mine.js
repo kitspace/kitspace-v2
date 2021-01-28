@@ -1,50 +1,30 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useRouter } from 'next/router'
-import { List, Button, Modal } from 'semantic-ui-react'
+import dynamic from 'next/dynamic'
+import { List, Button, Loader } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
-import { getUserRepos } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
-import { deleteRepo } from '@utils/giteaApi'
 import styles from './mine.module.scss'
+import { useUserRepos } from '@hooks/Gitea'
 
-const DeleteModal = ({ projectName }) => {
-  const { reload } = useRouter()
-  const { csrf } = useContext(AuthContext)
-
-  return (
-    <Modal
-      trigger={<Button content="Delete" color="red" />}
-      header="Heads up!"
-      content={`Are you sure you want to delete the ${projectName} project?`}
-      actions={[
-        'Cancel',
-        {
-          key: 'delete',
-          content: 'Delete',
-          negative: true,
-          onClick: async () => {
-            await deleteRepo(projectName, csrf)
-            await reload()
-          },
-        },
-      ]}
-    />
-  )
-}
+const DeleteModal = dynamic(() => import('@components/DeleteProjectModal'))
 
 const Mine = () => {
-  const { csrf } = useContext(AuthContext)
+  const { user } = useContext(AuthContext)
   const { push } = useRouter()
-  const [projects, setProjects] = useState([])
 
-  useEffect(() => {
-    if (csrf) {
-      getUserRepos(csrf).then(setProjects)
-    }
-  }, [csrf])
+  const { repos: projects, isLoading, mutate } = useUserRepos(user?.username)
 
-  const projectsList = projects.map(p => {
+  if (isLoading || !user) {
+    return (
+      <Page>
+        <Loader active />
+      </Page>
+    )
+  }
+
+  const projectsList = projects?.map(p => {
     const projectFullName = p.full_name
     const lastUpdateDate = new Date(p.updated_at)
 
@@ -69,7 +49,7 @@ const Mine = () => {
           >
             Update
           </Button>
-          <DeleteModal projectName={projectFullName} />
+          <DeleteModal projectName={projectFullName} invalidateCache={mutate} />
         </List.Content>
       </List.Item>
     )

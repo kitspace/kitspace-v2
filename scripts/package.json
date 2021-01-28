@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "puppeteer": "^5.5.0"
+  },
+  "scripts": {
+    "configure-gitea": "set -a && source ../.env && set +a && node configure_gitea.js",
+    "install-gitea": "cd .. && docker-compose up & sleep 20s && yarn configure-gitea && sleep 10s && docker-compose kill",
+    "install-gitea-and-start": "yarn install-gitea && cd .. && docker-compose up"
+  }
+}

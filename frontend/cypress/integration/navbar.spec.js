@@ -11,7 +11,8 @@ describe('It validates `Add Project` behavior', () => {
   })
 
   beforeEach(() => {
-    cy.signOut()
+    cy.clearCookies()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should redirect unauthenticated user to /login?redirect=/projects/new', () => {
@@ -27,10 +28,10 @@ describe('It validates `Add Project` behavior', () => {
   it('should redirect authenticated user to /projects/new', () => {
     // sign the user in.
     cy.visit('/login')
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true })
     cy.signIn(username, password)
 
     // Clicking `Add Project` redirects to new project page.
+    cy.visit('/')
     cy.get('#add_project').click()
     cy.url().should('eq', 'http://kitspace.test:3000/projects/new')
   })
@@ -47,13 +48,14 @@ describe('It validates redirects after login', () => {
   })
 
   beforeEach(() => {
-    cy.signOut()
+    cy.clearCookies()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
+
   it('should redirect to homepage if there is no redirect query', () => {
     cy.visit('/login')
 
     // sign the user in.
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true })
     cy.signIn(username, password)
 
     // After a successful login the user is redirect to the homepage.
@@ -67,14 +69,8 @@ describe('It validates redirects after login', () => {
     cy.get('#login').click()
 
     // sign the user in.
-    cy.stubSignInReq(
-      true,
-      { LoggedInSuccessfully: true },
-      `/login?redirect=/${pageClickFrom}`,
-    )
     cy.signIn(username, password)
 
-    cy.get('button').contains('Login').click()
     cy.url().should('eq', `http://kitspace.test:3000/${pageClickFrom}`)
   })
 })

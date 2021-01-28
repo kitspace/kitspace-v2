@@ -16,12 +16,12 @@ import { useMediaPredicate } from 'react-media-hook'
 
 import styles from './new.module.scss'
 import { Page } from '@components/Page'
-import DropZone from '../../components/DropZone'
+import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
-import { UploadContext } from '@contexts/UploadContext'
-import { createRepo, getRepo, migrateRepo, urlToName } from '@utils/giteaApi'
-import { slugifiedNameFromFiles } from '@utils/index'
-import useForm from '../../hooks/useForm'
+import { commitFiles } from '@utils/giteaInternalApi'
+import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
+import { slugifiedNameFromFiles, urlToName } from '@utils/index'
+import useForm from '@hooks/useForm'
 import { ExistingProjectFrom } from '@models/ExistingProjectForm'
 import { SyncRepoFrom } from '@models/SyncRepoForm'
 
@@ -69,7 +69,6 @@ const New = () => {
 
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
-  const { loadFiles } = useContext(UploadContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ExistingProjectFrom,
   )
@@ -77,6 +76,7 @@ const Upload = ({ user, csrf }) => {
   const [modalOpen, setModalOpen] = useState(false)
   const [files, setFiles] = useState([])
   const [projectName, setProjectName] = useState('')
+  const [originalProjectName, setOriginalProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
 
   useEffect(() => {
@@ -85,7 +85,8 @@ const Upload = ({ user, csrf }) => {
 
   useEffect(() => {
     if (form.name) {
-      validateProjectName().then()
+      // noinspection JSIgnoredPromiseFromCall
+      validateProjectName()
     }
   }, [form.name])
 
@@ -94,15 +95,21 @@ const Upload = ({ user, csrf }) => {
     const repo = await createRepo(tempProjectName, '', csrf)
 
     setProjectName(tempProjectName)
+    setOriginalProjectName(tempProjectName)
     setFiles(files)
 
-    // In the case of failing to create the repo, i.e., it already exits.
     if (repo === '') {
+      // In the case of failing to create the repo, i.e., it already exits.
       setModalOpen(true)
       console.error('Project already exists!')
     } else {
-      loadFiles(files, tempProjectName)
-      await push(`/projects/update/${user.login}/${tempProjectName}?create=true`)
+      // Commit files to gitea server on drop
+      await commitFiles({
+        files,
+        repo: `${user.username}/${tempProjectName}`,
+        csrf,
+      })
+      await push(`/projects/update/${user.username}/${tempProjectName}?create=true`)
     }
   }
 
@@ -112,20 +119,20 @@ const Upload = ({ user, csrf }) => {
     setProjectName(differentName)
     await createRepo(differentName, '', csrf)
 
-    loadFiles(files, differentName)
-    await push(`/projects/update/${user.login}/${differentName}?create=true`)
+    await commitFiles({ files, repo: `${user.username}/${differentName}`, csrf })
+    await push(`/projects/update/${user.username}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
-    loadFiles(files, projectName)
-    await push(`/projects/update/${user.login}/${projectName}`)
+    await commitFiles({ files, repo: `${user.username}/${projectName}`, csrf })
+    await push(`/projects/update/${user.username}/${projectName}`)
   }
 
   const validateProjectName = async () => {
     // Check if the new name will also cause a conflict.
-    const project = await getRepo(`${user.login}/${form.name}`)
+    const repoFullname = `${user.username}/${form.name}`
 
-    if (project == null) {
+    if (!(await repoExists(repoFullname))) {
       setIsValidProjectName(isValid)
     } else {
       setIsValidProjectName(false)
@@ -151,7 +158,12 @@ const Upload = ({ user, csrf }) => {
   return (
     <>
       <DropZone onDrop={onDrop} style={{ maxWidth: '70%', margin: 'auto' }} />
-      <Modal closeIcon open={modalOpen} onClose={() => setModalOpen(false)}>
+      <Modal
+        data-cy="collision-modal"
+        closeIcon
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+      >
         <Modal.Header>Heads up!</Modal.Header>
         <Modal.Content>
           <p>
@@ -172,15 +184,19 @@ const Upload = ({ user, csrf }) => {
         </Modal.Content>
         <Modal.Actions>
           <Button
+            data-cy="collision-different-name"
             content="Choose different name"
             color="green"
             disabled={!isValidProjectName}
             onClick={onDifferentName}
           />
           <Button
+            data-cy="collision-update"
             content="Update existing project"
             color="yellow"
             onClick={onUpdateExisting}
+            // When the modal pops if they change the project name, disable the `Update existing project` button
+            disabled={originalProjectName !== form.name}
           />
         </Modal.Actions>
       </Modal>
@@ -198,7 +214,7 @@ const Sync = ({ user, csrf }) => {
   const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
 
   const uid = user?.id
-  const username = user?.login
+  const username = user?.username
 
   const handleClick = async () => {
     if (isEmpty(errors)) {
@@ -211,7 +227,7 @@ const Sync = ({ user, csrf }) => {
       const repoURL = form.url
       const repoName = urlToName(repoURL)
 
-      const res = await migrateRepo(repoURL, uid, csrf)
+      const res = await mirrorRepo(repoURL, uid, csrf)
       const migrateSuccessfully = res.ok
       const alreadySynced = res.status === 409
 

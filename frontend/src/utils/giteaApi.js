@@ -1,5 +1,6 @@
-import path from 'path'
 import slugify from 'slugify'
+
+import { urlToName } from '@utils/index'
 
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
@@ -68,7 +69,7 @@ export const updateRepo = async (repo, updateFields, csrf) => {
  * @param csrf {string}
  * @returns {Promise<Response>}
  */
-export const migrateRepo = async (remoteRepo, uid, csrf) => {
+export const mirrorRepo = async (remoteRepo, uid, csrf) => {
   const clone_addr = remoteRepo
   const repo_name = urlToName(clone_addr)
   const endpoint = `${giteaApiUrl}/repos/migrate?_csrf=${csrf}`
@@ -91,8 +92,9 @@ export const migrateRepo = async (remoteRepo, uid, csrf) => {
     body: JSON.stringify(giteaOptions),
   })
 }
+
 /**
- * delete the corresponding gitea repo for a project.
+ * Delete the corresponding gitea repo for a project.
  * @param repo {string}
  * @param csrf {string}
  * @returns {Promise<boolean>}
@@ -112,16 +114,11 @@ export const deleteRepo = async (repo, csrf) => {
 /**
  * Get list of files in a gitea repo.
  * @param repo {string}
- * @param csrf {string}
  * @param branch {string=}
  * @returns {Promise<Array|null>}
  */
-export const getRepoFiles = async (repo, csrf, branch) => {
-  if (!branch) {
-    branch = 'master'
-  }
-
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=${branch}&_csrf=${csrf}`
+export const getRepoFiles = async (repo, branch = 'master') => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=${branch}`
   const res = await fetch(endpoint, {
     method: 'GET',
     mode,
@@ -129,26 +126,31 @@ export const getRepoFiles = async (repo, csrf, branch) => {
     headers,
   })
 
-  const body = await res.json()
+  if (res.ok) {
+    const body = await res.json()
 
-  if (body.hasOwnProperty('owner')) {
-    return []
+    // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
+    // Check if it returned repo details and replace it with an empty array.
+    if (body.hasOwnProperty('owner')) {
+      return []
+    } else {
+      return body
+    }
   } else {
-    return res.ok ? body : []
+    return []
   }
 }
 
 /**
  * get the files in repo's default branch
  * @param repo {string}
- * @param csrf {string}
  * @returns {Promise<Array|null>}
  */
-export const getDefaultBranchFiles = async (repo, csrf) => {
+export const getDefaultBranchFiles = async repo => {
   const repoDetails = await getRepo(repo)
-  const defaultBranch = repoDetails.default_branch
+  const { default_branch: defaultBranch } = repoDetails
 
-  return getRepoFiles(repo, csrf, defaultBranch)
+  return getRepoFiles(repo, defaultBranch)
 }
 
 /**
@@ -169,22 +171,31 @@ export const getRepo = async fullname => {
 }
 
 /**
- * Get all repos
- * @param csrf{string}
- * @returns {Promise<any|*[]>}
+ * Check if a repo exists
+ * @param fullname{string}
+ * @returns {Promise<boolean>}
  */
-export const getRepos = csrf => searchRepos(csrf)
+export const repoExists = async fullname => {
+  const repo = await getRepo(fullname)
+
+  return repo != null
+}
+
+/**
+ * Get all repos
+ * @returns {Promise<[Object]>}
+ */
+export const getAllRepos = () => searchRepos()
 
 /**
  * Search all repos
- * @param csrf{string}
  * @param sort{string}
  * @param order{string}
- * @param q{string}: search query, leave undefined to return all repos
- * @returns {Promise<any|*[]>}
+ * @param q{string=}: search query, leave undefined to return all repos
+ * @returns {Promise<[Object]>}
  */
-export const searchRepos = async (csrf, sort = 'updated', order = 'desc', q) => {
-  const endpoint = `${giteaApiUrl}/repos/search?_csrf=${csrf}`
+export const searchRepos = async (sort = 'updated', order = 'desc', q) => {
+  const endpoint = `${giteaApiUrl}/repos/search`
 
   const res = await fetch(endpoint, {
     method: 'GET',
@@ -194,18 +205,23 @@ export const searchRepos = async (csrf, sort = 'updated', order = 'desc', q) => 
     sort,
     order,
     q,
-  }).then(r => r.json())
+  })
 
-  return res.ok ? res.data : []
+  if (res.ok) {
+    const body = await res.json()
+    return body.data
+  } else {
+    return []
+  }
 }
 
 /**
- * Get the repos own by the current authenticated user
- * @param csrf{string}
- * @returns {Promise<any|*[]>}
+ * Get the repos owned by a user.
+ * @param username{string}
+ * @returns {Promise<[Object]>}
  */
-export const getUserRepos = async csrf => {
-  const endpoint = `${giteaApiUrl}/user/repos?_csrf=${csrf}`
+export const getUserRepos = async username => {
+  const endpoint = `${giteaApiUrl}/users/${username}/repos`
 
   const res = await fetch(endpoint, {
     method: 'GET',
@@ -256,20 +272,4 @@ export const uploadFile = async (repo, path, content, csrf) => {
   console.log(body)
 
   return res.ok
-}
-
-export const urlToName = url => {
-  url = new URL(url)
-  return path.basename(url.pathname, path.extname(url.pathname))
-}
-export const projectNameFromPath = path => {
-  return path.split('/').slice(3).join('/')
-}
-export const getSession = req => {
-  if (req != null) {
-    return req.session
-  }
-  if (process.browser) {
-    return window.session
-  }
 }

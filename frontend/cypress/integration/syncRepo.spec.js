@@ -1,15 +1,23 @@
 import faker from 'faker'
 
-describe('Importing a project behavior validation', () => {
+describe('Syncing a project behavior validation', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
   const password = '123456'
 
   before(() => {
     cy.clearCookies()
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
+
     cy.createUser(username, email, password)
+  })
+
+  beforeEach(() => {
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+
     cy.visit('/login')
     cy.signIn(username, password)
+    cy.wait('@sign_in')
   })
 
   it('should sync a repo on gitea', () => {
@@ -21,15 +29,17 @@ describe('Importing a project behavior validation', () => {
     cy.get('button').contains('Sync').click()
     cy.syncTestRepo()
 
+    // Go to Gitea dashboard and assert the repo has been migrated
     cy.visit(`http://gitea.kitspace.test:3000/${username}`)
     cy.get('.ui.repository.list').children().get('.header').contains(repoName)
+
+    cy.intercept(
+      `http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`,
+    ).as('getRepos')
+
+    // assert the repo is on `{frontend}/projects/mine`
     cy.visit('/projects/mine')
-  })
-
-  it("should redirect to upload page if there's no conflict", () => {
-    const fixtureFile = 'example.json'
-
-    cy.visit('/projects/new')
-    cy.get('.dropzone').attachFile(fixtureFile, { subjectType: 'drag-n-drop' })
+    cy.wait('@getRepos')
+    cy.get('.list > .item > .content > .header').contains(repoName)
   })
 })

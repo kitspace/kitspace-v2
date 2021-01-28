@@ -1,7 +1,6 @@
-import 'cypress-file-upload'
-
 const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
+const giteaApiUrl = 'http://gitea.kitspace.test:3000/api/v1'
 
 Cypress.Commands.add('createUser', (username, email, password) => {
   cy.request({
@@ -13,8 +12,6 @@ Cypress.Commands.add('createUser', (username, email, password) => {
 })
 
 Cypress.Commands.add('signUp', (username, email, password) => {
-  cy.createUser(username, email, password)
-
   cy.get('input[name=username]').clear().type(username)
   cy.get('input[name=email]').clear().type(email)
   cy.get('input[name=password]').clear().type(password)
@@ -23,15 +20,8 @@ Cypress.Commands.add('signUp', (username, email, password) => {
 })
 
 Cypress.Commands.add('signIn', (username, password) => {
-  cy.request({
-    url: signInEndpoint,
-    method: 'POST',
-    body: { username, password },
-    failOnStatusCode: false,
-  })
-
-  cy.get('input[name=username]').clear().type(username)
-  cy.get('input[name=password]').clear().type(password)
+  cy.get('input[name=username]').clear().type(username, {force: true})
+  cy.get('input[name=password]').clear().type(password, {force: true})
 
   cy.get('button').contains('Login').click()
 })
@@ -88,6 +78,7 @@ Cypress.Commands.add('goToUsersAdminPanel', () => {
   // Users database are at `{gitea}/admin/users`
   // Kitspace user interaction should appear there.
 
+  cy.clearCookies()
   cy.visit('http://gitea.kitspace.test:3000/user/login')
   cy.get('input#user_name').type(Cypress.env('GITEA_ADMIN_USERNAME'))
   cy.get('input#password').type(Cypress.env('GITEA_ADMIN_PASSWORD'))
@@ -105,6 +96,33 @@ Cypress.Commands.add('hasProperFields', schema => {
       cy.get(`input[name=${field}]`)
     }
   })
+})
+
+// credits https://gist.github.com/ZwaarContrast/00101934954980bcaa4ae70ac9930c60
+Cypress.Commands.add(
+  'dropFiles',
+  { prevSubject: 'element' },
+  (subject, files, fileNames) => {
+    cy.window().then(win => {
+      const filesContent = files.map((f, idx) => {
+        const blob = Cypress.Blob.base64StringToBlob(f)
+        return new win.File([blob], fileNames[idx])
+      })
+      cy.wait(500)
+      cy.wrap(subject).trigger('drop', {
+        dataTransfer: { files: filesContent, types: ['Files'] },
+      })
+    })
+  },
+)
+
+Cypress.Commands.add('preFileDrop', username => {
+  // This will match any request made by `utils/giteaApi.createRepo`,
+  // The `**` for matching the csrf query param.
+  cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
+
+  // This will match any request for `utils/giteaApi.getRepo`
+  cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
 })
 
 Cypress.Commands.add('syncTestRepo', () => {
@@ -128,5 +146,4 @@ Cypress.Commands.add('syncTestRepo', () => {
       body,
     })
   })
-  Cypress.Commands.add('getUpdatePage', projectName => {})
 })
