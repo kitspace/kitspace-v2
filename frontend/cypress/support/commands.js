@@ -80,6 +80,7 @@ Cypress.Commands.add('goToUsersAdminPanel', () => {
 
   cy.clearCookies()
   cy.visit('http://gitea.kitspace.test:3000/user/login')
+  cy.wait(1000)
   cy.get('input#user_name').type(Cypress.env('GITEA_ADMIN_USERNAME'))
   cy.get('input#password').type(Cypress.env('GITEA_ADMIN_PASSWORD'))
   cy.get('button').click()

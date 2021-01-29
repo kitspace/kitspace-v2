@@ -67,7 +67,7 @@ describe('Updating a project behavior validation', () => {
     })
 
     // waiting prevents random test failures due to jittering in response
-    cy.wait(1000)
+    cy.wait('@upload')
     // Dropping a file should make it appear in the preview component
     cy.get('[data-cy=file-name]').contains('example2.png')
 
@@ -86,6 +86,7 @@ describe('Updating a project behavior validation', () => {
     cy.get('[data-cy=update-form-name] > input').clear().type(newName)
     cy.get('[data-cy=update-form-submit]').click()
     cy.wait('@getRepo')
+    cy.wait(1000)
 
     // should redirect to the new update page
     cy.url().should('contain', `/projects/update/${username}/${newName}`)
@@ -116,6 +117,7 @@ describe('Updating a project behavior validation', () => {
     // Submit the update form
     cy.get('[data-cy=update-form-submit]').click()
 
+    cy.wait(1000)
     // Should redirect to the new update page
     cy.url().should('contain', `/projects/update/${username}/${newName}`)
 
