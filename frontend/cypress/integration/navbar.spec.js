@@ -1,3 +1,5 @@
+/// <reference types="../support" />
+
 import faker from 'faker'
 
 describe('It validates `Add Project` behavior', () => {
@@ -11,7 +13,10 @@ describe('It validates `Add Project` behavior', () => {
   })
 
   beforeEach(() => {
+   // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
@@ -22,6 +27,7 @@ describe('It validates `Add Project` behavior', () => {
     // Clicking `Add Project` redirects to the login page.
     // and adds redirect query to `/projects/new/`
     cy.get('#add_project').click()
+    cy.wait(1000)
     cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
@@ -32,6 +38,7 @@ describe('It validates `Add Project` behavior', () => {
 
     // Clicking `Add Project` redirects to new project page.
     cy.visit('/')
+    cy.wait(1000)
     cy.get('#add_project').click()
     cy.url().should('eq', 'http://kitspace.test:3000/projects/new')
   })
@@ -48,13 +55,16 @@ describe('It validates redirects after login', () => {
   })
 
   beforeEach(() => {
+    // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should redirect to homepage if there is no redirect query', () => {
     cy.visit('/login')
-
+    cy.wait(1000)
     // sign the user in.
     cy.signIn(username, password)
 
@@ -66,10 +76,12 @@ describe('It validates redirects after login', () => {
     const pageClickFrom = 'bom-builder'
 
     cy.visit(pageClickFrom)
+    cy.wait(1000)
     cy.get('#login').click()
 
     // sign the user in.
     cy.signIn(username, password)
+    cy.wait(1000)
 
     cy.url().should('eq', `http://kitspace.test:3000/${pageClickFrom}`)
   })

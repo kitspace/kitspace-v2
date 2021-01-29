@@ -6,8 +6,12 @@ import { SignUpForm } from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
   beforeEach(() => {
+    // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
     cy.visit('/login?sign_up')
+    cy.wait(1000)
   })
 
   afterEach(() => {
@@ -17,7 +21,6 @@ describe('Sign up form validation', () => {
 
   it('should route to sign up form based on params', () => {
     // The form is rendered on screen.
-    cy.visit('/login?sign_up')
     cy.contains('Create a new account')
   })
 
@@ -95,8 +98,11 @@ describe('Sign up form submission', () => {
   })
 
   beforeEach(() => {
-    cy.visit('/login?sign_up')
+   // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
+    cy.visit('/login?sign_up')
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 

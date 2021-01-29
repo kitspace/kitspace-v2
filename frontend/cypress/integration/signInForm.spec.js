@@ -8,7 +8,10 @@ describe('Log in form validation', () => {
   })
 
   beforeEach(() => {
+   // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
     cy.visit('/login')
   })
 
@@ -16,7 +19,6 @@ describe('Log in form validation', () => {
 
   it('should route to sign in form based on params', () => {
     // The form is rendered on screen.
-    cy.visit('/login')
     cy.contains('Log in')
   })
 
@@ -48,18 +50,21 @@ describe('Log in form submission', () => {
   const password = '123456'
 
   before(() => {
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
+    // create user and log him in.
+    cy.createUser(username, email, password)
   })
 
   beforeEach(() => {
+   // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
     cy.visit('/login')
+    cy.wait(1000)
   })
 
   it('should display username in homepage on submitting a valid form', () => {
-    // create user and log him in.
-    cy.createUser(username, email, password)
-
     cy.signIn(username, password)
 
     // After a successful login the user is redirect to the homepage.

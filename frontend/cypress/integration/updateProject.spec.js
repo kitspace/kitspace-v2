@@ -38,7 +38,10 @@ describe('Updating a project behavior validation', () => {
   })
 
   beforeEach(() => {
+    // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
+    cy.reload()
+
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
     cy.visit('/login')
     cy.signIn(username, password)
@@ -82,6 +85,7 @@ describe('Updating a project behavior validation', () => {
     // Changing the project name a submitting it
     cy.get('[data-cy=update-form-name] > input').clear().type(newName)
     cy.get('[data-cy=update-form-submit]').click()
+    cy.wait('@getRepo')
 
     // should redirect to the new update page
     cy.url().should('contain', `/projects/update/${username}/${newName}`)
@@ -174,9 +178,10 @@ describe('Update project form validation', () => {
   it('should prevent conflicting project names', () => {
     // Go to the update page for the project created by uploading files
     cy.visit(`projects/update/${username}/${uploadedRepoName}`)
+    cy.wait(2000)
 
     // Change the project name to the name of the synced repo which will cause conflict
-    cy.get('[data-cy=update-form-name] > input').clear().type(syncedRepoName)
+    cy.get('[data-cy=update-form-name] > input').clear().type(syncedRepoName, {force: true})
 
     // The form should show that a project with the same name already exists
     cy.get('.prompt[role=alert]').should('contain.text', syncedRepoName)
@@ -192,6 +197,7 @@ describe('Update project form validation', () => {
 
     // Go to the update page for the project created by uploading files
     cy.visit(`projects/update/${username}/${uploadedRepoName}`)
+    cy.wait(2000)
 
     // Change the project name 61+ name which is beyond the maximum allowable
     cy.get('[data-cy=update-form-name] > input').clear().type(longName)

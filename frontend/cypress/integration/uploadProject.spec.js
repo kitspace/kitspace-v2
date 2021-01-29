@@ -13,16 +13,14 @@ describe('Upload project', () => {
   })
 
   beforeEach(() => {
+   // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.reload()
 
-    cy.request({
-      url: 'http://gitea.kitspace.test:3000/user/kitspace/sign_in',
-      method: 'POST',
-      body: { username, password },
-      failOnStatusCode: false,
-    })
+    cy.visit('/login')
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
+    cy.signIn(username, password)
+    cy.wait(1000)
 
     cy.visit('/projects/new')
     cy.preFileDrop(username)
