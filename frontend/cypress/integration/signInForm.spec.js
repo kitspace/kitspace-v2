@@ -8,7 +8,7 @@ describe('Log in form validation', () => {
   })
 
   beforeEach(() => {
-   // deauthenticate the user and reload the page to update the CSRF token
+    // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
 
@@ -55,7 +55,7 @@ describe('Log in form submission', () => {
   })
 
   beforeEach(() => {
-   // deauthenticate the user and reload the page to update the CSRF token
+    // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
 

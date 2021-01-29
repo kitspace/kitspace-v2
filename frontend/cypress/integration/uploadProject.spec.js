@@ -13,7 +13,7 @@ describe('Upload project', () => {
   })
 
   beforeEach(() => {
-   // deauthenticate the user and reload the page to update the CSRF token
+    // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
 

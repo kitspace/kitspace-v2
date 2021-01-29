@@ -20,8 +20,8 @@ Cypress.Commands.add('signUp', (username, email, password) => {
 })
 
 Cypress.Commands.add('signIn', (username, password) => {
-  cy.get('input[name=username]').clear().type(username, {force: true})
-  cy.get('input[name=password]').clear().type(password, {force: true})
+  cy.get('input[name=username]').clear().type(username, { force: true })
+  cy.get('input[name=password]').clear().type(password, { force: true })
 
   cy.get('button').contains('Login').click()
 })

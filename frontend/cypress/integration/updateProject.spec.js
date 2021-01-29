@@ -25,9 +25,9 @@ describe('Updating a project behavior validation', () => {
     cy.visit('/projects/new/')
     // Simulate dropping a single file('example.png') in the dropzone.
     // So it will create a project named `example`
-    cy.intercept(
-      `http://gitea.kitspace.test:3000/${testRepoFullName}/upload**`,
-    ).as('upload')
+    cy.intercept(`http://gitea.kitspace.test:3000/${testRepoFullName}/upload**`).as(
+      'upload',
+    )
     cy.preFileDrop(username)
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -185,7 +185,9 @@ describe('Update project form validation', () => {
     cy.wait(2000)
 
     // Change the project name to the name of the synced repo which will cause conflict
-    cy.get('[data-cy=update-form-name] > input').clear().type(syncedRepoName, {force: true})
+    cy.get('[data-cy=update-form-name] > input')
+      .clear()
+      .type(syncedRepoName, { force: true })
 
     // The form should show that a project with the same name already exists
     cy.get('.prompt[role=alert]').should('contain.text', syncedRepoName)
