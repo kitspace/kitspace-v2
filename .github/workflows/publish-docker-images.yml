@@ -23,6 +23,7 @@ jobs:
       INDEX_ISR_INTERVAL: 3600
       USER_ISR_INTERVAL: 86400
       MAX_FILE_SIZE: 6M
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -116,6 +117,7 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: docker-compose -f ../docker-compose.deploy.yml up
+          browser: chrome
           command: yarn e2e --record
           working-directory: frontend
           # wait for 2 minutes for the server to respond
