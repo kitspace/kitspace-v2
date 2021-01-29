@@ -81,7 +81,7 @@ jobs:
           context: ./gitea
           file: ./gitea/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
       
