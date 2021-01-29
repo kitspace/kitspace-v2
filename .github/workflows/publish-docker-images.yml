@@ -33,8 +33,10 @@ jobs:
       - name: Get commit SHA
         id: sha
         shell: bash
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short)"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       
@@ -89,13 +91,16 @@ jobs:
           echo "172.17.0.1    kitspace.test" | sudo tee -a /etc/hosts
           echo "172.17.0.1    gitea.kitspace.test" | sudo tee -a /etc/hosts
           echo "172.17.0.1    processor.kitspace.test" | sudo tee -a /etc/hosts
-      
+
+      # The tagging steps have to happen in that following order
       # i. replace the `latest` tag with `SHA`
+      # ii. tag gitea with the submodule sha instead of HEAD sha
       # ii. forward Nginx port 80 to internal port 3000. Keep the indentation!
       - name: Patch `docker-compose.deploy.yml`
         shell: bash
         run: | 
           sed  -Ei "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
+          sed  -Ei "s/ghcr.io\/kitspace\/gitea:([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.giteasha_short }}/g" docker-compose.deploy.yml
           sed -i "/'443:443'/a\      - \'${KITSPACE_DEV_PORT}:80\'" docker-compose.deploy.yml
           cat docker-compose.deploy.yml
       
