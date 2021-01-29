@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: | 
           sed  -Ei "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
-          sed  -Ei "s/ghcr.io\/kitspace\/gitea:([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.giteasha_short }}/g" docker-compose.deploy.yml
+          sed  -Ei "s/ghcr.io\/kitspace\/gitea:latest/ghcr.io\/kitspace\/\gitea:${{ steps.sha.outputs.gitea_sha_short }}/g" docker-compose.deploy.yml
           sed -i "/'443:443'/a\      - \'${KITSPACE_DEV_PORT}:80\'" docker-compose.deploy.yml
           cat docker-compose.deploy.yml
       
