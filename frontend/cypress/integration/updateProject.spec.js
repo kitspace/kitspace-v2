@@ -45,7 +45,7 @@ describe('Updating a project behavior validation', () => {
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sing_in')
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('sing_in')
+    cy.wait('@sing_in')
 
     cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
     cy.visit(updatePageRoute)
@@ -57,6 +57,7 @@ describe('Updating a project behavior validation', () => {
   })
 
   it('should handle uploading files', () => {
+    cy.visit(updatePageRoute)
     // Intercept request for the uploading route
     cy.intercept(
       `http://gitea.kitspace.test:3000/${testRepoFullName}/upload-file**`,
