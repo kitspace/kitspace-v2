@@ -26,7 +26,7 @@ describe('Updating a project behavior validation', () => {
     // Simulate dropping a single file('example.png') in the dropzone.
     // So it will create a project named `example`
     cy.intercept(
-      `http://gitea.kitspace.test:3000/${testRepoFullName}/upload-file**`,
+      `http://gitea.kitspace.test:3000/${testRepoFullName}/upload**`,
     ).as('upload')
     cy.preFileDrop(username)
     cy.fixture('example.png', 'base64').then(file => {
@@ -42,9 +42,10 @@ describe('Updating a project behavior validation', () => {
     cy.clearCookies()
     cy.reload()
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sing_in')
     cy.visit('/login')
     cy.signIn(username, password)
+    cy.wait('sing_in')
 
     cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
     cy.visit(updatePageRoute)
