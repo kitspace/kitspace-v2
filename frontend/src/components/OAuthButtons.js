@@ -4,7 +4,7 @@ import { GithubLoginButton, TwitterLoginButton } from 'react-social-login-button
 
 import GoogleButton from './GoogleLoginButton'
 
-export default function () {
+export default function OAuthButtons() {
   return (
     <>
       <Header as="h3" textAlign="center">

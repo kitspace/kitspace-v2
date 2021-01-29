@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
-export default function () {
+export default function SignInFormComponent() {
   const router = useRouter()
 
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SignInForm)

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { AuthContext } from '@contexts/AuthContext'
 
-export default function (schema) {
+export default function UseForm(schema) {
   const [form, setForm] = useState({})
   const { csrf } = useContext(AuthContext)
 
