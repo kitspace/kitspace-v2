@@ -75,7 +75,15 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
+      - name: Pull gitea image with current submodule SHA
+        shell: bash
+        run : |
+          docker pull ghcr.io/kitspace/gitea: ${{ steps.sha.outputs.gitea_sha_short }} || echo 'Failed to pull, Gitea submodule has been updated!'
+
       - name: Push gitea to GitHub Container Registry
+        # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
+        # build image and push it
+        if: ${{ failure() }}
         uses: docker/build-push-action@v2
         with:
           context: ./gitea
