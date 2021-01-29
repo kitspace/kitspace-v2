@@ -94,44 +94,42 @@ jobs:
 
       # The tagging steps have to happen in that following order
       # i. replace the `latest` tag with `SHA`
-      # ii. tag gitea with the submodule sha instead of HEAD sha
+      # ii. tag gitea with the submodule SHA instead of HEAD SHA
       # ii. forward Nginx port 80 to internal port 3000. Keep the indentation!
       - name: Patch `docker-compose.deploy.yml`
         shell: bash
         run: | 
           sed  -Ei "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
-          cat docker-compose.deploy.yml
-          sed  -Ei "s/ghcr.io\/kitspace\/gitea:latest/ghcr.io\/kitspace\/\gitea:${{ steps.sha.outputs.gitea_sha_short }}/g" docker-compose.deploy.yml
-          cat docker-compose.deploy.yml
+          sed  -Ei "s/ghcr.io\/kitspace\/gitea:${{ steps.sha.outputs.sha_short }}/ghcr.io\/kitspace\/\gitea:${{ steps.sha.outputs.gitea_sha_short }}/g" docker-compose.deploy.yml
           sed -i "/'443:443'/a\      - \'${KITSPACE_DEV_PORT}:80\'" docker-compose.deploy.yml
           cat docker-compose.deploy.yml
       
-#      - name: Install httpie
-#        shell: bash
-#        run: sudo apt install httpie
-#
-#      - name: Build docker-compose stack
-#        shell: bash
-#        run: docker-compose -f docker-compose.deploy.yml build
-#
-#      - name: Install Gitea
-#        shell: bash
-#        timeout-minutes: 5
-#        run: |
-#          scripts/install_gitea.sh
-#
-#      - name: e2e
-#        uses: cypress-io/github-action@v2
-#        with:
-#          start: docker-compose -f ../docker-compose.deploy.yml up
-#          browser: chrome
-#          command: yarn e2e --record
-#          working-directory: frontend
-#          # wait for 2 minutes for the server to respond
-#          wait-on: 'http://kitspace.test:3000'
-#          wait-on-timeout: 120
-#        env:
-#          # pass the Dashboard record key as an environment variable
-#          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-#          # pass GitHub token to allow accurately detecting a build vs a re-run build
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install httpie
+        shell: bash
+        run: sudo apt install httpie
+
+      - name: Build docker-compose stack
+        shell: bash
+        run: docker-compose -f docker-compose.deploy.yml build
+
+      - name: Install Gitea
+        shell: bash
+        timeout-minutes: 5
+        run: |
+          scripts/install_gitea.sh
+
+      - name: e2e
+        uses: cypress-io/github-action@v2
+        with:
+          start: docker-compose -f ../docker-compose.deploy.yml up
+          browser: chrome
+          command: yarn e2e --record
+          working-directory: frontend
+          # wait for 2 minutes for the server to respond
+          wait-on: 'http://kitspace.test:3000'
+          wait-on-timeout: 120
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
