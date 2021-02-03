@@ -34,6 +34,7 @@ describe('Upload project', () => {
 
     // Wait until getting a response from the server then validate a redirection has happened
     cy.wait(['@createRepo', '@getRepo'])
+    cy.wait(1000)
     cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
 
     cy.get('[data-cy=file-name]').contains('example.png')
