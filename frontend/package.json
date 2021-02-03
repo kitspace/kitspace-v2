@@ -40,6 +40,7 @@
     "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
     "cypress": "^6.3.0",
+    "cypress-fail-fast": "^2.0.0",
     "faker": "^5.1.0",
     "lint-staged": ">=10",
     "nodemon": "^2.0.2",

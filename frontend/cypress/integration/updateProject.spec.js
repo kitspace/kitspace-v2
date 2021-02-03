@@ -158,7 +158,7 @@ describe('Update project form validation', () => {
     cy.syncTestRepo()
 
     // Create a repo by uploading files
-    cy.reload()  // The reload `projects/new` page as the previous step `sync` will trigger redirect
+    cy.reload() // The reload `projects/new` page as the previous step `sync` will trigger redirect
     cy.intercept(
       `http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`,
     ).as('getRepos')
@@ -175,9 +175,7 @@ describe('Update project form validation', () => {
   })
 
   beforeEach(() => {
-    cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as(
-      'getRepo',
-    )
+    cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
   })
 
   it('should prevent conflicting project names', () => {
