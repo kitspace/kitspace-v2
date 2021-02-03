@@ -79,6 +79,7 @@ Cypress.Commands.add('goToUsersAdminPanel', () => {
   // Kitspace user interaction should appear there.
 
   cy.clearCookies()
+  cy.reload()
   cy.visit('http://gitea.kitspace.test:3000/user/login')
   cy.wait(1000)
   cy.get('input#user_name').type(Cypress.env('GITEA_ADMIN_USERNAME'))

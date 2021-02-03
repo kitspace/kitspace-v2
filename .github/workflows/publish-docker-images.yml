@@ -140,9 +140,43 @@ jobs:
           working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
+          # This value is in seconds
           wait-on-timeout: 120
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push frontend:latest tag to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/kitspace/frontend-v2:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Push processo:latest to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./processor
+          file: ./processor/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/processor-v2:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Push gitea:latest to GitHub Container Registry
+        # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
+        # build image and push it
+        if: ${{ failure() }}
+        uses: docker/build-push-action@v2
+        with:
+          context: ./gitea
+          file: ./gitea/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/gitea:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
