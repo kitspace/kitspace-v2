@@ -170,9 +170,6 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Push gitea:latest to GitHub Container Registry
-        # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
-        # build image and push it
-        if: ${{ failure() }}
         uses: docker/build-push-action@v2
         with:
           context: ./gitea
