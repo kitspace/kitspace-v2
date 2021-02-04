@@ -1,8 +1,6 @@
 import React from 'react'
 import { Grid, Header } from 'semantic-ui-react'
-import { GithubLoginButton, TwitterLoginButton } from 'react-social-login-buttons'
-
-import GoogleButton from './GoogleLoginButton'
+import { GithubLoginButton, TwitterLoginButton, GoogleLoginButton } from 'react-social-login-buttons'
 
 export default function OAuthButtons() {
   return (
@@ -19,7 +17,7 @@ export default function OAuthButtons() {
             <GithubLoginButton>GitHub</GithubLoginButton>
           </Grid.Column>
           <Grid.Column>
-            <GoogleButton />
+            <GoogleLoginButton>Google</GoogleLoginButton>
           </Grid.Column>
         </Grid.Row>
       </Grid>
