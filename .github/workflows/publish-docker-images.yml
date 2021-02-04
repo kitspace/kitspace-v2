@@ -81,7 +81,7 @@ jobs:
         shell: bash
         run : |
           docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }} \
-            || echo 'Failed to pull, Gitea submodule has been updated! Building new image...'
+            || exit 1
 
       - name: Push gitea to GitHub Container Registry
         # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
