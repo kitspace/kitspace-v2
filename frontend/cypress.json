@@ -4,5 +4,9 @@
   "experimentalFetchPolyfill": true,
   "pageLoadTimeout": 100000,
   "viewportWidth": 1200,
-  "viewportHeight": 660
+  "viewportHeight": 660,
+  "retries": {
+    "runMode": 3,
+    "openMode": 2
+  }
 }
