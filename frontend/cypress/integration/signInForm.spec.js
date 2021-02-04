@@ -58,10 +58,9 @@ describe('Log in form submission', () => {
     // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
+    cy.wait(1000)
 
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
-    cy.visit('/login')
-    cy.wait(1000)
   })
 
   it('should display username in homepage on submitting a valid form', () => {
