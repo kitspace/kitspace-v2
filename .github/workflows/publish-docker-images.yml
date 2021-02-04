@@ -80,9 +80,7 @@ jobs:
 
       - name: Pull gitea image with current submodule SHA
         shell: bash
-        run: |
-          docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }} \
-            || echo 'Failed to pull, Gitea submodule has been updated! Building new image...' && exit 1
+        run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
 
       - name: Push gitea to GitHub Container Registry
         # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
@@ -104,6 +102,19 @@ jobs:
       - push_to_registry_sha
 
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
       - name: Configure /etc/hosts
         shell: bash
         run: |
