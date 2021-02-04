@@ -26,7 +26,7 @@ describe('Upload project', () => {
     cy.preFileDrop(username)
   })
 
-  it('Should create a project and redirect to its update route on file drop', () => {
+  it('should create a project and redirect to its update route on file drop', () => {
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -40,7 +40,7 @@ describe('Upload project', () => {
     cy.get('[data-cy=file-name]').contains('example.png')
   })
 
-  it('Should show modal on project names collision', () => {
+  it('should show modal on project names collision', () => {
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -56,7 +56,7 @@ describe('Upload project', () => {
     cy.get('[data-cy=collision-update]').should('be.enabled')
   })
 
-  it('Should commit files to the same project on `Update existing project`', () => {
+  it('should commit files to the same project on `Update existing project`', () => {
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
@@ -81,7 +81,7 @@ describe('Upload project', () => {
     cy.get('[data-cy=file-name]').contains('example2.png')
   })
 
-  it('Should create a project and redirect to its update route on `Choose different name`', () => {
+  it('should create a project and redirect to its update route on `Choose different name`', () => {
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
@@ -111,5 +111,20 @@ describe('Upload project', () => {
     // Both files dropped should be in the update page
     cy.get('[data-cy=file-name]').contains('example.png')
     cy.get('[data-cy=file-name]').contains('example2.png')
+  })
+
+  it('should reject files bigger than `MAX_FILE_SIZE`', () => {
+    cy.intercept(
+      `http://gitea.kitspace.test:3000/${username}/big/upload-file**`,
+    ).as('upload-big')
+
+    //   Simulate dropping a single file('example.png') in the dropzone.
+    cy.fixture('auto-gen/big.txt', 'base64').then(file => {
+      cy.get('.dropzone').dropFiles([file], ['big.txt'])
+    })
+
+    // Wait additional 10s when when intercepting the response
+    cy.wait(10000)
+    cy.wait('@upload-big').its('response.statusCode').should('eq', 413)
   })
 })
