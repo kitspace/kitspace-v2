@@ -52,7 +52,7 @@ const UpdateProject = () => {
     <Page>
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
         {isSynced ? (
-          <Message color="yellow">
+          <Message data-cy="sync-msg" color="yellow">
             <Message.Header>A synced repository!</Message.Header>
             <Message.Content>
               <p>Files uploading isn't supported for synced repositories.</p>
