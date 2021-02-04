@@ -22,8 +22,8 @@ import { commitFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
-import { ExistingProjectFrom } from '@models/ExistingProjectForm'
-import { SyncRepoFrom } from '@models/SyncRepoForm'
+import { ExistingProjectFromModel } from '@models/ExistingProjectForm'
+import { SyncRepoFromModel } from '@models/SyncRepoForm'
 
 // Explicitly mark as static.
 // Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
@@ -78,7 +78,7 @@ const New = () => {
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
-    ExistingProjectFrom,
+    ExistingProjectFromModel,
   )
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -214,7 +214,7 @@ const Upload = ({ user, csrf }) => {
 
 const Sync = ({ user, csrf }) => {
   const { push } = useRouter()
-  const { form, errors, onChange } = useForm(SyncRepoFrom)
+  const { form, errors, onChange } = useForm(SyncRepoFromModel)
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({})

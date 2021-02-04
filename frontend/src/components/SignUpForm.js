@@ -5,13 +5,13 @@ import { isEmpty } from 'lodash'
 
 import OAuthButtons from './OAuthButtons'
 import useForm from '@hooks/useForm'
-import { SignUpForm } from '@models/SignUpForm'
+import { SignUpFormModel } from '@models/SignUpFormModel'
 import { useRouter } from 'next/router'
 
 const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
 export default function SignUpFormComponent() {
-  const { form, onChange, isValid, errors, formatErrorPrompt } = useForm(SignUpForm)
+  const { form, onChange, isValid, errors, formatErrorPrompt } = useForm(SignUpFormModel)
   const [apiResponse, setApiResponse] = useState({})
   const { reload } = useRouter()
 

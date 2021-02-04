@@ -1,6 +1,6 @@
 import Joi from 'joi'
 
-export const SignUpForm = Joi.object({
+export const SignUpFormModel = Joi.object({
   _csrf: Joi.string(),
   username: Joi.string().alphanum().required().max(20),
   email: Joi.string()

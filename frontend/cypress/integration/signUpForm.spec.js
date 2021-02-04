@@ -2,7 +2,7 @@
 
 import faker from 'faker'
 
-import { SignUpForm } from '../../src/models/SignUpForm'
+import { SignUpFormModel } from '@models/SignUpFormModel'
 
 describe('Sign up form validation', () => {
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('Sign up form validation', () => {
 
   it('should have the proper fields', () => {
     // The form contains all the fields from the `SingUpForm` model.
-    cy.hasProperFields(SignUpForm)
+    cy.hasProperFields(SignUpFormModel)
   })
 
   it('should display error message on using invalid username', () => {

@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
-import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
+import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
 import { repoExists, updateRepo } from '@utils/giteaApi'
 import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
@@ -92,7 +92,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const { push } = useRouter()
   const { csrf } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
-    ProjectUpdateForm,
+    ProjectUpdateFormModel,
   )
 
   // Set values of the form as the values of the project stored in the Gitea repo

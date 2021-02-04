@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-import { SignInForm } from '../../src/models/SignInForm'
+import { SignInFormModel } from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
   before(() => {
@@ -24,7 +24,7 @@ describe('Log in form validation', () => {
 
   it('should have the proper fields', () => {
     // The form contains all the fields from the `SingUpForm` model.
-    cy.hasProperFields(SignInForm)
+    cy.hasProperFields(SignInFormModel)
   })
 
   it('should validate username field', () => {
