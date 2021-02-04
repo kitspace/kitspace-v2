@@ -132,6 +132,10 @@ jobs:
         run: |
           scripts/install_gitea.sh
 
+      - name: pre e2e
+        shell: bash
+        run: scripts/pre_e2e.sh
+
       - name: e2e
         uses: cypress-io/github-action@v2
         with:
