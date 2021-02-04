@@ -101,7 +101,7 @@ jobs:
     name: Run e2e & publish `latest` docker images
     runs-on: ubuntu-20.04
     needs:
-      - push_to_registry
+      - push_to_registry_sha
 
     steps:
       - name: Configure /etc/hosts
