@@ -2,7 +2,7 @@
 
 import faker from 'faker'
 
-import { SignUpFormModel } from '@models/SignUpFormModel'
+import { SignUpFormModel } from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
   beforeEach(() => {
@@ -128,9 +128,9 @@ describe('Sign up form submission', () => {
     cy.signUp(newUsername, newEmail, newPassword)
 
     // the user should be signed in, i.e., the `session.user` object won't be null
-    cy.wait(1000)
+    cy.wait(2000)
     cy.window().then(win => {
-      assert(win.session.user)
+      assert(win.session.user, "Auto sign in")
     })
   })
 
