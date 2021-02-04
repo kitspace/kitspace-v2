@@ -9,3 +9,4 @@ nginx/default.conf
 # e2e cypress results
 frontend/cypress/videos
 frontend/cypress/screenshots
+frontend/cypress/fixtures/auto-gen
