@@ -1,5 +1,6 @@
 import slugify from 'slugify'
 import path from 'path'
+import { groupBy, zip } from 'lodash'
 
 /**
  * Look in project files and choose a file name for the project from it.
@@ -86,4 +87,37 @@ export const MBytesToBytes = megs => {
 
   // 1 Megabyte = 1048576 Bytes.
   return 1048576 * num
+}
+
+/**
+ * Takes an []File zipped with their UUIDs on Gitea []String
+ * returns the UUIDs grouped by path
+ * @param filesZipUUIDs{Array.<[File, String]>}
+ * @returns {Object}
+ */
+export const groupByPath = filesZipUUIDs => {
+  const pathZipUUIDs = filesZipUUIDs.map(([f, uuid]) => {
+    const p = f.path
+    // Drag'nDrop result in absolute file paths `/{Top level dir}/...`,
+    // while choosing from file selector result in to relative paths `{Top level dir}/...`
+    // normalize Drag'nDrop to be like file selector
+    const normPath = p.startsWith('/') ? p.substring(1) : p
+    return [normPath, uuid]
+  })
+
+  const UUIDsGroupedByPath = groupBy(
+    pathZipUUIDs,
+    ([path, _]) =>
+      path
+        .split('/') // According to the browser API the file separator is always '/' even on Windows
+        .slice(1, -1) // Group by path, so the top level directory and  the file name should be ignored
+        .join('/'), // Reconstruct the file path once again, Gitea expects '/' as a separator
+  )
+
+  const paths = Object.keys(UUIDsGroupedByPath)
+  const uuids = Object.values(UUIDsGroupedByPath).map(f =>
+    f.map(([_, uuid]) => uuid),
+  )
+
+  return Object.fromEntries(zip(paths, uuids))
 }

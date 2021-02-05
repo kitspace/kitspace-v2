@@ -2,6 +2,7 @@
 
 import faker from 'faker'
 
+// noinspection ES6PreferShortImport
 import { SignUpFormModel } from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
@@ -130,7 +131,7 @@ describe('Sign up form submission', () => {
     // the user should be signed in, i.e., the `session.user` object won't be null
     cy.wait(2000)
     cy.window().then(win => {
-      assert(win.session.user, "Auto sign in")
+      assert(win.session.user, 'Auto sign in')
     })
   })
 
