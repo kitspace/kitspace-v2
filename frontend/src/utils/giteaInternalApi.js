@@ -4,7 +4,8 @@
  *  2. UUID returned from the previous step is used to make the actual commit request.
  */
 
-import { b64toBlob, readFileContent } from '@utils/index'
+import { b64toBlob, readFileContent, groupByPath } from '@utils/index'
+import { zip } from 'lodash'
 
 /**
  * Upload a file to gitea server, just upload it doesn't commit the files
@@ -28,7 +29,6 @@ const uploadFileToGiteaServer = async (repo, file, csrf) => {
 
     req.onload = () => {
       if (req.status >= 200 && req.status < 300) {
-        console.log(req.response)
         resolve(JSON.parse(req.response))
       } else {
         reject({
@@ -62,6 +62,7 @@ export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
       return await uploadFileToGiteaServer(repo, file, csrf)
     }),
   )
+  // noinspection JSUnresolvedVariable
   return filesUUIDs.map(res => res.uuid)
 }
 
@@ -83,22 +84,29 @@ export const commitFiles = async ({
   commitSummary,
   commitMessage,
   commitChoice,
-  treePath,
   newBranchName,
   csrf,
 }) => {
   const filesUUIDs = await uploadFilesToGiteaServer(repo, files, csrf)
+  // [][file, its uuid on Gitea]
+  const filesZipUUIDs = zip(files, filesUUIDs)
 
-  return commitFilesWithUUIDs({
-    repo,
-    filesUUIDs,
-    commitSummary,
-    commitMessage,
-    commitChoice,
-    treePath,
-    newBranchName,
-    csrf,
-  })
+  const paths = groupByPath(filesZipUUIDs)
+
+  for (const path in paths) {
+    if (paths.hasOwnProperty(path)) {
+      await commitFilesWithUUIDs({
+        repo,
+        filesUUIDs: paths[path],
+        commitSummary,
+        commitMessage,
+        commitChoice,
+        treePath: path,
+        newBranchName,
+        csrf,
+      })
+    }
+  }
 }
 
 /**
@@ -148,6 +156,5 @@ export const commitFilesWithUUIDs = async ({
     body,
   })
 
-  console.log(res)
   return res.ok
 }

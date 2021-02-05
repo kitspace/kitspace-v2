@@ -6,7 +6,7 @@ import {
   GoogleLoginButton,
 } from 'react-social-login-buttons'
 
-const  OAuthButtons = () =>  {
+const OAuthButtons = () => {
   return (
     <>
       <Header as="h3" textAlign="center">
