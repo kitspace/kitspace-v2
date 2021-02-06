@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const next = require('next')
 const conf = require('./next.config.js')
 const bodyParser = require('body-parser')
@@ -12,11 +13,11 @@ const nextHandler = app.getRequestHandler()
 app.prepare().then(() => {
   const server = express()
 
+
   if (dev) {
-    server.use(function (req, res, next) {
-      console.log('%s %s', req.method, req.url)
-      next()
-    })
+  server.use(morgan('dev'))
+  } else {
+    server.use(morgan('tiny'))
   }
 
   server.all('/_next/*', nextHandler)
