@@ -13,9 +13,8 @@ const nextHandler = app.getRequestHandler()
 app.prepare().then(() => {
   const server = express()
 
-
   if (dev) {
-  server.use(morgan('dev'))
+    server.use(morgan('dev'))
   } else {
     server.use(morgan('tiny'))
   }
