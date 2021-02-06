@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { object, func } from 'prop-types'
-import _ from 'lodash'
+import { isEmpty } from 'lodash'
 
 import { useDropzone } from 'react-dropzone'
 import { fromEvent } from 'file-selector'
@@ -29,18 +29,31 @@ const DropZone = ({ onDrop, style }) => {
     noClick: true,
     getFilesFromEvent,
     maxSize: MBytesToBytes(maxFileSize),
+    minSize: 1,
   })
 
   useEffect(() => {
-    // Display notification for failing to upload large files.
-    if (!_.isEmpty(fileRejections)) {
-      const largeFiles = fileRejections.map(f => f.file.name)
+    // Display notification for rejecting large and empty files.
+    if (!isEmpty(fileRejections)) {
+      const largeFiles = fileRejections.filter(
+        // `file-too-large` is the error code returned by DropZone if file size > `MAX_FILE_SIZE`
+        rej => rej.errors[0].code === 'file-too-large',
+      )
+
+      // `file-too-small` is the error code returned by DropZone if file size < 1, i.e., empty
+      const emptyFiles = fileRejections.filter(
+        rej => rej.errors[0].code === 'file-too-small',
+      )
       // The notification won't be needed unless of case of trying to upload files
-      // greater than the `MAX_FILE_SIZE`, so defer importing it until needed
+      // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
       import('react-hot-toast').then(toast => {
-        largeFiles.forEach(name => {
+        emptyFiles.forEach(rej => {
+          toast.default.error(`"${rej.file.name}" is empty!`)
+        })
+
+        largeFiles.forEach(rej => {
           toast.default.error(
-            `"${name}" is too large! The maximum file size is ${maxFileSize}`,
+            `"${rej.file.name}" is too large! The maximum file size is ${maxFileSize}`,
           )
         })
       })
@@ -68,7 +81,7 @@ const DropZone = ({ onDrop, style }) => {
           content="Select a folder"
           icon="folder"
         />
-        <input
+        <input {...getInputProps()}
           type="file"
           id="folder-picker"
           style={{ display: 'none' }}
@@ -78,7 +91,6 @@ const DropZone = ({ onDrop, style }) => {
           msdirectory=""
           odirectory=""
           multiple
-          onChange={e => getFilesFromEvent(e).then(onDrop)}
         />
       </div>
     </div>
