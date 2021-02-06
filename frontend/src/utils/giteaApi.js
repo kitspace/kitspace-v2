@@ -182,6 +182,23 @@ export const repoExists = async fullname => {
 }
 
 /**
+ * Check if a user exist
+ * @param username{string}
+ * @returns {Promise<boolean>}
+ */
+export const userExists = async username => {
+  const endpoint = `${giteaApiUrl}/users/${username}`
+
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    mode,
+    headers,
+  })
+
+  return res.ok
+}
+
+/**
  * Get all repos
  * @returns {Promise<[Object]>}
  */
