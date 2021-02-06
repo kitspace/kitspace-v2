@@ -24,6 +24,7 @@ import {
   uploadFilesToGiteaServer,
 } from '@utils/giteaInternalApi'
 import { AuthContext } from '@contexts/AuthContext'
+import ErrorPage from '@pages/_error'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -34,7 +35,7 @@ const UpdateProject = () => {
 
   const fullName = `${user}/${projectName}`
 
-  const { repo: project, isLoading } = useRepo(fullName)
+  const { repo: project, isLoading, isError } = useRepo(fullName)
 
   useEffect(() => {
     setIsSynced(project?.mirror)
@@ -46,6 +47,10 @@ const UpdateProject = () => {
         <Loader active />
       </Page>
     )
+  }
+
+  if (isError) {
+    return <ErrorPage statusCode={404} />
   }
 
   return (
@@ -151,7 +156,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
     const UUIDs = await uploadFilesToGiteaServer(projectFullname, files, csrf)
 
     setNewlyUploadedDetails(files)
-    setNewlyUploadedUUIDs(UUIDs)
+    setNewlyUploadedUUIDs([...newlyUploadedUUIDs, UUIDs])
   }
 
   const validateProjectName = async () => {
