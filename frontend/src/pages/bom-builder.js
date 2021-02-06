@@ -3,15 +3,7 @@ import Link from 'next/link'
 
 import { Page } from '@components/Page'
 
-// Explicitly mark as static.
-// Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
-export const getStaticProps = () => {
-  return {
-    props: {},
-  }
-}
-
-export default function BomBuilder() {
+const BomBuilder = () => {
   return (
     <Page title="BOM Builder">
       <h1 id="the-kitspace-bom-builder">The Kitspace BOM Builder</h1>
@@ -57,3 +49,5 @@ export default function BomBuilder() {
     </Page>
   )
 }
+
+export default BomBuilder
