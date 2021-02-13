@@ -7,7 +7,12 @@ import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
-import { repoExists, updateRepo } from '@utils/giteaApi'
+import {
+  getDefaultBranchFiles,
+  getRepo,
+  repoExists,
+  updateRepo,
+} from '@utils/giteaApi'
 import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   Button,
@@ -27,18 +32,38 @@ import { AuthContext } from '@contexts/AuthContext'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
-const UpdateProject = () => {
-  const { query } = useRouter()
-  const { user, projectName, create } = query
-  const [isSynced, setIsSynced] = useState(false)
+export const getServerSideProps = async ({ params, query }) => {
+  const repoFullName = `${params.user}/${params.projectName}`
+  if (await repoExists(repoFullName)) {
+    const repo = await getRepo(repoFullName)
+    const repoFiles = await getDefaultBranchFiles(repoFullName)
+    const isSynced = repo?.mirror
 
-  const fullName = `${user}/${projectName}`
+    return {
+      props: {
+        repo,
+        repoFiles,
+        isSynced,
+        user: params.user,
+        projectName: params.projectName,
+        isNew: query.create === 'true',
+      },
+    }
+  } else {
+    return { notFound: true }
+  }
+}
 
+<<<<<<< HEAD
   const { repo: project, isLoading } = useRepo(fullName)
+=======
+const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) => {
+  const fullName = `${user}/${projectName}`
+>>>>>>> 73b4d1e (SSR project update page.)
 
-  useEffect(() => {
-    setIsSynced(project?.mirror)
-  }, [isLoading, project])
+  const { repo: project, isLoading, isError } = useRepo(fullName, {
+    initialData: repo,
+  })
 
   if (isLoading) {
     return (
@@ -65,7 +90,8 @@ const UpdateProject = () => {
           Updating {projectName} by {user}
         </Header>
         <UpdateForm
-          isNew={create === 'true'}
+          repoFiles={repoFiles}
+          isNew={isNew}
           previewOnly={isSynced}
           owner={user}
           name={projectName}
@@ -76,12 +102,21 @@ const UpdateProject = () => {
   )
 }
 
-const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
+const UpdateForm = ({
+  repoFiles,
+  isNew,
+  previewOnly,
+  owner,
+  name,
+  description,
+}) => {
   const projectFullname = `${owner}/${name}`
   // The files in the Gitea repo associated with this project and the newly loaded files
-  const { files: remoteFiles, isLoading, mutate } = useDefaultBranchFiles(
-    projectFullname,
-  )
+  const {
+    files: remoteFiles,
+    isLoading,
+    mutate,
+  } = useDefaultBranchFiles(projectFullname, { initialData: repoFiles })
   // UUIDs for files dropped in the update page, the files gets committed on submit
   const [newlyUploadedUUIDs, setNewlyUploadedUUIDs] = useState([])
   // Details(name, path, last_modified, etc...) for files dropped in the update page
