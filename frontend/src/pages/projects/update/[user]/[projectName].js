@@ -56,12 +56,22 @@ export const getServerSideProps = async ({ params, query }) => {
   }
 }
 
-const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) => {
+const UpdateProject = ({
+  repo,
+  repoFiles,
+  isSynced,
+  isMigrating: isSyncing,
+  user,
+  projectName,
+  isNew,
+}) => {
   const fullName = `${user}/${projectName}`
   const { reload } = useRouter()
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
+    // If the repo is migrating poll for update every second, otherwise use default config
+    refreshInterval: isSyncing ? 1000 : 0,
   })
   // If the repo is migrating, poll for update every second, otherwise use default config.
 
