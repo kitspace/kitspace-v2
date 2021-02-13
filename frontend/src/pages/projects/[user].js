@@ -18,10 +18,9 @@ export const getServerSideProps = async ({ params, req }) => {
         permanent: true,
       },
     }
-  } else if (isEmpty(userRepos) && !(await userNotFound)) {
-    return {
-      notFound: true,
-    }
+    // If the repos are empty check if the user exists
+  } else if (isEmpty(userRepos) && !(await userExists(params.user))) {
+    return { notFound: true }
   } else {
     return {
       props: {
@@ -33,7 +32,9 @@ export const getServerSideProps = async ({ params, req }) => {
 }
 
 const User = ({ userRepos, username }) => {
-  const { repos: projects } = useUserRepos(username, { initialData: userRepos })
+  const { repos: projects } = useUserRepos(username, {
+    initialData: userRepos,
+  })
 
   const projectsList = projects?.map(p => {
     const lastUpdateDate = new Date(p.updated_at)
