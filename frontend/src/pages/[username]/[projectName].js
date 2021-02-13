@@ -44,8 +44,8 @@ export const getServerSideProps = async ({ params, query }) => {
         repo,
         repoFiles,
         isSynced: repo?.mirror,
-        isEmpty: repo?.empty,
-        user: params.username,
+        isMigrating: repo?.empty,
+        user: params.user,
         projectName: params.projectName,
         isNew: query.create === 'true',
       },
@@ -59,7 +59,7 @@ const UpdateProject = ({
   repo,
   repoFiles,
   isSynced,
-  isEmpty,
+  isMigrating: isSyncing,
   user,
   projectName,
   isNew,
@@ -69,6 +69,8 @@ const UpdateProject = ({
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
+    // If the repo is migrating poll for update every second, otherwise use default config
+    refreshInterval: isSyncing ? 1000 : 0,
   })
   // If the repo is migrating, poll for update every second, otherwise use default config.
 
@@ -84,7 +86,6 @@ const UpdateProject = ({
       reload()
     }
   }, [status])
-
   if (isLoading) {
     return (
       <Page>
