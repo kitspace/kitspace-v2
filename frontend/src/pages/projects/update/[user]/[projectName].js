@@ -38,13 +38,13 @@ export const getServerSideProps = async ({ params, query }) => {
   if (await repoExists(repoFullName)) {
     const repo = await getRepo(repoFullName)
     const repoFiles = await getDefaultBranchFiles(repoFullName)
-    const isSynced = repo?.mirror
 
     return {
       props: {
         repo,
         repoFiles,
-        isSynced,
+        isSynced: repo?.mirror,
+        isMigrating: repo?.empty,
         user: params.user,
         projectName: params.projectName,
         isNew: query.create === 'true',
@@ -55,12 +55,30 @@ export const getServerSideProps = async ({ params, query }) => {
   }
 }
 
-const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) => {
+const UpdateProject = ({
+  repo,
+  repoFiles,
+  isSynced,
+  isMigrating: isSyncing,
+  user,
+  projectName,
+  isNew,
+}) => {
   const fullName = `${user}/${projectName}`
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
+    // If the repo is migrating poll for update every second, otherwise use default config
+    refreshInterval: isSyncing ? 1000 : 0,
   })
+  const { reload } = useRouter()
+
+  useEffect(() => {
+    // If migration succeeded reload the page.
+    if (!project.empty && isSyncing) {
+      reload()
+    }
+  }, [project])
 
   if (isLoading) {
     return (
@@ -68,9 +86,13 @@ const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) 
         <Loader active />
       </Page>
     )
-  }
-
-  if (isError) {
+  } else if (isSyncing) {
+    return (
+      <Page>
+        <Loader active>Syncing repository...</Loader>
+      </Page>
+    )
+  } else if (isError) {
     return <ErrorPage statusCode={404} />
   }
 
