@@ -1,0 +1,221 @@
+name: Publish Docker images
+env:
+  POSTGRES_PASSWORD: change_me
+  KITSPACE_DOMAIN: kitspace.test
+  KITSPACE_SCHEME: http
+  KITSPACE_DEV_PORT: 3000
+  KITSPACE_EXTERNAL_PORT: ':3000'
+  CERTBOT_EMAIL: you@example.com
+  COMPOSE_PROJECT_NAME: kitspace
+  CYPRESS_GITEA_ADMIN_USERNAME: __admin
+  CYPRESS_GITEA_ADMIN_PASSWORD: 123456
+  FAIL_FAST_ENABLED: true
+  INDEX_ISR_INTERVAL: 3600
+  USER_ISR_INTERVAL: 86400
+  MAX_FILE_SIZE: 6M
+
+on:
+  release:
+    types: [ published ]
+  push:
+    branches:
+      - master
+      - ghcr
+jobs:
+  push_to_registry_sha:
+    name: Push Docker images-SHA to GitHub Container Register
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GitHub Container Registery
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Push frontend to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/kitspace/frontend-v2:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Push processor to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./processor
+          file: ./processor/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/processor-v2:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Pull gitea image with current submodule SHA
+        shell: bash
+        run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
+
+      - name: Push gitea to GitHub Container Registry
+        # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
+        # build image and push it
+        if: ${{ failure() }}
+        uses: docker/build-push-action@v2
+        with:
+          context: ./gitea
+          file: ./gitea/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+  push_to_registry_latest:
+    name: Run e2e & publish `latest` docker images
+    runs-on: ubuntu-20.04
+    needs:
+      - push_to_registry_sha
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+      - name: Configure /etc/hosts
+        shell: bash
+        run: |
+          echo "172.17.0.1    kitspace.test" | sudo tee -a /etc/hosts
+          echo "172.17.0.1    gitea.kitspace.test" | sudo tee -a /etc/hosts
+          echo "172.17.0.1    processor.kitspace.test" | sudo tee -a /etc/hosts
+
+      # The tagging steps have to happen in that following order
+      # i. replace the `latest` tag with `SHA`
+      # ii. tag gitea with the submodule SHA instead of HEAD SHA
+      # ii. forward Nginx port 80 to internal port 3000. Keep the indentation!
+      - name: Patch `docker-compose.deploy.yml`
+        shell: bash
+        run: |
+          sed  -Ei \
+            "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
+          sed  -Ei \
+            "s/ghcr.io\/kitspace\/gitea:${{ steps.sha.outputs.sha_short }}/ghcr.io\/kitspace\/\gitea:${{ steps.sha.outputs.gitea_sha_short }}/g" \
+            docker-compose.deploy.yml
+          sed -i "/'443:443'/a\      - \'${KITSPACE_DEV_PORT}:80\'" docker-compose.deploy.yml
+          cat docker-compose.deploy.yml
+
+      - name: Install httpie
+        shell: bash
+        run: sudo apt install httpie
+
+      - name: Build docker-compose stack
+        shell: bash
+        run: docker-compose -f docker-compose.deploy.yml build
+
+      - name: Install Gitea
+        shell: bash
+        timeout-minutes: 5
+        run: |
+          scripts/install_gitea.sh
+
+      - name: pre e2e
+        shell: bash
+        run: scripts/pre_e2e.sh
+
+      - name: e2e
+        uses: cypress-io/github-action@v2
+        with:
+          start: docker-compose -f ../docker-compose.deploy.yml up
+          browser: chrome
+          command: yarn e2e --record
+          working-directory: frontend
+          # wait for 2 minutes for the server to respond
+          wait-on: 'http://kitspace.test:3000'
+          # This value is in seconds
+          wait-on-timeout: 120
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GitHub Container Registery
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Push frontend:latest tag to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: ghcr.io/kitspace/frontend-v2:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Push processo:latest to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./processor
+          file: ./processor/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/processor-v2:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Push gitea:latest to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./gitea
+          file: ./gitea/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/gitea:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache

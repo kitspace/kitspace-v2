@@ -2,6 +2,7 @@ module.exports = {
   env: {
     KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
     KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
+    MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
   },
   webpack(config) {
     config.module.rules.push({

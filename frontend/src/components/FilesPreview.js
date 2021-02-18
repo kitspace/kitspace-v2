@@ -1,27 +1,22 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
-import { UploadContext } from '@contexts/UploadContext'
 import { List } from 'semantic-ui-react'
 
-const FilesPreview = () => {
-  const { allFiles } = useContext(UploadContext)
-
-  const files = allFiles.map(file => (
+const FilesPreview = ({ files }) => {
+  const filesList = files?.map(file => (
     <List.Item key={file.name}>
       <List.Icon name="file" />
       <List.Content>
-        <List.Header>{file.name}</List.Header>
+        <List.Header data-cy="file-name">{file.name}</List.Header>
         <List.Description>{file.size} bytes</List.Description>
       </List.Content>
     </List.Item>
   ))
 
   return (
-    <div
-      style={allFiles.length === 0 ? { display: 'none' } : { display: 'initial' }}
-    >
+    <div style={files?.length === 0 ? { display: 'none' } : { display: 'initial' }}>
       <h4>Files</h4>
-      <List relaxed>{files}</List>
+      <List relaxed>{filesList}</List>
     </div>
   )
 }

@@ -1,10 +1,17 @@
 import faker from 'faker'
 
-import { SignInForm } from '../../src/models/SignInForm'
+import { SignInFormModel } from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
+  before(() => {
+    cy.clearCookies()
+  })
+
   beforeEach(() => {
-    cy.signOut()
+    // deauthenticate the user and reload the page to update the CSRF token
+    cy.clearCookies()
+    cy.reload()
+
     cy.visit('/login')
   })
 
@@ -12,13 +19,12 @@ describe('Log in form validation', () => {
 
   it('should route to sign in form based on params', () => {
     // The form is rendered on screen.
-    cy.visit('/login')
     cy.contains('Log in')
   })
 
   it('should have the proper fields', () => {
     // The form contains all the fields from the `SingUpForm` model.
-    cy.hasProperFields(SignInForm)
+    cy.hasProperFields(SignInFormModel)
   })
 
   it('should validate username field', () => {
@@ -31,7 +37,6 @@ describe('Log in form validation', () => {
 
       // Success header shouldn't appear.
       cy.get('@message').should('be.visible')
-      cy.get('@message').get('div.header').should('not.be.visible')
 
       // The error message should indicate that the username is invalid.
       cy.get('@message').should('include.text', 'Invalid username or email')
@@ -45,20 +50,20 @@ describe('Log in form submission', () => {
   const password = '123456'
 
   before(() => {
-    cy.visit('/login')
-    cy.signOut()
+    // create user and log him in.
+    cy.createUser(username, email, password)
   })
 
   beforeEach(() => {
-    cy.visit('/login')
-    cy.signOut()
+    // deauthenticate the user and reload the page to update the CSRF token
+    cy.clearCookies()
+    cy.reload()
+    cy.wait(1000)
+
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should display username in homepage on submitting a valid form', () => {
-    // create user and log him in.
-    cy.createUser(username, email, password)
-    cy.stubSignInReq(true, { LoggedInSuccessfully: true })
-
     cy.signIn(username, password)
 
     // After a successful login the user is redirect to the homepage.

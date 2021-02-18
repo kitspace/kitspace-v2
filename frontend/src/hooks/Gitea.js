@@ -123,9 +123,9 @@ export const useUserRepos = (username, swrOpts = {}) => {
  * A hook to get the files in the default branch of a repo
  * @param repo{string}
  * @param swrOpts{swrOptions}
- * @returns {{isLoading: boolean, isError: boolean, files: {[Object]}, mutate: function}}
+ * @returns {{isLoading: boolean, isError: boolean, files: Object[], mutate: function}}
  */
-export const useDefaultBranchFiles = (repo, swrOpts) => {
+export const useDefaultBranchFiles = (repo, swrOpts = {}) => {
   const { repo: repoDetails } = useRepo(repo, swrOpts)
 
   // Dependent data if: swr won't fetch if `repoDetails.default_branch` returns a falsy value.

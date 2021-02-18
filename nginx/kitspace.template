@@ -65,6 +65,7 @@ server {
 		proxy_cookie_path          ~^(.+)$                            '$1; domain=.@KITSPACE_DOMAIN';
 		proxy_set_header           Origin                             gitea.@KITSPACE_DOMAIN;
 		proxy_pass_request_headers on;
+		client_max_body_size       @MAX_FILE_SIZE;
 
 		if ($request_method = OPTIONS) {
 			add_header Content-Length 0;
