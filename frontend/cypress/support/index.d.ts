@@ -72,7 +72,7 @@ declare namespace Cypress {
      * Users database are at `{gitea}/admin/users`
      * Kitspace user interaction should appear there.
      * @example
-     * cy.goToUsersAdminPanel(username, password)
+     * cy.goToUsersAdminPanel()
      */
     goToUsersAdminPanel()
   }
@@ -85,6 +85,27 @@ declare namespace Cypress {
      * hasProperFields(SignInForm)
      */
     hasProperFields(schema: Joi.ObjectSchema)
+  }
+
+  interface Chainable<Subject> {
+    /**
+     * Credits Zwaar Contrast <postduif@zwaarcontrast.nl>
+     * Create a drop event with file on the parent subject
+     * @param files
+     * @param fileNames
+     * cy.get('.dropzone').dropFile(file, 'example.txt')
+     */
+      dropFiles(files, fileNames): Chainable<any>
+  }
+
+  interface Chainable<Subject> {
+    /**
+     * Good to file uploading route and prepare call all necessary network intercepts
+     * @param username
+     * @example
+     *
+     */
+    preFileDrop(username: string): Chainable<any>
   }
 
   interface Chainable<Subject> {

@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { Page } from '@components/Page'
 import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
-import { ProjectUpdateForm } from '@models/ProjectUpdateForm'
+import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
 import { repoExists, updateRepo } from '@utils/giteaApi'
 import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
@@ -34,11 +34,11 @@ const UpdateProject = () => {
 
   const fullName = `${user}/${projectName}`
 
-  const { project, isLoading } = useRepo(fullName)
+  const { repo: project, isLoading } = useRepo(fullName)
 
   useEffect(() => {
     setIsSynced(project?.mirror)
-  }, [project])
+  }, [isLoading, project])
 
   if (isLoading) {
     return (
@@ -52,7 +52,7 @@ const UpdateProject = () => {
     <Page>
       <div style={{ maxWidth: '70%', margin: 'auto' }}>
         {isSynced ? (
-          <Message color="yellow">
+          <Message data-cy="sync-msg" color="yellow">
             <Message.Header>A synced repository!</Message.Header>
             <Message.Content>
               <p>Files uploading isn't supported for synced repositories.</p>
@@ -92,7 +92,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
   const { push } = useRouter()
   const { csrf } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
-    ProjectUpdateForm,
+    ProjectUpdateFormModel,
   )
 
   // Set values of the form as the values of the project stored in the Gitea repo
@@ -198,6 +198,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
         </Segment>
         <Segment>
           <Form.Field
+            data-cy="update-form-name"
             fluid
             required
             readOnly={previewOnly}
@@ -210,6 +211,7 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             error={formatProjectNameError('name')}
           />
           <Form.Field
+            data-cy="update-form-description"
             readOnly={previewOnly}
             control={TextArea}
             label="Project description"
@@ -220,10 +222,11 @@ const UpdateForm = ({ isNew, previewOnly, owner, name, description }) => {
             error={formatErrorPrompt('description')}
           />
           <Form.Field
+            data-cy="update-form-submit"
             fluid
             control={Button}
             content={isNew ? 'Create' : 'Update'}
-            disabled={previewOnly || !isValid || loading}
+            disabled={previewOnly || !isValidProjectName || loading}
             onClick={submit}
             positive
             loading={loading}

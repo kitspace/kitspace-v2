@@ -1,10 +1,12 @@
 import React from 'react'
 import { Grid, Header } from 'semantic-ui-react'
-import { GithubLoginButton, TwitterLoginButton } from 'react-social-login-buttons'
+import {
+  GithubLoginButton,
+  TwitterLoginButton,
+  GoogleLoginButton,
+} from 'react-social-login-buttons'
 
-import GoogleButton from './GoogleLoginButton'
-
-export default function () {
+const  OAuthButtons = () =>  {
   return (
     <>
       <Header as="h3" textAlign="center">
@@ -19,10 +21,12 @@ export default function () {
             <GithubLoginButton>GitHub</GithubLoginButton>
           </Grid.Column>
           <Grid.Column>
-            <GoogleButton />
+            <GoogleLoginButton>Google</GoogleLoginButton>
           </Grid.Column>
         </Grid.Row>
       </Grid>
     </>
   )
 }
+
+export default OAuthButtons
