@@ -13,7 +13,7 @@ import {
   repoExists,
   updateRepo,
 } from '@utils/giteaApi'
-import { useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
+import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   Button,
   Form,
@@ -44,7 +44,7 @@ export const getServerSideProps = async ({ params, query }) => {
         repo,
         repoFiles,
         isSynced: repo?.mirror,
-        isMigrating: repo?.empty,
+        isEmpty: repo?.empty,
         user: params.user,
         projectName: params.projectName,
         isNew: query.create === 'true',
@@ -59,26 +59,28 @@ const UpdateProject = ({
   repo,
   repoFiles,
   isSynced,
-  isMigrating: isSyncing,
+  isEmpty,
   user,
   projectName,
   isNew,
 }) => {
   const fullName = `${user}/${projectName}`
+  const { reload } = useRouter()
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
-    // If the repo is migrating poll for update every second, otherwise use default config
-    refreshInterval: isSyncing ? 1000 : 0,
   })
-  const { reload } = useRouter()
+  // If the repo is migrating, poll for update every second, otherwise use default config.
+
+  const { status } = pollMigrationStatus(repo.id, { refreshInterval: isEmpty ? 1000 : null })
+  const [isSyncing, setIsSyncing] = useState(isEmpty)
 
   useEffect(() => {
-    // If migration succeeded reload the page.
-    if (!project.empty && isSyncing) {
-      reload()
-    }
-  }, [project])
+    setIsSyncing(status === 'Queue' || status === 'Running')
+
+    if (!isSynced && status === 'Finished') { reload() }
+  }, [status])
+
 
   if (isLoading) {
     return (
@@ -92,6 +94,11 @@ const UpdateProject = ({
         <Loader active>Syncing repository...</Loader>
       </Page>
     )
+  } else if (status === 'Failed') {
+    return (
+      <Page>
+        <Loader active>Migration Failed, please try again later!</Loader>
+      </Page>)
   } else if (isError) {
     return <ErrorPage statusCode={404} />
   }
@@ -238,9 +245,9 @@ const UpdateForm = ({
     } else {
       return !isValidProjectName
         ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
         : null
     }
   }
