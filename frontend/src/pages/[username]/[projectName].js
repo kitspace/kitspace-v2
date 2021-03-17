@@ -44,7 +44,7 @@ export const getServerSideProps = async ({ params, query }) => {
         repo,
         repoFiles,
         isSynced: repo?.mirror,
-        isMigrating: repo?.empty,
+        isEmpty: repo?.empty,
         user: params.user,
         projectName: params.projectName,
         isNew: query.create === 'true',
@@ -59,7 +59,7 @@ const UpdateProject = ({
   repo,
   repoFiles,
   isSynced,
-  isMigrating: isSyncing,
+  isEmpty,
   user,
   projectName,
   isNew,
@@ -69,8 +69,6 @@ const UpdateProject = ({
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
-    // If the repo is migrating poll for update every second, otherwise use default config
-    refreshInterval: isSyncing ? 1000 : 0,
   })
   // If the repo is migrating, poll for update every second, otherwise use default config.
 
@@ -82,10 +80,10 @@ const UpdateProject = ({
   useEffect(() => {
     setIsSyncing(status === 'Queue' || status === 'Running')
 
-    if (!isSynced && status === 'Finished') {
-      reload()
-    }
+    if (!isSynced && status === 'Finished') { reload() }
   }, [status])
+
+
   if (isLoading) {
     return (
       <Page>
@@ -102,8 +100,7 @@ const UpdateProject = ({
     return (
       <Page>
         <Loader active>Migration Failed, please try again later!</Loader>
-      </Page>
-    )
+      </Page>)
   } else if (isError) {
     return <ErrorPage statusCode={404} />
   }
@@ -268,9 +265,9 @@ const UpdateForm = ({
     } else {
       return !isValidProjectName
         ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
         : null
     }
   }
