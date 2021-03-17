@@ -14,7 +14,10 @@ import {
   updateRepo,
 } from '@utils/giteaApi'
 import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
+<<<<<<< HEAD
 
+=======
+>>>>>>> 301a12e (Integrate the new gitea `migrata/status` enpoint.)
 import {
   Button,
   Form,
@@ -60,7 +63,7 @@ const UpdateProject = ({
   repo,
   repoFiles,
   isSynced,
-  isMigrating: isSyncing,
+  isEmpty,
   user,
   projectName,
   isNew,
@@ -70,23 +73,31 @@ const UpdateProject = ({
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
-    // If the repo is migrating poll for update every second, otherwise use default config
-    refreshInterval: isSyncing ? 1000 : 0,
   })
   // If the repo is migrating, poll for update every second, otherwise use default config.
 
+<<<<<<< HEAD
   const { status } = pollMigrationStatus(repo.id, {
     refreshInterval: isEmpty ? 1000 : null,
   })
+=======
+  const { status } = pollMigrationStatus(repo.id, { refreshInterval: isEmpty ? 1000 : null })
+>>>>>>> 301a12e (Integrate the new gitea `migrata/status` enpoint.)
   const [isSyncing, setIsSyncing] = useState(isEmpty)
 
   useEffect(() => {
     setIsSyncing(status === 'Queue' || status === 'Running')
 
+<<<<<<< HEAD
     if (!isSynced && status === 'Finished') {
       reload()
     }
   }, [status])
+=======
+    if (!isSynced && status === 'Finished') { reload() }
+  }, [status])
+
+>>>>>>> 301a12e (Integrate the new gitea `migrata/status` enpoint.)
 
   if (isLoading) {
     return (
@@ -104,8 +115,12 @@ const UpdateProject = ({
     return (
       <Page>
         <Loader active>Migration Failed, please try again later!</Loader>
+<<<<<<< HEAD
       </Page>
     )
+=======
+      </Page>)
+>>>>>>> 301a12e (Integrate the new gitea `migrata/status` enpoint.)
   } else if (isError) {
     return <ErrorPage statusCode={404} />
   }
@@ -256,9 +271,9 @@ const UpdateForm = ({
     } else {
       return !isValidProjectName
         ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
         : null
     }
   }
