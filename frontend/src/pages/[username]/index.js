@@ -29,7 +29,7 @@ const User = ({ userRepos, username }) => {
     const { repos: projects } = useUserRepos(username, { initialData: userRepos })
 
     return (
-        <Page title="home">
+        <Page title={username}>
             <h1>Projects by {username}</h1>
             <div className={styles}>
                 {projects?.map(project => (
