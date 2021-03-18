@@ -206,22 +206,20 @@ export const getAllRepos = () => searchRepos()
 
 /**
  * Search all repos
+ * @param q{string=}: search query, leave undefined to return all repos
  * @param sort{string}
  * @param order{string}
- * @param q{string=}: search query, leave undefined to return all repos
  * @returns {Promise<[Object]>}
  */
-export const searchRepos = async (sort = 'updated', order = 'desc', q) => {
-  const endpoint = `${giteaApiUrl}/repos/search`
+export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
+  console
+  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${q ? `&q=${q}` : ''}`
 
   const res = await fetch(endpoint, {
     method: 'GET',
     credentials,
     mode,
     headers,
-    sort,
-    order,
-    q,
   })
 
   if (res.ok) {

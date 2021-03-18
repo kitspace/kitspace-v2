@@ -67,7 +67,7 @@ export const useRepo = (fullname, swrOpts = {}) => {
  * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
  */
 export const useAllRepos = (swrOpts = {}) =>
-  useSearchRepos('updated', 'desc', swrOpts)
+  useSearchRepos(null, swrOpts)
 
 /**
  * A hook to search all repos
@@ -78,12 +78,12 @@ export const useAllRepos = (swrOpts = {}) =>
  * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
  */
 export const useSearchRepos = (
+  q,
+  swrOpts = {},
   sort = 'updated',
   order = 'desc',
-  swrOpts = {},
-  q,
 ) => {
-  const endpoint = `${giteaApiUrl}/repos/search`
+  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${q ? `&q=${q}` : ''}`
 
   const { data, error, mutate } = useSWR(
     [endpoint, { sort, order, q }],
@@ -195,6 +195,7 @@ export const pollMigrationStatus = (repoId, swrOpts = {}) => {
 
   const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
 
+  console.log({ data })
   return {
     status: statuses[data?.status],
     isLoading: !(data || error),
