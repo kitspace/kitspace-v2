@@ -25,6 +25,7 @@
     "next": "^10.0.5",
     "node-sass": "^4.13.0",
     "raw-loader": "^4.0.0",
+    "rc-tree": "^4.1.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-dropzone": "^11.2.3",

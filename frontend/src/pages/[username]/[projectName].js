@@ -46,7 +46,7 @@ export const getServerSideProps = async ({ params, query }) => {
         repoFiles,
         isSynced: repo?.mirror,
         isEmpty: repo?.empty,
-        user: params.user,
+        user: params.username,
         projectName: params.projectName,
         isNew: query.create === 'true',
       },
@@ -68,10 +68,15 @@ const UpdateProject = ({
   const fullName = `${user}/${projectName}`
   const { reload } = useRouter()
 
-    const { status } = pollMigrationStatus(repo.id, {
-        refreshInterval: isEmpty ? 1000 : null,
-    })
-    const [isSyncing, setIsSyncing] = useState(isEmpty)
+  const { repo: project, isLoading, isError } = useRepo(fullName, {
+    initialData: repo,
+  })
+  // If the repo is migrating, poll for update every second, otherwise use default config.
+
+  const { status } = pollMigrationStatus(repo.id, {
+    refreshInterval: isEmpty ? 1000 : null,
+  })
+  const [isSyncing, setIsSyncing] = useState(isEmpty)
 
   const { status } = pollMigrationStatus(repo.id, {
     refreshInterval: isEmpty ? 1000 : null,
@@ -105,27 +110,7 @@ const UpdateProject = ({
     } else if (isError) {
         return <ErrorPage statusCode={404} />
     }
-
-  if (isLoading) {
-    return (
-      <Page>
-        <Loader active />
-      </Page>
-    )
-  } else if (isSyncing) {
-    return (
-      <Page>
-        <Loader active>Syncing repository...</Loader>
-      </Page>
-    )
-  } else if (status === 'Failed') {
-    return (
-      <Page>
-        <Loader active>Migration Failed, please try again later!</Loader>
-      </Page>)
-  } else if (isError) {
-    return <ErrorPage statusCode={404} />
-  }
+  
 
   return (
     <Page>
@@ -296,53 +281,53 @@ const UpdateForm = ({
 
   if (isLoading) return <Loader active />
 
-    return (
-        <>
-            <BoardShowcase projectFullname={projectFullname} />
-            <Form>
-                <Segment>
-                    {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
-                    <FilesPreview files={allFiles} />
-                </Segment>
-                <Segment>
-                    <Form.Field
-                        data-cy="update-form-name"
-                        fluid
-                        required
-                        readOnly={previewOnly}
-                        control={Input}
-                        label="Project name"
-                        placeholder="Project name"
-                        name="name"
-                        value={form.name || ''}
-                        onChange={onChange}
-                        error={formatProjectNameError('name')}
-                    />
-                    <Form.Field
-                        data-cy="update-form-description"
-                        readOnly={previewOnly}
-                        control={TextArea}
-                        label="Project description"
-                        placeholder="Project description"
-                        name="description"
-                        value={form.description || ''}
-                        onChange={onChange}
-                        error={formatErrorPrompt('description')}
-                    />
-                    <Form.Field
-                        data-cy="update-form-submit"
-                        fluid
-                        control={Button}
-                        content={isNew ? 'Create' : 'Update'}
-                        disabled={previewOnly || !isValidProjectName || loading}
-                        onClick={submit}
-                        positive
-                        loading={loading}
-                    />
-                </Segment>
-            </Form>
-        </>
-    )
+  return (
+    <>
+      <BoardShowcase projectFullname={projectFullname} />
+      <Form>
+        <Segment>
+          {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
+          <FilesPreview files={allFiles} />
+        </Segment>
+        <Segment>
+          <Form.Field
+            data-cy="update-form-name"
+            fluid
+            required
+            readOnly={previewOnly}
+            control={Input}
+            label="Project name"
+            placeholder="Project name"
+            name="name"
+            value={form.name || ''}
+            onChange={onChange}
+            error={formatProjectNameError('name')}
+          />
+          <Form.Field
+            data-cy="update-form-description"
+            readOnly={previewOnly}
+            control={TextArea}
+            label="Project description"
+            placeholder="Project description"
+            name="description"
+            value={form.description || ''}
+            onChange={onChange}
+            error={formatErrorPrompt('description')}
+          />
+          <Form.Field
+            data-cy="update-form-submit"
+            fluid
+            control={Button}
+            content={isNew ? 'Create' : 'Update'}
+            disabled={previewOnly || !isValidProjectName || loading}
+            onClick={submit}
+            positive
+            loading={loading}
+          />
+        </Segment>
+      </Form>
+    </>
+  )
 }
 
 export default UpdateProject
