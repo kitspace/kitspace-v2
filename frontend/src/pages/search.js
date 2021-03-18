@@ -45,6 +45,7 @@ const Search = ({ repos, q }) => {
     useEffect(() => {
         query ? push(`/search?q=${query}`) : push(`/search`)
     }, [query])
+
     return (
         <Page title="home">
             <div>Hi there {username}</div>
