@@ -32,6 +32,7 @@ import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
 import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
+import OrderPCBs from '@components/Board/OrderPCBs'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -44,7 +45,7 @@ export const getServerSideProps = async ({ params, query }) => {
     const repo = await getRepo(repoFullname)
     const repoFiles = await getDefaultBranchFiles(repoFullname)
     const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r => r.json())
-    const { zipPath } = zipInfo
+    const { zipPath, width, height, layers } = zipInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
     return {
@@ -54,6 +55,7 @@ export const getServerSideProps = async ({ params, query }) => {
         // TODO:  figure out what `info.has_interactive_bom` stands for.
         hasInteractiveBom: true,
         zipUrl,
+        boardSpecs: { width, height, layers },
         isSynced: repo?.mirror,
         isEmpty: repo?.empty,
         user: params.username,
@@ -71,6 +73,7 @@ const UpdateProject = ({
   repoFiles,
   hasInteractiveBom,
   zipUrl,
+  boardSpecs,
   isSynced,
   isEmpty,
   user,
@@ -144,6 +147,7 @@ const UpdateProject = ({
           repoFiles={repoFiles}
           hasInteractiveBom={hasInteractiveBom}
           zipUrl={zipUrl}
+          boardSpecs={boardSpecs}
           isNew={isNew}
           previewOnly={isSynced}
           owner={user}
@@ -159,6 +163,7 @@ const UpdateForm = ({
   repoFiles,
   hasInteractiveBom,
   zipUrl,
+  boardSpecs,
   isNew,
   previewOnly,
   owner,
@@ -301,6 +306,7 @@ const UpdateForm = ({
     <>
       <BoardShowcase projectFullname={projectFullname} />
       <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
+      <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
