@@ -5,10 +5,10 @@ const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
 const useProjectAssets = projectFullname => {
-  const top = `/${projectFullname}/HEAD/images/top.svg`
+  const top = `${projectFullname}/HEAD/images/top.svg`
   const topStatusUrl = `${processorUrl}/status/${top}`
 
-  const bottom = `/${projectFullname}/HEAD/images/bottom.svg`
+  const bottom = `${projectFullname}/HEAD/images/bottom.svg`
   const bottomStatusUrl = `${processorUrl}/status/${bottom}`
 
   const { data: topStatus, error: topErr } = useSWR(topStatusUrl, fetcher)
