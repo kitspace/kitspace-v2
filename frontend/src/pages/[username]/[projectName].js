@@ -31,19 +31,29 @@ import {
 import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
+import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
 export const getServerSideProps = async ({ params, query }) => {
-  const repoFullName = `${params.username}/${params.projectName}`
-  if (await repoExists(repoFullName)) {
-    const repo = await getRepo(repoFullName)
-    const repoFiles = await getDefaultBranchFiles(repoFullName)
+  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+  const repoFullname = `${params.username}/${params.projectName}`
+  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+
+  if (await repoExists(repoFullname)) {
+    const repo = await getRepo(repoFullname)
+    const repoFiles = await getDefaultBranchFiles(repoFullname)
+    const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r => r.json())
+    const { zipPath } = zipInfo
+    const zipUrl = `${assetsPath}/${zipPath}`
 
     return {
       props: {
         repo,
         repoFiles,
+        // TODO:  figure out what `info.has_interactive_bom` stands for.
+        hasInteractiveBom: true,
+        zipUrl,
         isSynced: repo?.mirror,
         isEmpty: repo?.empty,
         user: params.username,
@@ -59,6 +69,8 @@ export const getServerSideProps = async ({ params, query }) => {
 const UpdateProject = ({
   repo,
   repoFiles,
+  hasInteractiveBom,
+  zipUrl,
   isSynced,
   isEmpty,
   user,
@@ -130,6 +142,8 @@ const UpdateProject = ({
         </Header>
         <UpdateForm
           repoFiles={repoFiles}
+          hasInteractiveBom={hasInteractiveBom}
+          zipUrl={zipUrl}
           isNew={isNew}
           previewOnly={isSynced}
           owner={user}
@@ -143,6 +157,8 @@ const UpdateProject = ({
 
 const UpdateForm = ({
   repoFiles,
+  hasInteractiveBom,
+  zipUrl,
   isNew,
   previewOnly,
   owner,
@@ -284,6 +300,7 @@ const UpdateForm = ({
   return (
     <>
       <BoardShowcase projectFullname={projectFullname} />
+      <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}

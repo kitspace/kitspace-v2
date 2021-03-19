@@ -32,8 +32,8 @@ const BoardShowcase = ({ projectFullname }) => {
             <div className={styles.boardContainer}>
               <div
                 className={`${styles.boardDiagram} ${
-                    selected === 'top' ? styles.selectedBoard : ''
-                  }` }
+                  selected === 'top' ? styles.selectedBoard : ''
+                }`}
               >
                 {isLoading || isError ? null : <img src={top} />}
               </div>
@@ -42,8 +42,8 @@ const BoardShowcase = ({ projectFullname }) => {
               </div>
               <div
                 className={`${styles.boardDiagram} ${
-                    selected === 'bottom' ? styles.selectedBoard : ''
-                  }`}
+                  selected === 'bottom' ? styles.selectedBoard : ''
+                }`}
               >
                 {isLoading || isError ? null : <img src={bottom} />}
               </div>
