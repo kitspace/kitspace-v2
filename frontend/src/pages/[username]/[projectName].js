@@ -33,6 +33,7 @@ import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
 import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
 import OrderPCBs from '@components/Board/OrderPCBs'
+import BuyParts from '@components/Board/BuyParts/index'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -45,6 +46,7 @@ export const getServerSideProps = async ({ params, query }) => {
     const repo = await getRepo(repoFullname)
     const repoFiles = await getDefaultBranchFiles(repoFullname)
     const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r => r.json())
+    const boardInfo = await fetch(`${assetsPath}/info.json`).then(r => r.json())
     const { zipPath, width, height, layers } = zipInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
@@ -55,6 +57,7 @@ export const getServerSideProps = async ({ params, query }) => {
         // TODO:  figure out what `info.has_interactive_bom` stands for.
         hasInteractiveBom: true,
         zipUrl,
+        boardInfo,
         boardSpecs: { width, height, layers },
         isSynced: repo?.mirror,
         isEmpty: repo?.empty,
@@ -73,6 +76,7 @@ const UpdateProject = ({
   repoFiles,
   hasInteractiveBom,
   zipUrl,
+  boardInfo,
   boardSpecs,
   isSynced,
   isEmpty,
@@ -148,6 +152,7 @@ const UpdateProject = ({
           hasInteractiveBom={hasInteractiveBom}
           zipUrl={zipUrl}
           boardSpecs={boardSpecs}
+          boardInfo={boardInfo}
           isNew={isNew}
           previewOnly={isSynced}
           owner={user}
@@ -162,6 +167,7 @@ const UpdateProject = ({
 const UpdateForm = ({
   repoFiles,
   hasInteractiveBom,
+  boardInfo,
   zipUrl,
   boardSpecs,
   isNew,
@@ -307,6 +313,11 @@ const UpdateForm = ({
       <BoardShowcase projectFullname={projectFullname} />
       <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
       <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
+      <BuyParts
+        project={'hard'}
+        lines={boardInfo.bom.lines}
+        parts={boardInfo.bom.parts}
+      />
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}

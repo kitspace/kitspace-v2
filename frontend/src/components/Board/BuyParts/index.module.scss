@@ -1,0 +1,91 @@
+//these are also defined in media_queries.js and need to be adjusted there and here
+@mixin breakpoint($point) {
+  @if $point == small_width {
+    @media (max-width: 878px) {
+      @content;
+    }
+  } @else if $point == semantic_container {
+    @media (max-width: 1199px) {
+      @content;
+    }
+  } @else if $point == mobile-m {
+    @media (max-width: 499px) {
+      @content;
+    }
+  } @else if $point == mobile_menu {
+    @media (max-width: 590px) {
+      @content;
+    }
+  }
+}
+
+.notSelectable {
+  user-select: none;
+  cursor: default;
+}
+
+.BuyParts {
+  .storeIcons {
+    height: 16px;
+    margin-right: 3px;
+    width: 16px;
+  }
+
+  .buttonSegment {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+  }
+
+  .buttonText {
+    color: white;
+    display: flex;
+    @include breakpoint(small_width) {
+      flex-wrap: wrap;
+    }
+  }
+
+  button.loading {
+    .buttonText {
+      opacity: 0.3;
+    }
+    .storeIcon {
+      opacity: 0.3;
+    }
+  }
+
+  div.retailerButton {
+    min-width: 202px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  a.ui.left.pointing.basic.label {
+    min-width: 218px !important;
+  }
+
+  button.retailerButton {
+    min-width: 110px;
+  }
+
+  button.retailerButton.pink {
+    background: #da8282 !important;
+  }
+
+  button.retailerButton.pink:hover {
+    background: #dc7c7c !important;
+  }
+
+  .ui.basic.pink.label {
+    border: 1px solid #da8282 !important;
+    color: #da8282 !important;
+  }
+
+  .AdjustQuantity {
+    border-top: 0px !important;
+    border-bottom: 0px !important;
+    font-size: 16px;
+  }
+}
