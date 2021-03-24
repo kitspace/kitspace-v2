@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"1-click-bom-minimal@https://github.com/kitspace/npm-1-click-bom-minimal":
+  version "1.3.1"
+  resolved "https://github.com/kitspace/npm-1-click-bom-minimal#b174fec7a21fe1d6c9021ded42e85640f2c2244f"
+
 "@ampproject/toolbox-core@2.7.4", "@ampproject/toolbox-core@^2.7.1-alpha.0":
   version "2.7.4"
   resolved "https://registry.yarnpkg.com/@ampproject/toolbox-core/-/toolbox-core-2.7.4.tgz#8355136f16301458ce942acf6c55952c9a415627"
@@ -1201,6 +1205,11 @@ brorand@^1.0.1, brorand@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha1-EsJe/kCkXjwyPrhnWgoM5XsiNx8=
+
+browser-version@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/browser-version/-/browser-version-1.0.0.tgz#75b7bac2b801de0a9b71c5ed6106ae5d09554f92"
+  integrity sha1-dbe6wrgB3gqbccXtYQauXQlVT5I=
 
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.2.0"
@@ -5498,10 +5507,15 @@ querystring@0.2.0, querystring@^0.2.0:
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
 
-ramda@~0.27.1:
+ramda@^0.27.1:
   version "0.27.1"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.1.tgz#66fc2df3ef873874ffc2da6aa8984658abacf5c9"
   integrity sha512-PgIdVpn5y5Yns8vqb8FzBUEYn98V3xcPgawAkkgj0YJ0qDsnHCiNmZYfOGMgOvoB0eWFLpYbhxUR3mxfDIMvpw==
+
+ramda@~0.26.1:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
+  integrity sha512-hLWjpy7EnsDBb0p+Z3B7rPi3GDeRG5ZtiI33kJhTt+ORCd38AbAIjB/9zRIUoeTbE/AVX5ZkU7m6bznsvrf8eQ==
 
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.1.0"
@@ -5619,6 +5633,11 @@ react-dom@^16.12.0:
     prop-types "^15.6.2"
     scheduler "^0.18.0"
 
+react-double-scrollbar@^0.0.15:
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/react-double-scrollbar/-/react-double-scrollbar-0.0.15.tgz#e915ab8cb3b959877075f49436debfdb04288fe4"
+  integrity sha1-6RWrjLO5WYdwdfSUNt6/2wQoj+Q=
+
 react-dropzone@^11.2.3:
   version "11.2.3"
   resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-11.2.3.tgz#8a49e9fc7ab75eaccf748c382a790092c035cef1"
@@ -5634,6 +5653,11 @@ react-hot-toast@^1.0.1:
   integrity sha512-og5MNzjNHa7BTjdThj3cwGoyD8tLoxMN9c8/Sme6bBLCnlrF54QrNOJW5gJkETTsuAHVsUK5z8Q6vvkc+9OfCg==
   dependencies:
     goober "^2.0.15"
+
+react-hyperscript-helpers@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-hyperscript-helpers/-/react-hyperscript-helpers-2.0.0.tgz#8fc891d3f50bc8b7b477ca955ef55bbaad2560c9"
+  integrity sha512-nkWZ7GBDGD4qWnIJo+/gF+tjW9lY6rKMOie/OP03rWYyGNrb1SreiPgcaBsZ2VPQkZ1uUgruKXpRql+LjbsogA==
 
 react-is@16.13.1, react-is@^16.12.0:
   version "16.13.1"
