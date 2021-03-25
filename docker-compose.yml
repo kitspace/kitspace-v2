@@ -13,6 +13,11 @@ services:
       - frontend-public:/app/public/
     depends_on:
       - gitea
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /etc/hosts:/etc/hosts
+    command: /bin/sh --verbose -c "yarn install && yarn build && yarn dev"
 
   gitea:
     environment:
