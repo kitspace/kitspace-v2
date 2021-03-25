@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "isomorphic-unfetch": "^3.1.0"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "mocha": "^8.2.1",
