@@ -1,0 +1,60 @@
+@import '../colors.scss';
+
+.subtitleText {
+  color: $gray;
+  font-size: 14px;
+  text-align: left;
+  margin: 3px;
+  margin-left: 0px;
+}
+
+.titleText {
+  border-radius: 5px;
+  color: black;
+  font-size: 24px;
+  line-height: 40px;
+  text-align: left;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.infoBar {
+  margin-top: 10px;
+  padding: 20px;
+}
+
+.infoBarTitle {
+  margin: 10px;
+  line-height: 1em;
+}
+
+.infoBarSummary {
+  margin: 10px;
+  margin-left: 0px;
+}
+
+.infoBarInner {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.infoBarWebsiteLink {
+  font-size: 14px;
+  text-align: left;
+  margin: 10px;
+}
+.infoBarSiteLink {
+  margin-top: 8px;
+}
+
+.infoBarLinkContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.infoBarLinks {
+  margin-left: 5px;
+  margin-right: 5px;
+}

@@ -35,6 +35,7 @@ import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
 import OrderPCBs from '@components/Board/OrderPCBs'
 import BuyParts from '@components/Board/BuyParts/index'
 import { findReadme, renderReadme } from '@utils/index'
+import InfoBar from '@components/Board/InfoBar'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -320,6 +321,12 @@ const UpdateForm = ({
 
   return (
     <>
+      <InfoBar
+        name={name}
+        url={boardInfo?.url || 'url goes here'}
+        site={boardInfo?.site || ''}
+        description={description}
+      />
       <BoardShowcase projectFullname={projectFullname} />
       <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
       <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
