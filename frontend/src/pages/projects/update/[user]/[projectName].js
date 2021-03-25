@@ -29,6 +29,7 @@ import {
   uploadFilesToGiteaServer,
 } from '@utils/giteaInternalApi'
 import { AuthContext } from '@contexts/AuthContext'
+import ErrorPage from '@pages/_error'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -54,8 +55,10 @@ export const getServerSideProps = async ({ params, query }) => {
   }
 }
 
+
 const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) => {
   const fullName = `${user}/${projectName}`
+
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
@@ -67,6 +70,10 @@ const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) 
         <Loader active />
       </Page>
     )
+  }
+
+  if (isError) {
+    return <ErrorPage statusCode={404} />
   }
 
   return (
@@ -182,7 +189,7 @@ const UpdateForm = ({
     const UUIDs = await uploadFilesToGiteaServer(projectFullname, files, csrf)
 
     setNewlyUploadedDetails(files)
-    setNewlyUploadedUUIDs(UUIDs)
+    setNewlyUploadedUUIDs([...newlyUploadedUUIDs, UUIDs])
   }
 
   const validateProjectName = async () => {

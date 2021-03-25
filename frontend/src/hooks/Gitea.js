@@ -52,10 +52,12 @@ export const useRepo = (fullname, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/repos/${fullname}`
   const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
 
+  const notFound = data?.message === 'Not Found'
+
   return {
     repo: data,
     isLoading: !(data || error),
-    isError: error,
+    isError: error || notFound,
     mutate,
   }
 }

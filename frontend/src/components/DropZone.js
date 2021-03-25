@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { object, func } from 'prop-types'
-import _ from 'lodash'
+import { isEmpty } from 'lodash'
 
 import { useDropzone } from 'react-dropzone'
 import { fromEvent } from 'file-selector'
@@ -17,35 +17,59 @@ const maxFileSize = process.env.MAX_FILE_SIZE
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
 const DropZone = ({ onDrop, style }) => {
-  /**
-   * A unified way to get files from files/folder drop amd files/folder picker
-   * @param event
-   * @returns {Promise<(FileWithPath | DataTransferItem)[]>}
-   */
-  const getFilesFromEvent = event => fromEvent(event)
+  const _onDrop = useCallback(onDrop, [onDrop])
 
-  const { getRootProps, getInputProps, open, fileRejections } = useDropzone({
-    onDropAccepted: onDrop,
+  const DropZoneConfig = {
+    onDropAccepted: _onDrop,
     noClick: true,
-    getFilesFromEvent,
+    getFilesFromEvent: fromEvent,
     maxSize: MBytesToBytes(maxFileSize),
-  })
+    minSize: 1,
+  }
+
+  // This is the only way to support Drag'nDrop, file selector and Folder selector at the same time
+  // This hook is responsible for Drag'nDrop and file selector
+  const {
+    getRootProps,
+    getInputProps,
+    open,
+    fileRejections: FilePickerRejections,
+  } = useDropzone(DropZoneConfig)
+  // This hook is responsible for folder selector
+  const {
+    getInputProps: FolderPickerInputProps,
+    fileRejections: FolderPickerRejections,
+  } = useDropzone(DropZoneConfig)
 
   useEffect(() => {
-    // Display notification for failing to upload large files.
-    if (!_.isEmpty(fileRejections)) {
-      const largeFiles = fileRejections.map(f => f.file.name)
+    const fileRejections = [...FilePickerRejections, ...FolderPickerRejections]
+
+    // Display notification for rejecting large and empty files.
+    if (!isEmpty(fileRejections)) {
+      const largeFiles = fileRejections.filter(
+        // `file-too-large` is the error code returned by DropZone if file size > `MAX_FILE_SIZE`
+        rej => rej.errors[0].code === 'file-too-large',
+      )
+
+      // `file-too-small` is the error code returned by DropZone if file size < 1, i.e., empty
+      const emptyFiles = fileRejections.filter(
+        rej => rej.errors[0].code === 'file-too-small',
+      )
       // The notification won't be needed unless of case of trying to upload files
-      // greater than the `MAX_FILE_SIZE`, so defer importing it until needed
+      // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
       import('react-hot-toast').then(toast => {
-        largeFiles.forEach(name => {
+        emptyFiles.forEach(rej => {
+          toast.default.error(`"${rej.file.name}" is empty!`)
+        })
+
+        largeFiles.forEach(rej => {
           toast.default.error(
-            `"${name}" is too large! The maximum file size is ${maxFileSize}`,
+            `"${rej.file.name}" is too large! The maximum file size is ${maxFileSize}`,
           )
         })
       })
     }
-  }, [fileRejections])
+  }, [FilePickerRejections, FolderPickerRejections])
 
   return (
     <div
@@ -69,6 +93,7 @@ const DropZone = ({ onDrop, style }) => {
           icon="folder"
         />
         <input
+          {...FolderPickerInputProps()}
           type="file"
           id="folder-picker"
           style={{ display: 'none' }}
@@ -78,7 +103,6 @@ const DropZone = ({ onDrop, style }) => {
           msdirectory=""
           odirectory=""
           multiple
-          onChange={e => getFilesFromEvent(e).then(onDrop)}
         />
       </div>
     </div>
