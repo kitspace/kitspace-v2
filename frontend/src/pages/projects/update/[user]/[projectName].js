@@ -54,12 +54,8 @@ export const getServerSideProps = async ({ params, query }) => {
   }
 }
 
-<<<<<<< HEAD
-  const { repo: project, isLoading } = useRepo(fullName)
-=======
 const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) => {
   const fullName = `${user}/${projectName}`
->>>>>>> 73b4d1e (SSR project update page.)
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
