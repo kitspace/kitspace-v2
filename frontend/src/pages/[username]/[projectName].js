@@ -34,6 +34,7 @@ import BoardShowcase from '@components/Board/BoardShowcase'
 import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
 import OrderPCBs from '@components/Board/OrderPCBs'
 import BuyParts from '@components/Board/BuyParts/index'
+import { findReadme, renderReadme } from '@utils/index'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -45,10 +46,15 @@ export const getServerSideProps = async ({ params, query }) => {
   if (await repoExists(repoFullname)) {
     const repo = await getRepo(repoFullname)
     const repoFiles = await getDefaultBranchFiles(repoFullname)
+
     const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r => r.json())
     const boardInfo = await fetch(`${assetsPath}/info.json`).then(r => r.json())
     const { zipPath, width, height, layers } = zipInfo
     const zipUrl = `${assetsPath}/${zipPath}`
+
+    const repoFileNames = repoFiles.map(f => f.name)
+    const readmeFile = findReadme(repoFileNames)
+    const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
     return {
       props: {
@@ -59,6 +65,7 @@ export const getServerSideProps = async ({ params, query }) => {
         zipUrl,
         boardInfo,
         boardSpecs: { width, height, layers },
+        renderedReadme,
         isSynced: repo?.mirror,
         isEmpty: repo?.empty,
         user: params.username,
@@ -78,6 +85,7 @@ const UpdateProject = ({
   zipUrl,
   boardInfo,
   boardSpecs,
+  renderedReadme,
   isSynced,
   isEmpty,
   user,
@@ -151,8 +159,9 @@ const UpdateProject = ({
           repoFiles={repoFiles}
           hasInteractiveBom={hasInteractiveBom}
           zipUrl={zipUrl}
-          boardSpecs={boardSpecs}
           boardInfo={boardInfo}
+          boardSpecs={boardSpecs}
+          renderedReadme={renderedReadme}
           isNew={isNew}
           previewOnly={isSynced}
           owner={user}
@@ -169,6 +178,7 @@ const UpdateForm = ({
   hasInteractiveBom,
   boardInfo,
   zipUrl,
+  renderedReadme,
   boardSpecs,
   isNew,
   previewOnly,
@@ -318,6 +328,10 @@ const UpdateForm = ({
         lines={boardInfo.bom.lines}
         parts={boardInfo.bom.parts}
       />
+      <div
+        style={{ padding: '2rem 0' }}
+        dangerouslySetInnerHTML={{ __html: renderedReadme }}
+      ></div>
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}

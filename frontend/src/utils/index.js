@@ -1,6 +1,8 @@
 import slugify from 'slugify'
 import path from 'path'
 import { groupBy, zip } from 'lodash'
+import { matcher } from 'micromatch'
+import { getFileRawContent, renderMarkdown } from './giteaApi'
 
 /**
  * Look in project files and choose a file name for the project from it.
@@ -20,6 +22,34 @@ export const slugifiedNameFromFiles = files => {
   const kicadProject = FilesNames.find(f => f.endsWith('.pro'))
   const projectWithExt = kicadProject || FilesNames[0]
   return slugify(projectWithExt.split('.')[0])
+}
+
+/**
+ * find readme file in a repo under a path(default root `/`)
+ * @param {[string]} fileNames list of file names to search
+ * @param {string=} path a path(gitea path) to search into, if not passed searches repo path.
+ * @returns {string} the readme file name if found and an empty string if no readme file were found.
+ */
+export const findReadme = (fileNames, path) => {
+  // TODO: implement path search, handle rst case
+  const isMatch = matcher('readme?(.markdown|.mdown|.mkdn|.md|.rst)', {
+    nocase: true,
+  })
+  // Find the first matching file index
+  const fileIndex = fileNames.map(f => isMatch(f)).indexOf(true)
+
+  return fileIndex !== -1 ? fileNames[fileIndex] : ''
+}
+
+/**
+ *
+ * @param {string} repo
+ * @param {string} readmeFile
+ * @returns {string} the content of readme file as html
+ */
+export const renderReadme = async (repo, readmeFile) => {
+  const readmeContent = await getFileRawContent(repo, readmeFile)
+  return await renderMarkdown(readmeContent)
 }
 
 /**

@@ -232,6 +232,25 @@ export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
 }
 
 /**
+ *
+ * @param {string} repo repo fullname
+ * @param {string} path file path
+ * @returns {Promise<string>} file's raw content or empty string if the file doesn't exist.
+ */
+export const getFileRawContent = async (repo, path) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/raw/${path}`
+
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    credentials,
+    mode,
+    headers,
+  })
+
+  return res.ok ? await res.blob().then(b => b.text()) : ''
+}
+
+/**
  * Get the repos owned by a user.
  * @param username{string}
  * @returns {Promise<[Object]>}
@@ -285,4 +304,17 @@ export const uploadFile = async (repo, path, content, csrf) => {
   })
 
   return res.ok
+}
+
+export const renderMarkdown = async markdown => {
+  const endpoint = `${giteaApiUrl}/markdown/raw`
+
+  const res = await fetch(endpoint, {
+    method: 'Post',
+    mode,
+    headers,
+    body: markdown,
+  })
+
+  return res.ok ? await res.blob().then(b => b.text()) : ''
 }
