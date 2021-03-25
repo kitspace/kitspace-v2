@@ -56,17 +56,11 @@ export const getServerSideProps = async ({ params, query }) => {
   }
 }
 
-const UpdateProject = ({
-  repo,
-  repoFiles,
-  isSynced,
-  isEmpty,
-  user,
-  projectName,
-  isNew,
-}) => {
+
+const UpdateProject = ({ repo, repoFiles, isSynced, user, projectName, isNew }) => {
   const fullName = `${user}/${projectName}`
   const { reload } = useRouter()
+
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
     initialData: repo,
@@ -101,6 +95,10 @@ const UpdateProject = ({
         <Loader active>Migration Failed, please try again later!</Loader>
       </Page>)
   } else if (isError) {
+    return <ErrorPage statusCode={404} />
+  }
+
+  if (isError) {
     return <ErrorPage statusCode={404} />
   }
 
