@@ -8,7 +8,6 @@ services:
     ports:
       - '1234:3000'
     environment:
-
       - 'NODE_ENV=development'
       - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
@@ -46,7 +45,7 @@ services:
       - '2222:22'
     depends_on:
       - postgres
-    command: /bin/bash --verbose -c "cd /go/src/code.gitea.io/gitea/ && make backend && cp gitea /app/gitea/ && /usr/bin/entrypoint"
+    command: /bin/bash --verbose -c "make build && cp gitea /app/gitea/ && /usr/bin/entrypoint"
 
   postgres:
     image: postgres:9.6

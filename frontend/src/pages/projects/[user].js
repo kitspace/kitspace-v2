@@ -32,6 +32,7 @@ export const getServerSideProps = async ({ params, req }) => {
 }
 
 const User = ({ userRepos, username }) => {
+
   const { repos: projects } = useUserRepos(username, {
     initialData: userRepos,
   })
