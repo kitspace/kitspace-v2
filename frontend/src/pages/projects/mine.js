@@ -7,14 +7,26 @@ import { Page } from '@components/Page'
 import { AuthContext } from '@contexts/AuthContext'
 import styles from './mine.module.scss'
 import { useUserRepos } from '@hooks/Gitea'
+import { getUserRepos } from '@utils/giteaApi'
 
 const DeleteModal = dynamic(() => import('@components/DeleteProjectModal'))
 
-const Mine = () => {
+export const getServerSideProps = async ({ req }) => {
+  const { username } = req.session.user
+  const userRepos = await getUserRepos(username)
+
+  return {
+    props: { userRepos, username },
+  }
+}
+
+const Mine = ({ userRepos }) => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
 
-  const { repos: projects, isLoading, mutate } = useUserRepos(user?.username)
+  const { repos: projects, isLoading, mutate } = useUserRepos(user?.username, {
+    initialData: userRepos,
+  })
 
   if (isLoading || !user) {
     return (

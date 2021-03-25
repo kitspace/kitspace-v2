@@ -3,15 +3,7 @@ import Link from 'next/link'
 
 import { Page } from '@components/Page'
 
-// Explicitly mark as static.
-// Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
-export const getStaticProps = () => {
-  return {
-    props: {},
-  }
-}
-
-export default function OneClickBom() {
+const OneClickBom = () => {
   return (
     <Page>
       <p style={{ textAlign: 'center', minHeight: 86 }}>
@@ -43,3 +35,5 @@ export default function OneClickBom() {
     </Page>
   )
 }
+
+export default OneClickBom

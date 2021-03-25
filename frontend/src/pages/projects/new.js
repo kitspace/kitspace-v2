@@ -25,14 +25,6 @@ import useForm from '@hooks/useForm'
 import { ExistingProjectFromModel } from '@models/ExistingProjectForm'
 import { SyncRepoFromModel } from '@models/SyncRepoForm'
 
-// Explicitly mark as static.
-// Due to using `getInitialProps` in `_app.js` pages that can be statically built aren't.
-export const getStaticProps = () => {
-  return {
-    props: {},
-  }
-}
-
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
   const isBigScreen = useMediaPredicate('(min-width: 1200px)')

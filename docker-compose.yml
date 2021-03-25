@@ -4,11 +4,12 @@ services:
   frontend:
     build:
       context: frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - '1234:3000'
     environment:
-      - 'NODE_ENV=production'
+
+      - 'NODE_ENV=development'
       - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - 'INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}'
@@ -20,12 +21,12 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /etc/hosts:/etc/hosts
-    command: /bin/sh --verbose -c "yarn build && yarn start"
+    command: /bin/sh --verbose -c "yarn install && yarn dev"
 
   gitea:
     build:
       context: gitea
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.gitea.dev
     environment:
       - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
@@ -45,7 +46,7 @@ services:
       - '2222:22'
     depends_on:
       - postgres
-#    command: /bin/bash --verbose -c "cd /go/src/code.gitea.io/gitea/ && make backend && cp gitea /app/gitea/ && /usr/bin/entrypoint"
+    command: /bin/bash --verbose -c "cd /go/src/code.gitea.io/gitea/ && make backend && cp gitea /app/gitea/ && /usr/bin/entrypoint"
 
   postgres:
     image: postgres:9.6
