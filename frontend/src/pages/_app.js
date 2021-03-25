@@ -54,7 +54,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
       <SWRConfig value={{}}>
         <Head>
           {setSession}
-          {setStaticFallback}}
+          {setStaticFallback}
         </Head>
         <Component {...pageProps} />
         {isStaticFallback ? <ErrorMessage /> : null}

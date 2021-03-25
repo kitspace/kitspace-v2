@@ -70,7 +70,6 @@ const DirectStores = ({ items, multiplier }) => {
   }
 
   const digikey = (countryCode, parts) => {
-    console.log({ parts })
     const site = DigikeyData.sites[DigikeyData.lookup[countryCode]]
     return (
       <form
