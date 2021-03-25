@@ -2,7 +2,11 @@ import slugify from 'slugify'
 import path from 'path'
 import { groupBy, zip } from 'lodash'
 import { matcher } from 'micromatch'
+import cheerio from 'cheerio'
+
 import { getFileRawContent, renderMarkdown } from './giteaApi'
+
+const giteaUrl = process.env.KITSPACE_GITEA_URL
 
 /**
  * Look in project files and choose a file name for the project from it.
@@ -31,7 +35,7 @@ export const slugifiedNameFromFiles = files => {
  * @returns {string} the readme file name if found and an empty string if no readme file were found.
  */
 export const findReadme = (fileNames, path) => {
-  // TODO: implement path search, handle rst case
+  // TODO: implement path search.
   const isMatch = matcher('readme?(.markdown|.mdown|.mkdn|.md|.rst)', {
     nocase: true,
   })
@@ -42,14 +46,35 @@ export const findReadme = (fileNames, path) => {
 }
 
 /**
- *
+ * convert readme to html and convert urls to absolute urls.
  * @param {string} repo
  * @param {string} readmeFile
- * @returns {string} the content of readme file as html
+ * @returns {Promise<string>} the content of readme file as html
  */
 export const renderReadme = async (repo, readmeFile) => {
+  // TODO handle `rst` case.
   const readmeContent = await getFileRawContent(repo, readmeFile)
-  return await renderMarkdown(readmeContent)
+  const readmeAsHtml = await renderMarkdown(readmeContent)
+
+  // Replace relative urls with absolute ones for `img` and `a` tags.
+  // Add class to `img` tags
+  const $ = cheerio.load(readmeAsHtml)
+  $('img').each((_, elem) => {
+    const img = $(elem)
+    const src = img.attr('src')
+    const rawUrl = `${giteaUrl}/${repo}/raw${src}`
+    img.attr('src', rawUrl)
+    img.attr('class', 'readmeImg')
+  })
+
+  $('a').each((_, elem) => {
+    const a = $(elem)
+    const href = a.attr('href')
+    const rawUrl = `${giteaUrl}/${repo}/raw${href}`
+    a.attr('href', rawUrl)
+  })
+
+  return $.html()
 }
 
 /**
