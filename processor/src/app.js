@@ -1,6 +1,7 @@
-const express = require('express')
-const path = require('path')
 const EventEmitter = require('events')
+const express = require('express')
+const log = require('loglevel')
+const path = require('path')
 
 const watcher = require('./watcher')
 
@@ -17,18 +18,18 @@ function createApp(repoDir = '/repositories') {
     fileStatus[x] = { status: 'in_progress' }
     const headPath = getHeadPath(x)
     links[headPath] = x
-    console.info('in_progress', x)
+    log.debug('in_progress', x)
   })
   eventEmitter.on('done', x => {
     x = path.relative(filesDir, x)
     fileStatus[x] = { status: 'done' }
-    console.info('done', x)
+    log.debug('done', x)
   })
   eventEmitter.on('failed', (x, e) => {
     x = path.relative(filesDir, x)
     const error = e.message || e.stderr || 'Unknown error'
     fileStatus[x] = { status: 'failed', error }
-    console.info('failed', x, error)
+    log.debug('failed', x, error)
   })
   const unwatch = watcher.watch(eventEmitter, repoDir)
 

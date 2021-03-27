@@ -77,6 +77,7 @@ services:
     environment:
       - NODE_ENV=development
       - 'ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+      - LOG_LEVEL=info
     volumes:
       - ./volumes/gitea/git/repositories:/repositories
       - ./volumes/processor:/data
