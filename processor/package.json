@@ -18,6 +18,7 @@
     "js-yaml": "^3.3.1",
     "jszip": "^3.1.1",
     "lodash.debounce": "^4.0.8",
+    "loglevel": "^1.7.1",
     "pcb-stackup": "4.0.0-next.13",
     "ramda": "^0.27.1",
     "superagent": "^6.1.0",

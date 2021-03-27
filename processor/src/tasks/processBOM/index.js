@@ -52,12 +52,12 @@ async function processBOM(
 
     if (bom.invalid != null) {
       bom.invalid.forEach(invalid => {
-        console.warning('invalid line:', invalid)
+        log.warn('invalid line:', invalid)
       })
     }
     if (bom.warnings != null) {
       bom.warnings.forEach(warning => {
-        console.warning('warning:', warning)
+        log.warn('warning:', warning)
       })
     }
     if (!bom.lines || bom.lines.length === 0) {
