@@ -36,11 +36,11 @@ services:
   postgres:
     image: postgres:12.2
     environment:
-      - POSTGRES_USER=gitea
+      - "POSTGRES_MULTIPLE_DATABASES=gitea:gitea,orders:orders"
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=gitea
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
 
   nginx:
     environment:
