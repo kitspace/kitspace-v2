@@ -30,11 +30,7 @@ services:
       - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
       - USER_GID=1000
-
-      # prevents gitea from showing a setup page for the
-      # database
-      - INSTALL_LOCK=false
-
+      - SECRET_KEY=${GITEA_SECRET_KEY}
       - DB_TYPE=postgres
       - DB_HOST=postgres:5432
       - DB_NAME=gitea
