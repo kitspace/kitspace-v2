@@ -48,7 +48,7 @@ services:
     command: /bin/bash --verbose -c "make build && cp gitea /app/gitea/ && /usr/bin/entrypoint"
 
   postgres:
-    image: postgres:9.6
+    image: postgres:12.2
     environment:
       - POSTGRES_USER=gitea
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
