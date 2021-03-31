@@ -43,7 +43,7 @@ cp .env.example .env
 docker-compose up
 ```
 
-5. Go to [gitea.kitspace.test:3000/install](http://gitea.kitspace.test:3000/install) and complete the install (everything should already be filled in correctly). Create a new user and login, this will be the admin user.
+5. Go to [gitea.kitspace.test:3000/user/sign_up](http://gitea.kitspace.test:3000/user/sign_up) and create a new user. This will be the admin user.
 
 
 ## Frontend
