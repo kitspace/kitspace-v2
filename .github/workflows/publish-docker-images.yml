@@ -15,12 +15,9 @@ env:
   MAX_FILE_SIZE: 6M
 
 on:
-  release:
-    types: [published]
   push:
     branches:
       - master
-      - ghcr
   pull_request:
     branches:
       - master
