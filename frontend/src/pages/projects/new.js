@@ -109,7 +109,7 @@ const Upload = ({ user, csrf }) => {
         repo: `${user.username}/${tempProjectName}`,
         csrf,
       })
-      await push(`/projects/update/${user.username}/${tempProjectName}?create=true`)
+      await push(`/${user.username}/${tempProjectName}?create=true`)
     }
   }
 
@@ -120,12 +120,12 @@ const Upload = ({ user, csrf }) => {
     await createRepo(differentName, '', csrf)
 
     await commitFiles({ files, repo: `${user.username}/${differentName}`, csrf })
-    await push(`/projects/update/${user.username}/${differentName}?create=true`)
+    await push(`/${user.username}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
     await commitFiles({ files, repo: `${user.username}/${projectName}`, csrf })
-    await push(`/projects/update/${user.username}/${projectName}`)
+    await push(`/${user.username}/${projectName}`)
   }
 
   const validateProjectName = async () => {
@@ -236,7 +236,7 @@ const Sync = ({ user, csrf }) => {
           content: 'Migrated successfully, redirecting the project page...',
           color: 'green',
         })
-        await push(`/projects/update/${username}/${repoName}`)
+        await push(`/${username}/${repoName}`)
       } else {
         if (alreadySynced) {
           setMessage({

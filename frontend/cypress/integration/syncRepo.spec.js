@@ -40,15 +40,10 @@ describe('Syncing a project behavior validation', () => {
     cy.wait(1000)
     cy.get('.ui.repository.list').children().get('.header').contains(repoName)
 
-    cy.intercept(
-      `http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`,
-    ).as('getRepos')
-
     // assert the repo is on `{frontend}/projects/mine`
-    cy.visit('/projects/mine')
+    cy.visit(`/${username}`)
     cy.wait(1000)
 
-    cy.wait('@getRepos')
-    cy.get('.list > .item > .content > .header').contains(repoName)
+    cy.get('.ui.card').contains(repoName)
   })
 })

@@ -48,13 +48,13 @@ export const urlToName = url => {
  * @returns {string}
  * @example
  * // returns 'testUser/cool-project"
- * projectNameFromPath('/projects/update/testUser/cool-project')
+ * projectNameFromPath('/testUser/cool-project')
  * @example
  * // returns 'testUser/cool-project"
- * projectNameFromPath('/projects/update/testUser/cool-project?create=true')
+ * projectNameFromPath('/testUser/cool-project?create=true')
  */
 export const projectNameFromPath = path => {
-  const pathWithQuery = path.split('/').slice(3).join('/')
+  const pathWithQuery = path.split('/').slice(1).join('/')
   // In case if there's a query string remove it
   return pathWithQuery.split('?')[0]
 }
