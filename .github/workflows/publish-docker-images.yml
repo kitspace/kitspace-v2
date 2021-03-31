@@ -16,7 +16,7 @@ env:
 
 on:
   release:
-    types: [ published ]
+    types: [published]
   push:
     branches:
       - master
@@ -25,8 +25,8 @@ on:
     branches:
       - master
 jobs:
-  push_to_registry_sha:
-    name: Push Docker images-SHA to GitHub Container Register
+  build:
+    name: Build docker images and push to registry (with sha tags)
     runs-on: ubuntu-20.04
 
     steps:
@@ -98,11 +98,11 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-  push_to_registry_latest:
-    name: Run e2e & publish `latest` docker images
+  test:
+    name: Run e2e tests
     runs-on: ubuntu-20.04
     needs:
-      - push_to_registry_sha
+      - build
 
     steps:
       - name: Check out the repo
@@ -175,6 +175,18 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  publish:
+    name: Tag "latest" docker images
+    runs-on: ubuntu-20.04
+    needs:
+      - test
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -186,7 +198,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to GitHub Container Registery
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -203,7 +215,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Push processo:latest to GitHub Container Registry
+      - name: Push processor:latest to GitHub Container Registry
         uses: docker/build-push-action@v2
         with:
           context: ./processor
