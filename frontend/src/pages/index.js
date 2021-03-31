@@ -2,11 +2,11 @@ export const getServerSideProps = async () => {
   return {
     redirect: {
       destination: '/search',
-      permanent: true
-    }
+      permanent: true,
+    },
   }
 }
 
-const Home = () => { }
+const Home = () => {}
 
 export default Home

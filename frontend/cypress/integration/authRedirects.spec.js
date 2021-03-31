@@ -36,6 +36,6 @@ describe('It validates authentication redirects', () => {
   it('should redirects authenticated users to homepage when accessing reqSignOut page', () => {
     // `/login` is marked as `reqSignOut`.
     cy.visit('/login')
-    cy.url().should('eq', 'http://kitspace.test:3000/')
+    cy.url().should('eq', 'http://kitspace.test:3000/search')
   })
 })

@@ -12,64 +12,77 @@ import ProjectCard from '@components/ProjectCard'
 import { useRouter } from 'next/router'
 
 export const getServerSideProps = async ({ query }) => {
-    const { q } = query
-    if (q) {
-        return {
-            props: {
-                repos: await searchRepos(q),
-                q
-            }
-        }
-    } else {
-        return {
-            props: {
-                repos: await getAllRepos(),
-            },
-        }
+  const { q } = query
+  if (q) {
+    return {
+      props: {
+        repos: await searchRepos(q),
+        q,
+      },
     }
+  } else {
+    return {
+      props: {
+        repos: await getAllRepos(),
+      },
+    }
+  }
 }
 
 const Search = ({ repos, q }) => {
-    const { user } = useContext(AuthContext)
-    const { push } = useRouter()
-    const username = user?.login || 'unknown user'
+  const { user } = useContext(AuthContext)
+  const { push } = useRouter()
+  const username = user?.login || 'unknown user'
 
-    const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFromModel)
-    const [query, setQuery] = useState(q || '')
-    const { repos: projects } = useSearchRepos(query, { initialData: repos })
+  const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFromModel)
+  const [query, setQuery] = useState(q || '')
+  const [queryChanged, setChangedQuery] = useState(false)
+  const { repos: projects } = useSearchRepos(query, { initialData: repos })
 
-    useEffect(() => {
-        setQuery(isValid ? form.query : '')
-    }, [form])
+  useEffect(() => {
+    setQuery(isValid ? form.query : '')
+    setChangedQuery(true)
+  }, [form])
 
-    useEffect(() => {
-        query ? push(`/search?q=${query}`) : push(`/search`)
-    }, [query])
+  useEffect(() => {
+    if (query) {
+      push(`/search?q=${query}`)
+    } else if (queryChanged) {
+      push(`/search`)
+    }
+  }, [query])
 
-    return (
-        <Page title="home">
-            <div>Hi there {username}</div>
-            <div style={{ maxWidth: '500px', margin: 'auto', padding: '1rem', paddingBottom: '3rem' }}>
-                <Form size='big'>
-                    <Form.Field
-                        icon='search'
-                        fluid
-                        control={Input}
-                        placeholder="Search for projects"
-                        name="query"
-                        value={form.query || ''}
-                        onChange={onChange}
-                        error={form.query !== '' && formatErrorPrompt('query')}
-                    />
-                </Form>
-            </div>
-            <div>
-                {projects?.map(project => (
-                    <ProjectCard {...project} key={project.id} />
-                ))}
-            </div>
-        </Page>
-    )
+  return (
+    <Page title="home">
+      <div>Hi there {username}</div>
+      <div
+        style={{
+          maxWidth: '500px',
+          margin: 'auto',
+          padding: '1rem',
+          paddingBottom: '3rem',
+        }}
+      >
+        <Form size="big">
+          <Form.Field
+            icon="search"
+            fluid
+            control={Input}
+            placeholder="Search for projects"
+            name="query"
+            value={form.query || ''}
+            onChange={onChange}
+            error={form.query !== '' && formatErrorPrompt('query')}
+          />
+        </Form>
+      </div>
+      <div>
+        {projects?.map(project => (
+          <ProjectCard {...project} key={project.id} />
+        ))}
+      </div>
+    </Page>
+  )
 }
 
 export default Search
