@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   frontend:
@@ -23,9 +23,10 @@ services:
       - SECRET_KEY=${GITEA_SECRET_KEY}
       - DB_TYPE=postgres
       - DB_HOST=postgres:5432
-      - DB_NAME=gitea
+      - DB_NAME=kitspace
       - DB_USER=gitea
       - DB_PASSWD=${GITEA_POSTGRES_PASSWORD}
+      - GITEA__DATABASE__SCHEMA=gitea
     volumes:
       - gitea-data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -35,12 +36,16 @@ services:
 
   postgres:
     image: postgres:12.2
+    ports:
+      - '5432:5432'
     environment:
-      - "POSTGRES_MULTIPLE_DATABASES=gitea:gitea:${GITEA_POSTGRES_PASSWORD},orders:orders:${ORDERS_POSTGRES_PASSWORD}"
-      - "POSTGRES_PASSWORD=${POSTGRES_ROOT_PASSWORD}"
+      - 'GITEA_POSTGRES_PASSWORD=${GITEA_POSTGRES_PASSWORD}'
+      - 'ORDERS_POSTGRES_PASSWORD=${ORDERS_POSTGRES_PASSWORD}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_ROOT_PASSWORD}'
+      - POSTGRES_DB=kitspace
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./postgres:/docker-entrypoint-initdb.d
+      - ./config/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
   nginx:
     environment:
