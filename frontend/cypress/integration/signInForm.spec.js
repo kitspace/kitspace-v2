@@ -67,7 +67,7 @@ describe('Log in form submission', () => {
     cy.signIn(username, password)
 
     // After a successful login the user is redirect to the homepage.
-    cy.url().should('eq', 'http://kitspace.test:3000/')
+    cy.url().should('eq', 'http://kitspace.test:3000/search')
     // Currently the username is in the homepage body,
     // probably will change in the future
     cy.get('.ui.container').should('include.text', username)

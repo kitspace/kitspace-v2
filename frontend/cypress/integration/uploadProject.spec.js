@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-const updateProjectUrl = 'http://kitspace.test:3000/projects/update'
+const updateProjectUrl = 'http://kitspace.test:3000'
 
 describe('Upload project', () => {
   const username = faker.name.firstName()
@@ -71,8 +71,6 @@ describe('Upload project', () => {
 
     // Choose `Update existing project`
     cy.get('[data-cy=collision-update]').click()
-
-    cy.wait('@getRepo')
 
     // redirect to the upload page
     cy.url().should('eq', `${updateProjectUrl}/${username}/example`)
