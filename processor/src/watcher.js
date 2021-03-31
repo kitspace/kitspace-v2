@@ -1,11 +1,12 @@
+const EventEmitter = require('events')
 const chokidar = require('chokidar')
 const cp = require('child_process')
 const debounce = require('lodash.debounce')
 const fs = require('fs')
+const jsYaml = require('js-yaml')
+const log = require('loglevel')
 const path = require('path')
 const util = require('util')
-const jsYaml = require('js-yaml')
-const EventEmitter = require('events')
 
 const { DATA_DIR } = require('./env')
 const { exists } = require('./utils')
@@ -22,7 +23,7 @@ function watch(eventEmitter, repoDir = '/repositories') {
 
   // watch repositories for file-system events and process the project
   const handleAddDir = gitDir => {
-    console.info('addDir', gitDir)
+    log.debug('addDir', gitDir)
     // we debounce the file-system event to only invoke once per change in the repo
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
@@ -38,7 +39,7 @@ function watch(eventEmitter, repoDir = '/repositories') {
     // if the repo is moved or deleted we clean up the watcher
     dirWatchers[gitDir].unlinkDir = chokidar.watch(gitDir).on('unlinkDir', dir => {
       if (dir === gitDir) {
-        console.info('deleting', gitDir)
+        log.debug('deleting', gitDir)
         dirWatchers[gitDir].add.close()
         dirWatchers[gitDir].unlinkDir.close()
         delete dirWatchers[gitDir]
@@ -127,7 +128,7 @@ async function sync(gitDir, checkoutDir) {
         err.stderr ===
         "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
       ) {
-        console.warn('repo without any branches', checkoutDir)
+        log.warn('repo without any branches', checkoutDir)
         return err
       } else {
         throw err
@@ -135,7 +136,7 @@ async function sync(gitDir, checkoutDir) {
     })
   } else {
     await exec(`git clone ${gitDir} ${checkoutDir}`)
-    console.info('cloned into', checkoutDir)
+    log.debug('cloned into', checkoutDir)
   }
 }
 
