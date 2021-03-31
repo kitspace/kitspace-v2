@@ -69,7 +69,7 @@ describe('It validates redirects after login', () => {
     cy.signIn(username, password)
 
     // After a successful login the user is redirect to the homepage.
-    cy.url().should('eq', 'http://kitspace.test:3000/search')
+    cy.url().should('eq', 'http://kitspace.test:3000/')
   })
 
   it('should redirect to correct page if there is a redirect query', () => {
