@@ -65,6 +65,37 @@ export const useRepo = (fullname, swrOpts = {}) => {
 export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
 
 /**
+ * A hook to search all repos
+ * @param sort{string}
+ * @param order{string}
+ * @param swrOpts{Object}
+ * @param q{string=}: search query, leave undefined to return all repos
+ * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
+ */
+export const useSearchRepos = (
+  q,
+  swrOpts = {},
+  sort = 'updated',
+  order = 'desc',
+) => {
+  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${
+    q ? `&q=${q}` : ''
+  }`
+
+  const { data, error, mutate } = useSWR(
+    [endpoint, { sort, order, q }],
+    fetcher,
+    swrOpts,
+  )
+  return {
+    repos: data || [],
+    isLoading: !(data || error),
+    isError: error,
+    mutate,
+  }
+}
+
+/**
  * A hook to get repos owned by as user
  * @param username{string}
  * @param swrOpts{swrOptions}
