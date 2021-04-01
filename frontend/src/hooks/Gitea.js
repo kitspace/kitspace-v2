@@ -25,21 +25,17 @@ import useSWR from 'swr'
  * @property {function(a, b)} [compare(a, b)]: comparison function used to detect when returned data has changed, to avoid spurious rerenders. By default, [dequal](https://github.com/lukeed/dequal) is used.
  **/
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
-const mode = 'cors'
-const headers = { 'Content-Type': 'application/json' }
 
 /**
  *
  * @param url
- * @param initOps{Object} other options to pass to `fetch`
  * @returns {Promise<Promise<any>>}
  */
-const fetcher = (url, initOps = {}) =>
+const fetcher = url =>
   fetch(url, {
     method: 'GET',
-    mode,
-    headers,
-    ...initOps,
+    mode: 'cors',
+    headers: { Accept: 'application/json' },
   }).then(r => r.json())
 
 /**
@@ -66,8 +62,7 @@ export const useRepo = (fullname, swrOpts = {}) => {
  * A hook to get all repos on gitea
  * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
  */
-export const useAllRepos = (swrOpts = {}) =>
-  useSearchRepos(null, swrOpts)
+export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
 
 /**
  * A hook to search all repos
@@ -83,7 +78,9 @@ export const useSearchRepos = (
   sort = 'updated',
   order = 'desc',
 ) => {
-  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${q ? `&q=${q}` : ''}`
+  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${
+    q ? `&q=${q}` : ''
+  }`
 
   const { data, error, mutate } = useSWR(
     [endpoint, { sort, order, q }],
