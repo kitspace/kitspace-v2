@@ -72,12 +72,7 @@ export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
  */
 export const useUserRepos = (username, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/users/${username}/repos`
-
-  const { data, error, mutate } = useSWR(
-    username ? endpoint : null,
-    fetcher,
-    swrOpts,
-  )
+  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
 
   return {
     repos: data || [],
@@ -95,10 +90,7 @@ export const useUserRepos = (username, swrOpts = {}) => {
  */
 export const useDefaultBranchFiles = (repo, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents`
-
-  // Dependent data if: swr won't fetch if `repoDetails.default_branch` returns a falsy value.
-  // See https://swr.vercel.app/docs/conditional-fetching
-  const { data, error, mutate } = useSWR(() => endpoint, fetcher, swrOpts)
+  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
 
   return {
     files: data || [],
