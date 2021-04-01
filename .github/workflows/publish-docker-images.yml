@@ -75,6 +75,7 @@ jobs:
       - name: Pull gitea image with current submodule SHA
         shell: bash
         run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
+        continue-on-error: true
 
       - name: Push gitea to GitHub Container Registry
         # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
