@@ -25,8 +25,8 @@ services:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     restart: always
     volumes:
-      - next:/app/.next/
-      - public:/app/public/
+      - next:/srv/frontend/.next/
+      - public:/srv/frontend/public/
 
   processor:
     image: ghcr.io/kitspace/processor:${PROCESSOR_DEPLOY_IMAGE_TAG:-latest}
