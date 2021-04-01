@@ -20,7 +20,7 @@ describe('Updating a project behavior validation', () => {
     cy.signIn(username, password)
 
     // waiting prevents random test failures due to jittering in response
-    cy.wait(1000)
+    cy.wait(5000)
     // sync the test repo
     cy.visit('/projects/new/')
     // Simulate dropping a single file('example.png') in the dropzone.
