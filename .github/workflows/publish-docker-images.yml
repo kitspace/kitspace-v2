@@ -17,7 +17,7 @@ env:
 on: [push]
 jobs:
   build:
-    name: Build docker images and push to registry (with sha tags)
+    name: Build docker images
     runs-on: ubuntu-20.04
 
     steps:
@@ -167,7 +167,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
-    name: Tag "latest" docker images
+    name: Push images with "latest" tag
     runs-on: ubuntu-20.04
     needs:
       - test
