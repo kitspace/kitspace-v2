@@ -14,13 +14,7 @@ env:
   USER_ISR_INTERVAL: 86400
   MAX_FILE_SIZE: 6M
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+on: [push]
 jobs:
   build:
     name: Build docker images and push to registry (with sha tags)
