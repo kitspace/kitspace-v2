@@ -105,10 +105,6 @@ jobs:
         shell: bash
         run: cat ./config/hosts | sudo tee -a /etc/hosts
 
-      - name: Install httpie
-        shell: bash
-        run: sudo apt install httpie
-
       - name: Install Gitea
         shell: bash
         timeout-minutes: 5
