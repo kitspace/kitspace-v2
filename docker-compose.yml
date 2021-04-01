@@ -66,4 +66,3 @@ services:
       - ./volumes/processor:/data
       - ./processor:/app
       - /app/node_modules
-    command: /bin/bash --verbose -c 'yarn install && yarn dev'

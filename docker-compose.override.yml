@@ -26,3 +26,4 @@ services:
       - NODE_ENV=development
     ports:
       - '5000:5000'
+    command: /bin/bash --verbose -c 'yarn install && yarn dev'
