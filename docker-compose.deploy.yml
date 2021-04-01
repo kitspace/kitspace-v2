@@ -4,6 +4,9 @@ services:
     image: ghcr.io/kitspace/frontend:${FRONTEND_DEPLOY_IMAGE_TAG:-latest}
     command: /bin/sh --verbose -c "yarn build && yarn start"
     restart: always
+    volumes:
+      - next:/app/.next/
+      - public:/app/public/
 
   gitea:
     image: ghcr.io/kitspace/gitea:${GITEA_DEPLOY_IMAGE_TAG:-latest}
@@ -21,7 +24,14 @@ services:
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     restart: always
+    volumes:
+      - next:/app/.next/
+      - public:/app/public/
 
   processor:
     image: ghcr.io/kitspace/processor:${PROCESSOR_DEPLOY_IMAGE_TAG:-latest}
     restart: always
+
+volumes:
+  next:
+  public:

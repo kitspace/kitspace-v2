@@ -11,7 +11,6 @@ services:
       - USER_ISR_INTERVAL=${USER_ISR_INTERVAL}
       - MAX_FILE_SIZE=${MAX_FILE_SIZE}
     volumes:
-      - ./frontend:/app
       - /app/node_modules
       - /etc/hosts:/etc/hosts
     depends_on:
@@ -50,12 +49,12 @@ services:
     depends_on:
       - frontend
       - gitea
+      - processor
     image: kitspace/nginx-certbot-plugin:latest
     ports:
       - '${KITSPACE_DEV_PORT}:80'
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - ./frontend:/srv/frontend
 
 
   processor:
@@ -65,5 +64,3 @@ services:
     volumes:
       - ./volumes/gitea/git/repositories:/repositories
       - ./volumes/processor:/data
-      - ./processor:/app
-      - /app/node_modules

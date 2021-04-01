@@ -8,6 +8,8 @@ services:
     ports:
       - '1234:3000'
     command: /bin/sh --verbose -c 'yarn install && yarn dev'
+    volumes:
+      - ./frontend:/app
 
   gitea:
     build:
@@ -18,6 +20,10 @@ services:
       - '2222:22'
     command: /bin/bash --verbose -c 'make build && cp gitea /app/gitea/ && /usr/bin/entrypoint'
 
+  nginx:
+    volumes:
+      - ./frontend:/srv/frontend
+
   processor:
     build:
       context: processor/
@@ -27,3 +33,6 @@ services:
     ports:
       - '5000:5000'
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
+    volumes:
+      - ./processor:/app
+      - /app/node_modules
