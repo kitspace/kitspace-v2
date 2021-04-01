@@ -2,20 +2,20 @@ version: '2'
 
 services:
   frontend:
+    command: /bin/sh --verbose -c "yarn install && yarn dev"
     environment:
-      - 'NODE_ENV=development'
-      - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
-      - 'KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
-      - 'INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}'
-      - 'USER_ISR_INTERVAL=${USER_ISR_INTERVAL}'
-      - 'MAX_FILE_SIZE=${MAX_FILE_SIZE}'
-    depends_on:
-      - gitea
+      - NODE_ENV=development
+      - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
+      - KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
+      - INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}
+      - USER_ISR_INTERVAL=${USER_ISR_INTERVAL}
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE}
     volumes:
       - ./frontend:/app
       - /app/node_modules
       - /etc/hosts:/etc/hosts
-    command: /bin/sh --verbose -c "yarn install && yarn dev"
+    depends_on:
+      - gitea
 
   gitea:
     environment:
@@ -46,20 +46,21 @@ services:
       - ./volumes/postgres:/var/lib/postgresql/data
 
   nginx:
-    image: 'kitspace/nginx-certbot-plugin:latest'
-    ports:
-      - '${KITSPACE_DEV_PORT}:80'
-    volumes:
-      - './nginx:/etc/nginx/conf.d'
-      - './frontend:/srv/frontend'
-    command: /bin/bash --verbose -c "sed -e 's/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g' -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
+    command: "/bin/bash --verbose -c \"sed -e 's/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g' -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\\\/\\\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command\""
     depends_on:
       - frontend
       - gitea
+    image: kitspace/nginx-certbot-plugin:latest
+    ports:
+      - '${KITSPACE_DEV_PORT}:80'
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./frontend:/srv/frontend
+
 
   processor:
     environment:
-      - 'ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+      - ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - LOG_LEVEL=info
     volumes:
       - ./volumes/gitea/git/repositories:/repositories

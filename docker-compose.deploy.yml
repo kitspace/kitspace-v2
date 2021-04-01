@@ -1,16 +1,12 @@
 version: '2'
 services:
   frontend:
-    image: 'ghcr.io/kitspace/frontend:${FRONTEND_DEPLOY_IMAGE_TAG:-latest}'
+    image: ghcr.io/kitspace/frontend:${FRONTEND_DEPLOY_IMAGE_TAG:-latest}
     command: /bin/sh --verbose -c "yarn build && yarn start"
     restart: always
 
-  processor:
-    image: 'ghcr.io/kitspace/processor:${PROCESSOR_DEPLOY_IMAGE_TAG:-latest}'
-    restart: always
-
   gitea:
-    image: 'ghcr.io/kitspace/gitea:${GITEA_DEPLOY_IMAGE_TAG:-latest}'
+    image: ghcr.io/kitspace/gitea:${GITEA_DEPLOY_IMAGE_TAG:-latest}
     command: /usr/bin/entrypoint
     restart: always
 
@@ -19,10 +15,13 @@ services:
 
   nginx:
     ports:
-      - '443:443'
+      - 443:443
     environment:
       - RUN_CERTBOT=true
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     restart: always
 
+  processor:
+    image: ghcr.io/kitspace/processor:${PROCESSOR_DEPLOY_IMAGE_TAG:-latest}
+    restart: always

@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - '1234:3000'
-    command: /bin/sh --verbose -c "yarn install && yarn dev"
+    command: /bin/sh --verbose -c 'yarn install && yarn dev'
 
   gitea:
     build:
@@ -16,7 +16,7 @@ services:
     ports:
       - '3333:3000'
       - '2222:22'
-    command: /bin/bash --verbose -c "make build && cp gitea /app/gitea/ && /usr/bin/entrypoint"
+    command: /bin/bash --verbose -c 'make build && cp gitea /app/gitea/ && /usr/bin/entrypoint'
 
   processor:
     build:
