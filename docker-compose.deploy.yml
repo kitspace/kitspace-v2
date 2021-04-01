@@ -1,7 +1,7 @@
 version: '2'
 services:
   frontend:
-    image: 'ghcr.io/kitspace/frontend-v2:latest'
+    image: 'ghcr.io/kitspace/frontend:latest'
     ports:
       - '1234:3000'
     environment:
@@ -21,7 +21,7 @@ services:
     restart: always
 
   processor:
-    image: 'ghcr.io/kitspace/processor-v2:latest'
+    image: 'ghcr.io/kitspace/processor:latest'
     ports:
       - '5000:5000'
     environment:

@@ -58,7 +58,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
           push: true
-          tags: ghcr.io/kitspace/frontend-v2:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -68,7 +68,7 @@ jobs:
           context: ./processor
           file: ./processor/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/processor-v2:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -202,7 +202,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
           push: true
-          tags: ghcr.io/kitspace/frontend-v2:latest
+          tags: ghcr.io/kitspace/frontend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -212,7 +212,7 @@ jobs:
           context: ./processor
           file: ./processor/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/processor-v2:latest
+          tags: ghcr.io/kitspace/processor:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
