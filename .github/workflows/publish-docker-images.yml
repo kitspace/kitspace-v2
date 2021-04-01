@@ -169,6 +169,7 @@ jobs:
 
   publish:
     name: Push images with "latest" tag
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
     needs:
       - test
