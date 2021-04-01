@@ -2,11 +2,6 @@ version: '2'
 
 services:
   frontend:
-    build:
-      context: frontend
-      dockerfile: Dockerfile.dev
-    ports:
-      - '1234:3000'
     environment:
       - 'NODE_ENV=development'
       - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
@@ -23,9 +18,6 @@ services:
     command: /bin/sh --verbose -c "yarn install && yarn dev"
 
   gitea:
-    build:
-      context: gitea
-      dockerfile: Dockerfile.gitea.dev
     environment:
       - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
@@ -41,12 +33,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - ./gitea:/go/src/code.gitea.io/gitea
-    ports:
-      - '3333:3000'
-      - '2222:22'
     depends_on:
       - postgres
-    command: /bin/bash --verbose -c "make build && cp gitea /app/gitea/ && /usr/bin/entrypoint"
 
   postgres:
     image: postgres:12.2
@@ -70,13 +58,7 @@ services:
       - gitea
 
   processor:
-    build:
-      context: processor/
-      dockerfile: Dockerfile
-    ports:
-      - '5000:5000'
     environment:
-      - NODE_ENV=development
       - 'ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
       - LOG_LEVEL=info
     volumes:
