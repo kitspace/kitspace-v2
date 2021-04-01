@@ -15,7 +15,12 @@ export default function UseForm(schema) {
     }))
   }
 
-  const populate = (data, predicate) => {
+  /**
+   * populate form data externally.
+   * @param {object} data form data
+   * @param {boolean} predicate condition to use for populating
+   */
+  const populate = (data, predicate = true) => {
     if (predicate) {
       setForm({ _csrf: csrf, ...data })
     }
