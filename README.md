@@ -25,12 +25,10 @@ git submodule update --init
 ```
 
 1. Install [Docker](https://www.docker.com/get-started) and [docker-compose](https://pypi.org/project/docker-compose/) (on Ubuntu: `snap install docker` and `apt install docker-compose`)
-2. Add the following to `/etc/hosts` (If you are not using Linux this won't work, please open an issue and we'll figure out how to support non-Linux development).
+2. Add the required lines to `/etc/hosts`  (If you are not using Linux this probably won't work, please open an issue and we'll figure out how to support non-Linux development).
 
 ```
-172.17.0.1    kitspace.test
-172.17.0.1    gitea.kitspace.test
-172.17.0.1    processor.kitspace.test
+cat ./config/hosts | sudo tee -a /etc/hosts
 ```
 
 3. Copy the example .env
