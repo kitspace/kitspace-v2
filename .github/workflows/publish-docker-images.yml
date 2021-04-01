@@ -78,8 +78,8 @@ jobs:
         continue-on-error: true
 
       - name: Push gitea to GitHub Container Registry
-        # If the previous step failed, i.e., there's no image tagged gitea:${{gitea_sha_short}} in ghcr,
-        # build image and push it
+        # If the previous step failed, i.e., there's no image tagged
+        # gitea:${{gitea_sha_short}} in ghcr, build image and push it
         if: ${{ failure() }}
         uses: docker/build-push-action@v2
         with:
@@ -117,32 +117,17 @@ jobs:
           echo "172.17.0.1    gitea.kitspace.test" | sudo tee -a /etc/hosts
           echo "172.17.0.1    processor.kitspace.test" | sudo tee -a /etc/hosts
 
-      # The tagging steps have to happen in that following order
-      # i. replace the `latest` tag with `SHA`
-      # ii. tag gitea with the submodule SHA instead of HEAD SHA
-      # ii. forward Nginx port 80 to internal port 3000. Keep the indentation!
-      - name: Patch `docker-compose.deploy.yml`
-        shell: bash
-        run: |
-          sed  -Ei \
-            "s/ghcr.io\/kitspace\/(.*):([[:alnum:]]*)/ghcr.io\/kitspace\/\1:${{ steps.sha.outputs.sha_short }}/g" docker-compose.deploy.yml
-          sed  -Ei \
-            "s/ghcr.io\/kitspace\/gitea:${{ steps.sha.outputs.sha_short }}/ghcr.io\/kitspace\/\gitea:${{ steps.sha.outputs.gitea_sha_short }}/g" \
-            docker-compose.deploy.yml
-          sed -i "/'443:443'/a\      - \'${KITSPACE_DEV_PORT}:80\'" docker-compose.deploy.yml
-          cat docker-compose.deploy.yml
-
       - name: Install httpie
         shell: bash
         run: sudo apt install httpie
 
-      - name: Build docker-compose stack
-        shell: bash
-        run: docker-compose -f docker-compose.deploy.yml build
-
       - name: Install Gitea
         shell: bash
         timeout-minutes: 5
+        env:
+          FRONTEND_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
+          PROCESSOR_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
+          GITEA_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.gitea_sha_short }}
         run: |
           scripts/install_gitea.sh
 
@@ -152,8 +137,16 @@ jobs:
 
       - name: e2e
         uses: cypress-io/github-action@v2
+        env:
+          # pass the Dashboard record key as an environment variable
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          # pass GitHub token to allow accurately detecting a build vs a re-run build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FRONTEND_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
+          PROCESSOR_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
+          GITEA_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.gitea_sha_short }}
         with:
-          start: docker-compose -f ../docker-compose.deploy.yml up
+          start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
           command: yarn e2e --record
           working-directory: frontend
@@ -161,11 +154,6 @@ jobs:
           wait-on: 'http://kitspace.test:3000'
           # This value is in seconds
           wait-on-timeout: 120
-        env:
-          # pass the Dashboard record key as an environment variable
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          # pass GitHub token to allow accurately detecting a build vs a re-run build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     name: Push images with "latest" tag

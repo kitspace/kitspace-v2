@@ -4,7 +4,7 @@
 
 set -Eeuo pipefail
 
-docker-compose -f docker-compose.deploy.yml up &
+docker-compose -f docker-compose.yml -f docker-compose.deploy.yml up &
 
 # Look(retry every 20s) in the logs for sign that gitea is ready
 until docker logs kitspace_gitea_1 | grep 'Preparing to run install page' ; do sleep 20s; done

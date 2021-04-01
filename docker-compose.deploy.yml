@@ -1,90 +1,28 @@
 version: '2'
 services:
   frontend:
-    image: 'ghcr.io/kitspace/frontend:latest'
-    ports:
-      - '1234:3000'
-    environment:
-      - NODE_ENV=development
-      - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
-      - KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
-      - INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}
-      - USER_ISR_INTERVAL=${USER_ISR_INTERVAL}
-      - MAX_FILE_SIZE=${MAX_FILE_SIZE}
+    image: 'ghcr.io/kitspace/frontend:${FRONTEND_DEPLOY_IMAGE_TAG:-latest}'
     command: /bin/sh --verbose -c "yarn build && yarn start"
-    volumes:
-      - next:/app/.next/
-      - public:/app/public/
-      - /etc/hosts:/etc/hosts
-    depends_on:
-      - gitea
     restart: always
 
   processor:
-    image: 'ghcr.io/kitspace/processor:latest'
-    ports:
-      - '5000:5000'
-    environment:
-      - ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
-    volumes:
-      - ./volumes/gitea/git/repositories:/repositories
-      - ./volumes/processor:/data
+    image: 'ghcr.io/kitspace/processor:${PROCESSOR_DEPLOY_IMAGE_TAG:-latest}'
     restart: always
 
   gitea:
-    image: 'ghcr.io/kitspace/gitea:latest'
-    ports:
-      - '3333:3000'
-      - '2222:22'
-    environment:
-      - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
-      - USER_UID=1000
-      - USER_GID=1000
-      - DB_TYPE=postgres
-      - DB_HOST=postgres:5432
-      - DB_NAME=gitea
-      - DB_USER=gitea
-      - DB_PASSWD=${POSTGRES_PASSWORD}
-    volumes:
-      - ./volumes/gitea:/data
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ./gitea:/go/src/code.gitea.io/gitea
-    depends_on:
-      - postgres
+    image: 'ghcr.io/kitspace/gitea:${GITEA_DEPLOY_IMAGE_TAG:-latest}'
+    command: /usr/bin/entrypoint
     restart: always
 
   postgres:
-    image: postgres:9.6
-    environment:
-      - POSTGRES_USER=gitea
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=gitea
-    volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data
     restart: always
 
   nginx:
-    image: 'kitspace/nginx-certbot-plugin:latest'
     ports:
-      - '80:80'
       - '443:443'
     environment:
       - RUN_CERTBOT=true
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
-    command: /bin/bash --verbose -c "sed -e 's/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g' -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command"
-    volumes:
-      - /etc/letsencrypt
-      - ./nginx:/etc/nginx/conf.d
-      - public:/srv/frontend/public
-      - next:/srv/frontend/.next
-    depends_on:
-      - frontend
-      - gitea
-      - processor
     restart: always
 
-volumes:
-  public:
-  next:
