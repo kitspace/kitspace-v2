@@ -76,6 +76,47 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
+  deploy-pre-e2e-dev:
+    if: github.ref == 'refs/heads/dev'
+    name: Deploy pre-e2e-dev
+    runs-on: ubuntu-20.04
+    environment: staging
+    needs:
+      - build
+    steps:
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+      - name: Deploy to https://pre-e2e-dev.staging.kitspace.org
+        uses: kitspace/docker-remote-deployment-action@master
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
+          GITEA_SECRET_KEY: ${{ secrets.STAGING_GITEA_SECRET }}
+          KITSPACE_DOMAIN: pre-e2e-dev.staging.kitspace.org
+          KITSPACE_SCHEME: https
+          KITSPACE_DEV_PORT: '80'
+          CERTBOT_EMAIL: kaspar@kitspace.org
+          COMPOSE_PROJECT_NAME: kitspace
+          # Incremental static regeneration period(in seconds) for `/`
+          INDEX_ISR_INTERVAL: '3600'
+          # Incremental static regeneration period(in seconds) for `/projects/[user]`
+          USER_ISR_INTERVAL: '86400'
+          # The maximum allowable file size that can be uploaded to Gitea
+          MAX_FILE_SIZE: '6M'
+          FRONTEND_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
+          PROCESSOR_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
+          GITEA_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.gitea_sha_short }}
+        with:
+          remote_docker_host: deploy@staging.kitspace.org
+          ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
+          stack_file_name: docker-compose.yml,docker-compose.deploy.yml
+          args: up -d
+
   test:
     name: Run e2e tests
     runs-on: ubuntu-20.04
