@@ -1,3 +1,4 @@
+// TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import _ from 'lodash'
@@ -28,6 +29,7 @@ import {
   commitFilesWithUUIDs,
   uploadFilesToGiteaServer,
 } from '@utils/giteaInternalApi'
+import { findReadme, renderReadme } from '@utils/index'
 import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
@@ -35,15 +37,18 @@ import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
 import OrderPCBs from '@components/Board/OrderPCBs'
 import BuyParts from '@components/Board/BuyParts/index'
 import InfoBar from '@components/Board/InfoBar'
-import { findReadme, renderReadme } from '@utils/index'
 import Readme from '@components/Board/Readme'
+import UploadModal from '@components/UploadModal'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
-export const getServerSideProps = async ({ params, query }) => {
+export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const repoFullname = `${params.username}/${params.projectName}`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+
+  // Only the repo owner can upload files.
+  const hasUploadPermission = params.username === req?.session?.user?.username
 
   if (await repoExists(repoFullname)) {
     const repo = await getRepo(repoFullname)
@@ -64,6 +69,7 @@ export const getServerSideProps = async ({ params, query }) => {
     return {
       props: {
         repo,
+        hasUploadPermission,
         repoFiles,
         // TODO:  figure out what `info.has_interactive_bom` stands for.
         hasInteractiveBom: true,
@@ -86,6 +92,7 @@ export const getServerSideProps = async ({ params, query }) => {
 const UpdateProject = ({
   repo,
   repoFiles,
+  hasUploadPermission,
   hasInteractiveBom,
   zipUrl,
   boardInfo,
@@ -162,6 +169,7 @@ const UpdateProject = ({
         </Header>
         <UpdateForm
           repoFiles={repoFiles}
+          hasUploadPermission={hasUploadPermission}
           hasInteractiveBom={hasInteractiveBom}
           zipUrl={zipUrl}
           boardInfo={boardInfo}
@@ -180,6 +188,7 @@ const UpdateProject = ({
 
 const UpdateForm = ({
   repoFiles,
+  hasUploadPermission,
   hasInteractiveBom,
   boardInfo,
   zipUrl,
@@ -192,6 +201,7 @@ const UpdateForm = ({
   description,
 }) => {
   const projectFullname = `${owner}/${name}`
+  const canUpload = hasUploadPermission && !previewOnly
   // The files in the Gitea repo associated with this project and the newly loaded files
   const {
     files: remoteFiles,
@@ -331,15 +341,28 @@ const UpdateForm = ({
         site={boardInfo?.site || ''}
         description={description}
       />
-      <BoardShowcase projectFullname={projectFullname} />
-      <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
-      <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
-      <BuyParts
-        project={'hard'}
-        lines={boardInfo.bom.lines}
-        parts={boardInfo.bom.parts}
-      />
-      <Readme renderedReadme={renderedReadme} />
+      <div>
+        <UploadModal activeTab={0} canUpload={hasUploadPermission} />
+        <BoardShowcase projectFullname={projectFullname} />
+        <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
+      </div>
+      <div>
+        <UploadModal activeTab={1} canUpload={hasUploadPermission} />
+        <OrderPCBs
+          zipUrl={zipUrl}
+          boardSpecs={boardSpecs}
+          hasUploadPermission={hasUploadPermission}
+        />
+        <BuyParts
+          project={'hard'}
+          lines={boardInfo.bom.lines}
+          parts={boardInfo.bom.parts}
+        />
+      </div>
+      <div>
+        <UploadModal activeTab={2} canUpload={hasUploadPermission} />
+        <Readme renderedReadme={renderedReadme} />
+      </div>
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}

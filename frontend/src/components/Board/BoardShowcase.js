@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import useProjectAssets from '@hooks/useProjectAssets'
 import styles from './BoardShowcase.module.scss'
-import UploadModal from '@components/UploadModal'
 
 const BoardShowcase = ({ projectFullname }) => {
   const { top, bottom, isLoading, isError } = useProjectAssets(projectFullname)
@@ -10,9 +9,6 @@ const BoardShowcase = ({ projectFullname }) => {
 
   return (
     <div className={styles.showcaseContainer}>
-      <div className={styles.buttonsBar}>
-        <UploadModal activeTab={0} />
-      </div>
       <div className={styles.boardShowcaseWithMenu}>
         <div className={styles.boardShowcaseContainer}>
           <div className={`${styles.toggleBoardView} ${styles.responsiveTabs}`}>
