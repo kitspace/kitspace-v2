@@ -5,4 +5,4 @@ set -Eeuo pipefail
 git pull
 
 sudo docker system prune -f
-sudo docker-compose -f docker-compose.deploy.yml up
+sudo docker-compose -f docker-compose.yml -f docker-compose.deploy.yml up
