@@ -140,7 +140,7 @@ jobs:
           wait-on-timeout: 120
 
   publish:
-    name: Push images with "latest" tag
+    name: Tag images with "latest"
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
     needs:
@@ -152,50 +152,52 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      - name: Tag frontend:latest
+        run: |
+          curl \
+            https://ghcr.io/v2/kitspace/frontend/manifests/${{ steps.sha.outputs.sha_short }} \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            > manifest.json
+          curl -X PUT \
+            https://ghcr.io/v2/kitspace/frontend/manifests/latest \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
+            -d '@manifest.json'
+          rm manifest.json
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }}
+      - name: Tag processor:latest
+        run: |
+          curl \
+            https://ghcr.io/v2/kitspace/processor/manifests/${{ steps.sha.outputs.sha_short }} \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            > manifest.json
+          curl -X PUT \
+            https://ghcr.io/v2/kitspace/processor/manifests/latest \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
+            -d '@manifest.json'
+          rm manifest.json
 
-      - name: Push frontend:latest tag to GitHub Container Registry
-        uses: docker/build-push-action@v2
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile.prod
-          push: true
-          tags: ghcr.io/kitspace/frontend:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-      - name: Push processor:latest to GitHub Container Registry
-        uses: docker/build-push-action@v2
-        with:
-          context: ./processor
-          file: ./processor/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/processor:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-      - name: Push gitea:latest to GitHub Container Registry
-        uses: docker/build-push-action@v2
-        with:
-          context: ./gitea
-          file: ./gitea/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/gitea:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Tag gitea:latest
+        run: |
+          curl \
+            https://ghcr.io/v2/kitspace/gitea/manifests/${{ steps.sha.outputs.gitea_sha_short }} \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            > manifest.json
+          curl -X PUT \
+            https://ghcr.io/v2/kitspace/gitea/manifests/latest \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
+            -d '@manifest.json'
+          rm manifest.json
