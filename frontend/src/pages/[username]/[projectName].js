@@ -34,8 +34,9 @@ import BoardShowcase from '@components/Board/BoardShowcase'
 import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
 import OrderPCBs from '@components/Board/OrderPCBs'
 import BuyParts from '@components/Board/BuyParts/index'
-import { findReadme, renderReadme } from '@utils/index'
 import InfoBar from '@components/Board/InfoBar'
+import { findReadme, renderReadme } from '@utils/index'
+import Readme from '@components/Board/Readme'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 
@@ -48,6 +49,9 @@ export const getServerSideProps = async ({ params, query }) => {
     const repo = await getRepo(repoFullname)
     const repoFiles = await getDefaultBranchFiles(repoFullname)
 
+    // TODO: ALL assets aren't available for the repos the are being processed,
+    // or the repos that don't have assets from first place.
+    // This should be handled properly currently, it breaks the page.
     const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r => r.json())
     const boardInfo = await fetch(`${assetsPath}/info.json`).then(r => r.json())
     const { zipPath, width, height, layers } = zipInfo
@@ -335,10 +339,7 @@ const UpdateForm = ({
         lines={boardInfo.bom.lines}
         parts={boardInfo.bom.parts}
       />
-      <div
-        style={{ padding: '2rem 0' }}
-        dangerouslySetInnerHTML={{ __html: renderedReadme }}
-      ></div>
+      <Readme renderedReadme={renderedReadme} />
       <Form>
         <Segment>
           {!previewOnly ? <DropZone onDrop={onDrop} /> : null}

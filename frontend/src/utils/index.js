@@ -57,7 +57,6 @@ export const renderReadme = async (repo, readmeFile) => {
   const readmeAsHtml = await renderMarkdown(readmeContent)
 
   // Replace relative urls with absolute ones for `img` and `a` tags.
-  // Add class to `img` tags
   const $ = cheerio.load(readmeAsHtml)
   $('img').each((_, elem) => {
     const img = $(elem)
@@ -67,6 +66,7 @@ export const renderReadme = async (repo, readmeFile) => {
     img.attr('class', 'readmeImg')
   })
 
+  // Add class to `img` tags.
   $('a').each((_, elem) => {
     const a = $(elem)
     const href = a.attr('href')

@@ -1,3 +1,4 @@
+import UploadModal from '@components/UploadModal'
 import React from 'react'
 import { Icon, Flag } from 'semantic-ui-react'
 
@@ -18,91 +19,96 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
   }
 
   return (
-    <div className={styles.PCBMenu}>
-      <div className={`${styles.PCBMenu__group} ${styles.PCBMenu__download}`}>
-        <a href={zipUrl} className={styles.PCBMenu__link}>
-          <Icon name="download" />
-          Download Gerbers
-        </a>
+    <>
+      <div className={styles.buttonsBar}>
+        <UploadModal activeTab={1} />
       </div>
-
-      <div
-        className={styles.PCBMenu__group}
-        style={{ flexGrow: 1, justifyContent: 'space-around' }}
-      >
-        <div className={styles.PCBMenu__subTitle}>
-          <h4>Order PCBs:</h4>
+      <div className={styles.PCBMenu}>
+        <div className={`${styles.PCBMenu__group} ${styles.PCBMenu__download}`}>
+          <a href={zipUrl} className={styles.PCBMenu__link}>
+            <Icon name="download" />
+            Download Gerbers
+          </a>
         </div>
 
-        <div className={styles.PCBMenu__linksContainer}>
-          <a
-            rel="nofollow"
-            href={aislerUrl}
-            target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('Aisler')}
-            onAuxClick={trackClick('Aisler')}
-          >
-            <img src="/images/aisler.png" />
-            <Flag name="de" />
-          </a>
+        <div
+          className={styles.PCBMenu__group}
+          style={{ flexGrow: 1, justifyContent: 'space-around' }}
+        >
+          <div className={styles.PCBMenu__subTitle}>
+            <h4>Order PCBs:</h4>
+          </div>
 
-          <a
-            rel="nofollow"
-            href={pcbwayUrl}
-            target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('PCBWay')}
-            onAuxClick={trackClick('PCBWay')}
-          >
-            <img src="/images/pcbway.png" />
-            <Flag name="cn" />
-          </a>
+          <div className={styles.PCBMenu__linksContainer}>
+            <a
+              rel="nofollow"
+              href={aislerUrl}
+              target="_blank"
+              className={styles.PCBMenu__link}
+              onClick={trackClick('Aisler')}
+              onAuxClick={trackClick('Aisler')}
+            >
+              <img src="/images/aisler.png" />
+              <Flag name="de" />
+            </a>
 
-          <a
-            rel="nofollow"
-            href={jlcpcbUrl}
-            target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('JLCPCB')}
-            onAuxClick={trackClick('JLCPCB')}
-          >
-            <img src="/images/jlcpcb.png" />
-            <Flag name="cn" />
-          </a>
+            <a
+              rel="nofollow"
+              href={pcbwayUrl}
+              target="_blank"
+              className={styles.PCBMenu__link}
+              onClick={trackClick('PCBWay')}
+              onAuxClick={trackClick('PCBWay')}
+            >
+              <img src="/images/pcbway.png" />
+              <Flag name="cn" />
+            </a>
 
-          <a
-            rel="nofollow"
-            href={oshparkUrl}
-            target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('OSHPark')}
-            onAuxClick={trackClick('OSHPark')}
-          >
-            <img src="/images/oshpark.png" />
-            <Flag name="us" />
-          </a>
+            <a
+              rel="nofollow"
+              href={jlcpcbUrl}
+              target="_blank"
+              className={styles.PCBMenu__link}
+              onClick={trackClick('JLCPCB')}
+              onAuxClick={trackClick('JLCPCB')}
+            >
+              <img src="/images/jlcpcb.png" />
+              <Flag name="cn" />
+            </a>
+
+            <a
+              rel="nofollow"
+              href={oshparkUrl}
+              target="_blank"
+              className={styles.PCBMenu__link}
+              onClick={trackClick('OSHPark')}
+              onAuxClick={trackClick('OSHPark')}
+            >
+              <img src="/images/oshpark.png" />
+              <Flag name="us" />
+            </a>
+          </div>
+        </div>
+
+        <div className={`${styles.PCBMenu__group} ${styles.PCBMenu__compare}`}>
+          <div className={styles.PCBMenu__subTitle}>
+            <h4>Compare PCB Prices:</h4>
+          </div>
+          <div className={styles.PCBMenu__linksContainer}>
+            <a
+              rel="nofollow"
+              href={pcbShopperUrl}
+              target="_blank"
+              className={styles.PCBMenu__link}
+              onClick={trackClick('PCBShopper')}
+              onAuxClick={trackClick('PCBShopper')}
+            >
+              <img src="/images/pcbshopper.png" />
+            </a>
+          </div>
         </div>
       </div>
-
-      <div className={`${styles.PCBMenu__group} ${styles.PCBMenu__compare}`}>
-        <div className={styles.PCBMenu__subTitle}>
-          <h4>Compare PCB Prices:</h4>
-        </div>
-        <div className={styles.PCBMenu__linksContainer}>
-          <a
-            rel="nofollow"
-            href={pcbShopperUrl}
-            target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('PCBShopper')}
-            onAuxClick={trackClick('PCBShopper')}
-          >
-            <img src="/images/pcbshopper.png" />
-          </a>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }
 
