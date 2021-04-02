@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   frontend:
-    image: ghcr.io/kitspace/frontend:${FRONTEND_DEPLOY_IMAGE_TAG:-latest}
+    image: ghcr.io/kitspace/frontend${FRONTEND_DEPLOY_IMAGE_TAG}
     command: /bin/sh --verbose -c "yarn build && yarn start"
     restart: always
     volumes:
@@ -9,7 +9,7 @@ services:
       - public:/app/public/
 
   gitea:
-    image: ghcr.io/kitspace/gitea:${GITEA_DEPLOY_IMAGE_TAG:-latest}
+    image: ghcr.io/kitspace/gitea${GITEA_DEPLOY_IMAGE_TAG}
     command: /usr/bin/entrypoint
     restart: always
 
@@ -29,7 +29,7 @@ services:
       - public:/srv/frontend/public/
 
   processor:
-    image: ghcr.io/kitspace/processor:${PROCESSOR_DEPLOY_IMAGE_TAG:-latest}
+    image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
     restart: always
 
 volumes:
