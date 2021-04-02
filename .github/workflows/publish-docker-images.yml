@@ -84,6 +84,10 @@ jobs:
     needs:
       - build
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Get commit SHA
         id: sha
         shell: bash
