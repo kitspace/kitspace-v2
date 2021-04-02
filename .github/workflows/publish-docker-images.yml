@@ -141,7 +141,7 @@ jobs:
 
   publish:
     name: Tag images with "latest"
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/actually-tag'
     runs-on: ubuntu-20.04
     needs:
       - test
