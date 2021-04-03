@@ -13,7 +13,7 @@ services:
     volumes:
       - /etc/hosts:/etc/hosts
       - ./frontend:/app
-      - /app/node_modules
+      - frontend-node_modules:/app/node_modules
 
   gitea:
     build:
@@ -42,4 +42,8 @@ services:
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
     volumes:
       - ./processor:/app
-      - /app/node_modules
+      - processor-node_modules:/app/node_modules
+
+volumes:
+  frontend-node_modules:
+  processor-node_modules:
