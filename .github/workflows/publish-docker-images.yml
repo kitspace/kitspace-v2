@@ -128,12 +128,12 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
 
-      - name: Deploy to https://pre-e2e-dev.staging.kitspace.org
+      - name: Deploy to dev.staging.kitspace.org
         uses: kitspace/docker-remote-deployment-action@master
         env:
           POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
           GITEA_SECRET_KEY: ${{ secrets.STAGING_GITEA_SECRET }}
-          KITSPACE_DOMAIN: pre-e2e-dev.staging.kitspace.org
+          KITSPACE_DOMAIN: dev.staging.kitspace.org
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
           CERTBOT_EMAIL: kaspar@kitspace.org
