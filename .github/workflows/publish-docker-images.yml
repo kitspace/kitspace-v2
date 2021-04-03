@@ -1,9 +1,9 @@
-name: Publish Docker Images
+name: Docker
 
 on: [push]
 jobs:
   build:
-    name: Build docker images
+    name: Build images
     runs-on: ubuntu-20.04
 
     steps:
@@ -38,7 +38,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      # to avoid being rate-limited
+      # to avoid being rate-limited on pulls
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -93,9 +93,9 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-  deploy-pre-e2e-dev:
+  deploy-dev:
     if: github.ref == 'refs/heads/dev'
-    name: Deploy pre-e2e-dev
+    name: Deploy dev
     runs-on: ubuntu-20.04
     environment: staging
     needs:
@@ -121,7 +121,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      # to avoid being rate-limited
+      # to avoid being rate-limited on pulls
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -137,7 +137,7 @@ jobs:
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
           CERTBOT_EMAIL: kaspar@kitspace.org
-          COMPOSE_PROJECT_NAME: kitspace-pre-e2e-dev
+          COMPOSE_PROJECT_NAME: kitspace-dev
           # Incremental static regeneration period(in seconds) for `/`
           INDEX_ISR_INTERVAL: '3600'
           # Incremental static regeneration period(in seconds) for `/projects/[user]`
@@ -149,14 +149,14 @@ jobs:
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
-          remote_docker_host: deploy@staging.kitspace.org
+          remote_docker_host: deploy@dev.staging.kitspace.org
           ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
           stack_file_name: docker-compose.yml,docker-compose.deploy.yml
           args: up -d
 
   test:
-    name: Run e2e tests
+    name: Test E2E
     runs-on: ubuntu-20.04
     needs:
       - build
@@ -219,7 +219,7 @@ jobs:
           wait-on-timeout: 120
 
   publish:
-    name: Tag images with "latest"
+    name: Tag "latest"
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
     needs:
