@@ -195,6 +195,7 @@ jobs:
         env:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
@@ -210,9 +211,10 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
-          PROCESSOR_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
-          GITEA_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.gitea_sha_short }}
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
