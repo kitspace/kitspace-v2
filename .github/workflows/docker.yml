@@ -141,6 +141,7 @@ jobs:
           KITSPACE_DOMAIN: ${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
+          CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: kaspar@kitspace.org
           COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
           # Incremental static regeneration period (in seconds) for `/`

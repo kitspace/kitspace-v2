@@ -17,7 +17,7 @@ services:
     ports:
       - 443:443
     environment:
-      - RUN_CERTBOT=true
+      - RUN_CERTBOT=${CERTBOT_ENABLED}
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     restart: always
