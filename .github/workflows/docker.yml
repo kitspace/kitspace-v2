@@ -31,7 +31,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to GitHub Container Registry
+      - name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -39,13 +39,13 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       # to avoid being rate-limited on pulls
-      - name: Login to Docker Hub
+      - name: Login to hub.docker.com
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
 
-      - name: Push frontend to GitHub Container Registry
+      - name: Build and push frontend
         uses: docker/build-push-action@v2
         with:
           context: ./frontend
@@ -55,7 +55,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Push processor to GitHub Container Registry
+      - name: Build and push processor
         uses: docker/build-push-action@v2
         with:
           context: ./processor
@@ -65,7 +65,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Push nginx to GitHub Container Registry
+      - name: Build and push nginx
         uses: docker/build-push-action@v2
         with:
           context: ./nginx
@@ -75,12 +75,12 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Pull gitea image with current submodule SHA
+      - name: Pull gitea image
         shell: bash
         run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
         continue-on-error: true
 
-      - name: Push gitea to GitHub Container Registry
+      - name: Build and push gitea
         # If the previous step failed, i.e., there's no image tagged
         # gitea:${{gitea_sha_short}} in ghcr, build image and push it
         if: ${{ failure() }}
@@ -119,7 +119,7 @@ jobs:
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
 
-      - name: Login to GitHub Container Registry
+      - name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -127,7 +127,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       # to avoid being rate-limited on pulls
-      - name: Login to Docker Hub
+      - name: Login to hub.docker.com
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
