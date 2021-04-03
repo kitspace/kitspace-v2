@@ -17,6 +17,7 @@ services:
     restart: always
 
   nginx:
+    image: ghcr.io/kitspace/nginx${PROCESSOR_DEPLOY_IMAGE_TAG}
     ports:
       - 443:443
     environment:

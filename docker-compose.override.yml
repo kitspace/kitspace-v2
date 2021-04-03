@@ -21,6 +21,9 @@ services:
     command: /bin/bash --verbose -c 'make build && cp gitea /app/gitea/ && /usr/bin/entrypoint'
 
   nginx:
+    build:
+      context: nginx
+      dockerfile: Dockerfile
     volumes:
       - ./frontend:/srv/frontend
 

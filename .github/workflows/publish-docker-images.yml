@@ -58,6 +58,16 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
+      - name: Push nginx to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: ./nginx
+          file: ./nginx/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
       - name: Pull gitea image with current submodule SHA
         shell: bash
         run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
@@ -228,6 +238,20 @@ jobs:
             > manifest.json
           curl -X PUT \
             https://ghcr.io/v2/kitspace/processor/manifests/latest \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
+            -d '@manifest.json'
+          rm manifest.json
+
+      - name: Tag nginx:latest
+        run: |
+          curl \
+            https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.sha_short }} \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            > manifest.json
+          curl -X PUT \
+            https://ghcr.io/v2/kitspace/nginx/manifests/latest \
             -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
