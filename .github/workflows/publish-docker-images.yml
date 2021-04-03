@@ -114,7 +114,7 @@ jobs:
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
           CERTBOT_EMAIL: kaspar@kitspace.org
-          COMPOSE_PROJECT_NAME: kitspace
+          COMPOSE_PROJECT_NAME: kitspace-pre-e2e-dev
           # Incremental static regeneration period(in seconds) for `/`
           INDEX_ISR_INTERVAL: '3600'
           # Incremental static regeneration period(in seconds) for `/projects/[user]`
