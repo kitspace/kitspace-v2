@@ -25,6 +25,7 @@ services:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     restart: always
     volumes:
+      - /etc/letsencrypt
       - next:/srv/frontend/.next/
       - public:/srv/frontend/public/
 
