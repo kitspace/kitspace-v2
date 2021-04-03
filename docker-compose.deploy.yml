@@ -2,11 +2,7 @@ version: '2'
 services:
   frontend:
     image: ghcr.io/kitspace/frontend${FRONTEND_DEPLOY_IMAGE_TAG}
-    command: /bin/sh --verbose -c "yarn build && yarn start"
     restart: always
-    volumes:
-      - next:/app/.next/
-      - public:/app/public/
 
   gitea:
     image: ghcr.io/kitspace/gitea${GITEA_DEPLOY_IMAGE_TAG}
@@ -27,13 +23,8 @@ services:
     restart: always
     volumes:
       - /etc/letsencrypt
-      - next:/srv/frontend/.next/
-      - public:/srv/frontend/public/
 
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
     restart: always
 
-volumes:
-  next:
-  public:
