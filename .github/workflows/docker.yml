@@ -44,6 +44,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
+        continue-on-error: true
 
       - name: Build and push frontend
         uses: docker/build-push-action@v2
@@ -125,6 +126,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
+        # we don't really need to log in to pull the images, just doing it in
+        # case an image is accidentally set to private
+        continue-on-error: true
 
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
@@ -132,6 +136,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
+        continue-on-error: true
 
       - name: Deploy to ${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
         uses: kitspace/docker-remote-deployment-action@master
