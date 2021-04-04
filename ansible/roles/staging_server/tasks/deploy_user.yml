@@ -1,0 +1,15 @@
+---
+- name: Ensure there is a 'deploy' user with docker group
+  become: true
+  user:
+    name: deploy
+    shell: /bin/bash
+    groups: docker
+    append: false
+
+- name: Ensure 'deploy' user's public key is in authorized_keys
+  become: true
+  authorized_key:
+    user: deploy
+    state: present
+    key: "{{ lookup('file', 'deploy.id_rsa.pub') }}"
