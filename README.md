@@ -69,6 +69,14 @@ When it first builds the docker container it builds the whole Gitea project (`ma
 This is a NodeJS and [Express](https://expressjs.com/) server that processes all the assets. As with the frontend, changing dependencies requires you to restart the development container.
 
 
+## Auto Deploys
+
+This repo auto deploys the `dev` and `master` branches (whether e2e tests pass or not) to our staging servers. The intention is to merge/force push whatever you want to the `dev` branch to preview deployment. `master` on the other hand is never force pushed to and is ideally kept in a working state.
+
+- https://dev.staging.kitspace.org
+- https://master.staging.kitspace.org
+
+
 ## Running Integration Tests
 
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
