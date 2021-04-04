@@ -6,3 +6,10 @@
       - docker-compose
     state: present
     update_cache: true
+
+- name: Ensure '{{ ansible_user_id }}' is in 'docker' group
+  become: true
+  user:
+    name: '{{ ansible_user_id }}'
+    groups: docker
+    append: true
