@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -eu -o pipefail
+
+# When we get killed, kill all our children
+trap "exit" INT TERM
+trap "kill 0" EXIT
+
+sed \
+   -e "s/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g" \
+   -e "s/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g" \
+   -e "s/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g" \
+   /opt/kitspace.template > /etc/nginx/conf.d/default.conf
+
+nginx -g "daemon off;" &
+
+if [ "${RUN_CERTBOT:-}" == "true" ]; then
+   # Run certbot which should get certificates and modify your nginx config
+   certbot --nginx --domains ${CERTBOT_DOMAINS} --email ${CERTBOT_EMAIL} --agree-tos --redirect --reinstall --non-interactive;
+else
+echo "Not requesting certificates through certbot, set RUN_CERTBOT=true to run."
+fi
+
+while [ true ]; do
+    echo "Running certbot renew"
+    certbot renew --non-interactive
+    nginx -s reload
+
+    # Sleep for 1 week
+    sleep 604810 &
+    SLEEP_PID=$!
+
+    # Wait on sleep so that when we get ctrl-c'ed it kills everything due to our trap
+    wait "$SLEEP_PID"
+done

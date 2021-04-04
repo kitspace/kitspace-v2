@@ -2,17 +2,15 @@ version: '2'
 
 services:
   frontend:
-    command: /bin/sh --verbose -c "yarn install && yarn dev"
     environment:
-      - NODE_ENV=development
       - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - INDEX_ISR_INTERVAL=${INDEX_ISR_INTERVAL}
       - USER_ISR_INTERVAL=${USER_ISR_INTERVAL}
       - MAX_FILE_SIZE=${MAX_FILE_SIZE}
     volumes:
-      - /app/node_modules
-      - /etc/hosts:/etc/hosts
+      - frontend-next:/app/.next/
+      - frontend-public:/app/public/
     depends_on:
       - gitea
 
@@ -28,10 +26,9 @@ services:
       - DB_USER=gitea
       - DB_PASSWD=${POSTGRES_PASSWORD}
     volumes:
-      - ./volumes/gitea:/data
+      - gitea-data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - ./gitea:/go/src/code.gitea.io/gitea
     depends_on:
       - postgres
 
@@ -42,25 +39,35 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=gitea
     volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
   nginx:
-    command: "/bin/bash --verbose -c \"sed -e 's/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g' -e 's/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g' -e 's/@KITSPACE_URL/${KITSPACE_SCHEME}:\\\\/\\\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g' /etc/nginx/conf.d/kitspace.template > /etc/nginx/conf.d/default.conf && /opt/command\""
+    environment:
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE}
+      - KITSPACE_DOMAIN=${KITSPACE_DOMAIN}
+      - KITSPACE_SCHEME=${KITSPACE_SCHEME}
+      - KITSPACE_EXTERNAL_PORT=${KITSPACE_EXTERNAL_PORT}
     depends_on:
       - frontend
       - gitea
       - processor
-    image: kitspace/nginx-certbot-plugin:latest
     ports:
       - '${KITSPACE_DEV_PORT}:80'
     volumes:
-      - ./nginx:/etc/nginx/conf.d
-
+      - frontend-next:/srv/frontend/.next/
+      - frontend-public:/srv/frontend/public/
 
   processor:
     environment:
       - ALLOWED_CORS_DOMAINS=${KITSPACE_SCHEME}://${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - LOG_LEVEL=info
     volumes:
-      - ./volumes/gitea/git/repositories:/repositories
-      - ./volumes/processor:/data
+      - gitea-data:/gitea-data
+      - processor-data:/data
+
+volumes:
+  frontend-next:
+  frontend-public:
+  gitea-data:
+  postgres-data:
+  processor-data:

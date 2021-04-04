@@ -1,9 +1,9 @@
-name: Publish Docker Images
+name: Docker
 
 on: [push]
 jobs:
   build:
-    name: Build docker images
+    name: Build images
     runs-on: ubuntu-20.04
 
     steps:
@@ -31,14 +31,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to GitHub Container Registry
+      - name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Push frontend to GitHub Container Registry
+      # to avoid being rate-limited on pulls
+      - name: Login to hub.docker.com
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PAT }}
+        continue-on-error: true
+
+      - name: Build and push frontend
         uses: docker/build-push-action@v2
         with:
           context: ./frontend
@@ -48,7 +56,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Push processor to GitHub Container Registry
+      - name: Build and push processor
         uses: docker/build-push-action@v2
         with:
           context: ./processor
@@ -58,12 +66,22 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Pull gitea image with current submodule SHA
+      - name: Build and push nginx
+        uses: docker/build-push-action@v2
+        with:
+          context: ./nginx
+          file: ./nginx/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Pull gitea image
         shell: bash
         run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
         continue-on-error: true
 
-      - name: Push gitea to GitHub Container Registry
+      - name: Build and push gitea
         # If the previous step failed, i.e., there's no image tagged
         # gitea:${{gitea_sha_short}} in ghcr, build image and push it
         if: ${{ failure() }}
@@ -76,8 +94,80 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
+  deploy:
+    if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' }}
+    name: Deploy to staging
+    runs-on: ubuntu-20.04
+    environment: staging
+    needs:
+      - build
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+
+      - name: Get branch name
+        id: branch
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }}
+        # we don't really need to log in to pull the images, just doing it in
+        # case an image is accidentally set to private
+        continue-on-error: true
+
+      # to avoid being rate-limited on pulls
+      - name: Login to hub.docker.com
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PAT }}
+        continue-on-error: true
+
+      - name: Deploy to ${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
+        uses: kitspace/docker-remote-deployment-action@master
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
+          GITEA_SECRET_KEY: ${{ secrets.STAGING_GITEA_SECRET }}
+          KITSPACE_DOMAIN: ${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
+          KITSPACE_SCHEME: https
+          KITSPACE_DEV_PORT: '80'
+          CERTBOT_ENABLED: 'true'
+          CERTBOT_EMAIL: kaspar@kitspace.org
+          COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
+          # Incremental static regeneration period (in seconds) for `/`
+          INDEX_ISR_INTERVAL: '3600'
+          # Incremental static regeneration period (in seconds) for `/projects/[user]`
+          USER_ISR_INTERVAL: '86400'
+          # The maximum allowable file size that can be uploaded to Gitea
+          MAX_FILE_SIZE: '6M'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+        with:
+          remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
+          ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
+          stack_file_name: docker-compose.yml,docker-compose.deploy.yml
+          args: up -d
+
   test:
-    name: Run e2e tests
+    name: Test E2E
     runs-on: ubuntu-20.04
     needs:
       - build
@@ -109,9 +199,10 @@ jobs:
         shell: bash
         timeout-minutes: 5
         env:
-          FRONTEND_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
-          PROCESSOR_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
-          GITEA_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.gitea_sha_short }}
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
 
@@ -126,9 +217,10 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
-          PROCESSOR_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.sha_short }}
-          GITEA_DEPLOY_IMAGE_TAG: ${{ steps.sha.outputs.gitea_sha_short }}
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
@@ -140,7 +232,7 @@ jobs:
           wait-on-timeout: 120
 
   publish:
-    name: Tag images with "latest"
+    name: Tag "latest"
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
     needs:
@@ -183,6 +275,20 @@ jobs:
             > manifest.json
           curl -X PUT \
             https://ghcr.io/v2/kitspace/processor/manifests/latest \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
+            -d '@manifest.json'
+          rm manifest.json
+
+      - name: Tag nginx:latest
+        run: |
+          curl \
+            https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.sha_short }} \
+            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            > manifest.json
+          curl -X PUT \
+            https://ghcr.io/v2/kitspace/nginx/manifests/latest \
             -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'

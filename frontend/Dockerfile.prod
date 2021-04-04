@@ -10,3 +10,5 @@ COPY package.json yarn.lock ./
 RUN yarn --prune-lockfile
 
 COPY . .
+
+CMD sh -c "yarn build && yarn start"
