@@ -1,0 +1,33 @@
+---
+- name: Ensure there is a 'deploy' user with docker group
+  become: true
+  user:
+    name: deploy
+    shell: /bin/bash
+    groups: docker
+    append: false
+
+- name: Ensure 'deploy' user's public key is in authorized_keys
+  become: true
+  authorized_key:
+    user: deploy
+    state: present
+    key: "{{ lookup('file', 'deploy.id_rsa.pub') }}"
+
+# Needed for docker-compose --host, from remote
+- name: Ensure sshd is configured with higher `MaxSessions`
+  become: true
+  copy:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  register: sshd_config
+
+- name: Reload sshd
+  become: true
+  service:
+    name: sshd
+    state: reloaded
+  when: sshd_config.changed
