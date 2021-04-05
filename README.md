@@ -71,11 +71,14 @@ This is a NodeJS and [Express](https://expressjs.com/) server that processes all
 
 ## Auto Deploys
 
-This repo auto deploys the `dev` and `master` branches (whether e2e tests pass or not) to our staging servers. The intention is to merge/force push whatever you want to the `dev` branch to preview deployment. `master` on the other hand is never force pushed to and is ideally kept in a working state.
+This repo auto deploys the `master` branch (whether e2e tests pass or not) to our staging server.
 
-- https://dev.staging.kitspace.org
-- https://master.staging.kitspace.org
+- [master.staging.kitspace.dev](https://master.staging.kitspace.dev)
 
+We also auto deploy some development branches:
+
+- [abdo-dev.staging.kitspace.dev](https://abdo-dev.staging.kitspace.dev) (from [abdo-dev](https://github.com/kitspace/kitspace-v2/tree/abdo-dev), [@AbdulrhmnGhanem](https://github.com/AbdulrhmnGhanem)'s branch)
+- [kaspar-dev.staging.kitspace.dev](https://abdo-dev.staging.kitspace.dev) (from [kaspar-dev](https://github.com/kitspace/kitspace-v2/tree/kaspar-dev), [@kasbah](https://github.com/kasbah)'s branch)
 
 ## Running Integration Tests
 
