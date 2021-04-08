@@ -1,30 +1,43 @@
-import React, { useEffect } from 'react'
-import { Icon, Tab, Table } from 'semantic-ui-react'
+import React, { useEffect, useState } from 'react'
+import { Icon, Table } from 'semantic-ui-react'
 import DoubleScrollBar from 'react-double-scrollbar'
 
 import styles from './Bom.module.scss'
 import TsvTable from './TsvTable'
 
-const Bom = ({ length, collapsed, parts, tsv }) => {
-  useEffect(() => {})
-  let diff = length - 7
-  if (diff < 2) {
-    diff = 0
-    collapsed = false
-  }
+const Bom = ({ length, parts, tsv }) => {
+  const [diff, setDiff] = useState(0)
+  const [collapsed, setCollapsed] = useState(true)
+
+  useEffect(() => {
+    const diff = length - 7
+    setDiff(diff)
+
+    if (diff < 2) {
+      setDiff(0)
+      setCollapsed(false)
+    }
+  }, [length])
 
   return (
     <div className={styles.Bom}>
       <DoubleScrollBar>
         <TsvTable parts={parts} tsv={tsv} collapsed={collapsed} />
       </DoubleScrollBar>
-      <ExpandBom diff={diff} collapsed={collapsed} setCollapsed={collapsed} />
+      <ExpandBom diff={diff} collapsed={collapsed} setCollapsed={setCollapsed} />
     </div>
   )
 }
 
 const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
-  return diff > 0 && collapsed ? (
+  const summary =
+    diff > 0 && collapsed ? (
+      <tr className={styles.expandSummary}>
+        <Table.Cell textAlign="center">{`... ${diff} more lines`}</Table.Cell>
+      </tr>
+    ) : null
+
+  return (
     <div style={{ paddingLeft: 1, paddingRight: 1 }}>
       <Table
         className={styles.expandBomTable}
@@ -39,9 +52,7 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
         onClick={() => setCollapsed(!collapsed)}
       >
         <tbody>
-          <tr className={styles.expandSummary}>
-            <Table.Cell textAlign="center">{`... ${diff} more lines`}</Table.Cell>
-          </tr>
+          {summary}
           <tr style={{ borderTop: 0 }}>
             <Table.Cell textAlign="center">
               <Icon name={collapsed ? 'eye' : 'arrow up'} />
@@ -51,8 +62,6 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
         </tbody>
       </Table>
     </div>
-  ) : (
-    <div />
   )
 }
 
