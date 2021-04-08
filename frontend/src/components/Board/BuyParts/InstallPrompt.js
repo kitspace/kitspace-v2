@@ -7,6 +7,10 @@ const InstallPrompt = ({ bomInstallLink, extensionPresence }) => {
   const [isCompatible, setIsCompatible] = useState(true)
   const [timedOut, setTimedOut] = useState(false)
 
+  useEffect(() => {
+    console.log(bomInstallLink)
+  }, [bomInstallLink])
+
   const getCompatibility = () => {
     if (typeof navigator === 'undefined') {
       return true
@@ -41,8 +45,10 @@ const InstallPrompt = ({ bomInstallLink, extensionPresence }) => {
 const PleaseInstall = ({ bomInstallLink }) => (
   <Message attached warning>
     <Icon name="attention" />
-    Please <a onClick={bomInstallLink}>install the 1-click BOM extension</a> to make
-    full use of this feature.
+    Please <a onClick={() => bomInstallLink()}>
+      install the 1-click BOM extension
+    </a>{' '}
+    to make full use of this feature.
   </Message>
 )
 

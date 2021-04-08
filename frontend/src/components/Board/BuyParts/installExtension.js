@@ -21,7 +21,7 @@ const installExtension = () => {
       window.open('/1-click-bom', '_self')
     }
   }
-  return onClick
+  return onClick()
 }
 
-export default installExtension()
+export default installExtension

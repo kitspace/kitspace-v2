@@ -9,7 +9,6 @@ import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
 const BuyParts = ({ project, lines, parts }) => {
-  const [collapsed, setCollapsed] = useState(false)
   const [extensionWaiting, setExtensionWaiting] = useState(true)
   const [extensionPresence, setExtensionPresence] = useState('unknown')
   const [buyParts, setBuyParts] = useState(installExtension)
@@ -138,14 +137,7 @@ const BuyParts = ({ project, lines, parts }) => {
       <Segment className={styles.buttonSegment} attached>
         {retailerButtons}
       </Segment>
-      <Bom
-        attached
-        parts={parts}
-        tsv={linesToTsv()}
-        length={lines.length}
-        collapsed={collapsed}
-        setCollapsed={v => setCollapsed(v)}
-      />
+      <Bom attached parts={parts} tsv={linesToTsv()} length={lines.length} />
       <DirectStores multiplier={mult} items={lines} />
     </div>
   )
