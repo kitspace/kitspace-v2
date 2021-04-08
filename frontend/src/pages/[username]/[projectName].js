@@ -153,7 +153,7 @@ const UpdateProject = ({
 
   return (
     <Page>
-      <div style={{ maxWidth: '70%', margin: 'auto' }}>
+      <div style={{ maxWidth: '90%', margin: 'auto' }}>
         {isSynced ? (
           <Message data-cy="sync-msg" color="yellow">
             <Message.Header>A synced repository!</Message.Header>

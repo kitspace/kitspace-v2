@@ -27,6 +27,7 @@ import 'semantic-ui-css/components/loader.min.css'
 import 'semantic-ui-css/components/list.min.css'
 import 'semantic-ui-css/components/modal.min.css'
 import 'semantic-ui-css/components/dimmer.min.css'
+import 'semantic-ui-css/components/table.min.css'
 
 import './_app.scss'
 import AuthProvider from '@contexts/AuthContext'
