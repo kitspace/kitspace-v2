@@ -37,21 +37,6 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
 
   app.stop = unwatch
 
-  app.use((req, res, next) => {
-    const origin = req.get('origin')
-    if (!origin) {
-      return next()
-    }
-    if (ALLOWED_CORS_DOMAINS.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin)
-      res.header('Access-Control-Allow-Methods', 'GET,OPTIONS')
-      res.header('Access-Control-Allow-Headers', 'Content-Type')
-      res.header('Access-Control-Allow-Credentials', 'true')
-      return next()
-    }
-    return res.sendStatus(403)
-  })
-
   app.get('/status/*', (req, res, next) => {
     let x = path.relative('/status/', req.path)
     x = lowerCaseProject(x)
