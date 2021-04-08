@@ -1,40 +1,38 @@
 import React, { useState } from 'react'
 import { Table } from 'semantic-ui-react'
 import { flattenDeep } from 'lodash'
-import { h, tbody } from 'react-hyperscript-helpers'
 
 import MpnPopup from './MpnPopup'
-import styles from './TsvTable'
-
-const markerColor = ref => {
-  if (/^C\d/.test(ref)) {
-    return 'orange'
-  }
-  if (/^R\d/.test(ref)) {
-    return 'lightblue'
-  }
-  if (/^IC\d/.test(ref) || /^U\d/.test(ref)) {
-    return 'blue'
-  }
-  if (/^L\d/.test(ref)) {
-    return 'black'
-  }
-  if (/^D\d/.test(ref)) {
-    return 'green'
-  }
-  if (/^LED\d/.test(ref)) {
-    return 'yellow'
-  }
-  return 'purple'
-}
+import styles from './TsvTable.module.scss'
 
 const TsvTable = ({ parts, tsv, collapsed }) => {
   const [activePopup, setActivePopup] = useState(null)
+  const markerColor = ref => {
+    if (/^C\d/.test(ref)) {
+      return 'orange'
+    }
+    if (/^R\d/.test(ref)) {
+      return 'lightblue'
+    }
+    if (/^IC\d/.test(ref) || /^U\d/.test(ref)) {
+      return 'blue'
+    }
+    if (/^L\d/.test(ref)) {
+      return 'black'
+    }
+    if (/^D\d/.test(ref)) {
+      return 'green'
+    }
+    if (/^LED\d/.test(ref)) {
+      return 'yellow'
+    }
+    return 'purple'
+  }
 
   const mpnCells = (contents, rowIndex, columnIndex) => {
     const active =
       activePopup && activePopup[0] === rowIndex && activePopup[1] === columnIndex
-    const cells = contents.map(t => h(Table.Cell, { active }, t))
+    const cells = contents.map(t => <Table.Cell active={active}>{t}</Table.Cell>)
     const number = contents[1]
     if (number !== '') {
       const part =
@@ -46,14 +44,14 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
             return part
           }
         }, null) || {}
-      return cells.map(cell => {
-        return h(MpnPopup, {
-          onOpen: () => setActivePopup([rowIndex, columnIndex]),
-          onClose: () => setActivePopup(null),
-          trigger: cell,
-          part: part,
-        })
-      })
+      return cells.map(cell => (
+        <MpnPopup
+          onOpen={() => setActivePopup([rowIndex, columnIndex])}
+          onClose={() => setActivePopup(null)}
+          trigger={cell}
+          part={part}
+        />
+      ))
     }
     return cells
   }
@@ -92,8 +90,12 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
 
   const headings = reducedLines[0]
   const bodyLines = reducedLines.slice(1)
-  let headingJSX = headings.map(text => h(Table.HeaderCell, text))
-  headingJSX = h(Table.Header, [h(Table.Row, headingJSX)])
+  let headingJSX = headings.map(text => <Table.HeaderCell>{text}</Table.HeaderCell>)
+  headingJSX = (
+    <Table.Header>
+      <Table.Row>{headingJSX}</Table.Row>
+    </Table.Header>
+  )
   const bodyLinesJSX = bodyLines.map((line, rowIndex) => {
     const grouped = line.reduce((grouped, text, columnIndex) => {
       const heading = headings[columnIndex]
@@ -107,7 +109,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       return grouped.concat([text])
     }, [])
     const groupedHeadings = headings.filter(h => h !== 'Manufacturer')
-    function markPink(columnIndex) {
+    const markPink = columnIndex => {
       //mark pink empty cells in all columns except these
       return ['Description'].indexOf(groupedHeadings[columnIndex]) < 0
     }
@@ -118,31 +120,35 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       const error = markPink(columnIndex) && contents === ''
       const className =
         columnIndex === 0 ? `${styles.marked} ${styles[markerColor(contents)]}` : ''
-      const cell = h(
-        Table.Cell,
-        {
-          error,
-          className,
-        },
-        contents,
+      const cell = (
+        <Table.Cell error={error} className={className}>
+          {contents}
+        </Table.Cell>
       )
       return cell
     })
+
     const rowActivePopup = activePopup && activePopup[0] === rowIndex
-    const className = rowActivePopup ? styles.selected : ''
-    return h(Table.Row, { className }, flattenDeep(bodyCells))
+    return (
+      <Table.Row className={rowActivePopup ? styles.selected : ''}>
+        {flattenDeep(bodyCells)}
+      </Table.Row>
+    )
   })
 
-  const bodyJSX = tbody(bodyLinesJSX)
-  const tableProps = {
-    selectable: !activePopup,
-    celled: true,
-    unstackable: true,
-    singleLine: true,
-    size: 'small',
-    className: styles.TsvTable + (collapsed ? styles.collapsed : ''),
-  }
-  return h(Table, tableProps, [headingJSX, bodyJSX])
+  return (
+    <Table
+      className={styles.TsvTable + (collapsed ? styles.collapsed : '')}
+      selectable={!activePopup}
+      celled
+      unstackable
+      singleLine
+      size="small"
+    >
+      {headingJSX}
+      <tbody>{bodyLinesJSX}</tbody>
+    </Table>
+  )
 }
 
 export default TsvTable
