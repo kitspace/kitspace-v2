@@ -5595,11 +5595,6 @@ querystring@0.2.0, querystring@^0.2.0:
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
 
-ramda@^0.27.1:
-  version "0.27.1"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.1.tgz#66fc2df3ef873874ffc2da6aa8984658abacf5c9"
-  integrity sha512-PgIdVpn5y5Yns8vqb8FzBUEYn98V3xcPgawAkkgj0YJ0qDsnHCiNmZYfOGMgOvoB0eWFLpYbhxUR3mxfDIMvpw==
-
 ramda@~0.26.1:
   version "0.26.1"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
@@ -5741,11 +5736,6 @@ react-hot-toast@^1.0.1:
   integrity sha512-og5MNzjNHa7BTjdThj3cwGoyD8tLoxMN9c8/Sme6bBLCnlrF54QrNOJW5gJkETTsuAHVsUK5z8Q6vvkc+9OfCg==
   dependencies:
     goober "^2.0.15"
-
-react-hyperscript-helpers@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-hyperscript-helpers/-/react-hyperscript-helpers-2.0.0.tgz#8fc891d3f50bc8b7b477ca955ef55bbaad2560c9"
-  integrity sha512-nkWZ7GBDGD4qWnIJo+/gF+tjW9lY6rKMOie/OP03rWYyGNrb1SreiPgcaBsZ2VPQkZ1uUgruKXpRql+LjbsogA==
 
 react-is@16.13.1, react-is@^16.12.0:
   version "16.13.1"
