@@ -30,19 +30,23 @@ export const slugifiedNameFromFiles = files => {
 
 /**
  * find readme file in a repo under a path(default root `/`)
- * @param {[string]} fileNames list of file names to search
+ * @param {Array<object>} repoFiles list of file names to search
  * @param {string=} path a path(gitea path) to search into, if not passed searches repo path.
  * @returns {string} the readme file name if found and an empty string if no readme file were found.
  */
-export const findReadme = (fileNames, path) => {
+export const findReadme = (repoFiles, path) => {
   // TODO: implement path search.
+  /**
+   * @type {string[]}
+   */
+  const filesNames = repoFiles.map(f => f.name)
   const isMatch = matcher('readme?(.markdown|.mdown|.mkdn|.md|.rst)', {
     nocase: true,
   })
   // Find the first matching file index
-  const fileIndex = fileNames.map(f => isMatch(f)).indexOf(true)
+  const fileIndex = filesNames.map(f => isMatch(f)).indexOf(true)
 
-  return fileIndex !== -1 ? fileNames[fileIndex] : ''
+  return fileIndex !== -1 ? filesNames[fileIndex] : ''
 }
 
 /**

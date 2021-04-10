@@ -3,18 +3,6 @@ import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
 import _ from 'lodash'
 import dynamic from 'next/dynamic'
-
-import { Page } from '@components/Page'
-import FilesPreview from '@components/FilesPreview'
-import useForm from '@hooks/useForm'
-import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
-import {
-  getDefaultBranchFiles,
-  getRepo,
-  repoExists,
-  updateRepo,
-} from '@utils/giteaApi'
-import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   Button,
   Form,
@@ -25,11 +13,24 @@ import {
   Segment,
   TextArea,
 } from 'semantic-ui-react'
+
+import { Page } from '@components/Page'
+import FilesPreview from '@components/FilesPreview'
+import useForm from '@hooks/useForm'
+import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
+import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import {
   commitFilesWithUUIDs,
   uploadFilesToGiteaServer,
 } from '@utils/giteaInternalApi'
+import {
+  getDefaultBranchFiles,
+  getRepo,
+  repoExists,
+  updateRepo,
+} from '@utils/giteaApi'
 import { findReadme, renderReadme } from '@utils/index'
+import { getBoardInfo, getBoardZipInfo } from '@utils/projectPage'
 import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
@@ -57,19 +58,16 @@ export const getServerSideProps = async ({ params, query, req }) => {
     // TODO: ALL assets aren't available for the repos the are being processed,
     // or the repos that don't have assets from first place.
     // This should be handled properly currently, it breaks the page.
-    const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r =>
-      r.json().catch(() => ''),
-    )
-    const boardInfo = await fetch(`${assetsPath}/info.json`).then(r =>
-      r.json().catch(() => ''),
-    )
-    const { zipPath = '', width = 200, height = 200, layers = 3 } = zipInfo
+    const [zipInfoExists, zipInfo] = await getBoardZipInfo(assetsPath)
+    const [boardInfoExists, boardInfo] = await getBoardInfo(assetsPath)
+
+    const { zipPath, width, height, layers } = zipInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
-    const repoFileNames = repoFiles.map(f => f.name)
-    const readmeFile = findReadme(repoFileNames)
+    const readmeFile = findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
+    console.log(readmeFile)
     return {
       props: {
         repo,
@@ -87,6 +85,8 @@ export const getServerSideProps = async ({ params, query, req }) => {
         user: params.username,
         projectName: params.projectName,
         isNew: query.create === 'true',
+        boardAssetsExist: zipInfoExists && boardInfoExists,
+        readmeExists: readmeFile !== '',
       },
     }
   } else {
@@ -108,6 +108,8 @@ const UpdateProject = ({
   user,
   projectName,
   isNew,
+  boardAssetsExist,
+  readmeExists,
 }) => {
   const fullName = `${user}/${projectName}`
   const { reload } = useRouter()
@@ -190,6 +192,8 @@ const UpdateProject = ({
           owner={user}
           name={projectName}
           description={project?.description}
+          boardAssetsExist={boardAssetsExist}
+          readmeExists={readmeExists}
         />
       </div>
     </Page>
@@ -209,6 +213,8 @@ const UpdateForm = ({
   owner,
   name,
   description,
+  boardAssetsExist,
+  readmeExists,
 }) => {
   const projectFullname = `${owner}/${name}`
   const canUpload = hasUploadPermission && !previewOnly
@@ -353,25 +359,44 @@ const UpdateForm = ({
       />
       <div>
         <UploadModal activeTab={0} canUpload={hasUploadPermission} />
-        <BoardShowcase projectFullname={projectFullname} />
-        <BoardExtraMenus hasInteractiveBom={hasInteractiveBom} zipUrl={zipUrl} />
+        {boardAssetsExist ? (
+          <>
+            <BoardShowcase projectFullname={projectFullname} />
+            <BoardExtraMenus
+              hasInteractiveBom={hasInteractiveBom}
+              zipUrl={zipUrl}
+            />
+          </>
+        ) : (
+          <AssetPlaceholder asset="board" />
+        )}
       </div>
       <div>
         <UploadModal activeTab={1} canUpload={hasUploadPermission} />
-        <OrderPCBs
-          zipUrl={zipUrl}
-          boardSpecs={boardSpecs}
-          hasUploadPermission={hasUploadPermission}
-        />
-        <BuyParts
-          project={'hard'}
-          lines={boardInfo.bom.lines}
-          parts={boardInfo.bom.parts}
-        />
+        {boardAssetsExist ? (
+          <>
+            <OrderPCBs
+              zipUrl={zipUrl}
+              boardSpecs={boardSpecs}
+              hasUploadPermission={hasUploadPermission}
+            />
+            <BuyParts
+              project={'hard'}
+              lines={boardInfo?.bom?.lines}
+              parts={boardInfo?.bom?.parts}
+            />
+          </>
+        ) : (
+          <AssetPlaceholder asset="bill of materials" />
+        )}
       </div>
       <div>
         <UploadModal activeTab={2} canUpload={hasUploadPermission} />
-        <Readme renderedReadme={renderedReadme} />
+        {readmeExists ? (
+          <Readme renderedReadme={renderedReadme} />
+        ) : (
+          <AssetPlaceholder asset="readme" />
+        )}
       </div>
       <Form>
         <Segment>
@@ -416,6 +441,23 @@ const UpdateForm = ({
         </Segment>
       </Form>
     </>
+  )
+}
+
+const AssetPlaceholder = ({ asset }) => {
+  return (
+    <div
+      style={{
+        width: '70%',
+        margin: 'auto',
+        textAlign: 'center',
+        padding: '5em',
+        borderStyle: 'dashed',
+        borderRadius: '0.8em',
+      }}
+    >
+      No {asset} files were found, upload some.
+    </div>
   )
 }
 
