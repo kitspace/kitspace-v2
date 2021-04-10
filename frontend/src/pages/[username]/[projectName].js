@@ -57,9 +57,13 @@ export const getServerSideProps = async ({ params, query, req }) => {
     // TODO: ALL assets aren't available for the repos the are being processed,
     // or the repos that don't have assets from first place.
     // This should be handled properly currently, it breaks the page.
-    const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r => r.json())
-    const boardInfo = await fetch(`${assetsPath}/info.json`).then(r => r.json())
-    const { zipPath, width, height, layers } = zipInfo
+    const zipInfo = await fetch(`${assetsPath}/zip-info.json`).then(r =>
+      r.json().catch(() => ''),
+    )
+    const boardInfo = await fetch(`${assetsPath}/info.json`).then(r =>
+      r.json().catch(() => ''),
+    )
+    const { zipPath = '', width = 200, height = 200, layers = 3 } = zipInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
     const repoFileNames = repoFiles.map(f => f.name)
@@ -78,6 +82,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         boardSpecs: { width, height, layers },
         renderedReadme,
         isSynced: repo?.mirror,
+        // Whether the project were empty or not at the time of requesting the this page from the server.
         isEmpty: repo?.empty,
         user: params.username,
         projectName: params.projectName,
@@ -125,31 +130,36 @@ const UpdateProject = ({
   useEffect(() => {
     setIsSyncing(status === 'Queue' || status === 'Running')
 
-    if (!isSynced && status === 'Finished') { reload() }
+    if (isEmpty && !isSynced && status === 'Finished') {
+      reload()
+    }
   }, [status])
 
-    if (isLoading) {
-        return (
-            <Page>
-                <Loader active />
-            </Page>
-        )
-    } else if (isSyncing) {
-        return (
-            <Page>
-                <Loader active>Syncing repository...</Loader>
-            </Page>
-        )
-    } else if (status === 'Failed') {
-        return (
-            <Page>
-                <Loader active>Migration Failed, please try again later!</Loader>
-            </Page>
-        )
-    } else if (isError) {
-        return <ErrorPage statusCode={404} />
-    }
-  
+  useEffect(() => {
+    console.log({ isSynced })
+  }, [])
+
+  if (isLoading) {
+    return (
+      <Page>
+        <Loader active />
+      </Page>
+    )
+  } else if (isSyncing) {
+    return (
+      <Page>
+        <Loader active>Syncing repository...</Loader>
+      </Page>
+    )
+  } else if (status === 'Failed') {
+    return (
+      <Page>
+        <Loader active>Migration Failed, please try again later!</Loader>
+      </Page>
+    )
+  } else if (isError) {
+    return <ErrorPage statusCode={404} />
+  }
 
   return (
     <Page>

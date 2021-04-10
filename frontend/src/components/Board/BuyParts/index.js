@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
 
-import installExtension from './installExtension'
 import Bom from './Bom'
 import InstallPrompt from './InstallPrompt'
 import DirectStores from './DirectStores'
@@ -11,7 +10,7 @@ import styles from './index.module.scss'
 const BuyParts = ({ project, lines, parts }) => {
   const [extensionWaiting, setExtensionWaiting] = useState(true)
   const [extensionPresence, setExtensionPresence] = useState('unknown')
-  const [buyParts, setBuyParts] = useState(installExtension)
+  const [buyParts, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
@@ -124,10 +123,7 @@ const BuyParts = ({ project, lines, parts }) => {
         />
         Buy Parts
       </Header>
-      <InstallPrompt
-        extensionPresence={extensionPresence}
-        bomInstallLink={installExtension}
-      />
+      <InstallPrompt extensionPresence={extensionPresence} />
       <AdjustQuantity
         buyMultiplier={buyMultiplier}
         buyAddPercent={buyAddPercent}
