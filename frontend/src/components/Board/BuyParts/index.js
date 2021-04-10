@@ -256,7 +256,9 @@ const RetailerButton = props => {
 }
 
 const StoreIcon = props => {
-  const imgHref = `/images/${props.retailer}${props.disabled ? '-grey' : ''}.ico`
+  const imgHref = `/static/images/${props.retailer}${
+    props.disabled ? '-grey' : ''
+  }.ico`
   return (
     <img
       className={styles.storeIcons}

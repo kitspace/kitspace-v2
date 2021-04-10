@@ -43,7 +43,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('Aisler')}
             onAuxClick={trackClick('Aisler')}
           >
-            <img src="/images/aisler.png" />
+            <img src="/static/images/aisler.png" />
             <Flag name="de" />
           </a>
 
@@ -55,7 +55,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('PCBWay')}
             onAuxClick={trackClick('PCBWay')}
           >
-            <img src="/images/pcbway.png" />
+            <img src="/static/images/pcbway.png" />
             <Flag name="cn" />
           </a>
 
@@ -67,7 +67,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('JLCPCB')}
             onAuxClick={trackClick('JLCPCB')}
           >
-            <img src="/images/jlcpcb.png" />
+            <img src="/static/images/jlcpcb.png" />
             <Flag name="cn" />
           </a>
 
@@ -79,7 +79,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('OSHPark')}
             onAuxClick={trackClick('OSHPark')}
           >
-            <img src="/images/oshpark.png" />
+            <img src="/static/images/oshpark.png" />
             <Flag name="us" />
           </a>
         </div>
@@ -98,7 +98,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('PCBShopper')}
             onAuxClick={trackClick('PCBShopper')}
           >
-            <img src="/images/pcbshopper.png" />
+            <img src="/static/images/pcbshopper.png" />
           </a>
         </div>
       </div>
