@@ -138,6 +138,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
+      - name: Set example environment variables
+        uses: c-py/action-dotenv-to-setenv@v2
+        with:
+          env-file: .env.example
+
       - name: Deploy to ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
         uses: kitspace/docker-remote-deployment-action@master
         env:
@@ -146,15 +151,10 @@ jobs:
           KITSPACE_DOMAIN: ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
+          KITSPACE_EXTERNAL_PORT: ''
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: kaspar@kitspace.org
           COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
-          # Incremental static regeneration period (in seconds) for `/`
-          INDEX_ISR_INTERVAL: '3600'
-          # Incremental static regeneration period (in seconds) for `/projects/[user]`
-          USER_ISR_INTERVAL: '86400'
-          # The maximum allowable file size that can be uploaded to Gitea
-          MAX_FILE_SIZE: '6M'
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
