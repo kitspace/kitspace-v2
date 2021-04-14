@@ -47,6 +47,7 @@ services:
       - KITSPACE_DOMAIN=${KITSPACE_DOMAIN}
       - KITSPACE_SCHEME=${KITSPACE_SCHEME}
       - KITSPACE_EXTERNAL_PORT=${KITSPACE_EXTERNAL_PORT}
+      - KITSPACE_ROBOTS_TXT=${KITSPACE_ROBOTS_TXT}
     depends_on:
       - frontend
       - gitea

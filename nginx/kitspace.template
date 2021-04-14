@@ -4,12 +4,18 @@ server {
 
 	server_name @KITSPACE_DOMAIN;
 
+    location /robots.txt {
+        add_header Content-Type text/plain;
+        return 200 "@KITSPACE_ROBOTS_TXT";
+    }
+
 	error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status/index.html;
 
 	location /error/ {
 		internal;
 		root /srv/frontend/static_fallback/;
 	}
+
 
     # see https://github.com/vercel/next.js/issues/16874
     location = /_next/static/development/_devPagesManifest.json {
@@ -53,6 +59,11 @@ server {
 
 	server_name gitea.@KITSPACE_DOMAIN;
 
+    location /robots.txt {
+        add_header Content-Type text/plain;
+        return 200 "@KITSPACE_ROBOTS_TXT";
+    }
+
 	location ^~ / {
 		proxy_set_header           Host                               $http_host;
 		proxy_set_header           X-Real-IP                          $remote_addr;
@@ -85,6 +96,11 @@ server {
 	listen [::]:80;
 
 	server_name processor.@KITSPACE_DOMAIN;
+
+    location /robots.txt {
+        add_header Content-Type text/plain;
+        return 200 "@KITSPACE_ROBOTS_TXT";
+    }
 
 	location / {
 		proxy_intercept_errors on;
