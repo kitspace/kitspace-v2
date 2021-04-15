@@ -4,9 +4,8 @@ import { Button, Header } from 'semantic-ui-react'
 import IBomIcon from './IBomIcon'
 import TracespaceIcon from './TracespaceIcon'
 
-const BoardExtraMenus = ({ zipUrl, hasInteractiveBom }) => {
-  // TODO figure out what `info.id` stands for.
-  const ibomUrl = `/interactive_bom/${'#todo'}`
+const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname}) => {
+  const ibomUrl = `/${projectFullname}/IBOM/`
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0' }}>
