@@ -11,6 +11,7 @@ export const getServerSideProps = async ({ params }) => {
     path.join(process.cwd(), `${basePath}/index.html`),
     'utf-8',
   )
+  // TODO: Both index.js and index.css should be served by nginx
   const IBOMScript = await fs.readFile(
     path.join(process.cwd(), `${basePath}/index.js`),
     'utf-8',
