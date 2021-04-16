@@ -29,8 +29,7 @@ export const getServerSideProps = async ({ params }) => {
 
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
-    // `${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`,
-      `https://kitspace.org/boards/github.com/emard/ulx3s/interactive_bom.json`,
+    `${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
     return {
 
