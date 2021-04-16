@@ -63,6 +63,8 @@ pcbdata['bom'] = ibom.generate_bom(components, config, None)
 pcbdata['ibom_version'] = config.version
 pcbdata['summary'] = summary
 pcbdata['metadata']['title'] = title
+# rename footprints to modules
+pcbdata['modules'] = pcbdata.pop('footprints')
 
 with open(out_file, 'w') as fp:
     json.dump(pcbdata, fp)
