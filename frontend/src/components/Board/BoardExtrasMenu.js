@@ -1,10 +1,11 @@
 import React from 'react'
+import Link from 'next/link'
 import { Button, Header } from 'semantic-ui-react'
 
 import IBomIcon from './IBomIcon'
 import TracespaceIcon from './TracespaceIcon'
 
-const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname}) => {
+const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname }) => {
   const ibomUrl = `/${projectFullname}/IBOM/`
 
   return (
@@ -19,15 +20,17 @@ const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname}) => {
         </div>
       </Button>
       {hasInteractiveBom && (
-        <Button basic as="a" href={ibomUrl}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Header as="h4">
-              <IBomIcon />
-              Assembly Guide
-            </Header>
-            <div>Interactive HTML BOM</div>
-          </div>
-        </Button>
+        <Link passHref prefetch href={ibomUrl}>
+          <Button basic as="a">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <Header as="h4">
+                <IBomIcon />
+                Assembly Guide
+              </Header>
+              <div>Interactive HTML BOM</div>
+            </div>
+          </Button>
+        </Link>
       )}
     </div>
   )

@@ -1,8 +1,8 @@
 // TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import _ from 'lodash'
 import dynamic from 'next/dynamic'
+import _ from 'lodash'
 import {
   Button,
   Form,
