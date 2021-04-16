@@ -11,15 +11,7 @@ export const getServerSideProps = async ({ params }) => {
     path.join(process.cwd(), `${basePath}/index.html`),
     'utf-8',
   )
-  // TODO: Both index.js and index.css should be served by nginx
-  const IBOMScript = await fs.readFile(
-    path.join(process.cwd(), `${basePath}/index.js`),
-    'utf-8',
-  )
-  const IBOMStyle = await fs.readFile(
-    path.join(process.cwd(), `${basePath}/index.css`),
-    'utf-8',
-  )
+
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const repoFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
@@ -33,7 +25,7 @@ export const getServerSideProps = async ({ params }) => {
     ).then(res => res.blob().then(b => b.text()))
     return {
 
-      props: { html: IBOMHtml, script: IBOMScript, style: IBOMStyle, pcbData},
+      props: { html: IBOMHtml, pcbData},
     }
   } else {
     return {
@@ -42,7 +34,7 @@ export const getServerSideProps = async ({ params }) => {
   }
 }
 
-const IBOM = ({ html, script, style, pcbData }) => {
+const IBOM = ({ html, pcbData }) => {
   const config = {
     dark_mode: false,
     show_pads: true,
@@ -57,6 +49,16 @@ const IBOM = ({ html, script, style, pcbData }) => {
     extra_fields: [],
   }
 
+
+  const initScript = `
+  var pcbdata = ${pcbData};
+  document.getElementById('IBOM_script').addEventListener('load', () => {
+    window.onresize = resizeAll;
+    initBOM();
+  });
+  `
+
+
   useEffect(() => {
     window.config = config
 
@@ -65,16 +67,12 @@ const IBOM = ({ html, script, style, pcbData }) => {
   return (
     <Page>
       <NextHead>
-        <script type="text/javascript" id="IBOM">{script};</script>
+        <script type="text/javascript" src="/static/IBOM/index.js" id="IBOM_script"></script>
         <script type="text/javascript">
-          var pcbdata = {pcbData};
-          window.onresize = resizeAll;
-          window.matchMedia("print").addListener(resizeAll);
-          initBOM();
+          {initScript}
         </script>
-        <style type="text/css">{style}</style>
+        <link rel="stylesheet" href='/static/IBOM/index.css'></link>
       </NextHead>
-
       <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
     </Page>
   )

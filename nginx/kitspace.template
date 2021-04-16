@@ -25,13 +25,9 @@ server {
 		proxy_pass    http://frontend:3000;
 	}
 
-	location ~ ^/_next/static/(.*)$ {
-		root /srv/frontend/;
-		try_files /.next/static/$1 /static_fallback/_next/static/$1 =404;
-	}
-
 	location /static/ {
-		alias /srv/frontend/public/static/;
+		root /srv/frontend/public/;
+		autoindex on;
 	}
 
 	location /_next {
