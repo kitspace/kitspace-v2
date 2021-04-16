@@ -65,17 +65,23 @@ export const renderReadme = async (repo, readmeFile) => {
   $('img').each((_, elem) => {
     const img = $(elem)
     const src = img.attr('src')
-    const rawUrl = `${giteaUrl}/${repo}/raw${src}`
-    img.attr('src', rawUrl)
-    img.attr('class', 'readmeImg')
+    // Used for styling images inside readme, in _app.css
+    img.attr('class', 'readmeImg')      
+
+    if(src.startsWith('/')) {
+      const rawUrl = `${giteaUrl}/${repo}/raw${src}`
+      img.attr('src', rawUrl)
+    }
   })
 
-  // Add class to `img` tags.
   $('a').each((_, elem) => {
     const a = $(elem)
     const href = a.attr('href')
-    const rawUrl = `${giteaUrl}/${repo}/raw${href}`
-    a.attr('href', rawUrl)
+    if(href.startsWith('/')) {
+      const rawUrl = `${giteaUrl}/${repo}/src${href}`
+      console.log(rawUrl)
+      a.attr('href', rawUrl)
+    }
   })
 
   return $.html()
