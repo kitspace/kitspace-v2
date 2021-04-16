@@ -1015,7 +1015,6 @@ function initBOM(e) {
   initDefaults();
   cleanGutters();
   populateMetadata();
-  document.getElementById("topmostdiv").requestFullscreen();
   dbgdiv = document.getElementById("dbg");
   bom = document.getElementById("bombody");
   bomhead = document.getElementById("bomhead");
