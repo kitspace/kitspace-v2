@@ -15,7 +15,7 @@ export const NavBar = () => {
     isSubmitRoute || pathname === '/' || RegExp('^/projects/').test(pathname)
 
   return (
-    <div className={styles.titleBar} id='nav'>
+    <div className={styles.titleBar} id="nav">
       <BigBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
       <SmallBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
     </div>

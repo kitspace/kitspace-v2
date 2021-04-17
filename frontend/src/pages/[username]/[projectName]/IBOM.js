@@ -6,9 +6,8 @@ import NextHead from 'next/head'
 import { Page } from '@components/Page'
 
 export const getServerSideProps = async ({ params }) => {
-  const basePath = 'src/IBOM'
   const IBOMHtml = await fs.readFile(
-    path.join(process.cwd(), `${basePath}/index.html`),
+    path.join(process.cwd(), 'public/static/IBOM/index.html'),
     'utf-8',
   )
 
@@ -18,18 +17,16 @@ export const getServerSideProps = async ({ params }) => {
     `${processorUrl}/status/${repoFullname}/HEAD/interactive_bom.json`,
   ).then(r => r.json().then(body => body.status))
 
-
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
-    `${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`,
+      `${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
     return {
-
-      props: { html: IBOMHtml, pcbData},
+      props: { html: IBOMHtml, pcbData },
     }
   } else {
     return {
-      notFound: true
+      notFound: true,
     }
   }
 }
@@ -49,7 +46,6 @@ const IBOM = ({ html, pcbData }) => {
     extra_fields: [],
   }
 
-
   const initScript = `
   var pcbdata = ${pcbData};
   document.getElementById('IBOM_script').addEventListener('load', () => {
@@ -58,20 +54,20 @@ const IBOM = ({ html, pcbData }) => {
   });
   `
 
-
   useEffect(() => {
     window.config = config
-
   }, [])
 
   return (
     <Page>
       <NextHead>
-        <script type="text/javascript" src="/static/IBOM/index.js" id="IBOM_script"></script>
-        <script type="text/javascript">
-          {initScript}
-        </script>
-        <link rel="stylesheet" href='/static/IBOM/index.css'></link>
+        <script
+          type="text/javascript"
+          src="/static/IBOM/index.js"
+          id="IBOM_script"
+        ></script>
+        <script type="text/javascript">{initScript}</script>
+        <link rel="stylesheet" href="/static/IBOM/index.css"></link>
       </NextHead>
       <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
     </Page>
