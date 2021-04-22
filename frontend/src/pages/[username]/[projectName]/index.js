@@ -124,11 +124,6 @@ const UpdateProject = ({
   })
   const [isSyncing, setIsSyncing] = useState(isEmpty)
 
-  const { status } = pollMigrationStatus(repo.id, {
-    refreshInterval: isEmpty ? 1000 : null,
-  })
-  const [isSyncing, setIsSyncing] = useState(isEmpty)
-
   useEffect(() => {
     setIsSyncing(status === 'Queue' || status === 'Running')
 
@@ -338,9 +333,9 @@ const UpdateForm = ({
     } else {
       return !isValidProjectName
         ? {
-          content: `A project named "${form.name}" already exists!`,
-          pointing: 'below',
-        }
+            content: `A project named "${form.name}" already exists!`,
+            pointing: 'below',
+          }
         : null
     }
   }
@@ -356,7 +351,7 @@ const UpdateForm = ({
         description={description}
       />
       <div>
-        <UploadModal activeTab={0} canUpload={hasUploadPermission} />
+        <UploadModal activeTab={0} canUpload={canUpload} />
         {boardAssetsExist ? (
           <>
             <BoardShowcase projectFullname={projectFullname} />
@@ -371,14 +366,10 @@ const UpdateForm = ({
         )}
       </div>
       <div>
-        <UploadModal activeTab={1} canUpload={hasUploadPermission} />
+        <UploadModal activeTab={1} canUpload={canUpload} />
         {boardAssetsExist ? (
           <>
-            <OrderPCBs
-              zipUrl={zipUrl}
-              boardSpecs={boardSpecs}
-              hasUploadPermission={hasUploadPermission}
-            />
+            <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
             <BuyParts
               project={'hard'}
               lines={boardInfo?.bom?.lines}
@@ -390,7 +381,7 @@ const UpdateForm = ({
         )}
       </div>
       <div>
-        <UploadModal activeTab={2} canUpload={hasUploadPermission} />
+        <UploadModal activeTab={2} canUpload={canUpload} />
         {readmeExists ? (
           <Readme renderedReadme={renderedReadme} />
         ) : (
