@@ -1,7 +1,6 @@
 // TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
 import _ from 'lodash'
 import {
   Button,
@@ -15,7 +14,6 @@ import {
 } from 'semantic-ui-react'
 
 import { Page } from '@components/Page'
-import FilesPreview from '@components/FilesPreview'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
 import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
@@ -41,7 +39,6 @@ import InfoBar from '@components/Board/InfoBar'
 import Readme from '@components/Board/Readme'
 import UploadModal from '@components/UploadModal'
 
-const DropZone = dynamic(() => import('@components/DropZone'))
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -351,7 +348,7 @@ const UpdateForm = ({
         description={description}
       />
       <div>
-        <UploadModal activeTab={0} canUpload={canUpload} />
+        <UploadModal files={allFiles} activeTab='PCB' canUpload={canUpload} />
         {boardAssetsExist ? (
           <>
             <BoardShowcase projectFullname={projectFullname} />
@@ -366,7 +363,7 @@ const UpdateForm = ({
         )}
       </div>
       <div>
-        <UploadModal activeTab={1} canUpload={canUpload} />
+        <UploadModal files={allFiles} activeTab='BOM' canUpload={canUpload} />
         {boardAssetsExist ? (
           <>
             <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
@@ -381,7 +378,7 @@ const UpdateForm = ({
         )}
       </div>
       <div>
-        <UploadModal activeTab={2} canUpload={canUpload} />
+        <UploadModal files={allFiles} activeTab='README' canUpload={canUpload} />
         {readmeExists ? (
           <Readme renderedReadme={renderedReadme} />
         ) : (
@@ -389,10 +386,6 @@ const UpdateForm = ({
         )}
       </div>
       <Form>
-        <Segment>
-          {!previewOnly ? <DropZone onDrop={onDrop} /> : null}
-          <FilesPreview files={allFiles} />
-        </Segment>
         <Segment>
           <Form.Field
             data-cy="update-form-name"

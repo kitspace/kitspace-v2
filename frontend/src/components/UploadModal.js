@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Button, Modal, Tab } from 'semantic-ui-react'
 
-const UploadModal = ({ activeTab, canUpload }) => {
+const DropZone = dynamic(() => import('@components/DropZone'))
+const FilesPreview = dynamic(() => import('@components/FilesPreview'))
+
+const UploadModal = ({ activeTab, canUpload, files }) => {
   const [open, setOpen] = useState(false)
 
   return canUpload ? (
@@ -22,7 +26,7 @@ const UploadModal = ({ activeTab, canUpload }) => {
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>
           <Modal.Description>
-            <TabExampleBasic activeTab={activeTab} />
+            <Tabs activeTab={activeTab} files={files} />
           </Modal.Description>
         </Modal.Content>
       </Modal>
@@ -30,14 +34,38 @@ const UploadModal = ({ activeTab, canUpload }) => {
   ) : null
 }
 
-const panes = [
-  { menuItem: 'PCB Files', render: () => <Tab.Pane>Tab 1 Content</Tab.Pane> },
-  { menuItem: 'BOM', render: () => <Tab.Pane>Tab 2 Content</Tab.Pane> },
-  { menuItem: 'README', render: () => <Tab.Pane>Tab 3 Content</Tab.Pane> },
-]
+const Tabs = ({ activeTab, files }) => {
+  const tabsMap = {PCB: 0, BOM: 1, README: 2}
+  const panes = [
+    {
+      menuItem: 'PCB Files',
+      render: () => <UploadTab files={files} trigger="PCB" />,
+    },
+    {
+      menuItem: 'BOM',
+      render: () => <UploadTab files={files} trigger="BOM" />,
+    },
+    {
+      menuItem: 'README',
+      render: () => <UploadTab files={files} trigger="README" />,
+    },
+  ]
 
-const TabExampleBasic = ({ activeTab }) => (
-  <Tab panes={panes} defaultActiveIndex={activeTab} />
-)
+  return <Tab panes={panes} defaultActiveIndex={tabsMap[activeTab]} />
+}
+
+const UploadTab = ({ files, trigger }) => {
+  return (
+    <Tab.Pane>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+        <DropZone style={{ marginRight: '0.5rem' }} trigger={trigger} />
+        <FilesPreview
+          files={files}
+          style={{ paddingLeft: '1rem', overflow: 'auto' }}
+        ></FilesPreview>
+      </div>
+    </Tab.Pane>
+  )
+}
 
 export default UploadModal
