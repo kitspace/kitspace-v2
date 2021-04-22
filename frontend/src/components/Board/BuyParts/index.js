@@ -3,12 +3,11 @@ import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
 
 import Bom from './Bom'
-import InstallPrompt from './InstallPrompt'
+import InstallPrompt, { install1ClickBOM } from './InstallPrompt'
 import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
 const BuyParts = ({ project, lines, parts }) => {
-  const [extensionWaiting, setExtensionWaiting] = useState(true)
   const [extensionPresence, setExtensionPresence] = useState('unknown')
   const [buyParts, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
@@ -37,8 +36,7 @@ const BuyParts = ({ project, lines, parts }) => {
             name={name}
             adding={adding[name]}
             extensionPresence={name === 'Digikey' ? false : extensionPresence}
-            // buyParts={buyParts.bind(null, name)}
-            buyParts={() => {}}
+            buyParts={() => install1ClickBOM()}
             numberOfParts={numberOfParts}
             numberOfLines={numberOfLines}
             totalLines={lines.length}
@@ -57,9 +55,9 @@ const BuyParts = ({ project, lines, parts }) => {
         if (event.source != window) {
           return
         }
+        console.log(event.data)
         if (event.data.from == 'extension') {
-          setExtensionWaiting(false)
-          setExtensionPresence(false)
+          setExtensionPresence('present')
           switch (event.data.message) {
             case 'register':
               setBuyParts(retailer => {

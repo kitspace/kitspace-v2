@@ -7,10 +7,6 @@ const InstallPrompt = ({ extensionPresence }) => {
   const [isCompatible, setIsCompatible] = useState(true)
   const [timedOut, setTimedOut] = useState(false)
 
-  useEffect(() => {
-    console.log(bomInstallLink)
-  }, [bomInstallLink])
-
   const getCompatibility = () => {
     if (typeof navigator === 'undefined') {
       return true
@@ -29,35 +25,11 @@ const InstallPrompt = ({ extensionPresence }) => {
     }, 5000)
   }, [])
 
-  const bomInstallLink = () => {
-    const version = BrowserVersion()
-    let onClick
-    if (/Chrome/.test(version)) {
-      onClick = () => {
-        window.plausible != null && window.plausible('Install Extension')
-        window.open(
-          'https://chrome.google.com/webstore/detail/kitspace-1-click-bom/mflpmlediakefinapghmabapjeippfdi',
-        )
-      }
-    } else if (/Firefox/.test(version)) {
-      onClick = () => {
-        window.plausible != null && window.plausible('Install Extension')
-        window.open('https://addons.mozilla.org/en-US/firefox/addon/1clickbom')
-      }
-    } else {
-      onClick = () => {
-        window.plausible != null && window.plausible('Install Extension')
-        window.open('/1-click-bom', '_self')
-      }
-    }
-    return onClick()
-  }
-
   if (extensionPresence === 'present') {
     return <div />
   } else if (timedOut) {
     return isCompatible ? (
-      <PleaseInstall bomInstallLink={bomInstallLink} />
+      <PleaseInstall install1ClickBOM={install1ClickBOM} />
     ) : (
       <NotCompatible />
     )
@@ -66,13 +38,12 @@ const InstallPrompt = ({ extensionPresence }) => {
   }
 }
 
-const PleaseInstall = ({ bomInstallLink }) => (
+const PleaseInstall = ({ install1ClickBOM }) => (
   <Message attached warning>
     <Icon name="attention" />
-    Please <a onClick={() => bomInstallLink()}>
-      install the 1-click BOM extension
-    </a>{' '}
-    to make full use of this feature.
+    Please{' '}
+    <a onClick={() => install1ClickBOM()}>install the 1-click BOM extension</a> to
+    make full use of this feature.
   </Message>
 )
 
@@ -86,6 +57,30 @@ const NotCompatible = () => {
       line-notes.
     </Message>
   )
+}
+
+export const install1ClickBOM = () => {
+  const version = BrowserVersion()
+  let onClick
+  if (/Chrome/.test(version)) {
+    onClick = () => {
+      window.plausible != null && window.plausible('Install Extension')
+      window.open(
+        'https://chrome.google.com/webstore/detail/kitspace-1-click-bom/mflpmlediakefinapghmabapjeippfdi',
+      )
+    }
+  } else if (/Firefox/.test(version)) {
+    onClick = () => {
+      window.plausible != null && window.plausible('Install Extension')
+      window.open('https://addons.mozilla.org/en-US/firefox/addon/1clickbom')
+    }
+  } else {
+    onClick = () => {
+      window.plausible != null && window.plausible('Install Extension')
+      window.open('/1-click-bom', '_self')
+    }
+  }
+  return onClick()
 }
 
 export default InstallPrompt
