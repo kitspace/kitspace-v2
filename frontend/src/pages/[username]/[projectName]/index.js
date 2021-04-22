@@ -165,37 +165,35 @@ const UpdateProject = ({
 
   return (
     <Page>
-      <div style={{ maxWidth: '90%', margin: 'auto' }}>
-        {isSynced ? (
-          <Message data-cy="sync-msg" color="yellow">
-            <Message.Header>A synced repository!</Message.Header>
-            <Message.Content>
-              <p>Files uploading isn't supported for synced repositories.</p>
-              Please commit files to the original git repository and it will be
-              synced automatically.
-            </Message.Content>
-          </Message>
-        ) : null}
-        <Header as="h2" textAlign="center">
-          Updating {projectName} by {user}
-        </Header>
-        <UpdateForm
-          repoFiles={repoFiles}
-          hasUploadPermission={hasUploadPermission}
-          hasInteractiveBom={hasInteractiveBom}
-          zipUrl={zipUrl}
-          boardInfo={boardInfo}
-          boardSpecs={boardSpecs}
-          renderedReadme={renderedReadme}
-          isNew={isNew}
-          previewOnly={isSynced}
-          owner={user}
-          name={projectName}
-          description={project?.description}
-          boardAssetsExist={boardAssetsExist}
-          readmeExists={readmeExists}
-        />
-      </div>
+      {isSynced ? (
+        <Message data-cy="sync-msg" color="yellow">
+          <Message.Header>A synced repository!</Message.Header>
+          <Message.Content>
+            <p>Files uploading isn't supported for synced repositories.</p>
+            Please commit files to the original git repository and it will be synced
+            automatically.
+          </Message.Content>
+        </Message>
+      ) : null}
+      <Header as="h2" textAlign="center">
+        Updating {projectName} by {user}
+      </Header>
+      <UpdateForm
+        repoFiles={repoFiles}
+        hasUploadPermission={hasUploadPermission}
+        hasInteractiveBom={hasInteractiveBom}
+        zipUrl={zipUrl}
+        boardInfo={boardInfo}
+        boardSpecs={boardSpecs}
+        renderedReadme={renderedReadme}
+        isNew={isNew}
+        previewOnly={isSynced}
+        owner={user}
+        name={projectName}
+        description={project?.description}
+        boardAssetsExist={boardAssetsExist}
+        readmeExists={readmeExists}
+      />
     </Page>
   )
 }

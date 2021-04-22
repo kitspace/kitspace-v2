@@ -55,7 +55,6 @@ const BuyParts = ({ project, lines, parts }) => {
         if (event.source != window) {
           return
         }
-        console.log(event.data)
         if (event.data.from == 'extension') {
           setExtensionPresence('present')
           switch (event.data.message) {

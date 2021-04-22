@@ -28,22 +28,19 @@
     background: #f2f2f2;
   }
 
-  &__sub-title {
+  &__subTitle {
     display: flex;
     justify-content: center;
+    margin-top: 30px;
   }
 
-  &__links-container {
+  &__linksContainer {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     @media (max-width: 1328px) {
       flex-direction: column;
     }
-  }
-
-  &__subTitle {
-    margin-top: 30px;
   }
 
   &__download {
