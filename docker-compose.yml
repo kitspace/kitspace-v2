@@ -13,11 +13,6 @@ services:
       - frontend-public:/app/public/
     depends_on:
       - gitea
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /etc/hosts:/etc/hosts
-    command: /bin/sh --verbose -c "yarn install && yarn build && yarn dev"
 
   gitea:
     environment:
@@ -36,7 +31,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - postgres
-    command: /bin/bash --verbose -c "make build && cp gitea /app/gitea/ && /usr/bin/entrypoint"
 
   postgres:
     image: postgres:12.2
