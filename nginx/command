@@ -15,12 +15,12 @@ sed \
 
 nginx -g "daemon off;" &
 
-if [ "${RUN_CERTBOT:-}" == "true" ]; then
-   # Run certbot which should get certificates and modify your nginx config
-   certbot --nginx --domains ${CERTBOT_DOMAINS} --email ${CERTBOT_EMAIL} --agree-tos --redirect --reinstall --non-interactive;
-else
-echo "Not requesting certificates through certbot, set RUN_CERTBOT=true to run."
-fi
+# if [ "${RUN_CERTBOT:-}" == "true" ]; then
+#    # Run certbot which should get certificates and modify your nginx config
+#    certbot --nginx --domains ${CERTBOT_DOMAINS} --email ${CERTBOT_EMAIL} --agree-tos --redirect --reinstall --non-interactive;
+# else
+# echo "Not requesting certificates through certbot, set RUN_CERTBOT=true to run."
+# fi
 
 while [ true ]; do
     echo "Running certbot renew"
