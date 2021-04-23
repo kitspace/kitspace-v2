@@ -68,19 +68,20 @@ server {
 		add_header                 'Access-Control-Allow-Origin'      '@KITSPACE_URL' always;
 		add_header                 'Access-Control-Allow-Methods'     'GET, POST, PUT, PATCH, DELETE, OPTIONS';
 		add_header                 'Access-Control-Allow-Credentials' 'true' always;
-		add_header                 'Access-Control-Allow-Headers'     'cache-control, pragma, user-agent content-type';
+		add_header                 'Access-Control-Allow-Headers'     'cache-control, pragma, user-agent';
 		proxy_cookie_path          ~^(.+)$                            '$1; domain=.@KITSPACE_DOMAIN';
 		proxy_set_header           Origin                             gitea.@KITSPACE_DOMAIN;
 		proxy_pass_request_headers on;
 		client_max_body_size       @MAX_FILE_SIZE;
 
 		if ($request_method = OPTIONS) {
+			add_header Content-Length 0;
 			add_header Content-Type text/plain;
 			add_header 'Access-Control-Allow-Origin' '@KITSPACE_URL';
 			add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS';
 			add_header 'Access-Control-Allow-Headers' 'cache-control, pragma, user-agent, content-type';
 			add_header 'Access-Control-Allow-Credentials' 'true' always;
-			return 204;
+			return 200;
 		}
 		proxy_pass http://gitea:3000;
 	}
@@ -99,11 +100,11 @@ server {
 
 	location / {
 		proxy_intercept_errors on;
-		proxy_set_header    Host                           $http_host;
-		proxy_set_header    X-Real-IP                      $remote_addr;
-		proxy_set_header    X-Forwarded-For                $proxy_add_x_forwarded_for;
-		proxy_set_header    X-Forwarded-Proto              $scheme;
-		add_header          'Access-Control-Allow-Origin'  '*' always;
+		proxy_set_header    Host                          $http_host;
+		proxy_set_header    X-Real-IP                     $remote_addr;
+		proxy_set_header    X-Forwarded-For               $proxy_add_x_forwarded_for;
+		proxy_set_header    X-Forwarded-Proto             $scheme;
+		add_header          'Access-Control-Allow-Origin' '*' always;
 		add_header          'Access-Control-Allow-Methods' 'GET, OPTIONS';
 
 		if ($request_method = OPTIONS) {
@@ -111,7 +112,7 @@ server {
 			add_header Content-Type text/plain;
 			add_header 'Access-Control-Allow-Origin' '*';
 			add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS';
-			return 204;
+			return 200;
 		}
 
 		proxy_pass http://processor:5000;
