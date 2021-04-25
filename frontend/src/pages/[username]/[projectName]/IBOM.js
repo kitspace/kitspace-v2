@@ -21,6 +21,7 @@ export const getServerSideProps = async ({ params }) => {
     const pcbData = await fetch(
       `${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
+
     return {
       props: { html: IBOMHtml, pcbData },
     }
@@ -46,11 +47,26 @@ const IBOM = ({ html, pcbData }) => {
     extra_fields: [],
   }
 
+  /*
+  i.   set the `pcbdata` var needed by IBOM
+  ii.  initizalize IBOM
+  iii. make the title anchor tag linking to the project page.
+  iv.  prefetch project page.
+   */
+  const titleTemplate = '`<a href=/${pcbTitle}>${pcbTitle}</a>`'
+  const herfTemplate = '`/${pcbTitle}`'
   const initScript = `
   var pcbdata = ${pcbData};
   document.getElementById('IBOM_script').addEventListener('load', () => {
     window.onresize = resizeAll;
     initBOM();
+    const pcbTitle = pcbdata.metadata.title;
+
+    document.querySelector('#title').innerHTML = ${titleTemplate};
+    const head = document.head;
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = ${herfTemplate};
   });
   `
 
