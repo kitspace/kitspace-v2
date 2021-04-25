@@ -229,7 +229,6 @@ jobs:
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
-          command: yarn e2e
           record: true
           parallel: true
           working-directory: frontend
