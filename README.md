@@ -2,7 +2,8 @@
 
 _work in progress_
 
-![Publish Docker images status badge](https://github.com/kitspace/kitspace-v2/workflows/Publish%20Docker%20images/badge.svg)
+![Publish Docker images status badge](https://github.com/kitspace/kitspace-v2/workflows/Docker/badge.svg)
+
 
 
 Re-writing [Kitspace](https://github.com/kitspace/kitspace) to use [Gitea](https://github.com/go-gitea/gitea) as a Git and authentication service.
