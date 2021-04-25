@@ -31,7 +31,10 @@ const Content = ({ reqSignIn, reqSignOut, contnetFullSize, children }) => {
     )
   } else {
     return (
-      <Container className={contnetFullSize ? styles.minimalContainer : null}>
+      <Container
+        className={contnetFullSize ? styles.minimalContainer : null}
+        style={{ marginTop: '2rem' }}
+      >
         {children}
       </Container>
     )
