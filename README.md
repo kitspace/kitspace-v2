@@ -98,3 +98,5 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 5. The Cypress GUI should pop up.
 
 6. To run all tests, press `Run all specs`.
+
+# Trigger the CI
