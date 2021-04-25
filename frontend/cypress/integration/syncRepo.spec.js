@@ -15,7 +15,7 @@ describe('Syncing a project behavior validation', () => {
 
   it('should sync a repo on gitea', () => {
     cy.clearCookies()
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
 
     cy.createUser(username, email, password)
     cy.visit('/login')
