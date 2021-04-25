@@ -28,8 +28,9 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it('should sync a repo on gitea', () => {
-
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as('sync')
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
+      'sync',
+    )
     cy.visit('/projects/new')
 
     cy.get('input:first').type(syncedRepoUrl)
