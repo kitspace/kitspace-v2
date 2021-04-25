@@ -20,12 +20,12 @@ describe('Upload project', () => {
     cy.visit('/login')
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
     cy.signIn(username, password)
-
     cy.visit('/projects/new')
-    cy.preFileDrop(username)
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
+    cy.visit('/projects/new')
+    cy.preFileDrop(username)
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -39,6 +39,8 @@ describe('Upload project', () => {
   })
 
   it('should show modal on project names collision', () => {
+    cy.visit('/projects/new')
+    cy.preFileDrop(username)
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -55,6 +57,8 @@ describe('Upload project', () => {
   })
 
   it('should commit files to the same project on `Update existing project`', () => {
+    cy.visit('/projects/new')
+    cy.preFileDrop(username)
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
