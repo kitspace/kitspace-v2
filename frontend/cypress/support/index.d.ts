@@ -107,13 +107,4 @@ declare namespace Cypress {
      */
     preFileDrop(username: string): Chainable<any>
   }
-
-  interface Chainable<Subject> {
-    /**
-     * sync the test repo for the current test user
-     * @example
-     * syncTestRepo()
-     */
-    syncTestRepo()
-  }
 }

@@ -20,14 +20,12 @@ describe('Upload project', () => {
     cy.visit('/login')
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
     cy.signIn(username, password)
-    cy.wait(1000)
-
     cy.visit('/projects/new')
-    cy.wait(1000)
-    cy.preFileDrop(username)
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
+    cy.visit('/projects/new')
+    cy.preFileDrop(username)
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -35,13 +33,14 @@ describe('Upload project', () => {
 
     // Wait until getting a response from the server then validate a redirection has happened
     cy.wait(['@createRepo', '@getRepo'])
-    cy.wait(1000)
     cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
 
-    cy.get('[data-cy=file-name]').contains('example.png')
+    cy.get('[data-cy=file-name]', {timeout: 15000}).contains('example.png')
   })
 
   it('should show modal on project names collision', () => {
+    cy.visit('/projects/new')
+    cy.preFileDrop(username)
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -58,6 +57,8 @@ describe('Upload project', () => {
   })
 
   it('should commit files to the same project on `Update existing project`', () => {
+    cy.visit('/projects/new')
+    cy.preFileDrop(username)
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
@@ -80,7 +81,7 @@ describe('Upload project', () => {
     cy.get('[data-cy=file-name]').contains('example2.png')
   })
 
-  // TODO FIXME
+  // TODO FIXME, after fixing the neme collision modal
   // it('should create a project and redirect to its update route on `Choose different name`', () => {
   //   // Dropping a single file with the same name as an existing project(example)
   //   // will trigger a name collision
