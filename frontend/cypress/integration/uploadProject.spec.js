@@ -20,10 +20,8 @@ describe('Upload project', () => {
     cy.visit('/login')
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
     cy.signIn(username, password)
-    cy.wait(1000)
 
     cy.visit('/projects/new')
-    cy.wait(1000)
     cy.preFileDrop(username)
   })
 
@@ -35,7 +33,6 @@ describe('Upload project', () => {
 
     // Wait until getting a response from the server then validate a redirection has happened
     cy.wait(['@createRepo', '@getRepo'])
-    cy.wait(1000)
     cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
 
     cy.get('[data-cy=file-name]').contains('example.png')
@@ -80,7 +77,7 @@ describe('Upload project', () => {
     cy.get('[data-cy=file-name]').contains('example2.png')
   })
 
-  // TODO FIXME
+  // TODO FIXME, after fixing the neme collision modal
   // it('should create a project and redirect to its update route on `Choose different name`', () => {
   //   // Dropping a single file with the same name as an existing project(example)
   //   // will trigger a name collision

@@ -12,7 +12,6 @@ describe('Sign up form validation', () => {
     cy.reload()
 
     cy.visit('/login?sign_up')
-    cy.wait(1000)
   })
 
   afterEach(() => {
@@ -128,9 +127,10 @@ describe('Sign up form submission', () => {
 
     cy.signUp(newUsername, newEmail, newPassword)
 
+    cy.visit('/')
     // the user should be signed in, i.e., the `session.user` object won't be null
-    cy.wait(2000)
     cy.window().then(win => {
+      console.log(win.session)
       assert(win.session.user, 'Auto sign in')
     })
   })

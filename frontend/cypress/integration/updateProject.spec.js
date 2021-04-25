@@ -19,8 +19,6 @@ describe('Updating a project behavior validation', () => {
     cy.visit('/login')
     cy.signIn(username, password)
 
-    // waiting prevents random test failures due to jittering in response
-    cy.wait(5000)
     // sync the test repo
     cy.visit('/projects/new/')
     // Simulate dropping a single file('example.png') in the dropzone.
@@ -42,10 +40,10 @@ describe('Updating a project behavior validation', () => {
     cy.clearCookies()
     cy.reload()
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sing_in')
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sing_in')
+    cy.wait('@sign_in')
 
     cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
     cy.visit(updatePageRoute)
@@ -58,10 +56,15 @@ describe('Updating a project behavior validation', () => {
 
   it('should handle uploading files', () => {
     cy.visit(updatePageRoute)
-    // Intercept request for the uploading route
+    // Intercept request for the upload route
     cy.intercept(
       `http://gitea.kitspace.test:3000/${testRepoFullName}/upload-file**`,
     ).as('upload')
+    // Intercept request for the commit route
+    cy.intercept(
+      `http://gitea.kitspace.test:3000/${testRepoFullName}/upload/master**`,
+    ).as('commit')
+
 
     cy.preFileDrop(username)
     cy.fixture('example2.png', 'base64').then(file => {
@@ -71,11 +74,11 @@ describe('Updating a project behavior validation', () => {
     // waiting prevents random test failures due to jittering in response
     cy.wait('@upload')
     // Dropping a file should make it appear in the preview component
-    cy.wait(1000)
     cy.get('[data-cy=file-name]').contains('example2.png')
 
     // Commit files to the repo
     cy.get('[data-cy=update-form-submit]').click()
+    cy.wait('@commit')
 
     // After reloading the update page the files should still in the preview component
     cy.reload()
@@ -89,7 +92,6 @@ describe('Updating a project behavior validation', () => {
     cy.get('[data-cy=update-form-name] > input').clear().type(newName)
     cy.get('[data-cy=update-form-submit]').click()
     cy.wait('@getRepo')
-    cy.wait(1000)
 
     // should redirect to the new update page
     cy.url().should('contain', `/${username}/${newName}`)
@@ -120,7 +122,6 @@ describe('Updating a project behavior validation', () => {
     // Submit the update form
     cy.get('[data-cy=update-form-submit]').click()
 
-    cy.wait(1000)
     // Should redirect to the new update page
     cy.url().should('contain', `/${username}/${newName}`)
 
@@ -141,6 +142,8 @@ describe('Update project form validation', () => {
     // Create a user
     cy.clearCookies()
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as('sync')
+
 
     cy.createUser(username, email, password)
     // sign in, and migrate `light-test-repo`
@@ -155,7 +158,7 @@ describe('Update project form validation', () => {
     cy.visit('/projects/new')
     cy.get('input:first').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
-    cy.syncTestRepo()
+    cy.wait('@sync')
 
     // Create a repo by uploading files
     cy.reload() // The reload `projects/new` page as the previous step `sync` will trigger redirect
@@ -164,7 +167,6 @@ describe('Update project form validation', () => {
     ).as('getRepos')
 
     // Simulate dropping a single file('example.png') in the dropzone.
-    cy.wait(1000)
     cy.preFileDrop(username)
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'])
@@ -181,7 +183,6 @@ describe('Update project form validation', () => {
   it('should prevent conflicting project names', () => {
     // Go to the update page for the project created by uploading files
     cy.visit(`/${username}/${uploadedRepoName}`)
-    cy.wait(2000)
 
     // Change the project name to the name of the synced repo which will cause conflict
     cy.get('[data-cy=update-form-name] > input')
@@ -202,7 +203,6 @@ describe('Update project form validation', () => {
 
     // Go to the update page for the project created by uploading files
     cy.visit(`/${username}/${uploadedRepoName}`)
-    cy.wait(2000)
 
     // Change the project name 61+ name which is beyond the maximum allowable
     cy.get('[data-cy=update-form-name] > input').clear().type(longName)
@@ -219,7 +219,6 @@ describe('Update project form validation', () => {
 
   it('should disable updating and warn for synced repos', () => {
     cy.visit(`${username}/${syncedRepoName}`)
-    cy.wait(2000)
 
     // display the warning message
     cy.get('[data-cy=sync-msg]').should('be.visible')

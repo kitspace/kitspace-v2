@@ -28,22 +28,20 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it('should sync a repo on gitea', () => {
-    cy.wait(2000)
+
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as('sync')
     cy.visit('/projects/new')
 
     cy.get('input:first').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
-    cy.syncTestRepo()
+    cy.wait('@sync')
 
     // Go to Gitea dashboard and assert the repo has been migrated
     cy.visit(`http://gitea.kitspace.test:3000/${username}`)
-    cy.wait(1000)
     cy.get('.ui.repository.list').children().get('.header').contains(repoName)
 
     // assert the repo is on `{frontend}/projects/mine`
     cy.visit(`/${username}`)
-    cy.wait(1000)
-
     cy.get('.ui.card').contains(repoName)
   })
 })
