@@ -19,8 +19,6 @@ describe('Updating a project behavior validation', () => {
     cy.visit('/login')
     cy.signIn(username, password)
 
-    // Go to home instead of `wait`
-    cy.visit('/')
     // sync the test repo
     cy.visit('/projects/new/')
     // Simulate dropping a single file('example.png') in the dropzone.
@@ -141,9 +139,8 @@ describe('Update project form validation', () => {
     // Create a user
     cy.clearCookies()
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
-      'sync',
-    )
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as('sync')
+
 
     cy.createUser(username, email, password)
     // sign in, and migrate `light-test-repo`

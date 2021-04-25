@@ -20,7 +20,9 @@ describe('Upload project', () => {
     cy.visit('/login')
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
     cy.signIn(username, password)
+
     cy.visit('/projects/new')
+    cy.preFileDrop(username)
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
