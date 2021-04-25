@@ -59,7 +59,7 @@ const IBOM = ({ html, pcbData }) => {
   }, [])
 
   return (
-    <Page>
+    <Page contnetFullSize>
       <NextHead>
         <script
           type="text/javascript"

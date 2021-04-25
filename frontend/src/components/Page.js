@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { string, object, bool } from 'prop-types'
-
-import Head from './Head'
-import NavBar from './NavBar'
 import { Container, Loader } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
 
-const Content = ({ reqSignIn, reqSignOut, children }) => {
+import Head from './Head'
+import NavBar from './NavBar'
+import styles from './Page.module.scss'
+
+const Content = ({ reqSignIn, reqSignOut, contnetFullSize, children }) => {
   const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
@@ -29,7 +30,11 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
       </Loader>
     )
   } else {
-    return <Container style={{ marginTop: 30 }}>{children}</Container>
+    return (
+      <Container className={contnetFullSize ? styles.minimalContainer : null}>
+        {children}
+      </Container>
+    )
   }
 }
 
@@ -40,9 +45,7 @@ export const Page = props => {
         <title>{props.title}</title>
       </Head>
       <NavBar />
-      <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
-        {props.children}
-      </Content>
+      <Content {...props}>{props.children}</Content>
     </>
   )
 }
@@ -51,10 +54,11 @@ Page.propTypes = {
   title: string,
   reqSignIn: bool,
   reqSignOut: bool,
-  head: object,
+  contnetFullSize: bool,
 }
 
 Content.propTypes = {
   reqSignIn: bool,
   reqSignOut: bool,
+  contnetFullSize: bool,
 }

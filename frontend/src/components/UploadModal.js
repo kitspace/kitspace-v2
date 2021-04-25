@@ -35,7 +35,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
 }
 
 const Tabs = ({ activeTab, files }) => {
-  const tabsMap = {PCB: 0, BOM: 1, README: 2}
+  const tabsMap = { PCB: 0, BOM: 1, README: 2 }
   const panes = [
     {
       menuItem: 'PCB Files',
