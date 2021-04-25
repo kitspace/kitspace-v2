@@ -35,7 +35,7 @@ describe('Upload project', () => {
     cy.wait(['@createRepo', '@getRepo'])
     cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
 
-    cy.get('[data-cy=file-name]').contains('example.png')
+    cy.get('[data-cy=file-name]', {timeout: 15000}).contains('example.png')
   })
 
   it('should show modal on project names collision', () => {

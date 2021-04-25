@@ -8,26 +8,15 @@ describe('Syncing a project behavior validation', () => {
   const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
   const repoName = 'light-test-repo'
 
-  before(() => {
+  it('should sync a repo on gitea', () => {
     cy.clearCookies()
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
 
     cy.createUser(username, email, password)
-  })
-
-  beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
-
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.visit('/login')
     cy.signIn(username, password)
     cy.wait('@sign_in')
-  })
 
-  it('should sync a repo on gitea', () => {
     cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
       'sync',
     )
