@@ -50,6 +50,8 @@ describe('Updating a project behavior validation', () => {
   })
 
   it('should render the update page with correct project name', () => {
+    // Go to home instead of `wait`
+    cy.visit('/')
     cy.visit(updatePageRoute)
     cy.get('[data-cy=update-form-name] > input').should('have.value', testRepoName)
   })
@@ -139,8 +141,9 @@ describe('Update project form validation', () => {
     // Create a user
     cy.clearCookies()
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as('sync')
-
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
+      'sync',
+    )
 
     cy.createUser(username, email, password)
     // sign in, and migrate `light-test-repo`
