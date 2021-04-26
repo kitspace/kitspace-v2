@@ -21,7 +21,7 @@ describe('Syncing a project behavior validation', () => {
     cy.visit('/login')
     cy.signIn(username, password)
     cy.wait('@sign_in')
-
+    
     cy.visit('/projects/new')
 
     cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
