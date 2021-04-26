@@ -127,11 +127,10 @@ describe('Sign up form submission', () => {
 
     cy.signUp(newUsername, newEmail, newPassword)
 
-    cy.visit('/')
     // the user should be signed in, i.e., the `session.user` object won't be null
+    cy.get('#logout').should('be.visible')
     cy.window().then(win => {
-      console.log(win.session)
-      assert(win.session.user, 'Auto sign in')
+      assert(win.session.user, 'Auto sign in.')
     })
   })
 
