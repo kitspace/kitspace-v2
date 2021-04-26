@@ -21,7 +21,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
-        trigger={<Button content="Upload" />}
+        trigger={<Button content={`Upload ${activeTab} file` }/>}
       >
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>
