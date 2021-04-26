@@ -156,7 +156,9 @@ describe('Update project form validation', () => {
 
     // migrate `light-test-repo`
     const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
-
+    // Go to home instead of `wait`
+    cy.visit('/')
+    
     cy.visit('/projects/new')
     cy.get('input:first').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
