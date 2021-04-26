@@ -156,7 +156,7 @@ const UpdateProject = ({
 
   return (
     <Page>
-      {isSynced ? (
+      {isSynced && hasUploadPermission ? (
         <Message data-cy="sync-msg" color="yellow">
           <Message.Header>A synced repository!</Message.Header>
           <Message.Content>
@@ -166,9 +166,6 @@ const UpdateProject = ({
           </Message.Content>
         </Message>
       ) : null}
-      <Header as="h2" textAlign="center">
-        Updating {projectName} by {user}
-      </Header>
       <UpdateForm
         repoFiles={repoFiles}
         hasUploadPermission={hasUploadPermission}
