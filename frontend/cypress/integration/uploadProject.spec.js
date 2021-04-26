@@ -25,25 +25,23 @@ describe('Upload project', () => {
 
   it('should create a project and redirect to its update route on file drop', () => {
     cy.visit('/projects/new')
-    cy.preFileDrop(username)
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
-      cy.get('.dropzone').dropFiles([file], ['example.png'])
+      cy.get('.dropzone').dropFiles([file], ['example.png'], username)
     })
 
     // Wait until getting a response from the server then validate a redirection has happened
     cy.wait(['@createRepo', '@getRepo'])
     cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
 
-    cy.get('[data-cy=file-name]', {timeout: 15000}).contains('example.png')
+    cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')
   })
 
   it('should show modal on project names collision', () => {
     cy.visit('/projects/new')
-    cy.preFileDrop(username)
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
-      cy.get('.dropzone').dropFiles([file], ['example.png'])
+      cy.get('.dropzone').dropFiles([file], ['example.png'], username)
     })
 
     cy.wait(['@createRepo', '@getRepo'])
@@ -58,14 +56,17 @@ describe('Upload project', () => {
 
   it('should commit files to the same project on `Update existing project`', () => {
     cy.visit('/projects/new')
-    cy.preFileDrop(username)
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(f1 => {
       cy.fixture('example2.png', 'base64').then(f2 => {
-        cy.get('.dropzone').dropFiles([f1, f2], ['example.png', 'example2.png'])
+        cy.get('.dropzone').dropFiles(
+          [f1, f2],
+          ['example.png', 'example2.png'],
+          username,
+        )
       })
     })
 

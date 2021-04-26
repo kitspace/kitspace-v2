@@ -104,7 +104,14 @@ Cypress.Commands.add('hasProperFields', schema => {
 Cypress.Commands.add(
   'dropFiles',
   { prevSubject: 'element' },
-  (subject, files, fileNames) => {
+  (subject, files, fileNames, username) => {
+    // This will match any request made by `utils/giteaApi.createRepo`,
+    // The `**` for matching the csrf query param.
+    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
+
+    // This will match any request for `utils/giteaApi.getRepo`
+    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
+
     cy.window().then(win => {
       const filesContent = files.map((f, idx) => {
         const blob = Cypress.Blob.base64StringToBlob(f)
@@ -115,14 +122,9 @@ Cypress.Commands.add(
         dataTransfer: { files: filesContent, types: ['Files'] },
       })
     })
+    // Wait until getting a response from the server
+    cy.wait(['@createRepo', '@getRepo'])
   },
 )
 
-Cypress.Commands.add('preFileDrop', username => {
-  // This will match any request made by `utils/giteaApi.createRepo`,
-  // The `**` for matching the csrf query param.
-  cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
-
-  // This will match any request for `utils/giteaApi.getRepo`
-  cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-})
+Cypress.Commands.add('preFileDrop', username => {})

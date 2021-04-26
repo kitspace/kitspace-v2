@@ -95,16 +95,6 @@ declare namespace Cypress {
      * @param fileNames
      * cy.get('.dropzone').dropFile(file, 'example.txt')
      */
-      dropFiles(files, fileNames): Chainable<any>
-  }
-
-  interface Chainable<Subject> {
-    /**
-     * Good to file uploading route and prepare call all necessary network intercepts
-     * @param username
-     * @example
-     *
-     */
-    preFileDrop(username: string): Chainable<any>
+      dropFiles(files, fileNames: string[], username: string): Chainable<any>
   }
 }
