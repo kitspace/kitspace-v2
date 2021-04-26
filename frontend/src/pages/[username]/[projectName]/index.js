@@ -129,7 +129,7 @@ const UpdateProject = ({
   }, [status])
 
   useEffect(() => {
-    console.log({ isSynced })
+    console.log({ project})
   }, [])
 
   if (isLoading) {
@@ -182,6 +182,7 @@ const UpdateProject = ({
         owner={user}
         name={projectName}
         description={project?.description}
+        url={project.original_url}
         boardAssetsExist={boardAssetsExist}
         readmeExists={readmeExists}
       />
@@ -202,6 +203,7 @@ const UpdateForm = ({
   owner,
   name,
   description,
+  url,
   boardAssetsExist,
   readmeExists,
 }) => {
@@ -342,7 +344,7 @@ const UpdateForm = ({
     <>
       <InfoBar
         name={name}
-        url={boardInfo?.url || 'url goes here'}
+        url={url}
         site={boardInfo?.site || ''}
         description={description}
       />
