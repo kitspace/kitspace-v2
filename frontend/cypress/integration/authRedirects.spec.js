@@ -26,6 +26,8 @@ describe('It validates authentication redirects', () => {
   it("should redirect unauthenticated users to '/login' when accessing reqSignIn page", () => {
     // Clear the cookies to make sure the user isn't authenticated
     cy.clearCookies()
+    // sign in, and migrate `light-test-repo`
+    cy.visit('/login')
     // `/project/new` is marked as `reqSignIn`.
     cy.visit('/projects/new')
     cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
