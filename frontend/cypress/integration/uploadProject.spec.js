@@ -30,8 +30,6 @@ describe('Upload project', () => {
       cy.get('.dropzone').dropFiles([file], ['example.png'], username)
     })
 
-    // Wait until getting a response from the server then validate a redirection has happened
-    cy.wait(['@createRepo', '@getRepo'])
     cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
 
     cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')
@@ -43,8 +41,6 @@ describe('Upload project', () => {
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'], username)
     })
-
-    cy.wait(['@createRepo', '@getRepo'])
 
     // Collision modal should open
     cy.get('[data-cy=collision-modal]').should('be.visible')
@@ -70,8 +66,6 @@ describe('Upload project', () => {
       })
     })
 
-    cy.wait(['@createRepo', '@getRepo'])
-
     // Choose `Update existing project`
     cy.get('[data-cy=collision-update]').click()
 
@@ -93,8 +87,6 @@ describe('Upload project', () => {
   //       cy.get('.dropzone').dropFiles([f1, f2], ['example.png', 'example2.png'])
   //     })
   //   })
-
-  //   cy.wait(['@createRepo', '@getRepo'])
 
   //   // Choose `Choose different name`
   //   const newName = faker.company.companyName()
