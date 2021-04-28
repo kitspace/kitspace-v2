@@ -52,7 +52,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
-      - name: Build and push frontend
+      - name: Build frontend
         uses: docker/build-push-action@v2
         with:
           context: ./frontend
@@ -63,7 +63,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Build and push processor
+      - name: Build processor
         uses: docker/build-push-action@v2
         with:
           context: ./processor
@@ -74,7 +74,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
-      - name: Build and push nginx
+      - name: Build nginx
         uses: docker/build-push-action@v2
         with:
           context: ./nginx
@@ -90,7 +90,7 @@ jobs:
         run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
         continue-on-error: true
 
-      - name: Build and push gitea
+      - name: Build gitea
         # If the previous step failed, i.e., there's no image tagged
         # gitea:${{gitea_sha_short}} in ghcr, build image and push it
         if: ${{ failure() }}
