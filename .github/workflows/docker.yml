@@ -98,7 +98,8 @@ jobs:
         with:
           context: ./gitea
           file: ./gitea/Dockerfile
-          push: true
+          # push if allowed to
+          push: ${{ secrets.CR_PAT != null }}
           tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
