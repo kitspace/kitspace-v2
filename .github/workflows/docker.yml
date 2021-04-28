@@ -31,7 +31,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Login to ghcr.io
+      - if: ${{ secrets.CR_PAT != null }}
+        name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -39,7 +40,8 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       # to avoid being rate-limited on pulls
-      - name: Login to hub.docker.com
+      - if: ${{ secrets.DOCKER_HUB_PAT != null }}
+        name: Login to hub.docker.com
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
@@ -51,7 +53,8 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
-          push: true
+          # push if allowed to
+          push: ${{ secrets.CR_PAT != null }}
           tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -61,7 +64,8 @@ jobs:
         with:
           context: ./processor
           file: ./processor/Dockerfile
-          push: true
+          # push if allowed to
+          push: ${{ secrets.CR_PAT != null }}
           tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -71,7 +75,8 @@ jobs:
         with:
           context: ./nginx
           file: ./nginx/Dockerfile
-          push: true
+          # push if allowed to
+          push: ${{ secrets.CR_PAT != null }}
           tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -120,7 +125,8 @@ jobs:
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
 
-      - name: Login to ghcr.io
+      - if: ${{ secrets.CR_PAT != null }}
+        name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -131,7 +137,8 @@ jobs:
         continue-on-error: true
 
       # to avoid being rate-limited on pulls
-      - name: Login to hub.docker.com
+      - if: ${{ secrets.DOCKER_HUB_PAT != null }}
+        name: Login to hub.docker.com
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
