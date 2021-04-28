@@ -31,8 +31,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - if: ${{ secrets.CR_PAT != null }}
-        name: Login to ghcr.io
+      - name: Login to ghcr.io
+        env:
+          CR_PAT: ${{ secrets.CR_PAT  }}
+        if: env.CR_PAT != null
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -40,8 +42,10 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       # to avoid being rate-limited on pulls
-      - if: ${{ secrets.DOCKER_HUB_PAT != null }}
-        name: Login to hub.docker.com
+      - name: Login to hub.docker.com
+        env:
+          DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT  }}
+        if: env.DOCKER_HUB_PAT != null
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
@@ -125,8 +129,10 @@ jobs:
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
 
-      - if: ${{ secrets.CR_PAT != null }}
-        name: Login to ghcr.io
+      - name: Login to ghcr.io
+        env:
+          CR_PAT: ${{ secrets.CR_PAT  }}
+        if: env.CR_PAT != null
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -137,8 +143,10 @@ jobs:
         continue-on-error: true
 
       # to avoid being rate-limited on pulls
-      - if: ${{ secrets.DOCKER_HUB_PAT != null }}
-        name: Login to hub.docker.com
+      - name: Login to hub.docker.com
+        env:
+          DOCKER_HUB_PAT: ${{ secrets.DOCKER_HUB_PAT  }}
+        if: env.DOCKER_HUB_PAT != null
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
