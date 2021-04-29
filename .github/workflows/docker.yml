@@ -199,10 +199,18 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Set example environment variables
+      - name: Set environment variables
         uses: c-py/action-dotenv-to-setenv@v2
         with:
           env-file: .env.example
+
+      - name: Get commit SHA
+        id: sha
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
       - name: Configure /etc/hosts
         shell: bash
@@ -211,6 +219,11 @@ jobs:
       - name: Install Gitea
         shell: bash
         timeout-minutes: 5
+        env:
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
 
@@ -225,8 +238,12 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
-          start: docker-compose up
+          start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
           record: true
           parallel: true
