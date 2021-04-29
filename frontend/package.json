@@ -4,7 +4,7 @@
     "dev": "nodemon server.js --watch server.js --watch next.config.js",
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
-    "start": "node server.js",
+    "start": "node src/server.js",
     "e2e": "cypress run",
     "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)"
   },
