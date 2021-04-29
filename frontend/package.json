@@ -46,7 +46,7 @@
   "devDependencies": {
     "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
-    "cypress": "6.8.0",
+    "cypress": "7.1.0",
     "cypress-fail-fast": "^2.0.0",
     "cypress-terminal-report": "^3.2.1",
     "faker": "^5.1.0",
