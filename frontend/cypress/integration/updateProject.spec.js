@@ -219,7 +219,7 @@ describe('Update project form validation', () => {
   })
 
   it('should disable updating and warn for synced repos', () => {
-    cy.visit(`${username}/${syncedRepoName}`)
+    cy.visit(`/${username}/${syncedRepoName}`)
 
     // display the warning message
     cy.get('[data-cy=sync-msg]').should('be.visible')
