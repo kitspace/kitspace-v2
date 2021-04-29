@@ -31,7 +31,7 @@ describe('Syncing a project behavior validation', () => {
 
     cy.url().then(url => {
       if(!url.endsWith('/projects/new')) {
-        cy.visit('/projects/page')
+        cy.visit('/projects/new')
       }
     })
     cy.get('input:first').type(syncedRepoUrl)
