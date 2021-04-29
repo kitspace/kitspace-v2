@@ -49,12 +49,6 @@ describe('Update project form validation', () => {
   })
 
   it('should prevent conflicting project names', () => {
-    // Make sure the repo has loaded
-    cy.intercept(
-      'http://gitea.kitspace.test:3000/api/v1/repos/migrate/status',
-    ).as('loaded')
-    cy.wait('@loaded')
-
     // Go to the update page for the project created by uploading files
     cy.visit(`/${username}/${uploadedRepoName}`)
 
@@ -92,7 +86,7 @@ describe('Update project form validation', () => {
   })
 
   it('should disable updating and warn for synced repos', () => {
-    cy.visit(`${username}/${syncedRepoName}`)
+    cy.visit(`/${username}/${syncedRepoName}`)
 
     // display the warning message
     cy.get('[data-cy=sync-msg]').should('be.visible')
