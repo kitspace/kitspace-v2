@@ -37,9 +37,6 @@ describe('Update project form validation', () => {
 
     // Create a repo by uploading files
     cy.visit('/projects/new') // go back to `projects/new` page as the previous step `sync` will trigger redirect
-    cy.intercept(
-      `http://gitea.kitspace.test:3000/api/v1/users/${username}/repos`,
-    ).as('getRepos')
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
@@ -52,6 +49,12 @@ describe('Update project form validation', () => {
   })
 
   it('should prevent conflicting project names', () => {
+    // Make sure the repo has loaded
+    cy.intercept(
+      'http://gitea.kitspace.test:3000/api/v1/repos/migrate/status',
+    ).as('loaded')
+    cy.wait('@loaded')
+
     // Go to the update page for the project created by uploading files
     cy.visit(`/${username}/${uploadedRepoName}`)
 

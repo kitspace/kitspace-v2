@@ -126,5 +126,3 @@ Cypress.Commands.add(
     cy.wait(['@createRepo', '@getRepo'])
   },
 )
-
-Cypress.Commands.add('preFileDrop', username => {})
