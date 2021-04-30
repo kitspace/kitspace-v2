@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { string, object, bool } from 'prop-types'
+import { string, bool } from 'prop-types'
 import { Container, Loader } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
 
@@ -7,7 +7,7 @@ import Head from './Head'
 import NavBar from './NavBar'
 import styles from './Page.module.scss'
 
-const Content = ({ reqSignIn, reqSignOut, contnetFullSize, children }) => {
+const Content = ({ reqSignIn, reqSignOut, contentFullSize, children }) => {
   const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
@@ -32,7 +32,7 @@ const Content = ({ reqSignIn, reqSignOut, contnetFullSize, children }) => {
   } else {
     return (
       <Container
-        className={contnetFullSize ? styles.minimalContainer : null}
+        className={contentFullSize ? styles.minimalContainer : null}
         style={{ marginTop: '2rem' }}
       >
         {children}
@@ -57,11 +57,11 @@ Page.propTypes = {
   title: string,
   reqSignIn: bool,
   reqSignOut: bool,
-  contnetFullSize: bool,
+  contentFullSize: bool,
 }
 
 Content.propTypes = {
   reqSignIn: bool,
   reqSignOut: bool,
-  contnetFullSize: bool,
+  contentFullSize: bool,
 }

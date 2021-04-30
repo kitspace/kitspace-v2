@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useLayoutEffect, useEffect, useState } from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
 import NextHead from 'next/head'
 
 import { Page } from '@components/Page'
+import { Loader } from 'semantic-ui-react'
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(
@@ -33,6 +34,7 @@ export const getServerSideProps = async ({ params }) => {
 }
 
 const IBOM = ({ html, pcbData }) => {
+  const [ready, setReady] = useState(false)
   const config = {
     dark_mode: false,
     show_pads: true,
@@ -49,12 +51,12 @@ const IBOM = ({ html, pcbData }) => {
 
   /*
   i.   set the `pcbdata` var needed by IBOM
-  ii.  initizalize IBOM
+  ii.  initialize IBOM
   iii. make the title anchor tag linking to the project page.
   iv.  prefetch project page.
    */
   const titleTemplate = '`<a href=/${pcbTitle}>${pcbTitle}</a>`'
-  const herfTemplate = '`/${pcbTitle}`'
+  const hrefTemplate = '`/${pcbTitle}`'
   const initScript = `
   var pcbdata = ${pcbData};
   document.getElementById('IBOM_script').addEventListener('load', () => {
@@ -66,28 +68,35 @@ const IBOM = ({ html, pcbData }) => {
     const head = document.head;
     const link = document.createElement("link");
     link.rel = "prefetch";
-    link.href = ${herfTemplate};
+    link.href = ${hrefTemplate};
   });
   `
 
   useEffect(() => {
     window.config = config
+    setReady(true)
   }, [])
 
-  return (
-    <Page contnetFullSize>
-      <NextHead>
-        <script
-          type="text/javascript"
-          src="/static/IBOM/index.js"
-          id="IBOM_script"
-        ></script>
-        <script type="text/javascript">{initScript}</script>
-        <link rel="stylesheet" href="/static/IBOM/index.css"></link>
-      </NextHead>
-      <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
+  if(ready) {
+    return (
+      <Page contentFullSize>
+        <NextHead>
+          <script
+            type="text/javascript"
+            src="/static/IBOM/index.js"
+            id="IBOM_script"
+          ></script>
+          <script type="text/javascript">{initScript}</script>
+          <link rel="stylesheet" href="/static/IBOM/index.css"></link>
+        </NextHead>
+        <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
+      </Page>
+    )
+  } else {
+    return <Page>
+      <Loader active>Loading IBOM</Loader>
     </Page>
-  )
+  }
 }
 
 export default IBOM
