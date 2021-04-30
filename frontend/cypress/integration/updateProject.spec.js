@@ -1,7 +1,5 @@
 import faker from 'faker'
 
-//
-
 describe('Update project form validation', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
