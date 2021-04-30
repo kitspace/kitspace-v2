@@ -89,12 +89,14 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
 
-2. navigate to `frontend`: `cd frontend/`.
+2. Navigate to `e2e`: `cd e2e/`.
 
-3. Source the `.env` file with `set -a && source ../.env && set +a`
+3. Install dependencies: `yarn install`.
 
-4. Start the testing client with the `npx cypress open` command.
+4. Source the `.env` file: `set -a && source ../.env && set +a`
 
-5. The Cypress GUI should pop up.
+5. Start the testing client: `npx cypress open` or `node_modules/.bin/cypress` command.
 
-6. To run all tests, press `Run all specs`.
+6. The Cypress GUI should pop up.
+
+7. To run all tests, press `Run all specs`.
