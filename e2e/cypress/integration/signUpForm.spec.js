@@ -10,7 +10,6 @@ const SignUpFormModel = Joi.object({
   password: Joi.string().min(6).required(),
 })
 
-
 describe('Sign up form validation', () => {
   beforeEach(() => {
     // deauthenticate the user and reload the page to update the CSRF token
