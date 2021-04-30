@@ -146,7 +146,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
-      - name: Set example environment variables
+      - name: Set environment variables
         uses: c-py/action-dotenv-to-setenv@v2
         with:
           env-file: .env.example
