@@ -5,7 +5,7 @@
   "numTestsKeptInMemory": 25,
   "includeShadowDom": true,
   "defaultCommandTimeout": 10000,
-  "pageLoadTimeout": 80000,
+  "pageLoadTimeout": 10000,
   "viewportWidth": 1200,
   "viewportHeight": 660,
   "retries": {

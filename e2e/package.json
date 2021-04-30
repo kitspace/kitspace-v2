@@ -1,0 +1,15 @@
+{
+  "name": "kitspace-cypress",
+  "description": "e2e",
+  "scripts": {
+    "e2e": "cypress run",
+    "fmt": "prettier --write *.js $(find . -name '*.js'| grep -v node_modules)"
+  },
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "cypress": "7.1.0",
+    "cypress-fail-fast": "^2.3.2",
+    "faker": "^5.5.3",
+    "joi": "^17.4.0"
+  }
+}

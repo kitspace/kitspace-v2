@@ -224,8 +224,8 @@ jobs:
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
-          command: yarn e2e --record
-          working-directory: frontend
+          command: yarn e2e --record --browser chrome
+          working-directory: e2e
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           # This value is in seconds
