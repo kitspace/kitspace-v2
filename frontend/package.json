@@ -19,6 +19,7 @@
     "body-parser": "^1.19.0",
     "browser-version": "^1.0.0",
     "cheerio": "^1.0.0-rc.5",
+    "csstype": "^2.6.2",
     "express": "^4.17.1",
     "file-loader": "^6.0.0",
     "file-selector": "^0.2.4",
@@ -41,12 +42,12 @@
     "semantic-ui-react": "^0.88.2",
     "slugify": "^1.4.6",
     "swr": "^0.3.11",
-    "url-loader": "^4.1.0"
+    "url-loader": "^4.1.0",
+    "webpack": "^5.36.1"
   },
   "devDependencies": {
-    "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
-    "cypress": "7.1.0",
+    "cypress": "6.8.0",
     "cypress-fail-fast": "^2.0.0",
     "cypress-terminal-report": "^3.2.1",
     "faker": "^5.1.0",
