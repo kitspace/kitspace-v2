@@ -138,7 +138,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
-      - name: Set environment variables
+      - name: Set example environment variables
         uses: c-py/action-dotenv-to-setenv@v2
         with:
           env-file: .env.example
@@ -225,7 +225,7 @@ jobs:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
           command: yarn e2e --record
-          working-directory: e2e
+          working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           # This value is in seconds
