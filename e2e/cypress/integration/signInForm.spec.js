@@ -12,7 +12,6 @@ const SignInFormModel = Joi.object({
   remember: Joi.boolean(),
 })
 
-
 describe('Log in form validation', () => {
   before(() => {
     cy.clearCookies()
