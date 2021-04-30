@@ -3,7 +3,7 @@
   "description": "e2e",
   "scripts": {
     "e2e": "cypress run",
-    "fmt": "prettier --write *.js $(find . -name '*.js'| grep -v node_modules)"
+    "fmt": "prettier --write $(find . -name '*.js'| grep -v node_modules)"
   },
   "license": "AGPL-3.0",
   "dependencies": {

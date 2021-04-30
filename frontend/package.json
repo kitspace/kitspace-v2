@@ -16,6 +16,7 @@
     "@stripe/stripe-js": "^1.10.0",
     "babel-plugin-lodash": "^3.3.4",
     "body-parser": "^1.19.0",
+    "csstype": "^2.6.2",
     "express": "^4.17.1",
     "file-loader": "^6.0.0",
     "file-selector": "^0.2.4",
@@ -35,15 +36,11 @@
     "semantic-ui-react": "^0.88.2",
     "slugify": "^1.4.6",
     "swr": "^0.3.11",
-    "url-loader": "^4.1.0"
+    "url-loader": "^4.1.0",
+    "webpack": "^5.36.1"
   },
   "devDependencies": {
-    "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
-    "cypress": "7.1.0",
-    "cypress-fail-fast": "^2.0.0",
-    "faker": "^5.1.0",
-    "lint-staged": ">=10",
     "nodemon": "^2.0.2",
     "prettier": "^2.0.5",
     "prop-types": "^15.7.2"
