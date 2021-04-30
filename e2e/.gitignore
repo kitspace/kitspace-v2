@@ -1,7 +1,0 @@
-node_modules
-yarn-error.log
-
-# e2e cypress results
-frontend/cypress/videos
-frontend/cypress/screenshots
-frontend/cypress/fixtures/auto-gen

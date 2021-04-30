@@ -4,7 +4,7 @@
     "dev": "nodemon server.js --watch server.js --watch next.config.js",
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
-    "start": "node src/server.js",
+    "start": "node server.js",
     "e2e": "cypress run",
     "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)"
   },
@@ -42,10 +42,10 @@
     "semantic-ui-react": "^0.88.2",
     "slugify": "^1.4.6",
     "swr": "^0.3.11",
-    "url-loader": "^4.1.0",
-    "webpack": "^5.36.1"
+    "url-loader": "^4.1.0"
   },
   "devDependencies": {
+    "@types/faker": "^5.1.0",
     "@types/stripe": "^7.13.25",
     "cypress": "6.8.0",
     "cypress-fail-fast": "^2.0.0",
