@@ -1,9 +1,15 @@
-/// <reference types="../support" />
-
 import faker from 'faker'
+import Joi from 'joi'
 
-// noinspection ES6PreferShortImport
-import { SignUpFormModel } from '../../src/models/SignUpForm'
+const SignUpFormModel = Joi.object({
+  _csrf: Joi.string(),
+  username: Joi.string().alphanum().required().max(20),
+  email: Joi.string()
+    .email({ tlds: { allow: false } })
+    .required(),
+  password: Joi.string().min(6).required(),
+})
+
 
 describe('Sign up form validation', () => {
   beforeEach(() => {
