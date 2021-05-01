@@ -128,10 +128,6 @@ const UpdateProject = ({
     }
   }, [status])
 
-  useEffect(() => {
-    console.log({ project})
-  }, [])
-
   if (isLoading) {
     return (
       <Page>

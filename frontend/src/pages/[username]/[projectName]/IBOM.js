@@ -77,7 +77,7 @@ const IBOM = ({ html, pcbData }) => {
     setReady(true)
   }, [])
 
-  if(ready) {
+  if (ready) {
     return (
       <Page contentFullSize>
         <NextHead>
@@ -93,9 +93,11 @@ const IBOM = ({ html, pcbData }) => {
       </Page>
     )
   } else {
-    return <Page>
-      <Loader active>Loading IBOM</Loader>
-    </Page>
+    return (
+      <Page>
+        <Loader active>Loading IBOM</Loader>
+      </Page>
+    )
   }
 }
 

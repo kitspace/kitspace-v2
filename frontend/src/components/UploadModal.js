@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Button, Modal, Tab } from 'semantic-ui-react'
 
@@ -7,6 +7,18 @@ const FilesPreview = dynamic(() => import('@components/FilesPreview'))
 
 const UploadModal = ({ activeTab, canUpload, files }) => {
   const [open, setOpen] = useState(false)
+  const allChecked = useRef([])
+
+  const mark = (node, checked) => {
+    if (checked) {
+      allChecked.current = [...allChecked.current, node]
+    } else {
+      const idx = allChecked.current.indexOf(node)
+      if (idx !== -1) {
+        allChecked.current.pop()
+      }
+    }
+  }
 
   return canUpload ? (
     <div
@@ -18,6 +30,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
       }}
     >
       <Modal
+        closeIcon
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
@@ -26,35 +39,42 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>
           <Modal.Description>
-            <Tabs activeTab={activeTab} files={files} />
+            <Tabs activeTab={activeTab} files={files} mark={mark} />
           </Modal.Description>
         </Modal.Content>
+        <Modal.Actions>
+          <Button
+            onClick={() => console.log(allChecked.current)}
+            positive
+            content="Upload"
+          />
+        </Modal.Actions>
       </Modal>
     </div>
   ) : null
 }
 
-const Tabs = ({ activeTab, files }) => {
+const Tabs = ({ activeTab, files, mark = { mark } }) => {
   const tabsMap = { PCB: 0, BOM: 1, README: 2 }
   const panes = [
     {
       menuItem: 'PCB Files',
-      render: () => <UploadTab files={files} trigger="PCB" />,
+      render: () => <UploadTab files={files} mark={mark} trigger="PCB" />,
     },
     {
       menuItem: 'BOM',
-      render: () => <UploadTab files={files} trigger="BOM" />,
+      render: () => <UploadTab files={files} mark={mark} trigger="BOM" />,
     },
     {
       menuItem: 'README',
-      render: () => <UploadTab files={files} trigger="README" />,
+      render: () => <UploadTab files={files} mark={mark} trigger="README" />,
     },
   ]
 
   return <Tab panes={panes} defaultActiveIndex={tabsMap[activeTab]} />
 }
 
-const UploadTab = ({ files, trigger }) => {
+const UploadTab = ({ files, trigger, mark }) => {
   return (
     <Tab.Pane>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
@@ -63,6 +83,7 @@ const UploadTab = ({ files, trigger }) => {
           trigger={trigger}
         />
         <FilesPreview
+          mark={mark}
           files={files}
           style={{ paddingLeft: '1rem', overflow: 'auto' }}
         ></FilesPreview>
