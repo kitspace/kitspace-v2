@@ -7,16 +7,13 @@ const FilesPreview = dynamic(() => import('@components/FilesPreview'))
 
 const UploadModal = ({ activeTab, canUpload, files }) => {
   const [open, setOpen] = useState(false)
-  const allChecked = useRef([])
+  const [allChecked, setAllChecked] = useState([])
 
   const mark = (node, checked) => {
     if (checked) {
-      allChecked.current = [...allChecked.current, node]
+       setAllChecked([...allChecked, node])
     } else {
-      const idx = allChecked.current.indexOf(node)
-      if (idx !== -1) {
-        allChecked.current.pop()
-      }
+      setAllChecked(allChecked.filter(n => n !== node))
     }
   }
 
@@ -44,9 +41,10 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
         </Modal.Content>
         <Modal.Actions>
           <Button
-            onClick={() => console.log(allChecked.current)}
+            onClick={() => console.log(allChecked)}
             positive
             content="Submit"
+            disabled={allChecked.length === 0}
           />
         </Modal.Actions>
       </Modal>
