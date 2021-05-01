@@ -46,7 +46,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
           <Button
             onClick={() => console.log(allChecked.current)}
             positive
-            content="Upload"
+            content="Submit"
           />
         </Modal.Actions>
       </Modal>

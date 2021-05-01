@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import useSWR from 'swr'
 
-import { Icon, List, Loader } from 'semantic-ui-react'
+import { Icon, List } from 'semantic-ui-react'
 
 const Tree = ({ files, mark }) => {
+  if (files == null) {
+    return <span>Loading...</span>
+  }
   const nodes = files?.map(node => (
     <List.Item key={node.path}>
       <TreeNode node={node} mark={mark} />
@@ -15,12 +17,23 @@ const Tree = ({ files, mark }) => {
 
 const TreeNode = ({ node, mark }) => {
   const [toggled, setToggled] = useState(false)
-  const { data, error } = useSWR(toggled ? node.url : null)
   const [checked, setChecked] = useState(false)
+  const [nodeData, setNodeData] = useState([])
+  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     mark(node, checked)
   }, [checked])
+
+  useEffect(() => {
+    fetch(node.url)
+      .then(r => r.json())
+      .then(setNodeData)
+      .catch(e => {
+        setFailed(true)
+        console.error(e)
+      })
+  }, [toggled])
 
   if (node.type === 'file') {
     return (
@@ -50,15 +63,13 @@ const TreeNode = ({ node, mark }) => {
           {node.name}
         </summary>
         <div style={{ paddingLeft: '1.3rem' }}>
-          {!(data || error) ? (
-            <Loader active inline />
-          ) : (
-            <Tree files={data} mark={mark} />
-          )}
-          {error ? 'Failed to load files!' : null}
+          <Tree files={nodeData} mark={mark} />
+          {failed ? 'Failed to load files!' : null}
         </div>
       </details>
     )
+  } else {
+    return <span>Loading...</span>
   }
 }
 
