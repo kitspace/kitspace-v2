@@ -21,7 +21,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
-        trigger={<Button content={`Upload ${activeTab} file` }/>}
+        trigger={<Button content={`Upload ${activeTab} file`} />}
       >
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>
@@ -58,7 +58,10 @@ const UploadTab = ({ files, trigger }) => {
   return (
     <Tab.Pane>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-        <DropZone style={{ marginRight: '0.5rem' }} trigger={trigger} />
+        <DropZone
+          style={{ marginRight: '0.5rem', maxHeight: '200px' }}
+          trigger={trigger}
+        />
         <FilesPreview
           files={files}
           style={{ paddingLeft: '1rem', overflow: 'auto' }}

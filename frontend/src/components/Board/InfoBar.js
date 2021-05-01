@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import styles from './InfoBar.module.scss'
 
 const InfoBar = ({ name, url, site, description }) => {
   // https://github.com/Jan--Henrik/CH330_Hardware -> github.com/Jan--Henrik
-  const ownerText = url.split('/').slice(2, 4).join('/')
- 
+  const ownerText = url?.split('/').slice(2, 4).join('/')
+
   const siteCom = site ? (
     <span>
       {'  |  '}

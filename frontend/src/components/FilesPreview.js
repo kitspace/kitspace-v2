@@ -1,26 +1,51 @@
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
+import useSWR from 'swr'
 
-import Tree, { TreeNode } from 'rc-tree'
+import { Icon, List, Loader } from 'semantic-ui-react'
 
-const FilesPreview = ({ files, style }) => {
-  useEffect(() => {
-    console.log(files)
-  }, [files])
-
-  const filesList = files?.map(file => (
-    <TreeNode
-      title={file.name}
-      key={file.path}
-      isLeaf={file?.type === 'file'}
-    ></TreeNode>
+const Tree = ({ files }) => {
+  const nodes = files?.map(node => (
+    <List.Item key={node.path}>
+      <TreeNode node={node} />
+    </List.Item>
   ))
 
-  return (
-    <div style={style}>
-      <h4>Files</h4>
-      {files?.lenght === 0 ? <span>No files</span> : <Tree>{filesList}</Tree>}
-    </div>
-  )
+  return <List>{nodes}</List>
 }
 
-export default FilesPreview
+const TreeNode = ({ node }) => {
+  const [toggled, setToggled] = useState(false)
+  const { data, error } = useSWR(toggled ? node.url : null)
+
+  if (node.type === 'file') {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <input style={{ marginRight: '0.5rem' }} type="checkbox" />
+        <Icon name="file" />
+        <div>
+          <List.Content>
+            <List.Header data-cy="file-name">{node.name}</List.Header>
+          </List.Content>
+        </div>
+      </div>
+    )
+  } else if (node.type === 'dir') {
+    return (
+      <details
+        style={{ paddingLeft: '0.3rem' }}
+        onToggle={() => setToggled(!toggled)}
+      >
+        <summary>
+          <Icon name="folder"></Icon>
+          {node.name}
+        </summary>
+        <div style={{ paddingLeft: '1.3rem' }}>
+          {!(data || error) ? <Loader active inline /> : <Tree files={data} />}
+          {error ? 'Failed to load files!' : null}
+        </div>
+      </details>
+    )
+  }
+}
+
+export default Tree
