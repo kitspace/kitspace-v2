@@ -1,2 +1,2 @@
 FROM postgres:13
-COPY --chown=postgres docker-entrypoint-initdb.d /
+ADD docker-entrypoint-initdb.d docker-entrypoint-initdb.d
