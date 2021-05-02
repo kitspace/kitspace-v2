@@ -12,7 +12,7 @@ services:
       - '1234:3000'
       - '9229:9229'
     volumes:
-      - /etc/hosts:/etc/hosts
+      - /etc/hosts:/etc/hosts:ro
       - ./frontend:/app
       - frontend-node_modules:/app/node_modules
 
@@ -62,7 +62,7 @@ services:
     volumes:
       - ./orders:/app
       - orders-node_modules:/app/node_modules
-      - /etc/hosts:/etc/hosts
+      - /etc/hosts:/etc/hosts:ro
 
 volumes:
   frontend-node_modules:
