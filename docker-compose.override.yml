@@ -48,7 +48,7 @@ services:
   orders:
     build:
       context: orders
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     environment:
       - 'NODE_ENV=development'
     command: /bin/sh --verbose -c "yarn install && yarn dev"

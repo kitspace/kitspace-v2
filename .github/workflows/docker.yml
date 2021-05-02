@@ -76,6 +76,26 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
+      - name: Build and push orders service
+        uses: docker/build-push-action@v2
+        with:
+          context: ./orders
+          file: ./orders/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/orders:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Build and push postgres
+        uses: docker/build-push-action@v2
+        with:
+          context: ./postgres
+          file: ./postgres/Dockerfile
+          push: true
+          tags: ghcr.io/kitspace/postgres:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
       - name: Pull gitea image
         id: pull_gitea
         shell: bash
