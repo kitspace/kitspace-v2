@@ -13,7 +13,7 @@ services:
     restart: always
 
   nginx:
-    image: ghcr.io/kitspace/nginx${PROCESSOR_DEPLOY_IMAGE_TAG}
+    image: ghcr.io/kitspace/nginx${NGINX_DEPLOY_IMAGE_TAG}
     ports:
       - 443:443
     environment:
@@ -29,5 +29,5 @@ services:
     restart: always
 
   orders:
-    image: ghcr.io/kitspace/orders${PROCESSOR_DEPLOY_IMAGE_TAG}
+    image: ghcr.io/kitspace/orders${ORDERS_DEPLOY_IMAGE_TAG}
     restart: always
