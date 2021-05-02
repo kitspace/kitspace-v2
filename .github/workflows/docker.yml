@@ -197,6 +197,8 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          ORDERS_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          POSTGRES_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
@@ -257,6 +259,8 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          ORDERS_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          POSTGRES_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
@@ -277,6 +281,8 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          ORDERS_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
+          POSTGRES_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up

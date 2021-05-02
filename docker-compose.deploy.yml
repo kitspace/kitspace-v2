@@ -10,6 +10,7 @@ services:
     restart: always
 
   postgres:
+    image: ghcr.io/kitspace/postgres${POSTGRES_DEPLOY_IMAGE_TAG}
     restart: always
 
   nginx:
