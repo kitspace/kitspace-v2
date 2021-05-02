@@ -54,7 +54,7 @@ jobs:
           push: true
           tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Build and push processor
         uses: docker/build-push-action@v2
@@ -64,7 +64,7 @@ jobs:
           push: true
           tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Build and push nginx
         uses: docker/build-push-action@v2
@@ -74,7 +74,7 @@ jobs:
           push: true
           tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Pull gitea image
         shell: bash
@@ -92,7 +92,15 @@ jobs:
           push: true
           tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+        name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
     if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' }}
