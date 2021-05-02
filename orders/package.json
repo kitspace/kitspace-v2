@@ -1,0 +1,22 @@
+{
+  "name": "kitspace-orders",
+  "version": "0.0.1",
+  "description": "Orders service kitspace-v2",
+  "license": "AGPL-3.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon src/server.js --watch src/",
+    "start": "node src/server.js",
+    "test": "mocha test/integration --timeout=120000",
+    "fmt": "prettier --write '*.json' $(find src/ test/ -name '*.js')"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "isomorphic-unfetch": "^3.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
+  }
+}

@@ -70,6 +70,12 @@ services:
       # share docker daemon when running docker inside docker
       - /var/run/docker.sock:/var/run/docker.sock
 
+  orders:
+    environment:
+      - 'KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}'
+    depends_on:
+      - gitea
+
 volumes:
   frontend-next:
   frontend-public:

@@ -27,3 +27,7 @@ services:
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
     restart: always
+
+  orders:
+    image: ghcr.io/kitspace/orders${PROCESSOR_DEPLOY_IMAGE_TAG}
+    restart: always

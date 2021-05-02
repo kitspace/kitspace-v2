@@ -45,6 +45,19 @@ services:
       - ./processor:/app
       - processor-node_modules:/app/node_modules
 
+  orders:
+    build:
+      context: orders
+      dockerfile: Dockerfile.dev
+    environment:
+      - 'NODE_ENV=development'
+    command: /bin/sh --verbose -c "yarn install && yarn dev"
+    volumes:
+      - ./orders:/app
+      - orders-node_modules:/app/node_modules
+      - /etc/hosts:/etc/hosts
+
 volumes:
   frontend-node_modules:
   processor-node_modules:
+  orders-node_modules:
