@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react'
-
 import { Icon, List } from 'semantic-ui-react'
 
-const Tree = ({ files, mark }) => {
+const Tree = ({ files, mark, allChecked }) => {
   if (files == null) {
     return <span>Loading...</span>
   }
   const nodes = files?.map(node => (
     <List.Item key={node.path}>
-      <TreeNode node={node} mark={mark} />
+      <TreeNode
+        node={node}
+        mark={mark}
+        allChecked={allChecked}
+        marked={allChecked?.includes(node)}
+      />
     </List.Item>
   ))
 
   return <List>{nodes}</List>
 }
 
-const TreeNode = ({ node, mark }) => {
+const TreeNode = ({ node, mark, allChecked, marked }) => {
   const [toggled, setToggled] = useState(false)
   const [checked, setChecked] = useState(false)
   const [nodeData, setNodeData] = useState([])
@@ -24,6 +28,13 @@ const TreeNode = ({ node, mark }) => {
   useEffect(() => {
     mark(node, checked)
   }, [checked])
+
+  useEffect(() => {
+    // Used to control the checkbox externally.
+    if (marked != null) {
+      setChecked(marked)
+    }
+  }, [marked])
 
   useEffect(() => {
     fetch(node.url)
@@ -63,7 +74,7 @@ const TreeNode = ({ node, mark }) => {
           {node.name}
         </summary>
         <div style={{ paddingLeft: '1.3rem' }}>
-          <Tree files={nodeData} mark={mark} />
+          <Tree files={nodeData} mark={mark} allChecked={allChecked} />
           {failed ? 'Failed to load files!' : null}
         </div>
       </details>

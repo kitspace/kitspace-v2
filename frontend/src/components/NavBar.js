@@ -185,10 +185,10 @@ function SigningButton() {
 }
 
 function LoginButton() {
-  const router = useRouter()
+  const { asPath, push } = useRouter()
 
   const onClick = async () => {
-    await router.push(`/login?redirect=${router.pathname}`)
+    await push(`/login?redirect=${asPath}`)
   }
 
   return (

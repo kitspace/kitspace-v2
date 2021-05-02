@@ -3,6 +3,7 @@ import path from 'path'
 import { groupBy, zip } from 'lodash'
 import { matcher } from 'micromatch'
 import cheerio from 'cheerio'
+import yaml from 'js-yaml'
 
 import { getFileRawContent, renderMarkdown } from './giteaApi'
 
@@ -85,6 +86,18 @@ export const renderReadme = async (repo, readmeFile) => {
   })
 
   return $.html()
+}
+
+export const submitKitspaceYaml = (selectedFiles, key) => {
+  /**
+   * From any gerber file, the path for the gerbers dir can be specified.
+   * For readme, and bom only a single file can be selected
+   */
+  const path = selectedFiles[0].path
+  const basePath = path.split('/')[0]
+
+  const e = yaml.dump({[key]: basePath})
+  console.log(e)
 }
 
 /**

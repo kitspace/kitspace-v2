@@ -63,7 +63,6 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const readmeFile = findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
-    console.log(readmeFile)
     return {
       props: {
         repo,
