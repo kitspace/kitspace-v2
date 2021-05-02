@@ -3,7 +3,7 @@ version: '2'
 services:
   frontend:
     build:
-      context: frontend
+      context: ./frontend
       dockerfile: Dockerfile.dev
     command: /bin/sh --verbose -c 'yarn install && yarn dev'
     environment:
@@ -18,7 +18,7 @@ services:
 
   gitea:
     build:
-      context: gitea
+      context: ./gitea
       dockerfile: Dockerfile.gitea.dev
     ports:
       - '3333:3000'
@@ -27,14 +27,21 @@ services:
     volumes:
       - ./gitea:/go/src/code.gitea.io/gitea
 
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    volumes:
+      - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
   nginx:
     build:
-      context: nginx
+      context: ./nginx
       dockerfile: Dockerfile
 
   processor:
     build:
-      context: processor/
+      context: ./processor
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=development
@@ -47,7 +54,7 @@ services:
 
   orders:
     build:
-      context: orders
+      context: ./orders
       dockerfile: Dockerfile
     environment:
       - 'NODE_ENV=development'

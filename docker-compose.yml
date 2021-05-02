@@ -35,7 +35,6 @@ services:
       - postgres
 
   postgres:
-    image: postgres:12.2
     ports:
       - '5432:5432'
     environment:
@@ -45,7 +44,6 @@ services:
       - POSTGRES_DB=kitspace
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./config/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
   nginx:
     environment:
