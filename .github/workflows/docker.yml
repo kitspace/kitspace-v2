@@ -158,16 +158,6 @@ jobs:
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
 
-      - name: Login to ghcr.io
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-        # we don't really need to log in to pull the images, just doing it in
-        # case an image is accidentally set to private
-        continue-on-error: true
-
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
         uses: docker/login-action@v1
