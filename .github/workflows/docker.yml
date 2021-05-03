@@ -171,11 +171,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - build
-    strategy:
-      fail-fast: false
-      matrix:
-        # run copies of the current job in parallel
-        containers: [1, 2, 3, 4]
 
     steps:
       - name: Check out the repo
@@ -229,8 +224,7 @@ jobs:
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           browser: chrome
-          record: true
-          parallel: true
+          command: yarn e2e --record
           working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
