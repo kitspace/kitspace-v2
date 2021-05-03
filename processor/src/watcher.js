@@ -31,7 +31,9 @@ function watch(events, repoDir = '/repositories') {
     const debouncedProcessRepo = debounce(async () => {
       if (!running[gitDir]) {
         running[gitDir] = true
-        await processRepo(events, repoDir, gitDir)
+        await processRepo(events, repoDir, gitDir).catch(e => {
+          log.error(`Error processing '${gitDir}':`, e)
+        })
         running[gitDir] = false
       }
     }, 1000)
