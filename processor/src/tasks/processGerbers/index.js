@@ -13,7 +13,28 @@ const readFile = util.promisify(fs.readFile)
 const gerberFiles = require('./gerber_files')
 const boardBuilder = require('./board_builder')
 
-async function processGerbers(
+function processGerbers(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+  if (kitspaceYaml.multi) {
+    const projectNames = Object.keys(kitspaceYaml.multi)
+    return Promise.all(
+      projectNames.map(projectName => {
+        const projectOutputDir = path.join(outputDir, projectName)
+        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        return _processGerbers(
+          events,
+          inputDir,
+          projectKitspaceYaml,
+          projectOutputDir,
+          hash,
+          projectName,
+        )
+      }),
+    )
+  }
+  return _processGerbers(events, inputDir, kitspaceYaml, outputDir, hash, name)
+}
+
+async function _processGerbers(
   events,
   inputDir,
   kitspaceYaml,
@@ -21,7 +42,9 @@ async function processGerbers(
   hash,
   name,
 ) {
-  const zipFileName = name.split('/')[1] + '-' + hash.slice(0, 7) + '-gerbers.zip'
+  const nameSplit = name.split('/')
+  const zipFileName =
+    nameSplit[nameSplit.length - 1] + '-' + hash.slice(0, 7) + '-gerbers.zip'
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')

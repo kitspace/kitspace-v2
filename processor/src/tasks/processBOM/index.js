@@ -11,14 +11,28 @@ const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
 
-async function processBOM(
-  events,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  hash,
-  name,
-) {
+function processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+  if (kitspaceYaml.multi) {
+    const projectNames = Object.keys(kitspaceYaml.multi)
+    return Promise.all(
+      projectNames.map(projectName => {
+        const projectOutputDir = path.join(outputDir, projectName)
+        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        return _processBOM(
+          events,
+          inputDir,
+          projectKitspaceYaml,
+          projectOutputDir,
+          hash,
+          projectName,
+        )
+      }),
+    )
+  }
+  return _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name)
+}
+
+async function _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'info.json')
 

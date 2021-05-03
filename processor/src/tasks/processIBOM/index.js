@@ -9,14 +9,28 @@ const { exists } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
-async function processIBOM(
-  events,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  hash,
-  name,
-) {
+function processIBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+  if (kitspaceYaml.multi) {
+    const projectNames = Object.keys(kitspaceYaml.multi)
+    return Promise.all(
+      projectNames.map(projectName => {
+        const projectOutputDir = path.join(outputDir, projectName)
+        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        return _processIBOM(
+          events,
+          inputDir,
+          projectKitspaceYaml,
+          projectOutputDir,
+          hash,
+          projectName,
+        )
+      }),
+    )
+  }
+  return _processIBOM(events, inputDir, kitspaceYaml, outputDir, hash, name)
+}
+
+async function _processIBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   events.emit('in_progress', ibomOutputPath)
 
