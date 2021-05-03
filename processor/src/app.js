@@ -12,26 +12,26 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
   const fileStatus = {}
   const links = {}
 
-  const eventEmitter = new EventEmitter()
-  eventEmitter.on('in_progress', x => {
+  const events = new EventEmitter()
+  events.on('in_progress', x => {
     x = path.relative(filesDir, x)
     fileStatus[x] = { status: 'in_progress' }
     const headPath = getHeadPath(x)
     links[headPath] = x
     log.debug('in_progress', x)
   })
-  eventEmitter.on('done', x => {
+  events.on('done', x => {
     x = path.relative(filesDir, x)
     fileStatus[x] = { status: 'done' }
     log.debug('done', x)
   })
-  eventEmitter.on('failed', (x, e) => {
+  events.on('failed', (x, e) => {
     x = path.relative(filesDir, x)
     const error = e.message || e.stderr || 'Unknown error'
     fileStatus[x] = { status: 'failed', error }
     log.debug('failed', x, error)
   })
-  const unwatch = watcher.watch(eventEmitter, repoDir)
+  const unwatch = watcher.watch(events, repoDir)
 
   const app = express()
 

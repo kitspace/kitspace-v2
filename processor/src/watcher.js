@@ -18,24 +18,27 @@ const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
 const running = {}
-function watch(eventEmitter, repoDir = '/repositories') {
+function watch(events, repoDir = '/repositories') {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
   const handleAddDir = gitDir => {
     log.debug('addDir', gitDir)
+
     // we debounce the file-system event to only invoke once per change in the repo
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
-    const debouncedRun = debounce(async () => {
+    const debouncedProcessRepo = debounce(async () => {
       if (!running[gitDir]) {
         running[gitDir] = true
-        await run(eventEmitter, repoDir, gitDir)
+        await processRepo(events, repoDir, gitDir)
         running[gitDir] = false
       }
     }, 1000)
+
     dirWatchers[gitDir] = {}
-    dirWatchers[gitDir].add = chokidar.watch(gitDir).on('add', debouncedRun)
+    dirWatchers[gitDir].add = chokidar.watch(gitDir).on('add', debouncedProcessRepo)
+
     // if the repo is moved or deleted we clean up the watcher
     dirWatchers[gitDir].unlinkDir = chokidar.watch(gitDir).on('unlinkDir', dir => {
       if (dir === gitDir) {
@@ -46,6 +49,7 @@ function watch(eventEmitter, repoDir = '/repositories') {
       }
     })
   }
+
   const repoWildcard = path.join(repoDir, '*', '*')
   let watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
 
@@ -72,7 +76,7 @@ function watch(eventEmitter, repoDir = '/repositories') {
   return unwatch
 }
 
-async function run(eventEmitter, repoDir, gitDir) {
+async function processRepo(events, repoDir, gitDir) {
   // /repositories/user/project.git -> user/project
   const name = path.relative(repoDir, gitDir).slice(0, -4)
   const checkoutDir = path.join(DATA_DIR, 'checkout', name)
@@ -86,9 +90,9 @@ async function run(eventEmitter, repoDir, gitDir) {
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
   await Promise.all([
-    processGerbers(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name),
-    processBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name),
-    processIBOM(eventEmitter, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processGerbers(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processIBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
   ])
 }
 
