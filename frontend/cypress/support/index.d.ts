@@ -93,8 +93,10 @@ declare namespace Cypress {
      * @credits Zwaar Contrast <postduif@zwaarcontrast.nl>
      * @param files
      * @param fileNames
+     * @param username the owner of repo
+     * @param newProject if the project is new wait for `@create` and `@upload`.
      * cy.get('.dropzone').dropFile(file, 'example.txt')
      */
-      dropFiles(files, fileNames: string[], username: string): Chainable<any>
+      dropFiles(files, fileNames: string[], username: string, newProject=true): Chainable<any>
   }
 }

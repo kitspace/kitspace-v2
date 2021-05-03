@@ -104,7 +104,7 @@ Cypress.Commands.add('hasProperFields', schema => {
 Cypress.Commands.add(
   'dropFiles',
   { prevSubject: 'element' },
-  (subject, files, fileNames, username) => {
+  (subject, files, fileNames, username, newProject=true) => {
     // This will match any request made by `utils/giteaApi.createRepo`,
     // The `**` for matching the csrf query param.
     cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
@@ -122,7 +122,8 @@ Cypress.Commands.add(
         dataTransfer: { files: filesContent, types: ['Files'] },
       })
     })
+    const waitedRequests = newProject ? ['@createRepo', '@getRepo'] : '@getRepo'
     // Wait until getting a response from the server
-    cy.wait(['@createRepo', '@getRepo'])
+    cy.wait(waitedRequests)
   },
 )
