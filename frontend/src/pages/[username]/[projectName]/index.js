@@ -28,7 +28,7 @@ import {
   updateRepo,
 } from '@utils/giteaApi'
 import { findReadme, renderReadme } from '@utils/index'
-import { getBoardInfo, getBoardZipInfo } from '@utils/projectPage'
+import { getBoardInfo, getBoardZipInfo, hasInteractiveBom } from '@utils/projectPage'
 import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
@@ -63,13 +63,14 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const readmeFile = findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
+    const hasIBOM = await hasInteractiveBom(repoFullname)
+
     return {
       props: {
         repo,
         hasUploadPermission,
         repoFiles,
-        // TODO:  figure out what `info.has_interactive_bom` stands for.
-        hasInteractiveBom: true,
+        hasIBOM,
         zipUrl,
         boardInfo,
         boardSpecs: { width, height, layers },
@@ -93,7 +94,7 @@ const UpdateProject = ({
   repo,
   repoFiles,
   hasUploadPermission,
-  hasInteractiveBom,
+  hasIBOM,
   zipUrl,
   boardInfo,
   boardSpecs,
@@ -164,7 +165,7 @@ const UpdateProject = ({
       <UpdateForm
         repoFiles={repoFiles}
         hasUploadPermission={hasUploadPermission}
-        hasInteractiveBom={hasInteractiveBom}
+        hasIBOM={hasIBOM}
         zipUrl={zipUrl}
         boardInfo={boardInfo}
         boardSpecs={boardSpecs}
@@ -185,7 +186,7 @@ const UpdateProject = ({
 const UpdateForm = ({
   repoFiles,
   hasUploadPermission,
-  hasInteractiveBom,
+  hasIBOM,
   boardInfo,
   zipUrl,
   renderedReadme,
@@ -347,7 +348,7 @@ const UpdateForm = ({
             <BoardShowcase projectFullname={projectFullname} />
             <BoardExtraMenus
               projectFullname={projectFullname}
-              hasInteractiveBom={hasInteractiveBom}
+              hasInteractiveBom={hasIBOM}
               zipUrl={zipUrl}
             />
           </>

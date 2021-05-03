@@ -1,3 +1,5 @@
+const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+
 /**
  *
  * @param {string} assetsPath
@@ -18,4 +20,15 @@ export const getBoardZipInfo = async assetsPath => {
 export const getBoardInfo = async assetsPath => {
   const res = await fetch(`${assetsPath}/info.json`)
   return [res.ok, res.ok ? await res.json() : {}]
+}
+
+/**
+ *  
+ * @param {string} repoFullname 
+ * @returns{Promise<boolean>}
+ */
+export const hasInteractiveBom = async repoFullname => {
+  const res = await fetch(`${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`)
+
+  return res.status !== 424
 }
