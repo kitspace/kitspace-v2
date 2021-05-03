@@ -40,7 +40,7 @@ describe('app', () => {
     // make a simple git repo without the right files
     await exec(`mkdir -p ${sourceRepo}`)
     await exec(
-      `cd ${sourceRepo} && git init && git config user.email "your@example.com" && git config user.name "Your Name" && touch test-file && git add test-file && git commit -m 'Initial commit'`,
+      `cd ${sourceRepo} && git init && git config user.email "email@example.com" && git config user.name "Example Name" && touch test-file && git add test-file && git commit -m 'Initial commit'`,
     )
     // gitea uses bare repos, so we clone it into one
     await exec(
@@ -144,6 +144,97 @@ describe('app', () => {
   const nonKicadHash = 'f8bdf1d0c358f88b70a8306c6855538ac933914e'
   it('processes the kitspace ruler project', testRuler(nonKicadHash))
   it('processes the kitspace ruler project with eda: kicad', testRuler(kicadHash))
+
+  it('processes a multi project correctly', async () => {
+    // first we reset HEAD/master to an exact version of the repo
+    // so future changes of the repo don't affect this test
+    const hash = '53a7770a66fe0209b38a826d560bc8a4b6b56a0d'
+    const tmpBare = path.join(tmpDir, 'diy_particle_detector.git')
+    await exec(
+      `git clone --bare https://github.com/kitspace-forks/DIY_particle_detector ${tmpBare}`,
+    )
+    await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
+    await exec(
+      `git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-forks/diy_particle_detector.git',
+      )}`,
+    )
+
+    const projectFiles = [
+      'zip-info.json',
+      'images/bottom.svg',
+      'images/top.svg',
+      'images/top.png',
+      'images/top-large.png',
+      'images/top-meta.png',
+      'images/top-with-background.png',
+      '1-click-BOM.tsv',
+      'info.json',
+      'interactive_bom.json',
+    ]
+
+    const files = projectFiles
+      .map(f => path.join('alpha-spectrometer', f))
+      .concat(projectFiles.map(f => path.join('electron-detector', f)))
+      .concat([
+        `alpha-spectrometer/alpha-spectrometer-${hash.slice(0, 7)}-gerbers.zip`,
+        `electron-detector/electron-detector-${hash.slice(0, 7)}-gerbers.zip`,
+      ])
+
+    for (const f of files) {
+      // at first it may not be processing yet so we get a 404
+      let r = await this.supertest.get(
+        `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+      )
+      while (r.status === 404) {
+        r = await this.supertest.get(
+          `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+        )
+      }
+
+      // after a while it should report something
+      assert(r.status === 200)
+      // but it's probably 'in_progress'
+      while (r.body.status === 'in_progress') {
+        r = await this.supertest.get(
+          `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+        )
+      }
+
+      // at some point it should notice it succeeded
+      assert(r.status === 200)
+      assert(
+        r.body.status === 'done',
+        `expecting body.status to be 'done' but got '${r.body.status}'`,
+      )
+
+      // getting the file from HEAD should re-direct to the exact hash
+      r = await this.supertest.get(
+        `/files/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+      )
+      assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
+
+      // it serves up the file
+      r = await this.supertest
+        .get(`/files/kitspace-forks/diy_particle_detector/HEAD/${f}`)
+        .redirects()
+      assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
+      assert(
+        r.req.path.includes(hash),
+        `expected '${r.req.path}' to include '${hash}'`,
+      )
+
+      // uppercase user and project name shouldn't matter
+      r = await this.supertest
+        .get(`/files/KITSPACE-FORKS/DIY_particle_detector/HEAD/${f}`)
+        .redirects()
+      assert(
+        r.status === 200,
+        `expected 200 but got ${r.status} for KITSPACE-FORKS/DIY_particle_detector/${f}`,
+      )
+    }
+  })
 
   afterEach(async () => {
     this.app.stop()

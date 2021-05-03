@@ -11,26 +11,40 @@ const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
 
-async function processBOM(
-  eventEmitter,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  hash,
-  name,
-) {
+function processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+  if (kitspaceYaml.multi) {
+    const projectNames = Object.keys(kitspaceYaml.multi)
+    return Promise.all(
+      projectNames.map(projectName => {
+        const projectOutputDir = path.join(outputDir, projectName)
+        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        return _processBOM(
+          events,
+          inputDir,
+          projectKitspaceYaml,
+          projectOutputDir,
+          hash,
+          projectName,
+        )
+      }),
+    )
+  }
+  return _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name)
+}
+
+async function _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'info.json')
 
   const filePaths = [bomOutputPath, infoJsonPath]
 
   for (const f of filePaths) {
-    eventEmitter.emit('in_progress', f)
+    events.emit('in_progress', f)
   }
 
   if (await existsAll(filePaths)) {
     for (const f of filePaths) {
-      eventEmitter.emit('done', f)
+      events.emit('done', f)
     }
     return
   }
@@ -62,7 +76,7 @@ async function processBOM(
     }
     if (!bom.lines || bom.lines.length === 0) {
       for (const f of filePaths) {
-        eventEmitter.emit('failed', f, { message: 'No lines in BOM found' })
+        events.emit('failed', f, { message: 'No lines in BOM found' })
       }
       return
     }
@@ -74,15 +88,15 @@ async function processBOM(
     const info = { site, bom }
     await Promise.all([
       writeFile(infoJsonPath, JSON.stringify(info))
-        .then(() => eventEmitter.emit('done', infoJsonPath))
-        .catch(e => eventEmitter.emit('failed', infoJsonPath, e)),
+        .then(() => events.emit('done', infoJsonPath))
+        .catch(e => events.emit('failed', infoJsonPath, e)),
       writeFile(bomOutputPath, bom.tsv)
-        .then(() => eventEmitter.emit('done', bomOutputPath))
-        .catch(e => eventEmitter.emit('failed', bomOutputPath, e)),
+        .then(() => events.emit('done', bomOutputPath))
+        .catch(e => events.emit('failed', bomOutputPath, e)),
     ])
   } catch (e) {
     for (const f of filePaths) {
-      eventEmitter.emit('failed', f, e)
+      events.emit('failed', f, e)
     }
   }
 }
