@@ -28,7 +28,8 @@ export const getBoardInfo = async assetsPath => {
  * @returns{Promise<boolean>}
  */
 export const hasInteractiveBom = async repoFullname => {
-  const res = await fetch(`${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`)
-
-  return res.status !== 424
+  const res = await fetch(`${processorUrl}/status/${repoFullname}/HEAD/interactive_bom.json`)
+  const body = await res.json()
+  console.log(body.status)
+  return body.status === 'done'
 }
