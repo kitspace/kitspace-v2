@@ -104,7 +104,7 @@ Cypress.Commands.add('hasProperFields', schema => {
 Cypress.Commands.add(
   'dropFiles',
   { prevSubject: 'element' },
-  (subject, files, fileNames, username, newProject=true) => {
+  (subject, files, fileNames, username, newProject = true) => {
     // This will match any request made by `utils/giteaApi.createRepo`,
     // The `**` for matching the csrf query param.
     cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')

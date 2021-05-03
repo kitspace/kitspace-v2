@@ -1,6 +1,5 @@
 import faker from 'faker'
 
-
 describe('Updating a project behavior validation', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
@@ -130,7 +129,6 @@ describe('Updating a project behavior validation', () => {
   })
 })
 
-
 describe('Update project form validation', () => {
   const username = faker.name.firstName()
   const email = faker.internet.email()
@@ -179,10 +177,10 @@ describe('Update project form validation', () => {
 
   it('should prevent conflicting project names', () => {
     // Make sure the repo has loaded
-    cy.intercept(
-      'http://gitea.kitspace.test:3000/api/v1/repos/migrate/status',
-    ).as('loaded')
-    cy.wait('@loaded', {timeout: 10000})
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate/status').as(
+      'loaded',
+    )
+    cy.wait('@loaded', { timeout: 10000 })
 
     // Go to the update page for the project created by uploading files
     cy.visit(`/${username}/${uploadedRepoName}`)
