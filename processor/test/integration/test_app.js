@@ -96,6 +96,7 @@ describe('app', () => {
       '1-click-BOM.tsv',
       'info.json',
       'interactive_bom.json',
+      'kitspace-yaml.json',
     ]
 
     for (const f of files) {
@@ -180,6 +181,7 @@ describe('app', () => {
       .concat([
         `alpha-spectrometer/alpha-spectrometer-${hash.slice(0, 7)}-gerbers.zip`,
         `electron-detector/electron-detector-${hash.slice(0, 7)}-gerbers.zip`,
+        'kitspace-yaml.json',
       ])
 
     for (const f of files) {
