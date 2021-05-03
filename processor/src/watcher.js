@@ -16,6 +16,7 @@ const processIBOM = require('./tasks/processIBOM')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
+const writeFile = util.promisify(fs.writeFile)
 
 const running = {}
 function watch(events, repoDir = '/repositories') {
@@ -87,11 +88,18 @@ async function processRepo(events, repoDir, gitDir) {
 
   const hash = await getGitHash(checkoutDir)
   const filesDir = path.join(DATA_DIR, 'files', name, hash)
+
+  const kitspaceYamlJson = path.join(filesDir, 'kitspace-yaml.json')
+  events.emit('in_progress', kitspaceYamlJson)
+
   await exec(`mkdir -p ${filesDir}`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
   await Promise.all([
+    writeFile(kitspaceYamlJson, JSON.stringify(kitspaceYaml, null, 2))
+      .then(() => events.emit('done', kitspaceYamlJson))
+      .catch(err => events.emit('failed', kitspaceYamlJson, err)),
     processGerbers(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
     processBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
     processIBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
