@@ -19,19 +19,15 @@
     "jszip": "^3.1.1",
     "lodash.debounce": "^4.0.8",
     "loglevel": "^1.7.1",
-    "pcb-stackup": "4.0.0-next.13",
+    "pcb-stackup": "^4.2.5",
     "ramda": "^0.27.1",
     "superagent": "^6.1.0",
-    "whats-that-gerber": "4.0.0-next.13",
+    "whats-that-gerber": "^4.2.2",
     "xml-element-string": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
     "supertest": "^6.0.1"
-  },
-  "resolutions": {
-    "pcb-stackup-core": "4.0.0-next.13",
-    "whats-that-gerber": "4.0.0-next.13"
   }
 }
