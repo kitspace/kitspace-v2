@@ -4,6 +4,7 @@
   "description": "Orders service kitspace-v2",
   "license": "AGPL-3.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js --watch src/",
     "start": "node src/server.js",

@@ -1,7 +1,7 @@
-const express = require('express')
-const fetch = require('node-fetch')
+import express from 'express'
+import fetch from 'node-fetch'
 
-const { ALLOWED_CORS_DOMAINS } = require('./env')
+import { ALLOWED_CORS_DOMAINS } from './env.js'
 
 function cors(req, res, next) {
   const origin = req.get('origin')
@@ -18,7 +18,7 @@ function cors(req, res, next) {
   return res.sendStatus(401)
 }
 
-function createApp() {
+export function createApp() {
   const app = express()
 
   app.use(cors)
@@ -55,5 +55,3 @@ function createApp() {
 
   return app
 }
-
-module.exports = { createApp }
