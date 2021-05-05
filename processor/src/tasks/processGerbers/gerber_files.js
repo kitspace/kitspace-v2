@@ -7,7 +7,7 @@ function gerberFiles(files, gerberPath) {
   }
   const layers = whatsThatGerber(files)
   const possibleGerbers = Object.keys(layers).filter(k => layers[k].type != null)
-  let duplicates = false
+  let hasDuplicates = false
   const types = []
   for (const k of possibleGerbers) {
     if (
@@ -18,13 +18,13 @@ function gerberFiles(files, gerberPath) {
           t.side !== 'inner',
       ) != null
     ) {
-      duplicates = true
+      hasDuplicates = true
       break
     } else {
       types.push(layers[k])
     }
   }
-  if (!duplicates) {
+  if (!hasDuplicates) {
     return possibleGerbers
   }
   //if we have duplicates we reduce it down to the folder with the most
