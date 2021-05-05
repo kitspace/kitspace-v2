@@ -85,7 +85,13 @@ async function _processGerbers(
     const files = globule.find(path.join(inputDir, '**'))
 
     let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
-    if (gerbers.length === 0) {
+
+    // XXX this is 5 due to whats-that-gerber matching non-gerber files and 5
+    // being a number that works for the projects currently on kitspace. it
+    // could cause problems with new projects and should be fixed in
+    // whats-that-gerber
+    // https://github.com/tracespace/tracespace/issues/357
+    if (gerbers.length < 5) {
       gerbers = await plotKicad(inputDir, files, kitspaceYaml)
     }
 
@@ -196,10 +202,9 @@ function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
 function generateZipInfo(zipPath, stackup, zipInfoPath) {
   const zipInfo = {
     zipPath: path.basename(zipPath),
-    width: Math.max(stackup.top.width, stackup.bottom.width),
-    height: Math.max(stackup.top.height, stackup.bottom.height),
-    // copper layers - tcu, bcu, icu
-    layers: stackup.layers.filter(layer => layer.type.includes('cu')).length,
+    width: Math.ceil(Math.max(stackup.top.width, stackup.bottom.width)),
+    height: Math.ceil(Math.max(stackup.top.height, stackup.bottom.height)),
+    layers: stackup.layers.filter(l => l.type === 'copper').length,
   }
   if (stackup.top.units === 'in') {
     if (stackup.bottom.units !== 'in') {

@@ -21,7 +21,7 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@tracespace/xml-id@^4.0.0", "@tracespace/xml-id@^4.0.0-next.13":
+"@tracespace/xml-id@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@tracespace/xml-id/-/xml-id-4.0.0.tgz#07aeea58b8b412f670f90cf85b9394d842ab2bcc"
   integrity sha512-bEAqLh8sxNHHVOErgQrF4cj/PlmaayrTTIWT3uKQKnFk8KlubUQeW+Ip6W9sa+J/bUii927qD0HE5sFxsPo/IQ==
@@ -31,10 +31,10 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
-"@types/node@^12.7.11":
-  version "12.12.28"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.28.tgz#3a2b5f8d21f96ace690a8832ae9779114612575f"
-  integrity sha512-g73GJYJDXgf0jqg+P9S8h2acWbDXNkoCX8DLtJVu7Fkn788pzQ/oJsrdJz/2JejRf/SjfZaAhsw+3nd1D5EWGg==
+"@types/node@^13.1.6":
+  version "13.13.51"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.51.tgz#a424c5282f99fc1ca41f11b727b6aea80668bcba"
+  integrity sha512-66/xg5I5Te4oGi5Jws11PtNmKkZbOPZWyBZZ/l5AOrWj1Dyw+6Ge/JhYTq/2/Yvdqyhrue8RL+DGI298OJ0xcg==
 
 "@ungap/promise-all-settled@1.1.2":
   version "1.1.2"
@@ -314,10 +314,10 @@ color-name@^1.0.0, color-name@~1.1.4:
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
-color-string@^1.4.0:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/color-string/-/color-string-1.5.3.tgz#c9bbc5f01b58b5492f3d6857459cb6590ce204cc"
-  integrity sha512-dC2C5qeWoYkxki5UAXapdjqO672AM4vZuPGRQfO8b5HKuKGBbKWpITyDYN7TOFKvRW7kOgAn3746clDBMDJyQw==
+color-string@^1.5.3:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/color-string/-/color-string-1.5.5.tgz#65474a8f0e7439625f3d27a6a19d89fc45223014"
+  integrity sha512-jgIoum0OfQfq9Whcfc2z/VhCNcmQjWbey6qBX0vqt7YICflUmBCh9E9CiQD5GSJ+Uehixm3NUwHVhqUAWRivZg==
   dependencies:
     color-name "^1.0.0"
     simple-swizzle "^0.2.2"
@@ -675,40 +675,40 @@ fsevents@~2.1.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.1.2.tgz#4c0a1fb34bc68e543b4b82a9ec392bfbda840805"
   integrity sha512-R4wDiBwZ0KzpgOWetKDug1FZcYhqYnUYKtfZYt4mD5SBz76q0KR4Q9o7GIPamsVPGmW3EYPPJ0dOOjvx32ldZA==
 
-gerber-parser@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/gerber-parser/-/gerber-parser-4.2.0.tgz#cd9fdee647b82a54a0cf716491d6e9ed0dd5d56b"
-  integrity sha512-b9whFhx0lsqL4NwltaAIiOoW9q+RmI8ZiGytsTjvbCa0ltis5XIsmYABoL3d7SFm10UwIebWK4hoCcdBVN9G0g==
+gerber-parser@^4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/gerber-parser/-/gerber-parser-4.2.4.tgz#9c6a8dd8e5987b44d49334b96d728a85f39262bd"
+  integrity sha512-Dn+nM+URswnKc1uOihOnmkbLqjiftPO3rYbBCFSz2WFFVOxDt7/nNNzX7U3OPoAoCYGrHbKsgLERj3YERaDLtA==
   dependencies:
-    "@types/node" "^12.7.11"
+    "@types/node" "^13.1.6"
     inherits "^2.0.4"
     lodash.isfinite "^3.3.2"
     lodash.padend "^4.6.1"
     lodash.padstart "^4.6.1"
     readable-stream "^3.4.0"
 
-gerber-plotter@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/gerber-plotter/-/gerber-plotter-4.2.0.tgz#960b2f0ddf1c0eb49e36b1b73e70e0e8964b9fd7"
-  integrity sha512-kNI/ybiP0Z+JZih2H/lquNUvIFBQsgh47Z2SHBgP/mw3IzEdevmB5CulcXISJ5G65BVLeUIAeEVHJmrap+cxTw==
+gerber-plotter@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/gerber-plotter/-/gerber-plotter-4.2.5.tgz#27fca1d6382f8e87b935165b1502e8bb72952ea7"
+  integrity sha512-8zU9sambodzYTzCC3p3hlar3QdGC9uwC+rDCkxKhVf7rlL2lo6S7c46Q2hyNI2SpuY3WAE8EGCXHMP+MMo+2Ew==
   dependencies:
-    "@types/node" "^12.7.11"
+    "@types/node" "^13.1.6"
     inherits "^2.0.4"
     lodash.fill "^3.4.0"
     lodash.isfinite "^3.3.2"
     lodash.isfunction "^3.0.9"
     readable-stream "^3.4.0"
 
-gerber-to-svg@^4.0.0-next.13:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/gerber-to-svg/-/gerber-to-svg-4.2.0.tgz#f82f473dd61597682f5e5569de0d473d78fd9178"
-  integrity sha512-tX2bVjnzMTsKjDwQKTVlEgIFzploSDjrqeHWChDCENnTI/FmfuVxoHza/0KRlrGLAN3gPQpRgNubBdQ3+WkZ8w==
+gerber-to-svg@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/gerber-to-svg/-/gerber-to-svg-4.2.5.tgz#07808df0f46a4f4a016d5ef9d95f07ea0b5b2d4e"
+  integrity sha512-1yR/j3bVZ/j0SKjvc+xYFrnYfccmH1jAh1oe4dw31eCOsNLYG43Sun6mOOYz5ylN95pStRRo7yU0T76wtgY74A==
   dependencies:
     "@tracespace/xml-id" "^4.0.0"
-    "@types/node" "^12.7.11"
+    "@types/node" "^13.1.6"
     escape-html "^1.0.3"
-    gerber-parser "^4.2.0"
-    gerber-plotter "^4.2.0"
+    gerber-parser "^4.2.4"
+    gerber-plotter "^4.2.5"
     inherits "^2.0.4"
     lodash.isfinite "^3.3.2"
     readable-stream "^3.4.0"
@@ -1078,11 +1078,6 @@ lodash.isfunction@^3.0.9:
   resolved "https://registry.yarnpkg.com/lodash.isfunction/-/lodash.isfunction-3.0.9.tgz#06de25df4db327ac931981d1bdb067e5af68d051"
   integrity sha512-AirXNj15uRIMMPihnkInB4i3NHeb4iBtNg9WRWuK2o31S+ePwwNmDPaTL3o7dTJ+VXNZim7rFs4rxN4YU1oUJw==
 
-lodash.isstring@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
-  integrity sha1-1SfftUVuynzJu5XV2ur4i6VKVFE=
-
 lodash.padend@^4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.padend/-/lodash.padend-4.6.1.tgz#53ccba047d06e158d311f45da625f4e49e6f166e"
@@ -1369,27 +1364,33 @@ path-to-regexp@0.1.7:
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
 
-pcb-stackup-core@4.0.0-next.13, pcb-stackup-core@^4.0.0-next.13:
-  version "4.0.0-next.13"
-  resolved "https://registry.yarnpkg.com/pcb-stackup-core/-/pcb-stackup-core-4.0.0-next.13.tgz#2f001ee05254c6ae9d171c5ae34e23d5eb7cd25c"
-  integrity sha512-SRkebjlZ3nYa+C2QVnQrUhtH8hpoiw7xe11iSWSrH4xpCrezFuBr8FRTdrGWR2KP5fiEQ6zpbKWN94lpszgdFA==
+pcb-stackup-core@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/pcb-stackup-core/-/pcb-stackup-core-4.2.5.tgz#0a9df166ce1338461d4ad86d23ec24f2c6261e56"
+  integrity sha512-iXx3khjlgh+mE7ucW8EFKFHLZmAsGViOdcYW0J6nV25Xxsyp/NMMiGuEbIpCt6nRmkScM5WZ0ROdGTnTrmAtKA==
   dependencies:
-    "@tracespace/xml-id" "^4.0.0-next.13"
-    color-string "^1.4.0"
-    lodash.isstring "^4.0.1"
+    "@tracespace/xml-id" "^4.0.0"
+    "@types/node" "^13.1.6"
+    color-string "^1.5.3"
+    gerber-to-svg "^4.2.5"
     viewbox "^1.0.0"
+    whats-that-gerber "^4.2.2"
     xml-element-string "^1.0.0"
+    xtend "^4.0.2"
 
-pcb-stackup@4.0.0-next.13:
-  version "4.0.0-next.13"
-  resolved "https://registry.yarnpkg.com/pcb-stackup/-/pcb-stackup-4.0.0-next.13.tgz#3adffb6d0ff81d15f1dec66f51b9c923f17cb5bf"
-  integrity sha512-DAfttHXnuAoBRTpz8sOKwXWY9gXdWy7fLTsluZRCYrSu3kKoh93WPMc5rRUa7zZ76yd7cn1M9V8M/Qty4hiivw==
+pcb-stackup@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/pcb-stackup/-/pcb-stackup-4.2.5.tgz#148c1c76bf9a024b3d5e2cef71d28bcc6a49da08"
+  integrity sha512-js/8fAjinLgyK9znctFKwidbDohMCJlhzLID44PU3WSkd2e9zC62YIomNF0/MJXwoE5VtEymAnTXZzzIwT39OA==
   dependencies:
-    "@tracespace/xml-id" "^4.0.0-next.13"
-    gerber-to-svg "^4.0.0-next.13"
-    pcb-stackup-core "^4.0.0-next.13"
-    whats-that-gerber "^4.0.0-next.13"
-    xtend "^4.0.1"
+    "@tracespace/xml-id" "^4.0.0"
+    "@types/node" "^13.1.6"
+    gerber-to-svg "^4.2.5"
+    pcb-stackup-core "^4.2.5"
+    run-parallel "^1.1.9"
+    run-waterfall "^1.1.6"
+    whats-that-gerber "^4.2.2"
+    xtend "^4.0.2"
 
 picomatch@^2.0.4, picomatch@^2.2.1:
   version "2.2.2"
@@ -1448,6 +1449,11 @@ qs@^6.9.4:
   version "6.9.4"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.4.tgz#9090b290d1f91728d3c22e54843ca44aea5ab687"
   integrity sha512-A1kFqHekCTM7cz0udomYUoYNWjBebHm/5wzU/XqrBRBNWectVH0QIiN+NEcZ0Dte5hvzHwbr8+XQmguPhJ6WdQ==
+
+queue-microtask@^1.2.2:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
+  integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
 ramda@^0.27.1:
   version "0.27.1"
@@ -1545,6 +1551,18 @@ responselike@^1.0.2:
   integrity sha1-kYcg7ztjHFZCvgaPFa3lpG9Loec=
   dependencies:
     lowercase-keys "^1.0.0"
+
+run-parallel@^1.1.9:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/run-parallel/-/run-parallel-1.2.0.tgz#66d1368da7bdf921eb9d95bd1a9229e7f21a43ee"
+  integrity sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==
+  dependencies:
+    queue-microtask "^1.2.2"
+
+run-waterfall@^1.1.6:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/run-waterfall/-/run-waterfall-1.1.7.tgz#ae368b549b2f5171f86c2924492cab3352a6e9c5"
+  integrity sha512-iFPgh7SatHXOG1ClcpdwHI63geV3Hc/iL6crGSyBlH2PY7Rm/za+zoKz6FfY/Qlw5K7JwSol8pseO8fN6CMhhQ==
 
 s-expression@^3.0.3:
   version "3.0.3"
@@ -1906,10 +1924,12 @@ viewbox@^1.0.0:
   resolved "https://registry.yarnpkg.com/viewbox/-/viewbox-1.0.0.tgz#7960c6106bf1d7eca21b894b6a0665be368d82ca"
   integrity sha1-eWDGEGvx1+yiG4lLagZlvjaNgso=
 
-whats-that-gerber@4.0.0-next.13, whats-that-gerber@^4.0.0-next.13:
-  version "4.0.0-next.13"
-  resolved "https://registry.yarnpkg.com/whats-that-gerber/-/whats-that-gerber-4.0.0-next.13.tgz#1bd76056b2450d13c2000de94950c300b2b3e4eb"
-  integrity sha512-KZ9KR/VdBdM1YGJRfLPFnGZ4QG+0kjdKNuM/qFTPZZzwL+lq3TRco9Q3UrMHfCZ7pJBAB1W2FEPh1gR1LEWOPQ==
+whats-that-gerber@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/whats-that-gerber/-/whats-that-gerber-4.2.2.tgz#7b039664887a6d971852095682d1ed1d28825a41"
+  integrity sha512-2agpMEj0a0SYYdvxlRJHMEiTbu25qgri5Le6Q1acKjU1s567J6hK6henR0a7I1XWNFxsALk5hl45xR1ZJFukFQ==
+  dependencies:
+    xtend "^4.0.2"
 
 which-module@^2.0.0:
   version "2.0.0"
@@ -1991,7 +2011,7 @@ xml-element-string@^1.0.0:
   dependencies:
     escape-html "^1.0.3"
 
-xtend@^4.0.1:
+xtend@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
   integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
