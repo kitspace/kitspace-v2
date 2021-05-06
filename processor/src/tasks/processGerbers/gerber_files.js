@@ -6,41 +6,38 @@ function gerberFiles(files, gerberPath) {
     files = files.filter(f => f.startsWith(gerberPath))
   }
   const layers = whatsThatGerber(files)
-  const possibleGerbers = Object.keys(layers).filter(k => layers[k].type != null)
+  const layerNames = Object.keys(layers).filter(k => layers[k].type != null)
   let hasDuplicates = false
-  const types = []
-  for (const k of possibleGerbers) {
-    if (
-      types.find(
-        t =>
-          t.type === layers[k].type &&
-          t.side === layers[k].side &&
-          t.side !== 'inner',
-      ) != null
-    ) {
-      hasDuplicates = true
+  const existingLayers = []
+  for (const name of layerNames) {
+    hasDuplicates = existingLayers.find(
+      t =>
+        t.type === layers[name].type &&
+        t.side === layers[name].side &&
+        t.side !== 'inner',
+    )
+    if (hasDuplicates) {
       break
-    } else {
-      types.push(layers[k])
     }
+    existingLayers.push(layers[name])
   }
   if (!hasDuplicates) {
-    return possibleGerbers
+    return layerNames
   }
   //if we have duplicates we reduce it down to the folder with the most
   //gerbers
-  const folders = possibleGerbers.reduce((folders, f) => {
-    const name = path.dirname(f)
-    folders[name] = (folders[name] || 0) + 1
-    return folders
+  const fileCounts = layerNames.reduce((result, fileName) => {
+    const folderName = path.dirname(fileName)
+    const fileCount = result[folderName] ? result[folderName] + 1 : 1
+    return { ...result, [folderName]: fileCount }
   }, {})
-  const gerberFolder = Object.keys(folders).reduce((prev, f) => {
-    if (folders[f] > folders[prev]) {
-      return f
+  const gerberFolder = Object.keys(fileCounts).reduce((result, folderName) => {
+    if (fileCounts[folderName] > fileCounts[result]) {
+      return folderName
     }
-    return prev
+    return result
   })
-  return possibleGerbers.filter(f => path.dirname(f) === gerberFolder)
+  return layerNames.filter(fileName => path.dirname(fileName) === gerberFolder)
 }
 
 module.exports = gerberFiles
