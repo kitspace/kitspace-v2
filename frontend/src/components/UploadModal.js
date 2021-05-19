@@ -9,7 +9,7 @@ const FilesPreview = dynamic(() => import('@components/FilesPreview'))
 
 const TabsNames = {
   PCBFiles: 'PCB Files',
-  BOMFiles: 'BOM File',
+  BOMFile: 'BOM File',
   READMEFile: 'README File',
 }
 const UploadModal = ({ activeTab, canUpload, files }) => {
@@ -18,7 +18,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
 
   /**
    * Passed to check boxes to add the checked file to `allChecked` array.
-   * @param {object} node gitea file or directory. 
+   * @param {object} node gitea file or directory.
    * @param {boolean} checked whether to mark this file as checked or unchecked.
    */
   const mark = (node, checked) => {
@@ -97,15 +97,18 @@ const Tabs = ({ activeTab, files, mark, allChecked, onTabChange }) => {
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
-      render: () => <UploadTab {...commonTabProps} />,
+      // PCB Files should be a folder
+      render: () => <UploadTab {...commonTabProps} allowFiles={false} />,
     },
     {
-      menuItem: TabsNames.BOMFiles,
-      render: () => <UploadTab {...commonTabProps} />,
+      menuItem: TabsNames.BOMFile,
+      // BOM Files should be a single file
+      render: () => <UploadTab {...commonTabProps} allowFolders={false} />,
     },
     {
       menuItem: TabsNames.READMEFile,
-      render: () => <UploadTab {...commonTabProps} />,
+      // README file should be a single file
+      render: () => <UploadTab {...commonTabProps} allowFolders={false} />,
     },
   ]
 
@@ -118,7 +121,7 @@ const Tabs = ({ activeTab, files, mark, allChecked, onTabChange }) => {
   )
 }
 
-const UploadTab = ({ files, mark, allChecked }) => {
+const UploadTab = ({ files, mark, allChecked, allowFiles, allowFolders }) => {
   return (
     <Tab.Pane>
       <div
@@ -126,10 +129,15 @@ const UploadTab = ({ files, mark, allChecked }) => {
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '3rem',
-          background: 'linear-gradient(rgb(238 238 238),rgb(238 238 238)) center/2px 100% no-repeat',
+          background:
+            'linear-gradient(rgb(238 238 238),rgb(238 238 238)) center/2px 100% no-repeat',
         }}
       >
-        <DropZone style={{ maxHeight: '200px' }} />
+        <DropZone
+          allowFiles={allowFiles}
+          allowFolders={allowFolders}
+          style={{ maxHeight: '200px' }}
+        />
         <FilesPreview
           allChecked={allChecked}
           mark={mark}

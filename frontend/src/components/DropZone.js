@@ -16,7 +16,7 @@ const maxFileSize = process.env.MAX_FILE_SIZE
 // this make next dynamically import the `Toaster` component only from this module.
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
-const DropZone = ({ onDrop, style }) => {
+const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => {
   const _onDrop = useCallback(onDrop, [onDrop])
 
   const DropZoneConfig = {
@@ -25,6 +25,12 @@ const DropZone = ({ onDrop, style }) => {
     getFilesFromEvent: fromEvent,
     maxSize: MBytesToBytes(maxFileSize),
     minSize: 1,
+    /*
+     * If folder upload isn't allowed, accept only a single file,
+     * `0` is the default value and it means unlimited number of files,
+     * see https://react-dropzone.js.org/#section-accepting-specific-number-of-files
+     */
+    maxFiles: !allowFolders ? 1 : 0,
   }
 
   // This is the only way to support Drag'nDrop, file selector and Folder selector at the same time
@@ -43,7 +49,6 @@ const DropZone = ({ onDrop, style }) => {
 
   useEffect(() => {
     const fileRejections = [...FilePickerRejections, ...FolderPickerRejections]
-
     // Display notification for rejecting large and empty files.
     if (!isEmpty(fileRejections)) {
       const largeFiles = fileRejections.filter(
@@ -54,6 +59,10 @@ const DropZone = ({ onDrop, style }) => {
       // `file-too-small` is the error code returned by DropZone if file size < 1, i.e., empty
       const emptyFiles = fileRejections.filter(
         rej => rej.errors[0].code === 'file-too-small',
+      )
+
+      const tooManyFiles = fileRejections.filter(
+        rej => rej.errors[0].code === 'too-many-files',
       )
       // The notification won't be needed unless of case of trying to upload files
       // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
@@ -67,6 +76,10 @@ const DropZone = ({ onDrop, style }) => {
             `"${rej.file.name}" is too large! The maximum file size is ${maxFileSize}`,
           )
         })
+
+        if (tooManyFiles.length !== 0) {
+          toast.default.error(`Only ${DropZoneConfig.maxFiles} file allowed!`)
+        }
       })
     }
   }, [FilePickerRejections, FolderPickerRejections])
@@ -78,36 +91,52 @@ const DropZone = ({ onDrop, style }) => {
     >
       <Toaster />
       <input {...getInputProps()} />
-      <p>Drop 'files or a folder' here, or </p>
-      <div style={{ display: 'block', margin: 'auto' }}>
-        <Button
-          as="button"
-          color="grey"
-          content="Select files"
-          onClick={open}
-          icon="file"
-        />
-        <div style={{ display: 'inline-block', padding: '1rem', margin: 'auto' }} />
-        <Button
-          as="label"
-          htmlFor="folder-picker"
-          type="button"
-          color="grey"
-          content="Select a folder"
-          icon="folder"
-        />
-        <input
-          {...FolderPickerInputProps()}
-          type="file"
-          id="folder-picker"
-          style={{ display: 'none' }}
-          directory=""
-          webkitdirectory=""
-          mozdirectory=""
-          msdirectory=""
-          odirectory=""
-          multiple
-        />
+      <p>
+        Drop{' '}
+        {!allowFiles ? 'a folder' : !allowFolders ? 'files' : 'files or a folder'}
+        {' here, or'}
+      </p>
+      <div
+        style={{
+          display: 'grid',
+          margin: 'auto',
+          gap: '1rem',
+          gridTemplateColumns: !(allowFolders && allowFiles) ? '1fr' : '1fr 1fr',
+        }}
+      >
+        {allowFiles && (
+          <Button
+            as="button"
+            color="grey"
+            content="Select files"
+            onClick={open}
+            icon="file"
+          />
+        )}
+        {allowFolders && (
+          <>
+            <Button
+              as="label"
+              htmlFor="folder-picker"
+              type="button"
+              color="grey"
+              content="Select a folder"
+              icon="folder"
+            />
+            <input
+              {...FolderPickerInputProps()}
+              type="file"
+              id="folder-picker"
+              style={{ display: 'none' }}
+              directory=""
+              webkitdirectory=""
+              mozdirectory=""
+              msdirectory=""
+              odirectory=""
+              multiple
+            />
+          </>
+        )}
       </div>
     </div>
   )
@@ -116,6 +145,8 @@ const DropZone = ({ onDrop, style }) => {
 DropZone.propTypes = {
   onDrop: func,
   style: object,
+  allowFolders: true,
+  allowFiles: true,
 }
 
 export default DropZone
