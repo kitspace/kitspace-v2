@@ -18,7 +18,12 @@ const Tree = ({ files, mark, allChecked }) => {
     </List.Item>
   ))
 
-  return <List>{nodes}</List>
+  return (
+    <div>
+      <p>Select from previously uploaded files:</p>
+      <List>{nodes}</List>
+    </div>
+  )
 }
 
 const TreeNode = ({ node, mark, allChecked, marked }) => {
