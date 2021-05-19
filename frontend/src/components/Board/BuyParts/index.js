@@ -226,7 +226,7 @@ const RetailerButton = props => {
       }
       label={{
         as: 'a',
-        color,
+        className: `${styles.retailerLabel} ${styles[color]} `,
         content: (
           <div
             style={{
@@ -247,7 +247,7 @@ const RetailerButton = props => {
         ),
       }}
       labelPosition="right"
-      className={`${styles.retailerButton} ${color}`}
+      className={`${styles.retailerButton} ${styles[color]}`}
     />
   )
 }

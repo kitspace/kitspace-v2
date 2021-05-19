@@ -70,17 +70,31 @@
     min-width: 110px;
   }
 
-  button.retailerButton.pink {
+  .retailerButton.pink {
     background: #da8282 !important;
   }
 
-  button.retailerButton.pink:hover {
+  .retailerButton.pink:hover {
     background: #dc7c7c !important;
   }
 
-  .ui.basic.pink.label {
+  .retailerLabel.green {
+    border: 1px solid #3dd460 !important;
+    color: #3dd460 !important;
+  }
+
+  .retailerLabel.green:hover {
+    color: #21ba45!important;
+    border-color: #21ba45!important;
+  }
+  .retailerLabel.pink {
     border: 1px solid #da8282 !important;
     color: #da8282 !important;
+  }
+
+  .retailerLabel.pink:hover {
+    color: #e61a8d!important;
+    border-color: #e61a8d!important
   }
 
   .AdjustQuantity {
