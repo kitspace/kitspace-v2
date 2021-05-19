@@ -779,6 +779,12 @@
 }
 /* END: Fix rendering only on fullscreen mode */
 
+#title {
+  display: inline;
+  vertical-align: middle;
+  width: 70%;
+}
+
 div.ibom .menu input[type="checkbox"] { margin: 3px 3px 3px 4px; }
 div.ibom .menu input[type="radio"] { margin: 3px 3px 3px 4px; }
 div.ibom .menu-content { box-sizing: content-box; }

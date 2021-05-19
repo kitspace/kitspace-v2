@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
 import NextHead from 'next/head'
