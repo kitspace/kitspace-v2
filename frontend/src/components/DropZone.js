@@ -16,7 +16,7 @@ const maxFileSize = process.env.MAX_FILE_SIZE
 // this make next dynamically import the `Toaster` component only from this module.
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
-const DropZone = ({ onDrop, style, trigger }) => {
+const DropZone = ({ onDrop, style }) => {
   const _onDrop = useCallback(onDrop, [onDrop])
 
   const DropZoneConfig = {
@@ -79,16 +79,16 @@ const DropZone = ({ onDrop, style, trigger }) => {
       <Toaster />
       <input {...getInputProps()} />
       <p>
-        <b>Drop</b> {trigger || 'files or a folder'} here, or{' '}
+        Drop 'files or a folder' here, or{' '}
       </p>
       <div style={{ display: 'block', margin: 'auto' }}>
-        <Button color="green" content="Select files" onClick={open} icon="file" />
+        <Button as='button' color="grey" content="Select files" onClick={open} icon="file" />
         <div style={{ display: 'inline-block', padding: '1rem', margin: 'auto' }} />
         <Button
           as="label"
           htmlFor="folder-picker"
           type="button"
-          color="green"
+          color="grey"
           content="Select a folder"
           icon="folder"
         />

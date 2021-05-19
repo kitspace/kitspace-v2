@@ -9,8 +9,8 @@ const FilesPreview = dynamic(() => import('@components/FilesPreview'))
 
 const TabsNames = {
   PCBFiles: 'PCB Files',
-  BOMFiles: 'BOM files',
-  READMEFile: 'README Files',
+  BOMFiles: 'BOM File',
+  READMEFile: 'README File',
 }
 const UploadModal = ({ activeTab, canUpload, files }) => {
   const [open, setOpen] = useState(false)
@@ -56,7 +56,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
     onTabChange: clearChecked,
   }
 
-  return canUpload ? (
+  return true ? (
     <div
       style={{
         padding: '0.5rem 0',
@@ -91,21 +91,21 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
   ) : null
 }
 
-const Tabs = ({ activeTab, files, mark, allChecked, onTabChange}) => {
+const Tabs = ({ activeTab, files, mark, allChecked, onTabChange }) => {
   const tabsMap = { PCB: 0, BOM: 1, README: 2 }
   const commonTabProps = { files, mark, allChecked }
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
-      render: () => <UploadTab {...commonTabProps} trigger="PCB" />,
+      render: () => <UploadTab {...commonTabProps} />,
     },
     {
       menuItem: TabsNames.BOMFiles,
-      render: () => <UploadTab {...commonTabProps} trigger="BOM" />,
+      render: () => <UploadTab {...commonTabProps} />,
     },
     {
       menuItem: TabsNames.READMEFile,
-      render: () => <UploadTab {...commonTabProps} trigger="README" />,
+      render: () => <UploadTab {...commonTabProps} />,
     },
   ]
 
@@ -118,14 +118,18 @@ const Tabs = ({ activeTab, files, mark, allChecked, onTabChange}) => {
   )
 }
 
-const UploadTab = ({ files, trigger, mark, allChecked }) => {
+const UploadTab = ({ files, mark, allChecked }) => {
   return (
     <Tab.Pane>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-        <DropZone
-          style={{ marginRight: '0.5rem', maxHeight: '200px' }}
-          trigger={trigger}
-        />
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '3rem',
+          background: 'linear-gradient(rgb(238 238 238),rgb(238 238 238)) center/2px 100% no-repeat',
+        }}
+      >
+        <DropZone style={{ maxHeight: '200px' }} />
         <FilesPreview
           allChecked={allChecked}
           mark={mark}
