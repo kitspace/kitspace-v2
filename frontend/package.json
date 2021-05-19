@@ -20,7 +20,7 @@
     "file-loader": "^6.0.0",
     "file-selector": "^0.2.4",
     "joi": "^17.2.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "next": "^10.0.5",
     "node-sass": "^4.13.0",
