@@ -78,11 +78,15 @@ const DropZone = ({ onDrop, style }) => {
     >
       <Toaster />
       <input {...getInputProps()} />
-      <p>
-        Drop 'files or a folder' here, or{' '}
-      </p>
+      <p>Drop 'files or a folder' here, or </p>
       <div style={{ display: 'block', margin: 'auto' }}>
-        <Button as='button' color="grey" content="Select files" onClick={open} icon="file" />
+        <Button
+          as="button"
+          color="grey"
+          content="Select files"
+          onClick={open}
+          icon="file"
+        />
         <div style={{ display: 'inline-block', padding: '1rem', margin: 'auto' }} />
         <Button
           as="label"

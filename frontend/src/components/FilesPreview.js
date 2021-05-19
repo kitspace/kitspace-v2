@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Icon, List } from 'semantic-ui-react'
 
+import styles from './FilesPreview.module.scss'
+
 const Tree = ({ files, mark, allChecked }) => {
   if (files == null) {
     return <span>Loading...</span>
@@ -48,9 +50,9 @@ const TreeNode = ({ node, mark, allChecked, marked }) => {
 
   if (node.type === 'file') {
     return (
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div className={styles.file} onClick={() => setChecked(!checked)}>
         <input
-          style={{ marginRight: '0.5rem' }}
+          className={styles.checkbox}
           type="checkbox"
           checked={checked}
           onChange={() => setChecked(!checked)}

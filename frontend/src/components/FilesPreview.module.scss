@@ -1,0 +1,14 @@
+.file {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.file:hover {
+    text-decoration: underline;
+}
+
+.checkbox {
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
