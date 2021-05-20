@@ -106,8 +106,8 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
       >
         {allowFiles && (
           <Button
+            basic
             as="button"
-            color="grey"
             content="Select files"
             onClick={open}
             icon="file"
@@ -116,10 +116,10 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
         {allowFolders && (
           <>
             <Button
+              basic
               as="label"
               htmlFor="folder-picker"
               type="button"
-              color="grey"
               content="Select a folder"
               icon="folder"
             />
