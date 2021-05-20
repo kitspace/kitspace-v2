@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Button, Modal, Tab } from 'semantic-ui-react'
 
@@ -14,45 +14,50 @@ const TabsNames = {
 }
 const UploadModal = ({ activeTab, canUpload, files }) => {
   const [open, setOpen] = useState(false)
-  const [allChecked, setAllChecked] = useState([])
+  const [selected, setSelected] = useState(null)
 
   /**
-   * Passed to check boxes to add the checked file to `allChecked` array.
+   * Passed to checkboxes to select the asset(file/folder).
    * @param {object} node gitea file or directory.
    * @param {boolean} checked whether to mark this file as checked or unchecked.
    */
-  const mark = (node, checked) => {
+  const select = (node, checked) => {
     if (checked) {
-      setAllChecked([...allChecked, node])
-    } else {
-      setAllChecked(allChecked.filter(n => n !== node))
+      setSelected(node)
     }
   }
 
-  const submit = async () => {
-    const activeTab = document.querySelector('.menu > .active').innerHTML
+  useEffect(() => {
+    if (selected != null) {
+      submit()
+      setOpen(false)
+    }
+  }, [selected])
 
+  const submit = async () => {
+    const activeTab = document.querySelector('.menu > .active')?.innerHTML
+    const submitSelected = asset => submitKitspaceYaml(selected, asset)
     switch (activeTab) {
       case TabsNames.PCBFiles:
-        submitKitspaceYaml(allChecked, 'gerbers')
+        submitSelected('gerbers')
         break
       case TabsNames.BOMFiles:
-        submitKitspaceYaml(allChecked, 'bom')
+        submitSelected('bom')
         break
       case TabsNames.READMEFile:
-        submitKitspaceYaml(allChecked, 'readme')
+        submitSelected('readme')
         break
       default:
         break
     }
   }
 
-  const clearChecked = () => setAllChecked([])
+  const clearChecked = () => setSelected(null)
   const TabsProps = {
     activeTab,
     files,
-    mark,
-    allChecked,
+    select,
+    selected,
     onTabChange: clearChecked,
   }
 
@@ -78,22 +83,14 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
             <Tabs {...TabsProps} />
           </Modal.Description>
         </Modal.Content>
-        <Modal.Actions>
-          <Button
-            onClick={submit}
-            positive
-            content="Submit"
-            disabled={allChecked.length === 0}
-          />
-        </Modal.Actions>
       </Modal>
     </div>
   ) : null
 }
 
-const Tabs = ({ activeTab, files, mark, allChecked, onTabChange }) => {
+const Tabs = ({ activeTab, files, select, selected, onTabChange }) => {
   const tabsMap = { PCB: 0, BOM: 1, README: 2 }
-  const commonTabProps = { files, mark, allChecked }
+  const commonTabProps = { files, select, selected }
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
@@ -121,7 +118,7 @@ const Tabs = ({ activeTab, files, mark, allChecked, onTabChange }) => {
   )
 }
 
-const UploadTab = ({ files, mark, allChecked, allowFiles, allowFolders }) => {
+const UploadTab = ({ files, select, selected, allowFiles, allowFolders }) => {
   return (
     <Tab.Pane>
       <div
@@ -139,8 +136,8 @@ const UploadTab = ({ files, mark, allChecked, allowFiles, allowFolders }) => {
           style={{ maxHeight: '200px' }}
         />
         <FilesPreview
-          allChecked={allChecked}
-          mark={mark}
+          selected={selected}
+          select={select}
           files={files}
           style={{ paddingLeft: '1rem', overflow: 'auto' }}
         />

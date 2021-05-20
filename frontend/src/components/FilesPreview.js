@@ -3,7 +3,7 @@ import { Icon, List } from 'semantic-ui-react'
 
 import styles from './FilesPreview.module.scss'
 
-const Tree = ({ files, mark, allChecked }) => {
+const Tree = ({ files, select, selected }) => {
   if (files == null) {
     return <span>Loading...</span>
   }
@@ -11,9 +11,9 @@ const Tree = ({ files, mark, allChecked }) => {
     <List.Item key={node.path}>
       <TreeNode
         node={node}
-        mark={mark}
-        allChecked={allChecked}
-        marked={allChecked?.includes(node)}
+        select={select}
+        selected={selected}
+        marked={selected === node}
       />
     </List.Item>
   ))
@@ -26,14 +26,14 @@ const Tree = ({ files, mark, allChecked }) => {
   )
 }
 
-const TreeNode = ({ node, mark, allChecked, marked }) => {
+const TreeNode = ({ node, select, selected, marked }) => {
   const [toggled, setToggled] = useState(false)
   const [checked, setChecked] = useState(false)
-  const [nodeData, setNodeData] = useState([])
+  const [nodeData, setNodeData] = useState(null)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
-    mark(node, checked)
+    select(node, checked)
   }, [checked])
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const TreeNode = ({ node, mark, allChecked, marked }) => {
           {node.name}
         </summary>
         <div style={{ paddingLeft: '1.3rem' }}>
-          <Tree files={nodeData} mark={mark} allChecked={allChecked} />
+          <Tree files={nodeData} select={select} selected={selected} />
           {failed ? 'Failed to load files!' : null}
         </div>
       </details>
