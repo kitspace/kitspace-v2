@@ -7,16 +7,16 @@ import Head from './Head'
 import NavBar from './NavBar'
 import styles from './Page.module.scss'
 
-const Content = ({ reqSignIn, reqSignOut, contentFullSize, children }) => {
+const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
   const { replace, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
-    if (reqSignIn && !isAuthenticated) {
+    if (requireSignIn && !isAuthenticated) {
       replace(`/login?redirect=${pathname}`).then()
-    } else if (reqSignOut && isAuthenticated) {
+    } else if (requireSignOut && isAuthenticated) {
       replace('/').then()
     } else {
       setLoading(false)
@@ -61,7 +61,7 @@ Page.propTypes = {
 }
 
 Content.propTypes = {
-  reqSignIn: bool,
-  reqSignOut: bool,
+  requireSignIn: bool,
+  requireSignOut: bool,
   contentFullSize: bool,
 }

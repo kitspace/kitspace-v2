@@ -32,7 +32,7 @@ const Login = () => {
   }, [query])
 
   return (
-    <Page title="login" reqSignOut>
+    <Page title="login" requireSignOut>
       <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab

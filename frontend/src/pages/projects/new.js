@@ -31,7 +31,7 @@ const New = () => {
   const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 
   return (
-    <Page title="new" reqSignIn>
+    <Page title="new" requireSignIn>
       {isBigScreen ? (
         <div
           className={`${styles.projectsNew} ui two column stackable center aligned grid`}
