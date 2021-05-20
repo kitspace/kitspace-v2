@@ -24,6 +24,27 @@ export const getBoardInfo = async assetsPath => {
 
 /**
  *
+ * @param {string} assetsPath
+ * @returns {Promise<[boolean, object]>}
+ */
+export const getKitspaceYAMLJson = async assetsPath => {
+  const kitspaceYAMLFields = {
+    summary: '',
+    site: '',
+    color: '',
+    bom: '',
+    gerbers: '',
+    eda: { type: '', pcb: '' },
+    readme: '',
+    multi: {},
+  }
+
+  const res = await fetch(`${assetsPath}/kitspace-yaml.json`)
+  return [res.ok, res.ok ? await res.json() : kitspaceYAMLFields]
+}
+
+/**
+ *
  * @param {string} repoFullname
  * @returns{Promise<boolean>}
  */

@@ -5,7 +5,6 @@ import _ from 'lodash'
 import {
   Button,
   Form,
-  Header,
   Input,
   Loader,
   Message,
@@ -31,6 +30,7 @@ import { findReadme, renderReadme } from '@utils/index'
 import {
   getBoardInfo,
   getBoardZipInfo,
+  getKitspaceYAMLJson,
   hasInteractiveBom,
 } from '@utils/projectPage'
 import { AuthContext } from '@contexts/AuthContext'
@@ -60,6 +60,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
     // This should be handled properly currently, it breaks the page.
     const [zipInfoExists, zipInfo] = await getBoardZipInfo(assetsPath)
     const [boardInfoExists, boardInfo] = await getBoardInfo(assetsPath)
+    const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(assetsPath)
 
     const { zipPath, width, height, layers } = zipInfo
     const zipUrl = `${assetsPath}/${zipPath}`
@@ -75,6 +76,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         hasUploadPermission,
         repoFiles,
         hasIBOM,
+        kitspaceYAML,
         zipUrl,
         boardInfo,
         boardSpecs: { width, height, layers },
@@ -87,6 +89,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         isNew: query.create === 'true',
         boardAssetsExist: zipInfoExists && boardInfoExists,
         readmeExists: readmeFile !== '',
+        kitspaceYAMLExists,
       },
     }
   } else {
@@ -94,40 +97,24 @@ export const getServerSideProps = async ({ params, query, req }) => {
   }
 }
 
-const UpdateProject = ({
-  repo,
-  repoFiles,
-  hasUploadPermission,
-  hasIBOM,
-  zipUrl,
-  boardInfo,
-  boardSpecs,
-  renderedReadme,
-  isSynced,
-  isEmpty,
-  user,
-  projectName,
-  isNew,
-  boardAssetsExist,
-  readmeExists,
-}) => {
-  const fullName = `${user}/${projectName}`
+const UpdateProject = props => {
+  const fullName = `${props.user}/${props.projectName}`
   const { reload } = useRouter()
 
   const { repo: project, isLoading, isError } = useRepo(fullName, {
-    initialData: repo,
+    initialData: props.repo,
   })
-  // If the repo is migrating, poll for update every second, otherwise use default config.
 
-  const { status } = pollMigrationStatus(repo.id, {
-    refreshInterval: isEmpty ? 1000 : null,
+  // If the repo is migrating, poll for update every second, otherwise use default config.
+  const { status } = pollMigrationStatus(props.repo.id, {
+    refreshInterval: props.isEmpty ? 1000 : null,
   })
-  const [isSyncing, setIsSyncing] = useState(isEmpty)
+  const [isSyncing, setIsSyncing] = useState(props.isEmpty)
 
   useEffect(() => {
     setIsSyncing(status === 'Queue' || status === 'Running')
 
-    if (isEmpty && !isSynced && status === 'Finished') {
+    if (props.isEmpty && !props.isSynced && status === 'Finished') {
       reload()
     }
   }, [status])
@@ -156,7 +143,7 @@ const UpdateProject = ({
 
   return (
     <Page>
-      {isSynced && hasUploadPermission ? (
+      {props.isSynced && props.hasUploadPermission ? (
         <Message data-cy="sync-msg" color="yellow">
           <Message.Header>A synced repository!</Message.Header>
           <Message.Content>
@@ -167,21 +154,11 @@ const UpdateProject = ({
         </Message>
       ) : null}
       <UpdateForm
-        repoFiles={repoFiles}
-        hasUploadPermission={hasUploadPermission}
-        hasIBOM={hasIBOM}
-        zipUrl={zipUrl}
-        boardInfo={boardInfo}
-        boardSpecs={boardSpecs}
-        renderedReadme={renderedReadme}
-        isNew={isNew}
-        previewOnly={isSynced}
-        owner={user}
-        name={projectName}
+        {...props}
         description={project?.description}
-        url={project.original_url}
-        boardAssetsExist={boardAssetsExist}
-        readmeExists={readmeExists}
+        url={project?.original_url}
+        owner={props.user}
+        name={props.projectName}
       />
     </Page>
   )
@@ -191,6 +168,7 @@ const UpdateForm = ({
   repoFiles,
   hasUploadPermission,
   hasIBOM,
+  kitspaceYAML,
   boardInfo,
   zipUrl,
   renderedReadme,
@@ -203,6 +181,7 @@ const UpdateForm = ({
   url,
   boardAssetsExist,
   readmeExists,
+  kitspaceYAMLExists,
 }) => {
   const projectFullname = `${owner}/${name}`
   const canUpload = hasUploadPermission && !previewOnly
@@ -335,6 +314,14 @@ const UpdateForm = ({
     }
   }
 
+  const SharedUploadModal = ({ activeTab }) => (
+    <UploadModal
+      files={allFiles}
+      activeTab={activeTab}
+      kitspaceYAML={kitspaceYAML}
+    />
+  )
+
   if (isLoading) return <Loader active />
 
   return (
@@ -346,9 +333,7 @@ const UpdateForm = ({
         description={description}
       />
       <div>
-        {canUpload && (
-          <UploadModal files={allFiles} activeTab="PCB" canUpload={canUpload} />
-        )}
+        {canUpload && <SharedUploadModal activeTab="PCB" />}
         {boardAssetsExist ? (
           <>
             <BoardShowcase projectFullname={projectFullname} />
@@ -371,18 +356,18 @@ const UpdateForm = ({
               lines={boardInfo?.bom?.lines}
               parts={boardInfo?.bom?.parts}
             >
-              {canUpload && <UploadModal files={allFiles} activeTab="BOM" />}
+              {canUpload && <SharedUploadModal activeTab="BOM" />}
             </BuyParts>
           </>
         ) : (
           <>
             <AssetPlaceholder asset="bill of materials" />
-            {canUpload && <UploadModal files={allFiles} activeTab="BOM" />}
+            {canUpload && <SharedUploadModal activeTab="BOM" />}
           </>
         )}
       </div>
       <div>
-        {canUpload && <UploadModal files={allFiles} activeTab="README" />}
+        {canUpload && <SharedUploadModal activeTab="README" />}
         {readmeExists ? (
           <Readme renderedReadme={renderedReadme} />
         ) : (

@@ -3,7 +3,7 @@ import { Icon, List } from 'semantic-ui-react'
 
 import styles from './FilesPreview.module.scss'
 
-const Tree = ({ files, select, selected }) => {
+const Tree = ({ files, select, selected, externallyMarked }) => {
   if (files == null) {
     return <span>Loading...</span>
   }
@@ -13,20 +13,16 @@ const Tree = ({ files, select, selected }) => {
         node={node}
         select={select}
         selected={selected}
-        marked={selected === node}
+        externallyMarked={externallyMarked}
+        marked={selected === node || node.path === externallyMarked}
       />
     </List.Item>
   ))
 
-  return (
-    <div>
-      <p>Select from previously uploaded files:</p>
-      <List>{nodes}</List>
-    </div>
-  )
+  return <List className={styles.tree}>{nodes}</List>
 }
 
-const TreeNode = ({ node, select, selected, marked }) => {
+const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
   const [toggled, setToggled] = useState(false)
   const [checked, setChecked] = useState(false)
   const [nodeData, setNodeData] = useState(null)
@@ -72,6 +68,13 @@ const TreeNode = ({ node, select, selected, marked }) => {
     )
   } else if (node.type === 'dir') {
     return (
+      <div className={styles.dir} >
+        <input
+          className={styles.checkbox}
+          type="checkbox"
+          checked={checked}
+          onChange={() => setChecked(!checked)}
+        />
       <details
         style={{ paddingLeft: '0.3rem' }}
         onToggle={() => setToggled(!toggled)}
@@ -81,14 +84,28 @@ const TreeNode = ({ node, select, selected, marked }) => {
           {node.name}
         </summary>
         <div style={{ paddingLeft: '1.3rem' }}>
-          <Tree files={nodeData} select={select} selected={selected} />
+          <Tree
+            files={nodeData}
+            select={select}
+            selected={selected}
+            externallyMarked={externallyMarked}
+          />
           {failed ? 'Failed to load files!' : null}
         </div>
       </details>
+      </div>
     )
   } else {
     return <span>Loading...</span>
   }
 }
 
-export default Tree
+const FilesPreview = props => {
+  return (
+    <div>
+      <p>Select from previously uploaded files:</p>
+      <Tree {...props} />
+    </div>
+  )
+}
+export default FilesPreview

@@ -12,53 +12,94 @@ const TabsNames = {
   BOMFile: 'BOM File',
   READMEFile: 'README File',
 }
-const UploadModal = ({ activeTab, files }) => {
+
+const defaultAssetsPaths = {
+  PCBFiles: 'gerber',
+  BOMFile: '1-click-bom.tsv',
+  READMEFile: 'README.md'
+}
+
+const UploadModal = ({ activeTab: defaultActiveTab, files, kitspaceYAML }) => {
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState(null)
+  const [kitspaceYAMLAsset, setKitspaceYAMLAsset] = useState('')
 
   /**
    * Passed to checkboxes to select the asset(file/folder).
    * @param {object} node gitea file or directory.
-   * @param {boolean} checked whether to mark this file as checked or unchecked.
    */
   const select = (node, checked) => {
     if (checked) {
       setSelected(node)
+      setKitspaceYAMLAsset(node.path)
     }
   }
 
   useEffect(() => {
-    if (selected != null) {
+    if (selected != null && hasChangedSelectedAsset()) {
       submit()
       setOpen(false)
     }
   }, [selected])
 
+  useEffect(() => populateChecked(), [open])
+
+  const activeTab = () => document.querySelector('.menu > .active')?.innerHTML
+
   const submit = async () => {
-    const activeTab = document.querySelector('.menu > .active')?.innerHTML
     const submitSelected = asset => submitKitspaceYaml(selected, asset)
-    switch (activeTab) {
+    switch (activeTab()) {
       case TabsNames.PCBFiles:
         submitSelected('gerbers')
         break
-      case TabsNames.BOMFiles:
+      case TabsNames.BOMFile:
         submitSelected('bom')
         break
       case TabsNames.READMEFile:
         submitSelected('readme')
         break
-      default:
+    }
+  }
+
+  const populateChecked = () => {
+    switch (activeTab()) {
+      case TabsNames.PCBFiles:
+        setKitspaceYAMLAsset(kitspaceYAML?.gerbers || defaultAssetsPaths.PCBFiles)
+        break
+      case TabsNames.BOMFile:
+        setKitspaceYAMLAsset(kitspaceYAML?.bom || defaultAssetsPaths.BOMFile)
+        break
+      case TabsNames.READMEFile:
+        setKitspaceYAMLAsset(kitspaceYAML?.readme || defaultAssetsPaths.READMEFile)
         break
     }
   }
 
-  const clearChecked = () => setSelected(null)
+  const hasChangedSelectedAsset = () => {
+    switch (activeTab()) {
+      case TabsNames.PCBFiles:
+        return kitspaceYAML.gerbers !== selected.path && defaultAssetsPaths.PCBFiles !== selected.path
+      case TabsNames.BOMFile:
+        return kitspaceYAML.bom !== selected.path && defaultAssetsPaths.BOMFile !== selected.path
+      case TabsNames.READMEFile:
+        return kitspaceYAML.readme !== selected.path && defaultAssetsPaths.READMEFile !== selected.path
+      default:
+        break
+    }
+
+  }
   const TabsProps = {
-    activeTab,
+    activeTab: defaultActiveTab,
     files,
     select,
     selected,
-    onTabChange: clearChecked,
+    externallyMarked: kitspaceYAMLAsset,
+    onTabChange: () => {
+      // Make sure the tab name has changed
+      const sleep = setTimeout(populateChecked, 50)
+      return () => clearTimeout(sleep)
+
+    },
   }
 
   return (
@@ -75,7 +116,7 @@ const UploadModal = ({ activeTab, files }) => {
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
-        trigger={<Button content={`Upload ${activeTab} file`} />}
+        trigger={<Button content={`Upload ${defaultActiveTab} file`} />}
       >
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>
@@ -88,9 +129,16 @@ const UploadModal = ({ activeTab, files }) => {
   )
 }
 
-const Tabs = ({ activeTab, files, select, selected, onTabChange }) => {
+const Tabs = ({
+  activeTab,
+  files,
+  select,
+  selected,
+  externallyMarked,
+  onTabChange,
+}) => {
   const tabsMap = { PCB: 0, BOM: 1, README: 2 }
-  const commonTabProps = { files, select, selected }
+  const commonTabProps = { files, select, selected, externallyMarked }
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
@@ -118,7 +166,14 @@ const Tabs = ({ activeTab, files, select, selected, onTabChange }) => {
   )
 }
 
-const UploadTab = ({ files, select, selected, allowFiles, allowFolders }) => {
+const UploadTab = ({
+  files,
+  select,
+  selected,
+  externallyMarked,
+  allowFiles,
+  allowFolders,
+}) => {
   return (
     <Tab.Pane>
       <div
@@ -136,8 +191,9 @@ const UploadTab = ({ files, select, selected, allowFiles, allowFolders }) => {
           style={{ maxHeight: '200px' }}
         />
         <FilesPreview
-          selected={selected}
           select={select}
+          selected={selected}
+          externallyMarked={externallyMarked}
           files={files}
           style={{ paddingLeft: '1rem', overflow: 'auto' }}
         />
