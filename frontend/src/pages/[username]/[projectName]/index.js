@@ -28,7 +28,11 @@ import {
   updateRepo,
 } from '@utils/giteaApi'
 import { findReadme, renderReadme } from '@utils/index'
-import { getBoardInfo, getBoardZipInfo, hasInteractiveBom } from '@utils/projectPage'
+import {
+  getBoardInfo,
+  getBoardZipInfo,
+  hasInteractiveBom,
+} from '@utils/projectPage'
 import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
 import BoardShowcase from '@components/Board/BoardShowcase'
@@ -342,7 +346,9 @@ const UpdateForm = ({
         description={description}
       />
       <div>
-        <UploadModal files={allFiles} activeTab="PCB" canUpload={canUpload} />
+        {canUpload && (
+          <UploadModal files={allFiles} activeTab="PCB" canUpload={canUpload} />
+        )}
         {boardAssetsExist ? (
           <>
             <BoardShowcase projectFullname={projectFullname} />
@@ -357,7 +363,6 @@ const UpdateForm = ({
         )}
       </div>
       <div>
-        <UploadModal files={allFiles} activeTab="BOM" canUpload={canUpload} />
         {boardAssetsExist ? (
           <>
             <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
@@ -365,14 +370,19 @@ const UpdateForm = ({
               project={'hard'}
               lines={boardInfo?.bom?.lines}
               parts={boardInfo?.bom?.parts}
-            />
+            >
+              {canUpload && <UploadModal files={allFiles} activeTab="BOM" />}
+            </BuyParts>
           </>
         ) : (
-          <AssetPlaceholder asset="bill of materials" />
+          <>
+            <AssetPlaceholder asset="bill of materials" />
+            {canUpload && <UploadModal files={allFiles} activeTab="BOM" />}
+          </>
         )}
       </div>
       <div>
-        <UploadModal files={allFiles} activeTab="README" canUpload={canUpload} />
+        {canUpload && <UploadModal files={allFiles} activeTab="README" />}
         {readmeExists ? (
           <Readme renderedReadme={renderedReadme} />
         ) : (

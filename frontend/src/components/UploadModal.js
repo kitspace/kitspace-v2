@@ -12,7 +12,7 @@ const TabsNames = {
   BOMFile: 'BOM File',
   READMEFile: 'README File',
 }
-const UploadModal = ({ activeTab, canUpload, files }) => {
+const UploadModal = ({ activeTab, files }) => {
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState(null)
 
@@ -61,10 +61,10 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
     onTabChange: clearChecked,
   }
 
-  return true ? (
+  return (
     <div
       style={{
-        padding: '0.5rem 0',
+        padding: '1rem 0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
@@ -85,7 +85,7 @@ const UploadModal = ({ activeTab, canUpload, files }) => {
         </Modal.Content>
       </Modal>
     </div>
-  ) : null
+  )
 }
 
 const Tabs = ({ activeTab, files, select, selected, onTabChange }) => {

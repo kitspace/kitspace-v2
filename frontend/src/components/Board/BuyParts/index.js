@@ -7,7 +7,7 @@ import InstallPrompt, { install1ClickBOM } from './InstallPrompt'
 import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
-const BuyParts = ({ project, lines, parts }) => {
+const BuyParts = ({ project, lines, parts, children }) => {
   const [extensionPresence, setExtensionPresence] = useState('unknown')
   const [buyParts, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
@@ -130,6 +130,7 @@ const BuyParts = ({ project, lines, parts }) => {
       <Segment className={styles.buttonSegment} attached>
         {retailerButtons}
       </Segment>
+      {children}
       <Bom attached parts={parts} tsv={linesToTsv()} length={lines.length} />
       <DirectStores multiplier={mult} items={lines} />
     </div>
