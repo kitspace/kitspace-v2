@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { object, func } from 'prop-types'
+import { object, func, bool } from 'prop-types'
 import { isEmpty } from 'lodash'
 
 import { useDropzone } from 'react-dropzone'
@@ -145,6 +145,11 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
 DropZone.propTypes = {
   onDrop: func,
   style: object,
+  allowFolders: bool,
+  allowFiles: bool,
+}
+
+DropZone.defaultProps = {
   allowFolders: true,
   allowFiles: true,
 }
