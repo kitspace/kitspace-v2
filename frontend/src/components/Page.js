@@ -8,16 +8,16 @@ import NavBar from './NavBar'
 import styles from './Page.module.scss'
 
 const Content = ({ reqSignIn, reqSignOut, contentFullSize, children }) => {
-  const { push, pathname } = useRouter()
+  const { replace, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
     if (reqSignIn && !isAuthenticated) {
-      push(`/login?redirect=${pathname}`).then()
+      replace(`/login?redirect=${pathname}`).then()
     } else if (reqSignOut && isAuthenticated) {
-      push('/').then()
+      replace('/').then()
     } else {
       setLoading(false)
     }
