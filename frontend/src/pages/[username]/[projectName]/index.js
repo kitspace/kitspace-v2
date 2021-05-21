@@ -1,7 +1,7 @@
 // TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
-import _ from 'lodash'
+import { uniqBy } from 'lodash'
 import {
   Button,
   Form,
@@ -156,6 +156,7 @@ const UpdateProject = props => {
       <UpdateForm
         {...props}
         description={project?.description}
+        previewOnly={props.isSynced}
         url={project?.original_url}
         owner={props.user}
         name={props.projectName}
@@ -212,7 +213,7 @@ const UpdateForm = ({
   // A disjoint between the newly uploaded files(waiting for submission) and the files
   // on the Gitea repo for this project
   useEffect(() => {
-    setAllFiles(_.uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
+    setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
   }, [remoteFiles, newlyUploadedUUIDs])
 
   useEffect(() => {
@@ -319,6 +320,7 @@ const UpdateForm = ({
       files={allFiles}
       activeTab={activeTab}
       kitspaceYAML={kitspaceYAML}
+      projectFullname={projectFullname}
     />
   )
 
@@ -374,44 +376,46 @@ const UpdateForm = ({
           <AssetPlaceholder asset="readme" />
         )}
       </div>
-      <Form>
-        <Segment>
-          <Form.Field
-            data-cy="update-form-name"
-            fluid
-            required
-            readOnly={previewOnly}
-            control={Input}
-            label="Project name"
-            placeholder="Project name"
-            name="name"
-            value={form.name || ''}
-            onChange={onChange}
-            error={formatProjectNameError('name')}
-          />
-          <Form.Field
-            data-cy="update-form-description"
-            readOnly={previewOnly}
-            control={TextArea}
-            label="Project description"
-            placeholder="Project description"
-            name="description"
-            value={form.description || ''}
-            onChange={onChange}
-            error={formatErrorPrompt('description')}
-          />
-          <Form.Field
-            data-cy="update-form-submit"
-            fluid
-            control={Button}
-            content={isNew ? 'Create' : 'Update'}
-            disabled={previewOnly || !isValidProjectName || loading}
-            onClick={submit}
-            positive
-            loading={loading}
-          />
-        </Segment>
-      </Form>
+      {canUpload && (
+        <Form>
+          <Segment>
+            <Form.Field
+              data-cy="update-form-name"
+              fluid
+              required
+              readOnly={previewOnly}
+              control={Input}
+              label="Project name"
+              placeholder="Project name"
+              name="name"
+              value={form.name || ''}
+              onChange={onChange}
+              error={formatProjectNameError('name')}
+            />
+            <Form.Field
+              data-cy="update-form-description"
+              readOnly={previewOnly}
+              control={TextArea}
+              label="Project description"
+              placeholder="Project description"
+              name="description"
+              value={form.description || ''}
+              onChange={onChange}
+              error={formatErrorPrompt('description')}
+            />
+            <Form.Field
+              data-cy="update-form-submit"
+              fluid
+              control={Button}
+              content={isNew ? 'Create' : 'Update'}
+              disabled={previewOnly || !isValidProjectName || loading}
+              onClick={submit}
+              positive
+              loading={loading}
+            />
+          </Segment>
+        </Form>
+      )}
     </>
   )
 }

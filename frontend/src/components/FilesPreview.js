@@ -68,31 +68,31 @@ const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
     )
   } else if (node.type === 'dir') {
     return (
-      <div className={styles.dir} >
+      <div className={styles.dir}>
         <input
           className={styles.checkbox}
           type="checkbox"
           checked={checked}
           onChange={() => setChecked(!checked)}
         />
-      <details
-        style={{ paddingLeft: '0.3rem' }}
-        onToggle={() => setToggled(!toggled)}
-      >
-        <summary>
-          <Icon name="folder"></Icon>
-          {node.name}
-        </summary>
-        <div style={{ paddingLeft: '1.3rem' }}>
-          <Tree
-            files={nodeData}
-            select={select}
-            selected={selected}
-            externallyMarked={externallyMarked}
-          />
-          {failed ? 'Failed to load files!' : null}
-        </div>
-      </details>
+        <details
+          style={{ paddingLeft: '0.3rem' }}
+          onToggle={() => setToggled(!toggled)}
+        >
+          <summary>
+            <Icon name="folder"></Icon>
+            {node.name}
+          </summary>
+          <div style={{ paddingLeft: '1.3rem' }}>
+            <Tree
+              files={nodeData}
+              select={select}
+              selected={selected}
+              externallyMarked={externallyMarked}
+            />
+            {failed ? 'Failed to load files!' : null}
+          </div>
+        </details>
       </div>
     )
   } else {

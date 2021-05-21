@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Button, Modal, Tab } from 'semantic-ui-react'
 
-import { submitKitspaceYaml } from '@utils/index'
+import { AuthContext } from '@contexts/AuthContext'
+import { submitKitspaceYaml } from '@utils/projectPage'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 const FilesPreview = dynamic(() => import('@components/FilesPreview'))
@@ -16,10 +17,17 @@ const TabsNames = {
 const defaultAssetsPaths = {
   PCBFiles: 'gerber',
   BOMFile: '1-click-bom.tsv',
-  READMEFile: 'README.md'
+  READMEFile: 'README.md',
 }
 
-const UploadModal = ({ activeTab: defaultActiveTab, files, kitspaceYAML }) => {
+const UploadModal = ({
+  activeTab: defaultActiveTab,
+  files,
+  kitspaceYAML,
+  projectFullname,
+}) => {
+  const { user, csrf } = useContext(AuthContext)
+
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState(null)
   const [kitspaceYAMLAsset, setKitspaceYAMLAsset] = useState('')
@@ -47,7 +55,16 @@ const UploadModal = ({ activeTab: defaultActiveTab, files, kitspaceYAML }) => {
   const activeTab = () => document.querySelector('.menu > .active')?.innerHTML
 
   const submit = async () => {
-    const submitSelected = asset => submitKitspaceYaml(selected, asset)
+    const submitSelected = assetName =>
+      submitKitspaceYaml(
+        selected,
+        kitspaceYAML,
+        assetName,
+        projectFullname,
+        user,
+        csrf,
+      )
+
     switch (activeTab()) {
       case TabsNames.PCBFiles:
         submitSelected('gerbers')
@@ -78,15 +95,18 @@ const UploadModal = ({ activeTab: defaultActiveTab, files, kitspaceYAML }) => {
   const hasChangedSelectedAsset = () => {
     switch (activeTab()) {
       case TabsNames.PCBFiles:
-        return kitspaceYAML.gerbers !== selected.path && defaultAssetsPaths.PCBFiles !== selected.path
+        return (
+          selected.path !== (kitspaceYAML.gerbers || defaultAssetsPaths.PCBFiles)
+        )
       case TabsNames.BOMFile:
-        return kitspaceYAML.bom !== selected.path && defaultAssetsPaths.BOMFile !== selected.path
+        return selected.path !== (kitspaceYAML.bom || defaultAssetsPaths.BOMFile)
       case TabsNames.READMEFile:
-        return kitspaceYAML.readme !== selected.path && defaultAssetsPaths.READMEFile !== selected.path
+        return (
+          selected.path !== (kitspaceYAML.readme || defaultAssetsPaths.READMEFile)
+        )
       default:
         break
     }
-
   }
   const TabsProps = {
     activeTab: defaultActiveTab,
@@ -98,7 +118,6 @@ const UploadModal = ({ activeTab: defaultActiveTab, files, kitspaceYAML }) => {
       // Make sure the tab name has changed
       const sleep = setTimeout(populateChecked, 50)
       return () => clearTimeout(sleep)
-
     },
   }
 
