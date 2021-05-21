@@ -269,17 +269,32 @@ export const getUserRepos = async username => {
 }
 
 /**
- * uploads a file to an existing gitea repo
+ * get a file in gitea repo
+ * @param {string} repo 
+ * @param {string} path 
+ * @returns 
+ */
+export const getFile = async (repo, path) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
+
+  const res = await fetch(endpoint, { method: 'GET', credentials, mode, headers })
+
+  return res.ok ? await res.json() : {}
+}
+
+/**
+ * update existing file in gitea
  * @param repo {string} full repo name, i.e., {user}/{repoName}
- * @param path
- * @param content: must be Base64 encoded
- * @param csrf
+ * @param path{string}
+ * @param content{string}: must be Base64 encoded
+ * @param user{object}
+ * @param csrf{string}
  * @returns {Promise<boolean>}
  */
-export const uploadFile = async (repo, path, content, csrf) => {
-  const user = window.session.user
+export const updateFile = async (repo, path, content, user, csrf) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
 
+  const { sha } = await getFile(repo, path)
   const reqBody = {
     author: {
       email: user.email,
@@ -289,14 +304,14 @@ export const uploadFile = async (repo, path, content, csrf) => {
       email: user.email,
       name: user.email,
     },
-    branch: 'master',
     // content must be Base64 encoded
     content: btoa(content),
-    message: `Automated commit on behalf of ${user.login} (${user.email})`,
+    sha,
   }
 
+
   const res = await fetch(endpoint, {
-    method: 'POST',
+    method: 'PUT',
     credentials,
     mode,
     headers,
