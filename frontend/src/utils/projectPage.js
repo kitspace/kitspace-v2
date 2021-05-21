@@ -1,3 +1,6 @@
+import yaml from 'js-yaml'
+import { updateFile } from '@utils/giteaApi'
+
 const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
 /**
@@ -55,4 +58,34 @@ export const hasInteractiveBom = async repoFullname => {
   const body = await res.json()
 
   return body.status === 'done'
+}
+
+/**
+ * 
+ * @param {string} selectedFile the path of the file
+ * @param {string} kitspaceYAML the contents of `kitspace.yml` as JSON
+ * @param {'gerbers' | 'bom' | 'readme'} assetName 
+ * @param {string} projectFullname 
+ * @param {object} user 
+ * @param {string} csrf 
+ */
+export const submitKitspaceYaml = (
+  selectedFile,
+  kitspaceYAML,
+  assetName,
+  projectFullname,
+  user,
+  csrf,
+) => {
+  /**
+   * From any gerber file, the path for the gerbers dir can be specified.
+   * For readme, and bom only a single file can be selected
+   */
+  const path = selectedFile.path
+  const basePath = path.split('/')[0]
+  const _kitspaceYAML = JSON.parse(JSON.stringify(kitspaceYAML))
+  _kitspaceYAML[assetName] = basePath
+
+  const newKitspaceYAML = yaml.dump(_kitspaceYAML)
+  updateFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
 }
