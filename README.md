@@ -20,8 +20,8 @@ Allow people to:
 ### Set Up
 0. Get all the source code
 ```
-git clone https://github.com/kitspace/kitspace-using-gitea
-cd kitspace-using-gitea
+git clone https://github.com/kitspace/kitspace-v2
+cd kitspace-v2
 git submodule update --init
 ```
 
