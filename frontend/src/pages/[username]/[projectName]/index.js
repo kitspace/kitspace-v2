@@ -331,8 +331,8 @@ const UpdateForm = ({
       <InfoBar
         name={name}
         url={url}
-        site={boardInfo?.site || ''}
-        description={description}
+        site={boardInfo?.site || kitspaceYAML?.site}
+        description={kitspaceYAML?.summary || description}
       />
       <div>
         {canUpload && <SharedUploadModal activeTab="PCB" />}
