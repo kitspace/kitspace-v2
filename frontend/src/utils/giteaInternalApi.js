@@ -19,7 +19,7 @@ const uploadFileToGiteaServer = async (repo, file, csrf) => {
   const blobFromFile = new Blob([fileContentBlob], { type: file.type })
 
   const formData = new FormData()
-  formData.append('file', blobFromFile, file.name)
+  formData.append('file', blobFromFile, file.path)
 
   return new Promise((resolve, reject) => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file?_csrf=${csrf}`
@@ -88,25 +88,16 @@ export const commitFiles = async ({
   csrf,
 }) => {
   const filesUUIDs = await uploadFilesToGiteaServer(repo, files, csrf)
-  // [][file, its uuid on Gitea]
-  const filesZipUUIDs = zip(files, filesUUIDs)
 
-  const paths = groupByPath(filesZipUUIDs)
-
-  for (const path in paths) {
-    if (paths.hasOwnProperty(path)) {
-      await commitFilesWithUUIDs({
-        repo,
-        filesUUIDs: paths[path],
-        commitSummary,
-        commitMessage,
-        commitChoice,
-        treePath: path,
-        newBranchName,
-        csrf,
-      })
-    }
-  }
+  await commitFilesWithUUIDs({
+    repo,
+    filesUUIDs,
+    commitSummary,
+    commitMessage,
+    commitChoice,
+    newBranchName,
+    csrf,
+  })
 }
 
 /**
