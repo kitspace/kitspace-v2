@@ -270,9 +270,9 @@ export const getUserRepos = async username => {
 
 /**
  * get a file in gitea repo
- * @param {string} repo 
- * @param {string} path 
- * @returns 
+ * @param {string} repo
+ * @param {string} path
+ * @returns
  */
 export const getFile = async (repo, path) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
@@ -308,7 +308,6 @@ export const updateFile = async (repo, path, content, user, csrf) => {
     content: btoa(content),
     sha,
   }
-
 
   const res = await fetch(endpoint, {
     method: 'PUT',

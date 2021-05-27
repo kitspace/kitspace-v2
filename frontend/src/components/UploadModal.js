@@ -4,6 +4,7 @@ import { Button, Modal, Tab } from 'semantic-ui-react'
 
 import { AuthContext } from '@contexts/AuthContext'
 import { submitKitspaceYaml } from '@utils/projectPage'
+import useKitspaceYAML from '@hooks/useKitspaceYAML'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 const FilesPreview = dynamic(() => import('@components/FilesPreview'))
@@ -23,12 +24,16 @@ const defaultAssetsPaths = {
 const UploadModal = ({
   activeTab: defaultActiveTab,
   files,
-  kitspaceYAML,
+  kitspaceYAMLPreloaded,
   projectFullname,
 }) => {
   const { user, csrf } = useContext(AuthContext)
+  const { kitspaceYAML, mutate } = useKitspaceYAML(projectFullname, {
+    initialData: kitspaceYAMLPreloaded,
+  })
 
   const [open, setOpen] = useState(false)
+  const [modalTriggerLoading, setLoading] = useState(false)
   const [selected, setSelected] = useState(null)
   const [kitspaceYAMLAsset, setKitspaceYAMLAsset] = useState('')
 
@@ -45,12 +50,18 @@ const UploadModal = ({
 
   useEffect(() => {
     if (selected != null && hasChangedSelectedAsset()) {
-      submit()
+      setLoading(true)
+      submit().then(submittedSuccessfully => {
+        if (submittedSuccessfully) {
+          mutate()
+          setLoading(false)
+        }
+      })
       setOpen(false)
     }
   }, [selected])
 
-  useEffect(() => populateChecked(), [open])
+  useEffect(() => populateChecked(), [open, kitspaceYAML])
 
   const activeTab = () => document.querySelector('.menu > .active')?.innerHTML
 
@@ -67,14 +78,11 @@ const UploadModal = ({
 
     switch (activeTab()) {
       case TabsNames.PCBFiles:
-        submitSelected('gerbers')
-        break
+        return await submitSelected('gerbers')
       case TabsNames.BOMFile:
-        submitSelected('bom')
-        break
+        return await submitSelected('bom')
       case TabsNames.READMEFile:
-        submitSelected('readme')
-        break
+        return await submitSelected('readme')
     }
   }
 
@@ -121,6 +129,11 @@ const UploadModal = ({
     },
   }
 
+  const onOpen = () => {
+    mutate()
+    setOpen(true)
+  }
+
   return (
     <div
       style={{
@@ -133,9 +146,15 @@ const UploadModal = ({
       <Modal
         closeIcon
         onClose={() => setOpen(false)}
-        onOpen={() => setOpen(true)}
+        onOpen={onOpen}
         open={open}
-        trigger={<Button content={`Upload ${defaultActiveTab} file`} />}
+        trigger={
+          <Button
+            content={`Upload ${defaultActiveTab} file`}
+            loading={modalTriggerLoading}
+            disabled={modalTriggerLoading}
+          />
+        }
       >
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>

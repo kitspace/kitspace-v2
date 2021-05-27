@@ -61,15 +61,15 @@ export const hasInteractiveBom = async repoFullname => {
 }
 
 /**
- * 
+ *
  * @param {string} selectedFile the path of the file
  * @param {string} kitspaceYAML the contents of `kitspace.yml` as JSON
- * @param {'gerbers' | 'bom' | 'readme'} assetName 
- * @param {string} projectFullname 
- * @param {object} user 
- * @param {string} csrf 
+ * @param {'gerbers' | 'bom' | 'readme'} assetName
+ * @param {string} projectFullname
+ * @param {object} user
+ * @param {string} csrf
  */
-export const submitKitspaceYaml = (
+export const submitKitspaceYaml = async (
   selectedFile,
   kitspaceYAML,
   assetName,
@@ -87,5 +87,11 @@ export const submitKitspaceYaml = (
   _kitspaceYAML[assetName] = basePath
 
   const newKitspaceYAML = yaml.dump(_kitspaceYAML)
-  updateFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
+  return await updateFile(
+    projectFullname,
+    'kitspace.yaml',
+    newKitspaceYAML,
+    user,
+    csrf,
+  )
 }
