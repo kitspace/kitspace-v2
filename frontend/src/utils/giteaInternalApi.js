@@ -4,8 +4,7 @@
  *  2. UUID returned from the previous step is used to make the actual commit request.
  */
 
-import { b64toBlob, readFileContent, groupByPath } from '@utils/index'
-import { zip } from 'lodash'
+import { b64toBlob, readFileContent } from '@utils/index'
 
 /**
  * Upload a file to gitea server. Just upload, it doesn't commit the files.
