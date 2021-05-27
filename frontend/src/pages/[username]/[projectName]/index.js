@@ -185,7 +185,6 @@ const UpdateForm = ({
   kitspaceYAMLExists,
 }) => {
   const projectFullname = `${owner}/${name}`
-  const canUpload = hasUploadPermission && !previewOnly
   // The files in the Gitea repo associated with this project and the newly loaded files
   const {
     files: remoteFiles,
@@ -200,15 +199,24 @@ const UpdateForm = ({
   const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
-  const { csrf } = useContext(AuthContext)
+  const { csrf, user } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUpdateFormModel,
   )
+  const [canUpload, setCanUpload] = useState(hasUploadPermission && !previewOnly)
 
   // Set values of the form as the values of the project stored in the Gitea repo
   useEffect(() => {
     populate({ name, description }, true)
   }, [])
+
+  useEffect(() => {
+    // Handle client side rendering for uploading permissions,
+    // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
+    if (!hasUploadPermission) {
+      setCanUpload(user?.username === owner && !previewOnly)
+    }
+  }, [hasUploadPermission, previewOnly, user])
 
   // A disjoint between the newly uploaded files(waiting for submission) and the files
   // on the Gitea repo for this project
