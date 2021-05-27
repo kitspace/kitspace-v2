@@ -8,7 +8,7 @@ import { b64toBlob, readFileContent, groupByPath } from '@utils/index'
 import { zip } from 'lodash'
 
 /**
- * Upload a file to gitea server, just upload it doesn't commit the files
+ * Upload a file to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
  * @param file{object}
  * @param csrf{string}
@@ -58,8 +58,8 @@ const uploadFileToGiteaServer = async (repo, file, csrf) => {
  */
 export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
   const filesUUIDs = await Promise.all(
-    files.map(async file => {
-      return await uploadFileToGiteaServer(repo, file, csrf)
+    files.map(file => {
+      return uploadFileToGiteaServer(repo, file, csrf)
     }),
   )
   // noinspection JSUnresolvedVariable
