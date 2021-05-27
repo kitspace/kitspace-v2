@@ -22,8 +22,9 @@ const defaultAssetsPaths = {
 }
 
 const UploadModal = ({
-  activeTab: defaultActiveTab,
+  kitspaceYAMLExists,
   files,
+  activeTab: defaultActiveTab,
   kitspaceYAMLPreloaded,
   projectFullname,
 }) => {
@@ -74,6 +75,7 @@ const UploadModal = ({
         projectFullname,
         user,
         csrf,
+        kitspaceYAMLExists,
       )
 
     switch (activeTab()) {

@@ -1,5 +1,5 @@
 import yaml from 'js-yaml'
-import { updateFile } from '@utils/giteaApi'
+import { updateFile, uploadFile } from '@utils/giteaApi'
 
 const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
@@ -61,13 +61,15 @@ export const hasInteractiveBom = async repoFullname => {
 }
 
 /**
- *
+ * Update the contents of kitspace.yaml if it exists or create it.
  * @param {string} selectedFile the path of the file
  * @param {string} kitspaceYAML the contents of `kitspace.yml` as JSON
  * @param {'gerbers' | 'bom' | 'readme'} assetName
  * @param {string} projectFullname
  * @param {object} user
  * @param {string} csrf
+ * @param {boolean} kitspaceYAMLExists
+ * @returns {Promise<boolean} : whether the update was successful or not.
  */
 export const submitKitspaceYaml = async (
   selectedFile,
@@ -76,6 +78,7 @@ export const submitKitspaceYaml = async (
   projectFullname,
   user,
   csrf,
+  kitspaceYAMLExists,
 ) => {
   /**
    * From any gerber file, the path for the gerbers dir can be specified.
@@ -87,11 +90,22 @@ export const submitKitspaceYaml = async (
   _kitspaceYAML[assetName] = basePath
 
   const newKitspaceYAML = yaml.dump(_kitspaceYAML)
-  return await updateFile(
-    projectFullname,
-    'kitspace.yaml',
-    newKitspaceYAML,
-    user,
-    csrf,
-  )
+
+  if (kitspaceYAMLExists) {
+    return await updateFile(
+      projectFullname,
+      'kitspace.yaml',
+      newKitspaceYAML,
+      user,
+      csrf,
+    )
+  } else {
+    return await uploadFile(
+      projectFullname,
+      'kitspace.yaml',
+      newKitspaceYAML,
+      user,
+      csrf,
+    )
+  }
 }

@@ -332,3 +332,39 @@ export const renderMarkdown = async markdown => {
 
   return res.ok ? await res.blob().then(b => b.text()) : ''
 }
+
+/**
+ * Upload file to gitea
+ * @param repo {string} full repo name, i.e., {user}/{repoName}
+ * @param path{string}
+ * @param content{string}: must be Base64 encoded
+ * @param user{object}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const uploadFile = async (repo, path, content, user, csrf) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
+
+  const reqBody = {
+    author: {
+      email: user.email,
+      name: user.login,
+    },
+    committer: {
+      email: user.email,
+      name: user.email,
+    },
+    // content must be Base64 encoded
+    content: btoa(content),
+  }
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    credentials,
+    mode,
+    headers,
+    body: JSON.stringify(reqBody),
+  })
+
+  return res.ok
+}

@@ -317,6 +317,7 @@ const UpdateForm = ({
 
   const SharedUploadModal = ({ activeTab }) => (
     <UploadModal
+      kitspaceYAMLExists={kitspaceYAMLExists}
       files={allFiles}
       activeTab={activeTab}
       kitspaceYAML={kitspaceYAML}
