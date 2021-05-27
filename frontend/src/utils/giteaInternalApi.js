@@ -56,6 +56,13 @@ const uploadFileToGiteaServer = async (repo, file, csrf) => {
  * @returns {Promise<string[]>}
  */
 export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
+  files = files.map(file => {
+    // remove any leading "/"
+    let filePath = file.path.startsWith('/') ? file.path.substring(1) : file.path
+    // ignore the top-level directory since this whole directory was the upload
+    filePath = filePath.split('/').slice(1).join('/')
+    return { ...file, path: filePath }
+  })
   const filesUUIDs = await Promise.all(
     files.map(file => {
       return uploadFileToGiteaServer(repo, file, csrf)
