@@ -1,17 +1,20 @@
 import React from 'react'
-import { Container } from 'semantic-ui-react'
 
 const Readme = ({ renderedReadme }) => {
   return (
-    <Container
+    <div
       style={{
         margin: '2rem 0',
         padding: '0.8rem',
         borderRadius: '5px',
         border: '1px solid #eeeeee',
       }}
-      dangerouslySetInnerHTML={{ __html: renderedReadme }}
-    />
+    >
+      <div
+        style={{ maxWidth: '1000px' }}
+        dangerouslySetInnerHTML={{ __html: renderedReadme }}
+      />
+    </div>
   )
 }
 
