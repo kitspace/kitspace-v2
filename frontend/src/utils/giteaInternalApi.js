@@ -5,6 +5,7 @@
  */
 
 import { b64toBlob, readFileContent } from '@utils/index'
+import { dirname } from 'path'
 
 /**
  * Upload a file to gitea server. Just upload, it doesn't commit the files.
@@ -13,12 +14,12 @@ import { b64toBlob, readFileContent } from '@utils/index'
  * @param csrf{string}
  * @returns {Promise<Object>}
  */
-const uploadFileToGiteaServer = async (repo, file, csrf) => {
+const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
   const fileContentBlob = await b64toBlob(await readFileContent(file))
   const blobFromFile = new Blob([fileContentBlob], { type: file.type })
 
   const formData = new FormData()
-  formData.append('file', blobFromFile, file.path)
+  formData.append('file', blobFromFile, filePath)
 
   return new Promise((resolve, reject) => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file?_csrf=${csrf}`
@@ -49,23 +50,28 @@ const uploadFileToGiteaServer = async (repo, file, csrf) => {
 }
 
 /**
- * upload multiple files to gitea server, just upload it doesn't commit the files
+ * Upload multiple files to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
  * @param files{[]}
  * @param csrf{string}
  * @returns {Promise<string[]>}
  */
 export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
-  files = files.map(file => {
-    // remove any leading "/"
-    let filePath = file.path.startsWith('/') ? file.path.substring(1) : file.path
-    // ignore the top-level directory since this whole directory was the upload
-    filePath = filePath.split('/').slice(1).join('/')
-    return { ...file, path: filePath }
-  })
+  // remove any leading "/"
+  let filePaths = files.map(file =>
+    file.path.startsWith('/') ? file.path.substring(1) : file.path,
+  )
+  // unless there are some top level files, we remove the top-level directory
+  // from the filePaths. we assume the whole directory was the upload and we
+  // don't want them in that directory in the git repo.
+  const hasTopLevelFile = filePaths.map(dirname).includes('.')
+  if (!hasTopLevelFile) {
+    filePaths = filePaths.map(filePath => filePath.split('/').slice(1).join('/'))
+  }
+
   const filesUUIDs = await Promise.all(
-    files.map(file => {
-      return uploadFileToGiteaServer(repo, file, csrf)
+    files.map((file, i) => {
+      return uploadFileToGiteaServer(repo, file, filePaths[i], csrf)
     }),
   )
   // noinspection JSUnresolvedVariable
