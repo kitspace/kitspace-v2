@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { string, bool } from 'prop-types'
-import { Container, Loader } from 'semantic-ui-react'
+import { Loader } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
 
 import Head from './Head'
@@ -31,12 +31,9 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
     )
   } else {
     return (
-      <Container
-        className={contentFullSize ? styles.minimalContainer : null}
-        style={{ marginTop: '2rem' }}
-      >
+      <div className={contentFullSize ? styles.minimalContainer : styles.container}>
         {children}
-      </Container>
+      </div>
     )
   }
 }
