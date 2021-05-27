@@ -124,7 +124,7 @@ export const commitFiles = async ({
 export const commitFilesWithUUIDs = async ({
   repo,
   filesUUIDs,
-  commitSummary = 'commit files',
+  commitSummary = 'Upload files',
   commitMessage = '',
   commitChoice = 'direct',
   treePath = '',
