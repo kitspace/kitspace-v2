@@ -126,12 +126,14 @@ describe('Sign up form submission', () => {
     const newPassword = '123456'
 
     cy.signUp(newUsername, newEmail, newPassword)
+    // Wait until the message appears, this means the sign up request has completed.
+    cy.get('.positive').as('message')
 
-    cy.visit('/')
+    cy.reload()
     // the user should be signed in, i.e., the `session.user` object won't be null
+    cy.get('#logout').should('be.visible')
     cy.window().then(win => {
-      console.log(win.session)
-      assert(win.session.user, 'Auto sign in')
+      assert(win.session.user, 'Auto sign in.')
     })
   })
 

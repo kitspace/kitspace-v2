@@ -89,22 +89,14 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
-     * Credits Zwaar Contrast <postduif@zwaarcontrast.nl>
      * Create a drop event with file on the parent subject
+     * @credits Zwaar Contrast <postduif@zwaarcontrast.nl>
      * @param files
      * @param fileNames
+     * @param username the owner of repo
+     * @param newProject if the project is new wait for `@create` and `@upload`.
      * cy.get('.dropzone').dropFile(file, 'example.txt')
      */
-      dropFiles(files, fileNames): Chainable<any>
-  }
-
-  interface Chainable<Subject> {
-    /**
-     * Good to file uploading route and prepare call all necessary network intercepts
-     * @param username
-     * @example
-     *
-     */
-    preFileDrop(username: string): Chainable<any>
+      dropFiles(files, fileNames: string[], username: string, newProject=true): Chainable<any>
   }
 }
