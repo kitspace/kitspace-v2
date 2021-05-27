@@ -138,7 +138,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
 
   return (
     <Table
-      className={styles.TsvTable + (collapsed ? styles.collapsed : '')}
+      className={`${styles.TsvTable} ${styles.collapsed}`}
       selectable={!activePopup}
       celled
       unstackable

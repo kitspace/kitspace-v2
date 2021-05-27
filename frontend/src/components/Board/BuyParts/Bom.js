@@ -24,7 +24,9 @@ const Bom = ({ length, parts, tsv }) => {
       <DoubleScrollBar>
         <TsvTable parts={parts} tsv={tsv} collapsed={collapsed} />
       </DoubleScrollBar>
-      <ExpandBom diff={diff} collapsed={collapsed} setCollapsed={setCollapsed} />
+      {diff !== 0 ? (
+        <ExpandBom diff={diff} collapsed={collapsed} setCollapsed={setCollapsed} />
+      ) : null}
     </div>
   )
 }
