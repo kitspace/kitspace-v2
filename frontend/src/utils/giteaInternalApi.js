@@ -90,10 +90,19 @@ export const commitInitialFiles = async ({
   newBranchName,
   csrf,
 }) => {
-  // remove any leading "/"
-  let filePaths = files.map(file =>
-    file.path.startsWith('/') ? file.path.substring(1) : file.path,
-  )
+  let filePaths = files.map(file => {
+    let filePath = file.path
+    if (!filePath) {
+      console.warn(
+        'File object in commitInitialFiles does not have a "path" property. Using "name" instead:',
+        file.name,
+      )
+      filePath = file.name
+    }
+    // remove any leading "/"
+    filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath
+    return filePath
+  })
   // unless there are some top level files, we remove the top-level directory
   // from the filePaths. we assume the whole directory was the upload and we
   // don't want them in that directory in the git repo.

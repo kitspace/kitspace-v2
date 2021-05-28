@@ -216,9 +216,26 @@ const UpdateForm = ({
   }
 
   const onDrop = async files => {
-    const filePaths = files.map(file => file.path)
+    const filePaths = files.map(file => {
+      let filePath = file.path
+      if (!filePath) {
+        console.warn(
+          'File object in onDrop does not have a "path" property. Using "name" instead:',
+          file.name,
+        )
+        filePath = file.name
+      }
+      // remove any leading "/"
+      filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath
+      return filePath
+    })
     // Upload files directly to gitea server on drop
-    const UUIDs = await uploadFilesToGiteaServer(projectFullname, files, filePaths, csrf)
+    const UUIDs = await uploadFilesToGiteaServer(
+      projectFullname,
+      files,
+      filePaths,
+      csrf,
+    )
 
     setNewlyUploadedDetails(files)
     setNewlyUploadedUUIDs([...newlyUploadedUUIDs, UUIDs])
