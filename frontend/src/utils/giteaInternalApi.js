@@ -11,6 +11,7 @@ import { dirname } from 'path'
  * Upload a file to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
  * @param file{object}
+ * @param filePath{string}
  * @param csrf{string}
  * @returns {Promise<Object>}
  */
