@@ -93,6 +93,15 @@
   justify-content: center;
 }
 
+.userButtonMenuItem {
+  padding-top: 5px;
+  padding-bottom: 1px;
+  padding-left: 1px;
+  padding-right: 1px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .userDropContainer {
   display: flex;
   align-items: center;
@@ -102,6 +111,7 @@
   padding-left: 5px;
   margin-top: -3px;
 }
+
 .smallMenu {
   display: none;
   @include breakpoint(mobile_menu) {

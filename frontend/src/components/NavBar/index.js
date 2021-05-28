@@ -8,6 +8,7 @@ import _JSXStyle from 'styled-jsx/style'
 
 import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
+import { UserMenu } from './UserMenu'
 import styles from './index.module.scss'
 
 const NavBar = () => {
@@ -203,7 +204,7 @@ const SigningButton = () => {
   const isLoginRoute = pathname === '/login'
 
   if (isAuthenticated) {
-    return <LogoutButton />
+    return <UserMenuButton />
   }
 
   if (isLoginRoute) {
@@ -245,6 +246,32 @@ const LogoutButton = () => {
         Log out
       </Button>
     </Menu.Item>
+  )
+}
+
+const UserMenuButton = () => {
+  const { user } = useContext(AuthContext)
+  return (
+    <Popup
+      trigger={
+        <a className={styles.userButtonMenuItem}>
+          <div className={styles.userDropContainer}>
+            <Image
+              alt="avatar"
+              style={{ background: 'white' }}
+              size="mini"
+              rounded
+              src={user.avatar_url}
+            />
+            <Icon inverted name="triangle down" />
+          </div>
+        </a>
+      }
+      position="bottom right"
+      on="click"
+    >
+      <UserMenu userName={user.username} />
+    </Popup>
   )
 }
 
