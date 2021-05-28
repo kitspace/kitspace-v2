@@ -26,6 +26,7 @@ const UploadModal = ({
   files,
   kitspaceYAMLPreloaded,
   projectFullname,
+  onDrop,
 }) => {
   const { user, csrf } = useContext(AuthContext)
   const { kitspaceYAML, mutate } = useKitspaceYAML(projectFullname, {
@@ -127,6 +128,7 @@ const UploadModal = ({
       const sleep = setTimeout(populateChecked, 50)
       return () => clearTimeout(sleep)
     },
+    onDrop,
   }
 
   const onOpen = () => {
@@ -167,8 +169,15 @@ const UploadModal = ({
   )
 }
 
-const Tabs = ({ files, select, selected, externallyMarked, onTabChange }) => {
-  const commonTabProps = { files, select, selected, externallyMarked }
+const Tabs = ({
+  files,
+  select,
+  selected,
+  externallyMarked,
+  onTabChange,
+  onDrop,
+}) => {
+  const commonTabProps = { files, select, selected, externallyMarked, onDrop }
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
@@ -197,6 +206,7 @@ const UploadTab = ({
   externallyMarked,
   allowFiles,
   allowFolders,
+  onDrop,
 }) => {
   return (
     <Tab.Pane>
@@ -213,6 +223,7 @@ const UploadTab = ({
           allowFiles={allowFiles}
           allowFolders={allowFolders}
           style={{ maxHeight: '200px' }}
+          onDrop={onDrop}
         />
         <FilesPreview
           select={select}

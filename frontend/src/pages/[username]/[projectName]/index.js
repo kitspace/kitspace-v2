@@ -340,6 +340,7 @@ const UpdateForm = ({
             files={allFiles}
             kitspaceYAML={kitspaceYAML}
             projectFullname={projectFullname}
+            onDrop={onDrop}
           />
         )}
         {boardAssetsExist ? (

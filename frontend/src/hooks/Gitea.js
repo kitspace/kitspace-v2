@@ -1,8 +1,8 @@
 import useSWR from 'swr'
 
 /**
- * @typedef {Object} swrOptions: Configuration options for swr
  * @link {https://swr.vercel.app/docs/options}
+ * @typedef {Object} swrOptions: Configuration options for swr
  * @property {boolean} [suspense] = false: enable React Suspense mode
  * @property {function} [fetcher] = window.fetch(url).then(res => res.json()): the fetcher function
  * @property {any} [initialData]: initial data to be returned
@@ -60,6 +60,7 @@ export const useRepo = (fullname, swrOpts = {}) => {
 
 /**
  * A hook to get all repos on gitea
+ * @param swrOpts{swrOptions}
  * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
  */
 export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
@@ -68,7 +69,7 @@ export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
  * A hook to search all repos
  * @param sort{string}
  * @param order{string}
- * @param swrOpts{Object}
+ * @param swrOpts{swrOptions}
  * @param q{string=}: search query, leave undefined to return all repos
  * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
  */
