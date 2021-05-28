@@ -4,22 +4,23 @@
  *  2. UUID returned from the previous step is used to make the actual commit request.
  */
 
-import { b64toBlob, readFileContent, groupByPath } from '@utils/index'
-import { zip } from 'lodash'
+import { b64toBlob, readFileContent } from '@utils/index'
+import { dirname } from 'path'
 
 /**
- * Upload a file to gitea server, just upload it doesn't commit the files
+ * Upload a file to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
  * @param file{object}
+ * @param filePath{string}
  * @param csrf{string}
  * @returns {Promise<Object>}
  */
-const uploadFileToGiteaServer = async (repo, file, csrf) => {
+const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
   const fileContentBlob = await b64toBlob(await readFileContent(file))
   const blobFromFile = new Blob([fileContentBlob], { type: file.type })
 
   const formData = new FormData()
-  formData.append('file', blobFromFile, file.name)
+  formData.append('file', blobFromFile, filePath)
 
   return new Promise((resolve, reject) => {
     const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file?_csrf=${csrf}`
@@ -50,16 +51,17 @@ const uploadFileToGiteaServer = async (repo, file, csrf) => {
 }
 
 /**
- * upload multiple files to gitea server, just upload it doesn't commit the files
+ * Upload multiple files to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
  * @param files{[]}
+ * @param filePaths{[]string}
  * @param csrf{string}
  * @returns {Promise<string[]>}
  */
-export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
+export const uploadFilesToGiteaServer = async (repo, files, filePaths, csrf) => {
   const filesUUIDs = await Promise.all(
-    files.map(async file => {
-      return await uploadFileToGiteaServer(repo, file, csrf)
+    files.map((file, i) => {
+      return uploadFileToGiteaServer(repo, file, filePaths[i], csrf)
     }),
   )
   // noinspection JSUnresolvedVariable
@@ -67,7 +69,8 @@ export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
 }
 
 /**
- * Takes an array of files and commit it to Gitea server.
+ * Takes an array of files and commit it to Gitea server. If the files are all
+ * in a folder it will be stripped from the path.
  * @param repo{string}
  * @param files{[]}
  * @param commitSummary{=string}
@@ -78,7 +81,7 @@ export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
  * @param csrf{string}
  * @returns {Promise<boolean>}
  */
-export const commitFiles = async ({
+export const commitInitialFiles = async ({
   repo,
   files,
   commitSummary,
@@ -87,26 +90,28 @@ export const commitFiles = async ({
   newBranchName,
   csrf,
 }) => {
-  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, csrf)
-  // [][file, its uuid on Gitea]
-  const filesZipUUIDs = zip(files, filesUUIDs)
-
-  const paths = groupByPath(filesZipUUIDs)
-
-  for (const path in paths) {
-    if (paths.hasOwnProperty(path)) {
-      await commitFilesWithUUIDs({
-        repo,
-        filesUUIDs: paths[path],
-        commitSummary,
-        commitMessage,
-        commitChoice,
-        treePath: path,
-        newBranchName,
-        csrf,
-      })
-    }
+  // remove any leading "/"
+  let filePaths = files.map(file =>
+    file.path.startsWith('/') ? file.path.substring(1) : file.path,
+  )
+  // unless there are some top level files, we remove the top-level directory
+  // from the filePaths. we assume the whole directory was the upload and we
+  // don't want them in that directory in the git repo.
+  const hasTopLevelFile = filePaths.map(dirname).includes('.')
+  if (!hasTopLevelFile) {
+    filePaths = filePaths.map(filePath => filePath.split('/').slice(1).join('/'))
   }
+  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
+
+  await commitFilesWithUUIDs({
+    repo,
+    filesUUIDs,
+    commitSummary,
+    commitMessage,
+    commitChoice,
+    newBranchName,
+    csrf,
+  })
 }
 
 /**
@@ -124,7 +129,7 @@ export const commitFiles = async ({
 export const commitFilesWithUUIDs = async ({
   repo,
   filesUUIDs,
-  commitSummary = 'commit files',
+  commitSummary = 'Upload files',
   commitMessage = '',
   commitChoice = 'direct',
   treePath = '',
