@@ -54,10 +54,42 @@ const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
  * Upload multiple files to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
  * @param files{[]}
+ * @param filePaths{[]string}
  * @param csrf{string}
  * @returns {Promise<string[]>}
  */
-export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
+export const uploadFilesToGiteaServer = async (repo, files, filePaths, csrf) => {
+  const filesUUIDs = await Promise.all(
+    files.map((file, i) => {
+      return uploadFileToGiteaServer(repo, file, filePaths[i], csrf)
+    }),
+  )
+  // noinspection JSUnresolvedVariable
+  return filesUUIDs.map(res => res.uuid)
+}
+
+/**
+ * Takes an array of files and commit it to Gitea server. If the files are all
+ * in a folder it will be stripped from the path.
+ * @param repo{string}
+ * @param files{[]}
+ * @param commitSummary{=string}
+ * @param commitMessage{=string}
+ * @param commitChoice{=string}
+ * @param treePath{=string}
+ * @param newBranchName{=string}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const commitInitialFiles = async ({
+  repo,
+  files,
+  commitSummary,
+  commitMessage,
+  commitChoice,
+  newBranchName,
+  csrf,
+}) => {
   // remove any leading "/"
   let filePaths = files.map(file =>
     file.path.startsWith('/') ? file.path.substring(1) : file.path,
@@ -69,38 +101,7 @@ export const uploadFilesToGiteaServer = async (repo, files, csrf) => {
   if (!hasTopLevelFile) {
     filePaths = filePaths.map(filePath => filePath.split('/').slice(1).join('/'))
   }
-
-  const filesUUIDs = await Promise.all(
-    files.map((file, i) => {
-      return uploadFileToGiteaServer(repo, file, filePaths[i], csrf)
-    }),
-  )
-  // noinspection JSUnresolvedVariable
-  return filesUUIDs.map(res => res.uuid)
-}
-
-/**
- * Takes an array of files and commit it to Gitea server.
- * @param repo{string}
- * @param files{[]}
- * @param commitSummary{=string}
- * @param commitMessage{=string}
- * @param commitChoice{=string}
- * @param treePath{=string}
- * @param newBranchName{=string}
- * @param csrf{string}
- * @returns {Promise<boolean>}
- */
-export const commitFiles = async ({
-  repo,
-  files,
-  commitSummary,
-  commitMessage,
-  commitChoice,
-  newBranchName,
-  csrf,
-}) => {
-  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, csrf)
+  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
 
   await commitFilesWithUUIDs({
     repo,

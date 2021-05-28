@@ -18,7 +18,7 @@ import styles from './new.module.scss'
 import { Page } from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
-import { commitFiles } from '@utils/giteaInternalApi'
+import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
@@ -104,7 +104,7 @@ const Upload = ({ user, csrf }) => {
       console.error('Project already exists!')
     } else {
       // Commit files to gitea server on drop
-      await commitFiles({
+      await commitInitialFiles({
         files,
         repo: `${user.username}/${tempProjectName}`,
         csrf,
@@ -119,12 +119,12 @@ const Upload = ({ user, csrf }) => {
     setProjectName(differentName)
     await createRepo(differentName, '', csrf)
 
-    await commitFiles({ files, repo: `${user.username}/${differentName}`, csrf })
+    await commitInitialFiles({ files, repo: `${user.username}/${differentName}`, csrf })
     await push(`/${user.username}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
-    await commitFiles({ files, repo: `${user.username}/${projectName}`, csrf })
+    await commitInitialFiles({ files, repo: `${user.username}/${projectName}`, csrf })
     await push(`/${user.username}/${projectName}`)
   }
 
