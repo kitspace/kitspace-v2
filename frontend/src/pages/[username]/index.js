@@ -8,7 +8,6 @@ import styles from './username.module.scss'
 import { useUserRepos } from '@hooks/Gitea'
 
 export const getServerSideProps = async ({ params }) => {
-  console.log(params)
   const userRepos = await getUserRepos(params.username)
 
   if (isEmpty(userRepos) && !(await userExists(params.username))) {
