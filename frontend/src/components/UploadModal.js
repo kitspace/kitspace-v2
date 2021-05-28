@@ -24,7 +24,6 @@ const defaultAssetsPaths = {
 const UploadModal = ({
   kitspaceYAMLExists,
   files,
-  activeTab: defaultActiveTab,
   kitspaceYAMLPreloaded,
   projectFullname,
 }) => {
@@ -119,7 +118,6 @@ const UploadModal = ({
     }
   }
   const TabsProps = {
-    activeTab: defaultActiveTab,
     files,
     select,
     selected,
@@ -152,7 +150,7 @@ const UploadModal = ({
         open={open}
         trigger={
           <Button
-            content={`Upload ${defaultActiveTab} file`}
+            content={`Edit files`}
             loading={modalTriggerLoading}
             disabled={modalTriggerLoading}
           />
@@ -169,15 +167,7 @@ const UploadModal = ({
   )
 }
 
-const Tabs = ({
-  activeTab,
-  files,
-  select,
-  selected,
-  externallyMarked,
-  onTabChange,
-}) => {
-  const tabsMap = { PCB: 0, BOM: 1, README: 2 }
+const Tabs = ({ files, select, selected, externallyMarked, onTabChange }) => {
   const commonTabProps = { files, select, selected, externallyMarked }
   const panes = [
     {
@@ -197,13 +187,7 @@ const Tabs = ({
     },
   ]
 
-  return (
-    <Tab
-      onTabChange={onTabChange}
-      panes={panes}
-      defaultActiveIndex={tabsMap[activeTab]}
-    />
-  )
+  return <Tab onTabChange={onTabChange} panes={panes} />
 }
 
 const UploadTab = ({

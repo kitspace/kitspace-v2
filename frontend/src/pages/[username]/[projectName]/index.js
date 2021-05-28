@@ -323,16 +323,6 @@ const UpdateForm = ({
     }
   }
 
-  const SharedUploadModal = ({ activeTab }) => (
-    <UploadModal
-      kitspaceYAMLExists={kitspaceYAMLExists}
-      files={allFiles}
-      activeTab={activeTab}
-      kitspaceYAML={kitspaceYAML}
-      projectFullname={projectFullname}
-    />
-  )
-
   if (isLoading) return <Loader active />
 
   return (
@@ -344,7 +334,14 @@ const UpdateForm = ({
         description={kitspaceYAML?.summary || description}
       />
       <div>
-        {canUpload && <SharedUploadModal activeTab="PCB" />}
+        {canUpload && (
+          <UploadModal
+            kitspaceYAMLExists={kitspaceYAMLExists}
+            files={allFiles}
+            kitspaceYAML={kitspaceYAML}
+            projectFullname={projectFullname}
+          />
+        )}
         {boardAssetsExist ? (
           <>
             <BoardShowcase projectFullname={projectFullname} />
@@ -366,19 +363,13 @@ const UpdateForm = ({
               project={'hard'}
               lines={boardInfo?.bom?.lines}
               parts={boardInfo?.bom?.parts}
-            >
-              {canUpload && <SharedUploadModal activeTab="BOM" />}
-            </BuyParts>
+            />
           </>
         ) : (
-          <>
-            <AssetPlaceholder asset="bill of materials" />
-            {canUpload && <SharedUploadModal activeTab="BOM" />}
-          </>
+          <AssetPlaceholder asset="bill of materials" />
         )}
       </div>
       <div>
-        {canUpload && <SharedUploadModal activeTab="README" />}
         {readmeExists ? (
           <Readme renderedReadme={renderedReadme} />
         ) : (
