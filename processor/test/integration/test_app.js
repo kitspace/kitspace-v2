@@ -12,6 +12,19 @@ const tmpDir = '/tmp/kitspace-processor-test'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
 
+const standardProjectFiles = [
+  'zip-info.json',
+  'images/bottom.svg',
+  'images/top.svg',
+  'images/top.png',
+  'images/top-large.png',
+  'images/top-meta.png',
+  'images/top-with-background.png',
+  '1-click-BOM.tsv',
+  'info.json',
+  'interactive_bom.json',
+]
+
 describe('app', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
@@ -86,17 +99,8 @@ describe('app', () => {
 
     const files = [
       `ruler-${hash.slice(0, 7)}-gerbers.zip`,
-      'zip-info.json',
-      'images/bottom.svg',
-      'images/top.svg',
-      'images/top.png',
-      'images/top-large.png',
-      'images/top-meta.png',
-      'images/top-with-background.png',
-      '1-click-BOM.tsv',
-      'info.json',
-      'interactive_bom.json',
       'kitspace-yaml.json',
+      ...standardProjectFiles,
     ]
 
     for (const f of files) {
@@ -162,27 +166,20 @@ describe('app', () => {
       )}`,
     )
 
-    const projectFiles = [
-      'zip-info.json',
-      'images/bottom.svg',
-      'images/top.svg',
-      'images/top.png',
-      'images/top-large.png',
-      'images/top-meta.png',
-      'images/top-with-background.png',
-      '1-click-BOM.tsv',
-      'info.json',
-      'interactive_bom.json',
-    ]
+    const alphaSpectrometerFiles = standardProjectFiles.map(f =>
+      path.join('alpha-spectrometer', f),
+    )
+    const electronDetectorFiles = standardProjectFiles.map(f =>
+      path.join('electron-detector', f),
+    )
 
-    const files = projectFiles
-      .map(f => path.join('alpha-spectrometer', f))
-      .concat(projectFiles.map(f => path.join('electron-detector', f)))
-      .concat([
-        `alpha-spectrometer/alpha-spectrometer-${hash.slice(0, 7)}-gerbers.zip`,
-        `electron-detector/electron-detector-${hash.slice(0, 7)}-gerbers.zip`,
-        'kitspace-yaml.json',
-      ])
+    const files = [
+      `alpha-spectrometer/alpha-spectrometer-${hash.slice(0, 7)}-gerbers.zip`,
+      `electron-detector/electron-detector-${hash.slice(0, 7)}-gerbers.zip`,
+      'kitspace-yaml.json',
+      ...alphaSpectrometerFiles,
+      ...electronDetectorFiles,
+    ]
 
     for (const f of files) {
       // at first it may not be processing yet so we get a 404
