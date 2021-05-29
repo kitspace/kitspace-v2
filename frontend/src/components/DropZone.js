@@ -11,13 +11,22 @@ import { MBytesToBytes } from '@utils/index'
 
 const maxFileSize = process.env.MAX_FILE_SIZE
 
-// The notification won't be needed unless of case of trying to upload files
-// greater than the `MAX_FILE_SIZE`, so defer importing it until needed,
+// The notification won't be needed util a file is rejected, so defer importing it until needed,
 // this make next dynamically import the `Toaster` component only from this module.
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
 const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => {
   const _onDrop = useCallback(onDrop)
+
+  /*
+   * If folder upload isn't allowed:
+   * - Accept only a single file, `0` is the default value and it means unlimited number of files,
+   * see https://react-dropzone.js.org/#section-accepting-specific-number-of-files.
+   *
+   * - Make the content of file selection button indicate that it only accept a single file.
+   */
+  const maxFiles = !allowFolders ? 1 : 0
+  const filesButtonContent = !allowFolders ? 'Select a file' : 'Select files'
 
   const DropZoneConfig = {
     onDropAccepted: _onDrop,
@@ -25,12 +34,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
     getFilesFromEvent: fromEvent,
     maxSize: MBytesToBytes(maxFileSize),
     minSize: 1,
-    /*
-     * If folder upload isn't allowed, accept only a single file,
-     * `0` is the default value and it means unlimited number of files,
-     * see https://react-dropzone.js.org/#section-accepting-specific-number-of-files
-     */
-    maxFiles: !allowFolders ? 1 : 0,
+    maxFiles,
   }
 
   // This is the only way to support Drag'nDrop, file selector and Folder selector at the same time
@@ -93,7 +97,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
       <input {...getInputProps()} />
       <p>
         Drop{' '}
-        {!allowFiles ? 'a folder' : !allowFolders ? 'files' : 'files or a folder'}
+        {!allowFiles ? 'a folder' : !allowFolders ? 'a file' : 'files or a folder'}
         {' here, or'}
       </p>
       <div
@@ -108,7 +112,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
           <Button
             basic
             as="button"
-            content="Select files"
+            content={filesButtonContent}
             onClick={open}
             icon="file"
           />
