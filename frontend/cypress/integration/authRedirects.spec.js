@@ -23,7 +23,7 @@ describe('It validates authentication redirects', () => {
     cy.wait('@sign_in')
   })
 
-  it("should redirect unauthenticated users to '/login' when accessing reqSignIn page", () => {
+  it("should redirect unauthenticated users to '/login' when accessing requireSignIn page", () => {
     // Clear the cookies to make sure the user isn't authenticated
     cy.clearCookies()
     // sign in, and migrate `light-test-repo`
@@ -36,6 +36,6 @@ describe('It validates authentication redirects', () => {
   it('should redirects authenticated users to homepage when accessing reqSignOut page', () => {
     // `/login` is marked as `reqSignOut`.
     cy.visit('/login')
-    cy.url().should('eq', 'http://kitspace.test:3000/')
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${Cypress.env('home_url')}`)
   })
 })

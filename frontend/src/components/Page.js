@@ -31,7 +31,10 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
     )
   } else {
     return (
-      <div className={contentFullSize ? styles.minimalContainer : styles.container}>
+      <div
+        className={contentFullSize ? styles.minimalContainer : styles.container}
+        data-cy="page-container"
+      >
         {children}
       </div>
     )
