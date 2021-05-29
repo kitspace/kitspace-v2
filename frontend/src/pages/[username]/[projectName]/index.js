@@ -16,10 +16,7 @@ import { Page } from '@components/Page'
 import useForm from '@hooks/useForm'
 import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
 import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
-import {
-  commitFilesWithUUIDs,
-  uploadFilesToGiteaServer,
-} from '@utils/giteaInternalApi'
+import { commitFiles } from '@utils/giteaInternalApi'
 import {
   getDefaultBranchFiles,
   getRepo,
@@ -191,8 +188,6 @@ const UpdateForm = ({
     isLoading,
     mutate,
   } = useDefaultBranchFiles(projectFullname, { initialData: repoFiles })
-  // UUIDs for files dropped in the update page, the files gets committed on submit
-  const [newlyUploadedUUIDs, setNewlyUploadedUUIDs] = useState([])
   // Details(name, path, last_modified, etc...) for files dropped in the update page
   const [newlyUploadedDetails, setNewlyUploadedDetails] = useState([])
   const [allFiles, setAllFiles] = useState([])
@@ -222,7 +217,7 @@ const UpdateForm = ({
   // on the Gitea repo for this project
   useEffect(() => {
     setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
-  }, [remoteFiles, newlyUploadedUUIDs])
+  }, [remoteFiles, newlyUploadedDetails])
 
   useEffect(() => {
     if (form.name) {
@@ -232,22 +227,8 @@ const UpdateForm = ({
   }, [form.name])
 
   const submit = async e => {
-    /**
-     * The update must be done in this order.
-     *  i. Commit the files
-     *  ii. update project details
-     * If this order were reversed uploading new files and changing the project name wouldn't work;
-     * The files would be committed to the old repo it won't be under the project with new name
-     */
     e.preventDefault()
     setLoading(true)
-
-    await commitFilesWithUUIDs({
-      repo: projectFullname,
-      filesUUIDs: newlyUploadedUUIDs,
-      csrf,
-    })
-    await mutate()
 
     const updatedSuccessfully = await updateRepo(
       projectFullname,
@@ -265,29 +246,20 @@ const UpdateForm = ({
   }
 
   const onDrop = async files => {
-    const filePaths = files.map(file => {
-      let filePath = file.path
-      if (!filePath) {
-        console.warn(
-          'File object in onDrop does not have a "path" property. Using "name" instead:',
-          file.name,
-        )
-        filePath = file.name
-      }
-      // remove any leading "/"
-      filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath
-      return filePath
-    })
-    // Upload files directly to gitea server on drop
-    const UUIDs = await uploadFilesToGiteaServer(
-      projectFullname,
-      files,
-      filePaths,
-      csrf,
-    )
-
     setNewlyUploadedDetails(files)
-    setNewlyUploadedUUIDs([...newlyUploadedUUIDs, UUIDs])
+
+    const committedSuccessfully = await commitFiles({
+      repo: projectFullname,
+      files,
+      csrf,
+    })
+    if (committedSuccessfully) {
+      // After uploading the files successfully, revalidate the files from gitea, and clear `newlyUploadedDetails`
+      mutate().then(files => {
+        setNewlyUploadedDetails([])
+        setAllFiles(files)
+      })
+    }
   }
 
   const validateProjectName = async () => {

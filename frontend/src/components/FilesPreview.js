@@ -40,13 +40,16 @@ const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
   }, [marked])
 
   useEffect(() => {
-    fetch(node.url)
-      .then(r => r.json())
-      .then(setNodeData)
-      .catch(e => {
-        setFailed(true)
-        console.error(e)
-      })
+    // Fetch files inside a directory when toggling it in the tree preview.
+    if (node.hasOwnProperty('url')) {
+      fetch(node.url)
+        .then(r => r.json())
+        .then(setNodeData)
+        .catch(e => {
+          setFailed(true)
+          console.error(e)
+        })
+    }
   }, [toggled])
 
   if (node.type === 'file') {
@@ -96,7 +99,13 @@ const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
       </div>
     )
   } else {
-    return <span>Loading...</span>
+    return (
+      <span>
+        {node.path || node.name
+          ? `Uploading ${node.path || node.name}`
+          : 'Loading...'}
+      </span>
+    )
   }
 }
 

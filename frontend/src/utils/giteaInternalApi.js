@@ -112,7 +112,46 @@ export const commitInitialFiles = async ({
   }
   const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
 
-  await commitFilesWithUUIDs({
+  return await commitFilesWithUUIDs({
+    repo,
+    filesUUIDs,
+    commitSummary,
+    commitMessage,
+    commitChoice,
+    newBranchName,
+    csrf,
+  })
+}
+
+/**
+ * Takes an array of files and commit it to Gitea server.
+ * @param repo{string}
+ * @param files{[]}
+ * @param commitSummary{=string}
+ * @param commitMessage{=string}
+ * @param commitChoice{=string}
+ * @param treePath{=string}
+ * @param newBranchName{=string}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const commitFiles = async ({
+  repo,
+  files,
+  commitSummary,
+  commitMessage,
+  commitChoice,
+  newBranchName,
+  csrf,
+}) => {
+  // remove any leading "/"
+  const filePaths = files.map(file =>
+    file.path.startsWith('/') ? file.path.substring(1) : file.path,
+  )
+
+  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
+
+  return await commitFilesWithUUIDs({
     repo,
     filesUUIDs,
     commitSummary,
