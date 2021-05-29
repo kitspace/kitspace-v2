@@ -103,8 +103,8 @@ const UpdateProject = props => {
   })
 
   // If the repo is migrating, poll for update every second, otherwise use default config.
-  const { status } = pollMigrationStatus(props.repo.id, {
-    refreshInterval: props.isEmpty ? 1000 : null,
+  const { status } = pollMigrationStatus(props.repo.id, props.isEmpty, {
+    refreshInterval: 1000,
   })
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
 

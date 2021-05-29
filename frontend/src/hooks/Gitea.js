@@ -165,11 +165,12 @@ export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
 /**
  * A hook to get the migration status of a repo
  * @param repoId{string}
+ * @param shouldFetch{boolean}
  * @param swrOpts{swrOptions}
 
  * @returns {{isLoading: boolean, isError: boolean, status: statuses, mutate?: function}}
  */
-export const pollMigrationStatus = (repoId, swrOpts = {}) => {
+export const pollMigrationStatus = (repoId, shouldFetch, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/repos/migrate/status?repo_id=${repoId}`
   /**
    * Gitea repo migration statuses
@@ -183,7 +184,11 @@ export const pollMigrationStatus = (repoId, swrOpts = {}) => {
     4: 'Finished',
   }
 
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
+  const { data, error, mutate } = useSWR(
+    shouldFetch ? endpoint : null,
+    fetcher,
+    swrOpts,
+  )
 
   return {
     status: statuses[data?.status],
