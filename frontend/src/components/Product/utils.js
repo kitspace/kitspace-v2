@@ -20,8 +20,6 @@ export const formatTotalPrice = ({ amount, currency, quantity, shipping }) => {
   }
   shipping = shipping / 100
   const total = (quantity * amount + shipping).toFixed(2)
-  console.log({ total })
-  console.log(numberFormat.format(Number(total)))
   return numberFormat.format(Number(total))
 }
 

@@ -184,7 +184,6 @@ export const pollMigrationStatus = (repoId, swrOpts = {}) => {
 
   const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
 
-  console.log({ data })
   return {
     status: statuses[data?.status],
     isLoading: !(data || error),

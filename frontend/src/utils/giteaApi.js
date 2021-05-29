@@ -284,8 +284,5 @@ export const uploadFile = async (repo, path, content, csrf) => {
     body: JSON.stringify(reqBody),
   })
 
-  const body = await res.json()
-  console.log(body)
-
   return res.ok
 }
