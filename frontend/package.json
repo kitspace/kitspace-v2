@@ -41,6 +41,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
     "slugify": "^1.4.6",
+    "styled-jsx": "^3.4.4",
     "swr": "^0.3.11",
     "url-loader": "^4.1.0"
   },
