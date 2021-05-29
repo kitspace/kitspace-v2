@@ -3,7 +3,14 @@ import { Icon, List } from 'semantic-ui-react'
 
 import styles from './FilesPreview.module.scss'
 
-const Tree = ({ files, select, selected, externallyMarked }) => {
+const Tree = ({
+  files,
+  select,
+  selected,
+  externallyMarked,
+  allowFiles,
+  allowFolders,
+}) => {
   if (files == null) {
     return <span>Loading...</span>
   }
@@ -15,6 +22,8 @@ const Tree = ({ files, select, selected, externallyMarked }) => {
         selected={selected}
         externallyMarked={externallyMarked}
         marked={selected === node || node.path === externallyMarked}
+        allowFiles={allowFiles}
+        allowFolders={allowFolders}
       />
     </List.Item>
   ))
@@ -22,7 +31,16 @@ const Tree = ({ files, select, selected, externallyMarked }) => {
   return <List className={styles.tree}>{nodes}</List>
 }
 
-const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
+const TreeNode = ({
+  node,
+  select,
+  selected,
+  marked,
+  externallyMarked,
+  allowFiles,
+  allowFolders,
+}) => {
+  // console.log({allowFolders, allowFiles})
   const [toggled, setToggled] = useState(false)
   const [checked, setChecked] = useState(false)
   const [nodeData, setNodeData] = useState(null)
@@ -59,6 +77,7 @@ const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
           className={styles.checkbox}
           type="checkbox"
           checked={checked}
+          disabled={!allowFiles}
           onChange={() => setChecked(!checked)}
         />
         <Icon name="file" />
@@ -76,6 +95,7 @@ const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
           className={styles.checkbox}
           type="checkbox"
           checked={checked}
+          disabled={!allowFolders}
           onChange={() => setChecked(!checked)}
         />
         <details
@@ -92,6 +112,8 @@ const TreeNode = ({ node, select, selected, marked, externallyMarked }) => {
               select={select}
               selected={selected}
               externallyMarked={externallyMarked}
+              allowFiles={allowFiles}
+              allowFolders={allowFolders}
             />
             {failed ? 'Failed to load files!' : null}
           </div>

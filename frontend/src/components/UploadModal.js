@@ -182,17 +182,23 @@ const Tabs = ({
     {
       menuItem: TabsNames.PCBFiles,
       // PCB Files should be a folder
-      render: () => <UploadTab {...commonTabProps} allowFiles={false} />,
+      render: () => (
+        <UploadTab {...commonTabProps} allowFiles={false} allowFolders={true} />
+      ),
     },
     {
       menuItem: TabsNames.BOMFile,
       // BOM Files should be a single file
-      render: () => <UploadTab {...commonTabProps} allowFolders={false} />,
+      render: () => (
+        <UploadTab {...commonTabProps} allowFiles={true} allowFolders={false} />
+      ),
     },
     {
       menuItem: TabsNames.READMEFile,
       // README file should be a single file
-      render: () => <UploadTab {...commonTabProps} allowFolders={false} />,
+      render: () => (
+        <UploadTab {...commonTabProps} allowFiles={true} allowFolders={false} />
+      ),
     },
   ]
 
@@ -226,6 +232,8 @@ const UploadTab = ({
           onDrop={onDrop}
         />
         <FilesPreview
+          allowFiles={allowFiles}
+          allowFolders={allowFolders}
           select={select}
           selected={selected}
           externallyMarked={externallyMarked}
