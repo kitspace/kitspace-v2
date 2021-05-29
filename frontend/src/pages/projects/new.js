@@ -119,12 +119,20 @@ const Upload = ({ user, csrf }) => {
     setProjectName(differentName)
     await createRepo(differentName, '', csrf)
 
-    await commitInitialFiles({ files, repo: `${user.username}/${differentName}`, csrf })
+    await commitInitialFiles({
+      files,
+      repo: `${user.username}/${differentName}`,
+      csrf,
+    })
     await push(`/${user.username}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
-    await commitInitialFiles({ files, repo: `${user.username}/${projectName}`, csrf })
+    await commitInitialFiles({
+      files,
+      repo: `${user.username}/${projectName}`,
+      csrf,
+    })
     await push(`/${user.username}/${projectName}`)
   }
 

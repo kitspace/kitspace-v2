@@ -13,7 +13,6 @@ describe('Syncing a project behavior validation', () => {
     cy.visit('/')
   })
 
-  
   it('should sync a repo on gitea', () => {
     cy.clearCookies()
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
@@ -22,7 +21,7 @@ describe('Syncing a project behavior validation', () => {
     cy.visit('/login')
     cy.signIn(username, password)
     cy.wait('@sign_in')
-    
+
     cy.visit('/projects/new')
 
     cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
@@ -30,7 +29,7 @@ describe('Syncing a project behavior validation', () => {
     )
 
     cy.url().then(url => {
-      if(!url.endsWith('/projects/new')) {
+      if (!url.endsWith('/projects/new')) {
         cy.visit('/projects/new')
       }
     })
