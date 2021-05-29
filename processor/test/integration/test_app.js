@@ -166,72 +166,63 @@ describe('app', () => {
       )}`,
     )
 
-    const alphaSpectrometerFiles = standardProjectFiles.map(f =>
-      path.join('alpha-spectrometer', f),
-    )
-    const electronDetectorFiles = standardProjectFiles.map(f =>
-      path.join('electron-detector', f),
-    )
+    for (const projectName of ['alpha-spectrometer', 'electron-detector']) {
+      const projectFiles = standardProjectFiles.map(f => path.join(projectName, f))
+      const files = [
+        `${projectName}/${projectName}-${hash.slice(0, 7)}-gerbers.zip`,
+        'kitspace-yaml.json',
+        ...projectFiles,
+      ]
 
-    const files = [
-      `alpha-spectrometer/alpha-spectrometer-${hash.slice(0, 7)}-gerbers.zip`,
-      `electron-detector/electron-detector-${hash.slice(0, 7)}-gerbers.zip`,
-      'kitspace-yaml.json',
-      ...alphaSpectrometerFiles,
-      ...electronDetectorFiles,
-    ]
-
-    for (const f of files) {
-      // at first it may not be processing yet so we get a 404
-      let r = await this.supertest.get(
-        `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
-      )
-      while (r.status === 404) {
-        r = await this.supertest.get(
+      for (const f of files) {
+        // at first it may not be processing yet so we get a 404
+        let r = await this.supertest.get(
           `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
         )
-      }
+        while (r.status === 404) {
+          r = await this.supertest.get(
+            `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+          )
+        }
 
-      // after a while it should report something
-      assert(r.status === 200)
-      // but it's probably 'in_progress'
-      while (r.body.status === 'in_progress') {
-        r = await this.supertest.get(
-          `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+        // after a while it should report something
+        assert(r.status === 200)
+        // but it's probably 'in_progress'
+        while (r.body.status === 'in_progress') {
+          r = await this.supertest.get(
+            `/status/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+          )
+        }
+
+        // at some point it should notice it succeeded
+        assert(r.status === 200)
+        assert(
+          r.body.status === 'done',
+          `expecting body.status to be 'done' but got '${r.body.status}'`,
         )
+
+        // getting the file from HEAD should re-direct to the exact hash
+        r = await this.supertest.get(
+          `/files/kitspace-forks/diy_particle_detector/HEAD/${f}`,
+        )
+        assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
+
+        // it serves up the file
+        r = await this.supertest
+          .get(`/files/kitspace-forks/diy_particle_detector/HEAD/${f}`)
+          .redirects()
+        assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
+        assert(
+          r.req.path.includes(hash),
+          `expected '${r.req.path}' to include '${hash}'`,
+        )
+
+        // uppercase user and project name shouldn't matter
+        r = await this.supertest
+          .get(`/files/KITSPACE-FORKS/DIY_particle_detector/HEAD/${f}`)
+          .redirects()
+        assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
       }
-
-      // at some point it should notice it succeeded
-      assert(r.status === 200)
-      assert(
-        r.body.status === 'done',
-        `expecting body.status to be 'done' but got '${r.body.status}'`,
-      )
-
-      // getting the file from HEAD should re-direct to the exact hash
-      r = await this.supertest.get(
-        `/files/kitspace-forks/diy_particle_detector/HEAD/${f}`,
-      )
-      assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
-
-      // it serves up the file
-      r = await this.supertest
-        .get(`/files/kitspace-forks/diy_particle_detector/HEAD/${f}`)
-        .redirects()
-      assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
-      assert(
-        r.req.path.includes(hash),
-        `expected '${r.req.path}' to include '${hash}'`,
-      )
-
-      // uppercase user and project name shouldn't matter
-      r = await this.supertest
-        .get(`/files/KITSPACE-FORKS/DIY_particle_detector/HEAD/${f}`)
-        .redirects()
-      assert(
-        r.status === 200,
-        `expected 200 but got ${r.status} for KITSPACE-FORKS/DIY_particle_detector/${f}`,
-      )
     }
   })
 
