@@ -79,7 +79,6 @@ export const renderReadme = async (repo, readmeFile) => {
     const href = a.attr('href')
     if (href.startsWith('/')) {
       const rawUrl = `${giteaUrl}/${repo}/src${href}`
-      console.log(rawUrl)
       a.attr('href', rawUrl)
     }
   })

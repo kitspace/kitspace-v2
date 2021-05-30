@@ -40,7 +40,6 @@ const TreeNode = ({
   allowFiles,
   allowFolders,
 }) => {
-  // console.log({allowFolders, allowFiles})
   const [toggled, setToggled] = useState(false)
   const [checked, setChecked] = useState(false)
   const [nodeData, setNodeData] = useState(null)
