@@ -5,7 +5,7 @@ const path = require('path')
 
 const watcher = require('./watcher')
 
-const { ALLOWED_CORS_DOMAINS, DATA_DIR } = require('./env')
+const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
 
 function createApp(repoDir = '/gitea-data/git/repositories') {
