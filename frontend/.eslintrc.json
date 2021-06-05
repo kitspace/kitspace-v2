@@ -1,4 +1,19 @@
 {
+  "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json",
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["@components", "./src/components"],
+          ["@contexts", "./src/contexts"],
+          ["@hooks", "./src/hooks"],
+          ["@models", "./src/models"],
+          ["@utils", "./src/utils"],
+          ["@pages", "./src/pages"]
+        ]
+      }
+    }
+  },
   "env": {
     "browser": true,
     "es2021": true
