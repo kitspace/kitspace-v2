@@ -65,8 +65,6 @@ export const renderReadme = async (repo, readmeFile) => {
   $('img').each((_, elem) => {
     const img = $(elem)
     const src = img.attr('src')
-    // Used for styling images inside readme, in _app.css
-    img.attr('class', 'readmeImg')
 
     if (src.startsWith('/')) {
       const rawUrl = `${giteaUrl}/${repo}/raw${src}`
