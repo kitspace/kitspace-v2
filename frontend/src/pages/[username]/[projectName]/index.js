@@ -18,6 +18,7 @@ import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
 import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import { commitFiles } from '@utils/giteaInternalApi'
 import {
+  canCommit,
   getDefaultBranchFiles,
   getRepo,
   repoExists,
@@ -42,11 +43,14 @@ import UploadModal from '@components/UploadModal'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+  // `repoFullname` is resolved by matching its name against the `page` dir.
+  // Then it's used to access the repo by the Gitea API.
   const repoFullname = `${params.username}/${params.projectName}`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
 
-  // Only the repo owner can upload files.
-  const hasUploadPermission = params.username === req?.session?.user?.username
+  // The repo owner and collaborators can upload files.
+  const hasUploadPermission = await canCommit(repoFullname, req?.session?.user?.username)
+
 
   if (await repoExists(repoFullname)) {
     const repo = await getRepo(repoFullname)
@@ -95,10 +99,10 @@ export const getServerSideProps = async ({ params, query, req }) => {
 }
 
 const UpdateProject = props => {
-  const fullName = `${props.user}/${props.projectName}`
+  const {full_name: projectFullname} = props.repo
   const { reload } = useRouter()
 
-  const { repo: project, isLoading, isError } = useRepo(fullName, {
+  const { repo: project, isLoading, isError } = useRepo(projectFullname, {
     initialData: props.repo,
   })
 
@@ -152,6 +156,7 @@ const UpdateProject = props => {
       ) : null}
       <UpdateForm
         {...props}
+        projectFullname={projectFullname}
         description={project?.description}
         previewOnly={props.isSynced}
         url={project?.original_url}
@@ -176,12 +181,12 @@ const UpdateForm = ({
   owner,
   name,
   description,
+  projectFullname,
   url,
   boardAssetsExist,
   readmeExists,
   kitspaceYAMLExists,
 }) => {
-  const projectFullname = `${owner}/${name}`
   // The files in the Gitea repo associated with this project and the newly loaded files
   const {
     files: remoteFiles,
@@ -209,7 +214,9 @@ const UpdateForm = ({
     // Handle client side rendering for uploading permissions,
     // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
     if (!hasUploadPermission) {
-      setCanUpload(user?.username === owner && !previewOnly)
+      canCommit(projectFullname, user.username).then(res => {
+        setCanUpload(res && !previewOnly)
+      })
     }
   }, [hasUploadPermission, previewOnly, user])
 
