@@ -84,7 +84,7 @@ export const submitKitspaceYaml = async (
    * From any gerber file, the path for the gerbers dir can be specified.
    * For readme, and bom only a single file can be selected
    */
-  const path = selectedFile.path
+  const { path } = selectedFile
   const basePath = path.split('/')[0]
   const _kitspaceYAML = JSON.parse(JSON.stringify(kitspaceYAML))
   _kitspaceYAML[assetName] = basePath
@@ -99,13 +99,12 @@ export const submitKitspaceYaml = async (
       user,
       csrf,
     )
-  } else {
-    return await uploadFile(
-      projectFullname,
-      'kitspace.yaml',
-      newKitspaceYAML,
-      user,
-      csrf,
-    )
   }
+  return await uploadFile(
+    projectFullname,
+    'kitspace.yaml',
+    newKitspaceYAML,
+    user,
+    csrf,
+  )
 }

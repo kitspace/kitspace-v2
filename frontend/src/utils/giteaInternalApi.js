@@ -60,9 +60,7 @@ const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
  */
 export const uploadFilesToGiteaServer = async (repo, files, filePaths, csrf) => {
   const filesUUIDs = await Promise.all(
-    files.map((file, i) => {
-      return uploadFileToGiteaServer(repo, file, filePaths[i], csrf)
-    }),
+    files.map((file, i) => uploadFileToGiteaServer(repo, file, filePaths[i], csrf)),
   )
   // noinspection JSUnresolvedVariable
   return filesUUIDs.map(res => res.uuid)

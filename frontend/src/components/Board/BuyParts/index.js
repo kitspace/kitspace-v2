@@ -48,7 +48,7 @@ const BuyParts = ({ project, lines, parts }) => {
     .filter(l => l != null)
 
   useEffect(() => {
-    //extension communication
+    // extension communication
     window.addEventListener(
       'message',
       event => {
@@ -62,7 +62,7 @@ const BuyParts = ({ project, lines, parts }) => {
               setBuyParts(retailer => {
                 window.plausible('Buy Parts', {
                   props: {
-                    project: project,
+                    project,
                     vendor: retailer,
                     multiplier: mult,
                   },
@@ -91,11 +91,11 @@ const BuyParts = ({ project, lines, parts }) => {
   }, [])
 
   useEffect(() => {
-    let multi = buyMultiplier
+    const multi = buyMultiplier
     if (isNaN(multi) || multi < 1) {
       setMult(1)
     }
-    let percent = buyAddPercent
+    const percent = buyAddPercent
     if (isNaN(percent) || percent < 1) {
       setMult(0)
     }
@@ -103,11 +103,10 @@ const BuyParts = ({ project, lines, parts }) => {
   }, [buyMultiplier, buyAddPercent])
 
   const linesToTsv = () => {
-    const linesMult = lines.map(line => {
-      return Object.assign({}, line, {
-        quantity: Math.ceil(line.quantity * mult),
-      })
-    })
+    const linesMult = lines.map(line => ({
+      ...line,
+      quantity: Math.ceil(line.quantity * mult),
+    }))
     return OneClickBom.writeTSV(linesMult)
   }
 
@@ -136,75 +135,73 @@ const BuyParts = ({ project, lines, parts }) => {
   )
 }
 
-const AdjustQuantity = props => {
-  return (
-    <Segment textAlign="center" attached className={styles.AdjustQuantity}>
-      Adjust quantity:
-      <Icon
-        style={{
-          margin: 5,
-          marginTop: 0,
-        }}
-        name="delete"
-      />
-      <Input
-        type="number"
-        size="mini"
-        min={1}
-        value={props.buyMultiplier}
-        style={{ width: 80 }}
-        error={isNaN(props.buyMultiplier) || props.buyMultiplier < 1}
-        onBlur={e => {
-          const v = props.buyMultiplier
-          if (isNaN(v) || v < 1) {
-            props.setBuyMultiplier(1)
-          }
-        }}
-        onChange={e => {
-          var v = parseFloat(e.target.value)
-          props.setBuyMultiplier(v)
-        }}
-      />
-      <Icon
-        style={{
-          margin: 10,
-          marginTop: 0,
-        }}
-        name="plus"
-      />
-      <Input
-        type="number"
-        min={0}
-        step={10}
-        value={props.buyAddPercent}
-        size="mini"
-        style={{ width: 80 }}
-        error={isNaN(props.buyAddPercent) || props.buyAddPercent < 0}
-        onBlur={e => {
-          const v = props.buyAddPercent
-          if (isNaN(v) || v < 0) {
-            props.setBuyAddPercent(0)
-          }
-        }}
-        onChange={e => {
-          var v = parseFloat(e.target.value)
-          props.setBuyAddPercent(v)
-        }}
-      />
-      <span className={styles.notSelectable} style={{ marginLeft: 5 }}>
-        %
-      </span>
-    </Segment>
-  )
-}
+const AdjustQuantity = props => (
+  <Segment textAlign="center" attached className={styles.AdjustQuantity}>
+    Adjust quantity:
+    <Icon
+      style={{
+        margin: 5,
+        marginTop: 0,
+      }}
+      name="delete"
+    />
+    <Input
+      type="number"
+      size="mini"
+      min={1}
+      value={props.buyMultiplier}
+      style={{ width: 80 }}
+      error={isNaN(props.buyMultiplier) || props.buyMultiplier < 1}
+      onBlur={e => {
+        const v = props.buyMultiplier
+        if (isNaN(v) || v < 1) {
+          props.setBuyMultiplier(1)
+        }
+      }}
+      onChange={e => {
+        const v = parseFloat(e.target.value)
+        props.setBuyMultiplier(v)
+      }}
+    />
+    <Icon
+      style={{
+        margin: 10,
+        marginTop: 0,
+      }}
+      name="plus"
+    />
+    <Input
+      type="number"
+      min={0}
+      step={10}
+      value={props.buyAddPercent}
+      size="mini"
+      style={{ width: 80 }}
+      error={isNaN(props.buyAddPercent) || props.buyAddPercent < 0}
+      onBlur={e => {
+        const v = props.buyAddPercent
+        if (isNaN(v) || v < 0) {
+          props.setBuyAddPercent(0)
+        }
+      }}
+      onChange={e => {
+        const v = parseFloat(e.target.value)
+        props.setBuyAddPercent(v)
+      }}
+    />
+    <span className={styles.notSelectable} style={{ marginLeft: 5 }}>
+      %
+    </span>
+  </Segment>
+)
 
 const RetailerButton = props => {
   const r = props.name
   let onClick = props.buyParts
-  //if the extension is not here fallback to direct submissions
+  // if the extension is not here fallback to direct submissions
   if (props.extensionPresence !== 'present' && typeof document !== 'undefined') {
     onClick = () => {
-      const form = document.getElementById(r + 'Form')
+      const form = document.getElementById(`${r}Form`)
       if (form) {
         form.submit()
       } else {

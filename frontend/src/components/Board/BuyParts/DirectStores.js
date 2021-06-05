@@ -32,11 +32,11 @@ const DirectStores = ({ items, multiplier }) => {
         const { country_code: code } = body
         if (code === 'GB') {
           return 'UK'
-        } else if (usedCountryCodes.indexOf(code) < 0) {
-          return 'Other'
-        } else {
-          return code
         }
+        if (usedCountryCodes.indexOf(code) < 0) {
+          return 'Other'
+        }
+        return code
       })
       .catch(err => {
         console.error(err)
@@ -44,19 +44,16 @@ const DirectStores = ({ items, multiplier }) => {
       })
   }
 
-  const getParts = retailer => {
-    return items
+  const getParts = retailer =>
+    items
       .filter(part => retailer in part.retailers && part.retailers[retailer] != '')
       .map(part => ({
         sku: part.retailers[retailer],
         reference: part.reference,
         quantity: Math.ceil(multiplier * part.quantity),
       }))
-  }
 
-  const tildeDelimiter = part => {
-    return part.sku + '~' + part.quantity
-  }
+  const tildeDelimiter = part => `${part.sku}~${part.quantity}`
 
   const digikeyPartRenderer = (part, index) => {
     index++

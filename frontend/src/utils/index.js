@@ -126,8 +126,8 @@ export const projectNameFromPath = path => {
  * @param file
  * @returns {Promise<string>}
  */
-export const readFileContent = file => {
-  return new Promise(resolve => {
+export const readFileContent = file =>
+  new Promise(resolve => {
     const reader = new FileReader()
     reader.onload = () => {
       const content = reader.result
@@ -135,7 +135,6 @@ export const readFileContent = file => {
     }
     reader.readAsDataURL(file)
   })
-}
 
 /**
  * Convert Megabytes to bytes

@@ -29,29 +29,26 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
         Loading...
       </Loader>
     )
-  } else {
-    return (
-      <div
-        className={contentFullSize ? styles.minimalContainer : styles.container}
-        data-cy="page-container"
-      >
-        {children}
-      </div>
-    )
   }
-}
-
-export const Page = props => {
   return (
-    <>
-      <Head>
-        <title>{props.title}</title>
-      </Head>
-      <NavBar />
-      <Content {...props}>{props.children}</Content>
-    </>
+    <div
+      className={contentFullSize ? styles.minimalContainer : styles.container}
+      data-cy="page-container"
+    >
+      {children}
+    </div>
   )
 }
+
+export const Page = props => (
+  <>
+    <Head>
+      <title>{props.title}</title>
+    </Head>
+    <NavBar />
+    <Content {...props}>{props.children}</Content>
+  </>
+)
 
 Page.propTypes = {
   title: string,

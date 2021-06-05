@@ -61,17 +61,13 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     .slice(0, -1)
     .map(line => line.split('\t'))
   let columns = lines.slice(1).reduce(
-    (prev, line) => {
-      return prev.map((column, index) => {
-        return column.concat([line[index]])
-      })
-    },
+    (prev, line) => prev.map((column, index) => column.concat([line[index]])),
     lines[0].map(t => [t]),
   )
 
-  //get rid of empty columns
+  // get rid of empty columns
   columns = columns.filter(column => {
-    //always keep Manufacturer though
+    // always keep Manufacturer though
     if (column[0] === 'Manufacturer') {
       return true
     }
@@ -80,11 +76,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
 
   const numberOfLines = collapsed ? 8 : undefined
   const reducedLines = columns.slice(1).reduce(
-    (prev, column) => {
-      return prev.map((line, index) => {
-        return line.concat([column[index]])
-      })
-    },
+    (prev, column) => prev.map((line, index) => line.concat([column[index]])),
     columns[0].slice(0, numberOfLines).map(c => [c]),
   )
 
@@ -109,10 +101,10 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       return grouped.concat([text])
     }, [])
     const groupedHeadings = headings.filter(h => h !== 'Manufacturer')
-    const markPink = columnIndex => {
-      //mark pink empty cells in all columns except these
-      return ['Description'].indexOf(groupedHeadings[columnIndex]) < 0
-    }
+    const markPink = columnIndex =>
+      // mark pink empty cells in all columns except these
+      ['Description'].indexOf(groupedHeadings[columnIndex]) < 0
+
     const bodyCells = grouped.map((contents, columnIndex) => {
       if (typeof contents === 'object') {
         return mpnCells(contents, rowIndex, columnIndex)

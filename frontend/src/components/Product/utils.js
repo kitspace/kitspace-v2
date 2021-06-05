@@ -18,7 +18,7 @@ export const formatTotalPrice = ({ amount, currency, quantity, shipping }) => {
       zeroDecimalCurrency = false
     }
   }
-  shipping = shipping / 100
+  shipping /= 100
   const total = (quantity * amount + shipping).toFixed(2)
   return numberFormat.format(Number(total))
 }
@@ -31,7 +31,7 @@ export const formatPrice = ({ amount, currency, quantity }) => {
   })
   const parts = numberFormat.formatToParts(amount)
   let zeroDecimalCurrency = true
-  for (let part of parts) {
+  for (const part of parts) {
     if (part.type === 'decimal') {
       zeroDecimalCurrency = false
     }

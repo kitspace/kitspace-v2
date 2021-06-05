@@ -37,7 +37,7 @@ const BoardShowcase = ({ projectFullname }) => {
                 {isLoading || isError ? null : <img src={top} />}
               </div>
               <div className={styles.circuitBorderContainer}>
-                <div className={styles.circuitBorder}></div>
+                <div className={styles.circuitBorder} />
               </div>
               <div
                 className={`${styles.boardDiagram} ${

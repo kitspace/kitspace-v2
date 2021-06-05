@@ -26,10 +26,9 @@ export const getServerSideProps = async ({ params }) => {
     return {
       props: { html: IBOMHtml, pcbData },
     }
-  } else {
-    return {
-      notFound: true,
-    }
+  }
+  return {
+    notFound: true,
   }
 }
 
@@ -85,20 +84,19 @@ const IBOM = ({ html, pcbData }) => {
             type="text/javascript"
             src="/static/IBOM/index.js"
             id="IBOM_script"
-          ></script>
+          />
           <script type="text/javascript">{initScript}</script>
-          <link rel="stylesheet" href="/static/IBOM/index.css"></link>
+          <link rel="stylesheet" href="/static/IBOM/index.css" />
         </NextHead>
         <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
       </Page>
     )
-  } else {
-    return (
-      <Page>
-        <Loader active>Loading IBOM</Loader>
-      </Page>
-    )
   }
+  return (
+    <Page>
+      <Loader active>Loading IBOM</Loader>
+    </Page>
+  )
 }
 
 export default IBOM

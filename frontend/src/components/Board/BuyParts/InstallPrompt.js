@@ -10,12 +10,12 @@ const InstallPrompt = ({ extensionPresence }) => {
   const getCompatibility = () => {
     if (typeof navigator === 'undefined') {
       return true
-    } else if (/Mobile/i.test(navigator.userAgent)) {
-      return false
-    } else {
-      const version = BrowserVersion()
-      return /Chrome/.test(version) || /Firefox/.test(version)
     }
+    if (/Mobile/i.test(navigator.userAgent)) {
+      return false
+    }
+    const version = BrowserVersion()
+    return /Chrome/.test(version) || /Firefox/.test(version)
   }
 
   useEffect(() => {
@@ -27,15 +27,15 @@ const InstallPrompt = ({ extensionPresence }) => {
 
   if (extensionPresence === 'present') {
     return <div />
-  } else if (timedOut) {
+  }
+  if (timedOut) {
     return isCompatible ? (
       <PleaseInstall install1ClickBOM={install1ClickBOM} />
     ) : (
       <NotCompatible />
     )
-  } else {
-    return null
   }
+  return null
 }
 
 const PleaseInstall = ({ install1ClickBOM }) => (
@@ -47,17 +47,14 @@ const PleaseInstall = ({ install1ClickBOM }) => (
   </Message>
 )
 
-const NotCompatible = () => {
-  return (
-    <Message attached warning>
-      <Icon name="attention" />
-      Sorry, the <a href="/1-click-bom">1-click BOM extension</a> is not yet
-      available for your browser. Only the Digikey add-to-cart links work fully,
-      Farnell and Newark should work but the references will not be added as
-      line-notes.
-    </Message>
-  )
-}
+const NotCompatible = () => (
+  <Message attached warning>
+    <Icon name="attention" />
+    Sorry, the <a href="/1-click-bom">1-click BOM extension</a> is not yet available
+    for your browser. Only the Digikey add-to-cart links work fully, Farnell and
+    Newark should work but the references will not be added as line-notes.
+  </Message>
+)
 
 export const install1ClickBOM = () => {
   const version = BrowserVersion()

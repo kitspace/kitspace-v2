@@ -95,9 +95,8 @@ export const getServerSideProps = async ({ params, query, req }) => {
         kitspaceYAMLExists,
       },
     }
-  } else {
-    return { notFound: true }
   }
+  return { notFound: true }
 }
 
 const UpdateProject = props => {
@@ -132,19 +131,22 @@ const UpdateProject = props => {
         <Loader active />
       </Page>
     )
-  } else if (isSyncing) {
+  }
+  if (isSyncing) {
     return (
       <Page>
         <Loader active>Syncing repository...</Loader>
       </Page>
     )
-  } else if (status === 'Failed') {
+  }
+  if (status === 'Failed') {
     return (
       <Page>
         <Loader active>Migration Failed, please try again later!</Loader>
       </Page>
     )
-  } else if (isError) {
+  }
+  if (isError) {
     return <ErrorPage statusCode={404} />
   }
 
@@ -298,14 +300,13 @@ const UpdateForm = ({
 
     if (formErrors) {
       return formErrors
-    } else {
-      return !isValidProjectName
-        ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
-        : null
     }
+    return !isValidProjectName
+      ? {
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
+      : null
   }
 
   if (isLoading) return <Loader active />
@@ -346,7 +347,7 @@ const UpdateForm = ({
           <>
             <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
             <BuyParts
-              project={'hard'}
+              project="hard"
               lines={boardInfo?.bom?.lines}
               parts={boardInfo?.bom?.parts}
             />
@@ -406,21 +407,19 @@ const UpdateForm = ({
   )
 }
 
-const AssetPlaceholder = ({ asset }) => {
-  return (
-    <div
-      style={{
-        width: '70%',
-        margin: 'auto',
-        textAlign: 'center',
-        padding: '5em',
-        borderStyle: 'dashed',
-        borderRadius: '0.8em',
-      }}
-    >
-      No {asset} files were found, upload some.
-    </div>
-  )
-}
+const AssetPlaceholder = ({ asset }) => (
+  <div
+    style={{
+      width: '70%',
+      margin: 'auto',
+      textAlign: 'center',
+      padding: '5em',
+      borderStyle: 'dashed',
+      borderRadius: '0.8em',
+    }}
+  >
+    No {asset} files were found, upload some.
+  </div>
+)
 
 export default UpdateProject

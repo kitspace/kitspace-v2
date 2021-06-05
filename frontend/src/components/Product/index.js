@@ -79,9 +79,9 @@ const Product = ({
       <div className={styles.product__details}>
         <h2 className={styles.product__title}>{name}</h2>
         <p>
-          {description + ' '}
+          {`${description} `}
           See full project details{' '}
-          <a href={projectLink} target="_blank">
+          <a href={projectLink} target="_blank" rel="noreferrer">
             here.
           </a>
         </p>

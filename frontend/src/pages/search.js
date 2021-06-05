@@ -20,12 +20,11 @@ export const getServerSideProps = async ({ query }) => {
         q,
       },
     }
-  } else {
-    return {
-      props: {
-        repos: await getAllRepos(),
-      },
-    }
+  }
+  return {
+    props: {
+      repos: await getAllRepos(),
+    },
   }
 }
 

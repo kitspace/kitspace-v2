@@ -4,8 +4,8 @@ import { isEmpty } from 'lodash'
 import { Page } from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
-import styles from './username.module.scss'
 import { useUserRepos } from '@hooks/Gitea'
+import styles from './username.module.scss'
 
 export const getServerSideProps = async ({ params }) => {
   const userRepos = await getUserRepos(params.username)
@@ -14,13 +14,12 @@ export const getServerSideProps = async ({ params }) => {
     return {
       notFound: true,
     }
-  } else {
-    return {
-      props: {
-        userRepos,
-        username: params.username,
-      },
-    }
+  }
+  return {
+    props: {
+      userRepos,
+      username: params.username,
+    },
   }
 }
 

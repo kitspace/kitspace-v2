@@ -36,7 +36,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
 
         <div className={styles.PCBMenu__linksContainer}>
           <a
-            rel="nofollow"
+            rel="nofollow noreferrer"
             href={aislerUrl}
             target="_blank"
             className={styles.PCBMenu__link}
@@ -48,7 +48,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
           </a>
 
           <a
-            rel="nofollow"
+            rel="nofollow noreferrer"
             href={pcbwayUrl}
             target="_blank"
             className={styles.PCBMenu__link}
@@ -60,7 +60,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
           </a>
 
           <a
-            rel="nofollow"
+            rel="nofollow noreferrer"
             href={jlcpcbUrl}
             target="_blank"
             className={styles.PCBMenu__link}
@@ -72,7 +72,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
           </a>
 
           <a
-            rel="nofollow"
+            rel="nofollow noreferrer"
             href={oshparkUrl}
             target="_blank"
             className={styles.PCBMenu__link}
@@ -91,7 +91,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
         </div>
         <div className={styles.PCBMenu__linksContainer}>
           <a
-            rel="nofollow"
+            rel="nofollow noreferrer"
             href={pcbShopperUrl}
             target="_blank"
             className={styles.PCBMenu__link}

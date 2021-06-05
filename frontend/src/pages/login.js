@@ -145,9 +145,8 @@ const SignInForm = () => {
 const SignUpForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
-  const { form, onChange, isValid, errors, formatErrorPrompt } = useForm(
-    SignUpFormModel,
-  )
+  const { form, onChange, isValid, errors, formatErrorPrompt } =
+    useForm(SignUpFormModel)
   const [apiResponse, setApiResponse] = useState({})
   const { reload } = useRouter()
 

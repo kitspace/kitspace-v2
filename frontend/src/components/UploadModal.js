@@ -152,7 +152,7 @@ const UploadModal = ({
         open={open}
         trigger={
           <Button
-            content={`Edit files`}
+            content="Edit files"
             loading={modalTriggerLoading}
             disabled={modalTriggerLoading}
           />
@@ -183,21 +183,21 @@ const Tabs = ({
       menuItem: TabsNames.PCBFiles,
       // PCB Files should be a folder
       render: () => (
-        <UploadTab {...commonTabProps} allowFiles={false} allowFolders={true} />
+        <UploadTab {...commonTabProps} allowFiles={false} allowFolders />
       ),
     },
     {
       menuItem: TabsNames.BOMFile,
       // BOM Files should be a single file
       render: () => (
-        <UploadTab {...commonTabProps} allowFiles={true} allowFolders={false} />
+        <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
       ),
     },
     {
       menuItem: TabsNames.READMEFile,
       // README file should be a single file
       render: () => (
-        <UploadTab {...commonTabProps} allowFiles={true} allowFolders={false} />
+        <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
       ),
     },
   ]
@@ -213,36 +213,34 @@ const UploadTab = ({
   allowFiles,
   allowFolders,
   onDrop,
-}) => {
-  return (
-    <Tab.Pane>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '3rem',
-          background:
-            'linear-gradient(rgb(238 238 238),rgb(238 238 238)) center/2px 100% no-repeat',
-        }}
-      >
-        <DropZone
-          allowFiles={allowFiles}
-          allowFolders={allowFolders}
-          style={{ maxHeight: '200px' }}
-          onDrop={onDrop}
-        />
-        <FilesPreview
-          allowFiles={allowFiles}
-          allowFolders={allowFolders}
-          select={select}
-          selected={selected}
-          externallyMarked={externallyMarked}
-          files={files}
-          style={{ paddingLeft: '1rem', overflow: 'auto' }}
-        />
-      </div>
-    </Tab.Pane>
-  )
-}
+}) => (
+  <Tab.Pane>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '3rem',
+        background:
+          'linear-gradient(rgb(238 238 238),rgb(238 238 238)) center/2px 100% no-repeat',
+      }}
+    >
+      <DropZone
+        allowFiles={allowFiles}
+        allowFolders={allowFolders}
+        style={{ maxHeight: '200px' }}
+        onDrop={onDrop}
+      />
+      <FilesPreview
+        allowFiles={allowFiles}
+        allowFolders={allowFolders}
+        select={select}
+        selected={selected}
+        externallyMarked={externallyMarked}
+        files={files}
+        style={{ paddingLeft: '1rem', overflow: 'auto' }}
+      />
+    </div>
+  </Tab.Pane>
+)
 
 export default UploadModal

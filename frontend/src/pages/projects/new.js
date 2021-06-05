@@ -14,7 +14,6 @@ import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
 import { useMediaPredicate } from 'react-media-hook'
 
-import styles from './new.module.scss'
 import { Page } from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
@@ -24,6 +23,7 @@ import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
 import { ExistingProjectFromModel } from '@models/ExistingProjectForm'
 import { SyncRepoFromModel } from '@models/SyncRepoForm'
+import styles from './new.module.scss'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
@@ -153,14 +153,13 @@ const Upload = ({ user, csrf }) => {
 
     if (formErrors) {
       return formErrors
-    } else {
-      return !isValidProjectName
-        ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
-        : null
     }
+    return !isValidProjectName
+      ? {
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
+      : null
   }
 
   return (

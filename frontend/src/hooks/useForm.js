@@ -36,9 +36,8 @@ export default function UseForm(schema) {
 
   const isErrorField = field => errors.field === field && form[field] != null
 
-  const formatErrorPrompt = field => {
-    return isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
-  }
+  const formatErrorPrompt = field =>
+    isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
 
   return { form, onChange, populate, isValid, errors, formatErrorPrompt }
 }

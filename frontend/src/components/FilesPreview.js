@@ -87,7 +87,8 @@ const TreeNode = ({
         </div>
       </div>
     )
-  } else if (node.type === 'dir') {
+  }
+  if (node.type === 'dir') {
     return (
       <div className={styles.dir}>
         <input
@@ -102,7 +103,7 @@ const TreeNode = ({
           onToggle={() => setToggled(!toggled)}
         >
           <summary>
-            <Icon name="folder"></Icon>
+            <Icon name="folder" />
             {node.name}
           </summary>
           <div style={{ paddingLeft: '1.3rem' }}>
@@ -119,23 +120,20 @@ const TreeNode = ({
         </details>
       </div>
     )
-  } else {
-    return (
-      <span>
-        {node.path || node.name
-          ? `Uploading ${node.path || node.name}`
-          : 'Loading...'}
-      </span>
-    )
   }
-}
-
-const FilesPreview = props => {
   return (
-    <div>
-      <p>Select from previously uploaded files:</p>
-      <Tree {...props} />
-    </div>
+    <span>
+      {node.path || node.name
+        ? `Uploading ${node.path || node.name}`
+        : 'Loading...'}
+    </span>
   )
 }
+
+const FilesPreview = props => (
+  <div>
+    <p>Select from previously uploaded files:</p>
+    <Tree {...props} />
+  </div>
+)
 export default FilesPreview

@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+
 const statusCodes = {
   400: 'Bad Request',
   404: 'This page could not be found',

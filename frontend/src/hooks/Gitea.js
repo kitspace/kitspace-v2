@@ -23,7 +23,7 @@ import useSWR from 'swr'
  * @property {function(err, key, config)} [onError(err, key, config)]: callback function when a request returns an error
  * @property {function(err, key, config, revalidate, revalidateOps)} [onErrorRetry(err, key, config, revalidate, revalidateOps)]: handler for error retry
  * @property {function(a, b)} [compare(a, b)]: comparison function used to detect when returned data has changed, to avoid spurious rerenders. By default, [dequal](https://github.com/lukeed/dequal) is used.
- **/
+ * */
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 /**
@@ -152,13 +152,12 @@ export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
       isLoading: !(data || error),
       isError: error,
     }
-  } else {
-    return {
-      files: data,
-      isLoading: !(data || error),
-      isError: error,
-      mutate,
-    }
+  }
+  return {
+    files: data,
+    isLoading: !(data || error),
+    isError: error,
+    mutate,
   }
 }
 

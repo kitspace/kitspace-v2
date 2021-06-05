@@ -19,7 +19,7 @@ export const createRepo = async (name, description, csrf) => {
   const giteaOptions = {
     _csrf: csrf,
     name: slugify(name),
-    description: description,
+    description,
     repo_template: '',
     issue_labels: '',
     gitignores: '',
@@ -38,7 +38,7 @@ export const createRepo = async (name, description, csrf) => {
 
   const body = await res.json()
 
-  return res.ok ? body['full_name'] : ''
+  return res.ok ? body.full_name : ''
 }
 
 /**
@@ -133,12 +133,10 @@ export const getRepoFiles = async (repo, branch = 'master') => {
     // Check if it returned repo details and replace it with an empty array.
     if (body.hasOwnProperty('owner')) {
       return []
-    } else {
-      return body
     }
-  } else {
-    return []
+    return body
   }
+  return []
 }
 
 /**
@@ -255,9 +253,8 @@ export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
   if (res.ok) {
     const body = await res.json()
     return body.data
-  } else {
-    return []
   }
+  return []
 }
 
 /**
