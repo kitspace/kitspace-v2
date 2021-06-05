@@ -8,7 +8,6 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
   const [expanded, setExpanded] = useState(false)
 
   const popUpProps = {
-    className: styles.MpnPopup,
     hoverable: true,
     mouseLeaveDelay: 200,
     mouseEnterDelay: 200,
@@ -73,30 +72,17 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
   return (
     <Popup {...popUpProps}>
       <div className={styles.topAreaContainer}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
+        <div className={styles.componentFigure}>
           <div>
             <div className={styles.imageContainer}>
               <Image src={image?.url} />
-              <a style={{ fontSize: 9 }} href={image?.credit_url}>
-                {image?.credit_string}
-              </a>
             </div>
+            <a style={{ fontSize: 9 }} href={image?.credit_url}>
+              {image?.credit_string}
+            </a>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'flex-start',
-            }}
-          >
+          <div className={styles.octopartLinkContainer}>
             <a
-              style={{ fontSize: 10 }}
               href={
                 number
                   ? `https://octopart.com/search?q=${number}`
@@ -109,9 +95,10 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
         </div>
         <div style={{ marginLeft: 20 }}>
           <div style={{ maxWidth: 200 }}>{part.description}</div>
-          <div style={{ marginTop: 15, display: 'flex', justifyContent: 'center' }}>
+          <div className={styles.datasheetContainer}>
             <a href={part.datasheet}>
-              <Icon name="file pdf outline">Datasheet</Icon>
+              <Icon name="file pdf outline" />
+              Datasheet
             </a>
           </div>
           <Table
@@ -121,7 +108,7 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
             renderBodyRow={renderBodyRow}
           />
           {part.specs?.length > 4 ? (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div className={styles.expansionButton}>
               <Button
                 onClick={() => setExpanded(!expanded)}
                 size="tiny"
