@@ -77,6 +77,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Pull gitea image
+        id: pull_gitea
         shell: bash
         run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
         continue-on-error: true
@@ -84,7 +85,7 @@ jobs:
       - name: Build and push gitea
         # If the previous step failed, i.e., there's no image tagged
         # gitea:${{gitea_sha_short}} in ghcr, build image and push it
-        if: ${{ failure() }}
+        if: steps.pull_gitea.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
           context: ./gitea
