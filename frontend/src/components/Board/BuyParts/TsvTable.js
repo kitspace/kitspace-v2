@@ -37,13 +37,13 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     const number = contents[1]
     if (number !== '') {
       const part =
-        // eslint-disable-next-line no-shadow, array-callback-return, consistent-return
-        parts.reduce((prev, part) => {
-          if (prev) {
-            return prev
+        // eslint-disable-next-line array-callback-return, consistent-return
+        parts.reduce((accumulator, currentPart) => {
+          if (accumulator) {
+            return accumulator
           }
-          if (part && part.mpn && part.mpn.part === number) {
-            return part
+          if (currentPart && currentPart.mpn && currentPart.mpn.part === number) {
+            return currentPart
           }
         }, null) || {}
       return cells.map(cell => (
@@ -91,17 +91,16 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     </Table.Header>
   )
   const bodyLinesJSX = bodyLines.map((line, rowIndex) => {
-    // eslint-disable-next-line no-shadow
-    const grouped = line.reduce((grouped, text, columnIndex) => {
+    const grouped = line.reduce((accumulator, text, columnIndex) => {
       const heading = headings[columnIndex]
       if (heading === 'Manufacturer') {
-        return grouped.concat([[text]])
+        return accumulator.concat([[text]])
       }
       if (heading === 'MPN') {
-        grouped[grouped.length - 1].push(text)
-        return grouped
+        accumulator[accumulator.length - 1].push(text)
+        return accumulator
       }
-      return grouped.concat([text])
+      return accumulator.concat([text])
     }, [])
     const groupedHeadings = headings.filter(h => h !== 'Manufacturer')
     const markPink = columnIndex =>

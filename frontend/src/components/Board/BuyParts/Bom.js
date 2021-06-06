@@ -11,11 +11,10 @@ const Bom = ({ length, parts, tsv }) => {
   const [collapsed, setCollapsed] = useState(true)
 
   useEffect(() => {
-    // eslint-disable-next-line no-shadow
-    const diff = length - 7
-    setDiff(diff)
+    const collapsedDiff = length - 7
+    setDiff(collapsedDiff)
 
-    if (diff < 2) {
+    if (collapsedDiff < 2) {
       setDiff(0)
       setCollapsed(false)
     }

@@ -23,15 +23,11 @@ const BuyParts = ({ project, lines, parts }) => {
     // eslint-disable-next-line array-callback-return, consistent-return
     .map(name => {
       const [numberOfLines, numberOfParts] = lines.reduce(
-        // eslint-disable-next-line no-shadow
-        ([numberOfLines, numberOfParts], line) => {
+        ([numOfLines, numOfParts], line) => {
           if (line.retailers[name]) {
-            return [
-              numberOfLines + 1,
-              numberOfParts + Math.ceil(mult * line.quantity),
-            ]
+            return [numOfLines + 1, numOfParts + Math.ceil(mult * line.quantity)]
           }
-          return [numberOfLines, numberOfParts]
+          return [numOfLines, numOfParts]
         },
         [0, 0],
       )

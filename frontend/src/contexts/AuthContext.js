@@ -9,22 +9,21 @@ export const AuthContext = createContext({
 
 const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false)
-  const [user, setUser] = useState(null)
+  const [authenticatedUser, setAuthenticatedUser] = useState(null)
   const [csrf, setCsrf] = useState('')
 
   useEffect(() => {
     setCsrf(window.session._csrf)
-  }, [user, auth])
+  }, [authenticatedUser, auth])
 
-  // eslint-disable-next-line no-shadow
   const authorize = user => {
     setAuth(true)
-    setUser(user)
+    setAuthenticatedUser(user)
   }
 
   const deAuthorize = () => {
     setAuth(false)
-    setUser(null)
+    setAuthenticatedUser(null)
   }
 
   useEffect(() => {
@@ -38,7 +37,9 @@ const AuthProvider = ({ children }) => {
   })
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: auth, user, csrf }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated: auth, user: authenticatedUser, csrf }}
+    >
       {children}
     </AuthContext.Provider>
   )
