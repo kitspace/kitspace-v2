@@ -92,19 +92,7 @@ export const submitKitspaceYaml = async (
   const newKitspaceYAML = yaml.dump(_kitspaceYAML)
 
   if (kitspaceYAMLExists) {
-    return await updateFile(
-      projectFullname,
-      'kitspace.yaml',
-      newKitspaceYAML,
-      user,
-      csrf,
-    )
+    return updateFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
   }
-  return await uploadFile(
-    projectFullname,
-    'kitspace.yaml',
-    newKitspaceYAML,
-    user,
-    csrf,
-  )
+  return uploadFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
 }

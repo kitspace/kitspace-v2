@@ -32,18 +32,12 @@ const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
       if (req.status >= 200 && req.status < 300) {
         resolve(JSON.parse(req.response))
       } else {
-        reject({
-          status: req.status,
-          statusText: req.statusText,
-        })
+        reject(new Error(req.statusText))
       }
     }
 
     req.onerror = () => {
-      reject({
-        status: req.status,
-        statusText: req.statusText,
-      })
+      reject(new Error(req.statusText))
     }
 
     req.send(formData)
@@ -64,100 +58,6 @@ export const uploadFilesToGiteaServer = async (repo, files, filePaths, csrf) => 
   )
   // noinspection JSUnresolvedVariable
   return filesUUIDs.map(res => res.uuid)
-}
-
-/**
- * Takes an array of files and commit it to Gitea server. If the files are all
- * in a folder it will be stripped from the path.
- * @param repo{string}
- * @param files{[]}
- * @param commitSummary{=string}
- * @param commitMessage{=string}
- * @param commitChoice{=string}
- * @param treePath{=string}
- * @param newBranchName{=string}
- * @param csrf{string}
- * @returns {Promise<boolean>}
- */
-export const commitInitialFiles = async ({
-  repo,
-  files,
-  commitSummary,
-  commitMessage,
-  commitChoice,
-  newBranchName,
-  csrf,
-}) => {
-  let filePaths = files.map(file => {
-    let filePath = file.path
-    if (!filePath) {
-      console.warn(
-        'File object in commitInitialFiles does not have a "path" property. Using "name" instead:',
-        file.name,
-      )
-      filePath = file.name
-    }
-    // remove any leading "/"
-    filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath
-    return filePath
-  })
-  // unless there are some top level files, we remove the top-level directory
-  // from the filePaths. we assume the whole directory was the upload and we
-  // don't want them in that directory in the git repo.
-  const hasTopLevelFile = filePaths.map(dirname).includes('.')
-  if (!hasTopLevelFile) {
-    filePaths = filePaths.map(filePath => filePath.split('/').slice(1).join('/'))
-  }
-  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
-
-  return await commitFilesWithUUIDs({
-    repo,
-    filesUUIDs,
-    commitSummary,
-    commitMessage,
-    commitChoice,
-    newBranchName,
-    csrf,
-  })
-}
-
-/**
- * Takes an array of files and commit it to Gitea server.
- * @param repo{string}
- * @param files{[]}
- * @param commitSummary{=string}
- * @param commitMessage{=string}
- * @param commitChoice{=string}
- * @param treePath{=string}
- * @param newBranchName{=string}
- * @param csrf{string}
- * @returns {Promise<boolean>}
- */
-export const commitFiles = async ({
-  repo,
-  files,
-  commitSummary,
-  commitMessage,
-  commitChoice,
-  newBranchName,
-  csrf,
-}) => {
-  // remove any leading "/"
-  const filePaths = files.map(file =>
-    file.path.startsWith('/') ? file.path.substring(1) : file.path,
-  )
-
-  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
-
-  return await commitFilesWithUUIDs({
-    repo,
-    filesUUIDs,
-    commitSummary,
-    commitMessage,
-    commitChoice,
-    newBranchName,
-    csrf,
-  })
 }
 
 /**
@@ -208,4 +108,99 @@ export const commitFilesWithUUIDs = async ({
   })
 
   return res.ok
+}
+
+/**
+ * Takes an array of files and commit it to Gitea server. If the files are all
+ * in a folder it will be stripped from the path.
+ * @param repo{string}
+ * @param files{[]}
+ * @param commitSummary{=string}
+ * @param commitMessage{=string}
+ * @param commitChoice{=string}
+ * @param treePath{=string}
+ * @param newBranchName{=string}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const commitInitialFiles = async ({
+  repo,
+  files,
+  commitSummary,
+  commitMessage,
+  commitChoice,
+  newBranchName,
+  csrf,
+}) => {
+  let filePaths = files.map(file => {
+    let filePath = file.path
+    if (!filePath) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'File object in commitInitialFiles does not have a "path" property. Using "name" instead:',
+        file.name,
+      )
+      filePath = file.name
+    }
+    // remove any leading "/"
+    filePath = filePath.startsWith('/') ? filePath.substring(1) : filePath
+    return filePath
+  })
+  // unless there are some top level files, we remove the top-level directory
+  // from the filePaths. we assume the whole directory was the upload and we
+  // don't want them in that directory in the git repo.
+  const hasTopLevelFile = filePaths.map(dirname).includes('.')
+  if (!hasTopLevelFile) {
+    filePaths = filePaths.map(filePath => filePath.split('/').slice(1).join('/'))
+  }
+  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
+
+  return commitFilesWithUUIDs({
+    repo,
+    filesUUIDs,
+    commitSummary,
+    commitMessage,
+    commitChoice,
+    newBranchName,
+    csrf,
+  })
+}
+
+/**
+ * Takes an array of files and commit it to Gitea server.
+ * @param repo{string}
+ * @param files{[]}
+ * @param commitSummary{=string}
+ * @param commitMessage{=string}
+ * @param commitChoice{=string}
+ * @param treePath{=string}
+ * @param newBranchName{=string}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const commitFiles = async ({
+  repo,
+  files,
+  commitSummary,
+  commitMessage,
+  commitChoice,
+  newBranchName,
+  csrf,
+}) => {
+  // remove any leading "/"
+  const filePaths = files.map(file =>
+    file.path.startsWith('/') ? file.path.substring(1) : file.path,
+  )
+
+  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
+
+  return commitFilesWithUUIDs({
+    repo,
+    filesUUIDs,
+    commitSummary,
+    commitMessage,
+    commitChoice,
+    newBranchName,
+    csrf,
+  })
 }

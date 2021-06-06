@@ -1,6 +1,5 @@
 import slugify from 'slugify'
-
-import { urlToName } from '@utils/index'
+import platformPath from 'path'
 
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
@@ -63,6 +62,22 @@ export const updateRepo = async (repo, updateFields, csrf) => {
 }
 
 /**
+ * Get the repo name from its url
+ * @param url
+ * @returns {string}
+ * @example
+ * // returns 'ulx3s'
+ * urlToName('https://github.com/emard/ulx3s/')
+ */
+const urlToName = url => {
+  const urlObj = new URL(url)
+  return platformPath.basename(
+    urlObj.pathname,
+    platformPath.extname(urlObj.pathname),
+  )
+}
+
+/**
  * Mirror an existing remote git repo to a Gitea repo
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
@@ -70,13 +85,12 @@ export const updateRepo = async (repo, updateFields, csrf) => {
  * @returns {Promise<Response>}
  */
 export const mirrorRepo = async (remoteRepo, uid, csrf) => {
-  const clone_addr = remoteRepo
-  const repo_name = urlToName(clone_addr)
+  const repoName = urlToName(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate?_csrf=${csrf}`
   const giteaOptions = {
-    clone_addr,
+    remoteRepo,
     uid,
-    repo_name,
+    repo_name: repoName,
     mirror: true,
     wiki: false,
     private: false,
@@ -84,7 +98,7 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     releases: true,
   }
 
-  return await fetch(endpoint, {
+  return fetch(endpoint, {
     method: 'POST',
     mode,
     credentials: 'include',
@@ -131,24 +145,13 @@ export const getRepoFiles = async (repo, branch = 'master') => {
 
     // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
     // Check if it returned repo details and replace it with an empty array.
+    // eslint-disable-next-line no-prototype-builtins
     if (body.hasOwnProperty('owner')) {
       return []
     }
     return body
   }
   return []
-}
-
-/**
- * get the files in repo's default branch
- * @param repo {string}
- * @returns {Promise<Array|null>}
- */
-export const getDefaultBranchFiles = async repo => {
-  const repoDetails = await getRepo(repo)
-  const { default_branch: defaultBranch } = repoDetails
-
-  return getRepoFiles(repo, defaultBranch)
 }
 
 /**
@@ -165,7 +168,19 @@ export const getRepo = async fullname => {
     mode,
     headers,
   })
-  return res.ok ? await res.json() : null
+  return res.ok ? res.json() : null
+}
+
+/**
+ * get the files in repo's default branch
+ * @param repo {string}
+ * @returns {Promise<Array|null>}
+ */
+export const getDefaultBranchFiles = async repo => {
+  const repoDetails = await getRepo(repo)
+  const { default_branch: defaultBranch } = repoDetails
+
+  return getRepoFiles(repo, defaultBranch)
 }
 
 /**
@@ -225,19 +240,6 @@ export const canCommit = async (repo, username) => {
   return repoOwner === username || isCollaborator(repo, username)
 }
 
-/**
- * Get all repos
- * @returns {Promise<[Object]>}
- */
-export const getAllRepos = () => searchRepos()
-
-/**
- * Search all repos
- * @param q{string=}: search query, leave undefined to return all repos
- * @param sort{string}
- * @param order{string}
- * @returns {Promise<[Object]>}
- */
 export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
   const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${
     q ? `&q=${q}` : ''
@@ -258,6 +260,20 @@ export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
 }
 
 /**
+ * Get all repos
+ * @returns {Promise<[Object]>}
+ */
+export const getAllRepos = () => searchRepos()
+
+/**
+ * Search all repos
+ * @param q{string=}: search query, leave undefined to return all repos
+ * @param sort{string}
+ * @param order{string}
+ * @returns {Promise<[Object]>}
+ */
+
+/**
  *
  * @param {string} repo repo fullname
  * @param {string} path file path
@@ -273,7 +289,7 @@ export const getFileRawContent = async (repo, path) => {
     headers,
   })
 
-  return res.ok ? await res.blob().then(b => b.text()) : ''
+  return res.ok ? res.blob().then(b => b.text()) : ''
 }
 
 /**
@@ -291,7 +307,7 @@ export const getUserRepos = async username => {
     headers,
   })
 
-  return res.ok ? await res.json() : []
+  return res.ok ? res.json() : []
 }
 
 /**
@@ -305,7 +321,7 @@ export const getFile = async (repo, path) => {
 
   const res = await fetch(endpoint, { method: 'GET', credentials, mode, headers })
 
-  return res.ok ? await res.json() : {}
+  return res.ok ? res.json() : {}
 }
 
 /**
@@ -356,7 +372,7 @@ export const renderMarkdown = async markdown => {
     body: markdown,
   })
 
-  return res.ok ? await res.blob().then(b => b.text()) : ''
+  return res.ok ? res.blob().then(b => b.text()) : ''
 }
 
 /**
