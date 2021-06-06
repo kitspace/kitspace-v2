@@ -145,7 +145,6 @@ export const getRepoFiles = async (repo, branch = 'master') => {
 
     // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
     // Check if it returned repo details and replace it with an empty array.
-    // eslint-disable-next-line no-prototype-builtins
     if (body.hasOwnProperty('owner')) {
       return []
     }

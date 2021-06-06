@@ -147,8 +147,6 @@ export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
   // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
   // Check if it returned repo details and replace it with an empty array.
 
-  // This is for sure not a builtin check.
-  // eslint-disable-next-line no-prototype-builtins
   if (data?.hasOwnProperty('owner')) {
     return {
       files: [],

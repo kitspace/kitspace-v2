@@ -24,7 +24,6 @@ const Login = () => {
   const { query } = useRouter()
 
   useEffect(() => {
-    // eslint-disable-next-line no-prototype-builtins
     if (query.hasOwnProperty('sign_up')) {
       setOpenPane(0)
     } else {
