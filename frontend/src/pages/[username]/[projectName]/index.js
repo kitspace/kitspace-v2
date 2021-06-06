@@ -49,8 +49,10 @@ export const getServerSideProps = async ({ params, query, req }) => {
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
 
   // The repo owner and collaborators can upload files.
-  const hasUploadPermission = await canCommit(repoFullname, req?.session?.user?.username)
-
+  const hasUploadPermission = await canCommit(
+    repoFullname,
+    req?.session?.user?.username,
+  )
 
   if (await repoExists(repoFullname)) {
     const repo = await getRepo(repoFullname)
@@ -99,10 +101,14 @@ export const getServerSideProps = async ({ params, query, req }) => {
 }
 
 const UpdateProject = props => {
-  const {full_name: projectFullname} = props.repo
+  const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
 
-  const { repo: project, isLoading, isError } = useRepo(projectFullname, {
+  const {
+    repo: project,
+    isLoading,
+    isError,
+  } = useRepo(projectFullname, {
     initialData: props.repo,
   })
 
