@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Button, Header } from 'semantic-ui-react'
 
+import { bool, string } from 'prop-types'
 import IBomIcon from './IBomIcon'
 import TracespaceIcon from './TracespaceIcon'
 
@@ -34,6 +35,12 @@ const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname }) => {
       )}
     </div>
   )
+}
+
+BoardExtraMenus.propTypes = {
+  zipUrl: string.isRequired,
+  hasInteractiveBom: bool.isRequired,
+  projectFullname: string.isRequired,
 }
 
 export default BoardExtraMenus

@@ -89,6 +89,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
   }, [FilePickerRejections, FolderPickerRejections])
 
   return (
+    /* eslint-disable no-nested-ternary */
     <div
       {...getRootProps({ className: 'dropzone' })}
       style={style || { margin: '2rem 0' }}
@@ -147,8 +148,8 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
 }
 
 DropZone.propTypes = {
-  onDrop: func,
-  style: object,
+  onDrop: func.isRequired,
+  style: object.isRequired,
   allowFolders: bool,
   allowFiles: bool,
 }

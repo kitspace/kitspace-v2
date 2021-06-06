@@ -3,7 +3,7 @@ import { string, array } from 'prop-types'
 
 import { Input, Form } from 'semantic-ui-react'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import { AuthContext } from '@contexts/AuthContext'
 import { getAllRepos, searchRepos } from '@utils/giteaApi'

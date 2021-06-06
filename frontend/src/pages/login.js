@@ -12,7 +12,7 @@ import {
   Tab,
 } from 'semantic-ui-react'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'

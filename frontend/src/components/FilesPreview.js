@@ -1,3 +1,4 @@
+import { arrayOf, bool, func, object, string } from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { Icon, List } from 'semantic-ui-react'
 
@@ -58,6 +59,7 @@ const TreeNode = ({
 
   useEffect(() => {
     // Fetch files inside a directory when toggling it in the tree preview.
+    // eslint-disable-next-line no-prototype-builtins
     if (node.hasOwnProperty('url')) {
       fetch(node.url)
         .then(r => r.json())
@@ -72,7 +74,14 @@ const TreeNode = ({
 
   if (node.type === 'file') {
     return (
-      <div className={styles.file} onClick={() => setChecked(!checked)}>
+      <div
+        className={styles.file}
+        onClick={() => setChecked(!checked)}
+        onKeyPress={() => setChecked(!checked)}
+        role="menuitemcheckbox"
+        aria-checked={checked}
+        tabIndex={-1}
+      >
         <input
           className={styles.checkbox}
           type="checkbox"
@@ -137,4 +146,24 @@ const FilesPreview = props => (
     <Tree {...props} />
   </div>
 )
+
+Tree.propTypes = {
+  files: arrayOf(object).isRequired,
+  select: func.isRequired,
+  selected: object.isRequired,
+  externallyMarked: string.isRequired,
+  allowFiles: bool.isRequired,
+  allowFolders: bool.isRequired,
+}
+
+TreeNode.propTypes = {
+  node: object.isRequired,
+  select: func.isRequired,
+  selected: object.isRequired,
+  marked: bool.isRequired,
+  externallyMarked: string.isRequired,
+  allowFiles: bool.isRequired,
+  allowFolders: bool.isRequired,
+}
+
 export default FilesPreview

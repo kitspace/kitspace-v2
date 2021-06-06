@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { arrayOf, func, node, number as numberType, object } from 'prop-types'
 import { Popup, Image, Table, Icon, Button } from 'semantic-ui-react'
 import { flattenDeep } from 'lodash'
 
@@ -31,9 +32,9 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
     ]
 
     const groups = specs.reduce((acc, spec) => {
-      let index = importance.reduce((prev, keys, index) => {
+      let index = importance.reduce((prev, keys, i) => {
         if (keys.indexOf(spec.key) >= 0) {
-          return index
+          return i
         }
         return prev
       }, null)
@@ -42,7 +43,7 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
       }
       acc[index].push(spec)
       return acc
-    }, importance.map(x => []).concat([[]]))
+    }, importance.map(() => []).concat([[]]))
 
     return flattenDeep(groups)
   }
@@ -121,6 +122,15 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
       </div>
     </Popup>
   )
+}
+
+MpnPopup.propTypes = {
+  onOpen: func.isRequired,
+  onClose: func.isRequired,
+  trigger: node.isRequired,
+  part: object.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  offset: arrayOf(numberType),
 }
 
 export default MpnPopup

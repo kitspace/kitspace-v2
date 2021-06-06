@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { array, bool, func, number, object, string } from 'prop-types'
 import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
 
@@ -9,6 +10,8 @@ import styles from './index.module.scss'
 
 const BuyParts = ({ project, lines, parts }) => {
   const [extensionPresence, setExtensionPresence] = useState('unknown')
+  // it's needed to fix the extension integration.
+  // eslint-disable-next-line no-unused-vars
   const [buyParts, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
@@ -17,8 +20,10 @@ const BuyParts = ({ project, lines, parts }) => {
 
   const retailerList = OneClickBom.getRetailers()
   const retailerButtons = retailerList
+    // eslint-disable-next-line array-callback-return, consistent-return
     .map(name => {
       const [numberOfLines, numberOfParts] = lines.reduce(
+        // eslint-disable-next-line no-shadow
         ([numberOfLines, numberOfParts], line) => {
           if (line.retailers[name]) {
             return [
@@ -52,10 +57,10 @@ const BuyParts = ({ project, lines, parts }) => {
     window.addEventListener(
       'message',
       event => {
-        if (event.source != window) {
+        if (event.source !== window) {
           return
         }
-        if (event.data.from == 'extension') {
+        if (event.data.from === 'extension') {
           setExtensionPresence('present')
           switch (event.data.message) {
             case 'register':
@@ -83,6 +88,8 @@ const BuyParts = ({ project, lines, parts }) => {
             case 'updateAddingState':
               setAdding(event.data.value)
               break
+            default:
+              break
           }
         }
       },
@@ -92,11 +99,11 @@ const BuyParts = ({ project, lines, parts }) => {
 
   useEffect(() => {
     const multi = buyMultiplier
-    if (isNaN(multi) || multi < 1) {
+    if (Number.isNaN(multi) || multi < 1) {
       setMult(1)
     }
     const percent = buyAddPercent
-    if (isNaN(percent) || percent < 1) {
+    if (Number.isNaN(percent) || percent < 1) {
       setMult(0)
     }
     setMult(multi + multi * (percent / 100))
@@ -135,7 +142,12 @@ const BuyParts = ({ project, lines, parts }) => {
   )
 }
 
-const AdjustQuantity = props => (
+const AdjustQuantity = ({
+  buyMultiplier,
+  setBuyMultiplier,
+  buyAddPercent,
+  setBuyAddPercent,
+}) => (
   <Segment textAlign="center" attached className={styles.AdjustQuantity}>
     Adjust quantity:
     <Icon
@@ -149,18 +161,18 @@ const AdjustQuantity = props => (
       type="number"
       size="mini"
       min={1}
-      value={props.buyMultiplier}
+      value={buyMultiplier}
       style={{ width: 80 }}
-      error={isNaN(props.buyMultiplier) || props.buyMultiplier < 1}
-      onBlur={e => {
-        const v = props.buyMultiplier
-        if (isNaN(v) || v < 1) {
-          props.setBuyMultiplier(1)
+      error={Number.isNaN(buyMultiplier) || buyMultiplier < 1}
+      onBlur={() => {
+        const v = buyMultiplier
+        if (Number.isNaN(v) || v < 1) {
+          setBuyMultiplier(1)
         }
       }}
       onChange={e => {
         const v = parseFloat(e.target.value)
-        props.setBuyMultiplier(v)
+        setBuyMultiplier(v)
       }}
     />
     <Icon
@@ -174,19 +186,19 @@ const AdjustQuantity = props => (
       type="number"
       min={0}
       step={10}
-      value={props.buyAddPercent}
+      value={buyAddPercent}
       size="mini"
       style={{ width: 80 }}
-      error={isNaN(props.buyAddPercent) || props.buyAddPercent < 0}
-      onBlur={e => {
-        const v = props.buyAddPercent
-        if (isNaN(v) || v < 0) {
-          props.setBuyAddPercent(0)
+      error={Number.isNaN(buyAddPercent) || buyAddPercent < 0}
+      onBlur={() => {
+        const v = buyAddPercent
+        if (Number.isNaN(v) || v < 0) {
+          setBuyAddPercent(0)
         }
       }}
       onChange={e => {
         const v = parseFloat(e.target.value)
-        props.setBuyAddPercent(v)
+        setBuyAddPercent(v)
       }}
     />
     <span className={styles.notSelectable} style={{ marginLeft: 5 }}>
@@ -195,30 +207,37 @@ const AdjustQuantity = props => (
   </Segment>
 )
 
-const RetailerButton = props => {
-  const r = props.name
-  let onClick = props.buyParts
+const RetailerButton = ({
+  name,
+  buyParts,
+  extensionPresence,
+  numberOfLines,
+  totalLines,
+  numberOfParts,
+  adding,
+}) => {
+  let onClick = buyParts
   // if the extension is not here fallback to direct submissions
-  if (props.extensionPresence !== 'present' && typeof document !== 'undefined') {
+  if (extensionPresence !== 'present' && typeof document !== 'undefined') {
     onClick = () => {
-      const form = document.getElementById(`${r}Form`)
+      const form = document.getElementById(`${name}Form`)
       if (form) {
         form.submit()
       } else {
-        props.buyParts()
+        buyParts()
       }
     }
   }
-  const color = props.numberOfLines === props.totalLines ? 'green' : 'pink'
+  const color = numberOfLines === totalLines ? 'green' : 'pink'
   return (
     <Button
       onClick={onClick}
-      loading={props.adding}
+      loading={adding}
       color={color}
       content={
         <div className={styles.buttonText}>
-          <StoreIcon retailer={r} />
-          {r}
+          <StoreIcon retailer={name} />
+          {name}
         </div>
       }
       label={{
@@ -233,8 +252,7 @@ const RetailerButton = props => {
             }}
           >
             <div>
-              {props.numberOfLines}/{props.totalLines} lines ({props.numberOfParts}{' '}
-              parts)
+              {numberOfLines}/{totalLines} lines ({numberOfParts} parts)
             </div>
             <div>
               <Icon name="plus" />
@@ -249,18 +267,43 @@ const RetailerButton = props => {
   )
 }
 
-const StoreIcon = props => {
-  const imgHref = `/static/images/${props.retailer}${
-    props.disabled ? '-grey' : ''
-  }.ico`
+const StoreIcon = ({ retailer, disabled }) => {
+  const imgHref = `/static/images/${retailer}${disabled ? '-grey' : ''}.ico`
   return (
     <img
       className={styles.storeIcons}
-      key={props.retailer}
+      key={retailer}
       src={imgHref}
-      alt={props.retailer}
+      alt={retailer}
     />
   )
+}
+
+BuyParts.propTypes = {
+  project: string.isRequired,
+  lines: array.isRequired,
+  parts: object.isRequired,
+}
+
+AdjustQuantity.propTypes = {
+  buyMultiplier: number.isRequired,
+  setBuyMultiplier: func.isRequired,
+  buyAddPercent: number.isRequired,
+  setBuyAddPercent: func.isRequired,
+}
+
+RetailerButton.propTypes = {
+  name: string.isRequired,
+  buyParts: func.isRequired,
+  extensionPresence: string.isRequired,
+  numberOfLines: number.isRequired,
+  totalLines: number.isRequired,
+  numberOfParts: number.isRequired,
+  adding: bool.isRequired,
+}
+StoreIcon.propTypes = {
+  retailer: string.isRequired,
+  disabled: bool.isRequired,
 }
 
 export default BuyParts

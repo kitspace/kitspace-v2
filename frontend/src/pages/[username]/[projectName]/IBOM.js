@@ -4,7 +4,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import NextHead from 'next/head'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import { Loader } from 'semantic-ui-react'
 import { object, string } from 'prop-types'
 

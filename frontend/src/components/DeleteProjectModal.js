@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
-import { string } from 'prop-types'
-import { mutate } from 'swr'
+import { func, string } from 'prop-types'
 
 import { Button, Modal } from 'semantic-ui-react'
 import { deleteRepo } from '@utils/giteaApi'
@@ -12,7 +11,7 @@ const DeleteModal = ({ projectName, invalidateCache }) => {
   return (
     <Modal
       trigger={<Button content="Delete" color="red" />}
-      heade="Heads up!"
+      header="Heads up!"
       content={`Are you sure you want to delete the ${projectName} project?`}
       actions={[
         'Cancel',
@@ -32,7 +31,8 @@ const DeleteModal = ({ projectName, invalidateCache }) => {
 }
 
 DeleteModal.propTypes = {
-  projectName: string,
+  projectName: string.isRequired,
+  invalidateCache: func.isRequired,
 }
 
 export default DeleteModal

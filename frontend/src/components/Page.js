@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { string, bool } from 'prop-types'
-import { Loader } from 'semantic-ui-react'
-import { useRouter } from 'next/router'
+import { string, bool, node } from 'prop-types'
 
+import { Container, Loader } from 'semantic-ui-react'
+import { useRouter } from 'next/router'
 import Head from './Head'
 import NavBar from './NavBar'
-import styles from './Page.module.scss'
 
-const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
-  const { replace, pathname } = useRouter()
+const Content = ({ reqSignIn, reqSignOut, children }) => {
+  const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
-    if (requireSignIn && !isAuthenticated) {
-      replace(`/login?redirect=${pathname}`).then()
-    } else if (requireSignOut && isAuthenticated) {
-      replace('/').then()
+    if (reqSignIn && !isAuthenticated) {
+      push(`/login?redirect=${pathname}`).then()
+    } else if (reqSignOut && isAuthenticated) {
+      push('/').then()
     } else {
       setLoading(false)
     }
@@ -30,35 +29,32 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
       </Loader>
     )
   }
-  return (
-    <div
-      className={contentFullSize ? styles.minimalContainer : styles.container}
-      data-cy="page-container"
-    >
-      {children}
-    </div>
-  )
+  return <Container style={{ marginTop: 30 }}>{children}</Container>
 }
 
-export const Page = props => (
+const Page = ({ title, reqSignIn, reqSignOut, children }) => (
   <>
     <Head>
-      <title>{props.title}</title>
+      <title>{title}</title>
     </Head>
     <NavBar />
-    <Content {...props}>{props.children}</Content>
+    <Content reqSignIn={reqSignIn} reqSignOut={reqSignOut}>
+      {children}
+    </Content>
   </>
 )
 
 Page.propTypes = {
-  title: string,
-  reqSignIn: bool,
-  reqSignOut: bool,
-  contentFullSize: bool,
+  title: string.isRequired,
+  reqSignIn: bool.isRequired,
+  reqSignOut: bool.isRequired,
+  children: node.isRequired,
 }
 
 Content.propTypes = {
-  requireSignIn: bool,
-  requireSignOut: bool,
-  contentFullSize: bool,
+  reqSignIn: bool.isRequired,
+  reqSignOut: bool.isRequired,
+  children: node.isRequired,
 }
+
+export default Page

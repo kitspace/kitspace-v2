@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Image, Input } from 'semantic-ui-react'
 
+import { func, number, object, string } from 'prop-types'
 import { formatPrice } from './utils'
 import styles from './style.module.scss'
 
@@ -79,3 +80,21 @@ export const Quantity = ({ state, dispatch }) => (
     </span>
   </div>
 )
+
+ProductImage.propTypes = {
+  src: string.isRequired,
+}
+
+Total.propTypes = {
+  val: number.isRequired,
+}
+
+Shipping.propTypes = {
+  deliveryDate: string.isRequired,
+  price: number.isRequired,
+}
+
+Quantity.propTypes = {
+  state: object.isRequired,
+  dispatch: func.isRequired,
+}

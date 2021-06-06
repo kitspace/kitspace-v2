@@ -2,7 +2,7 @@ import React from 'react'
 import { isEmpty } from 'lodash'
 import { arrayOf, string } from 'prop-types'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
 import { useUserRepos } from '@hooks/Gitea'

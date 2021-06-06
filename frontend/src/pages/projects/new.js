@@ -15,7 +15,7 @@ import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
 import { useMediaPredicate } from 'react-media-hook'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
 import { commitInitialFiles } from '@utils/giteaInternalApi'

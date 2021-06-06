@@ -5,6 +5,7 @@ import { Button, Modal, Tab } from 'semantic-ui-react'
 import { AuthContext } from '@contexts/AuthContext'
 import { submitKitspaceYaml } from '@utils/projectPage'
 import useKitspaceYAML from '@hooks/useKitspaceYAML'
+import { array, bool, func, object, objectOf, string } from 'prop-types'
 
 const DropZone = dynamic(() => import('@components/DropZone'))
 const FilesPreview = dynamic(() => import('@components/FilesPreview'))
@@ -38,6 +39,65 @@ const UploadModal = ({
   const [selected, setSelected] = useState(null)
   const [kitspaceYAMLAsset, setKitspaceYAMLAsset] = useState('')
 
+  const activeTab = () => document.querySelector('.menu > .active')?.innerHTML
+
+  const submit = async () => {
+    const submitSelected = assetName =>
+      submitKitspaceYaml(
+        selected,
+        kitspaceYAML,
+        assetName,
+        projectFullname,
+        user,
+        csrf,
+        kitspaceYAMLExists,
+      )
+
+    switch (activeTab()) {
+      case TabsNames.PCBFiles:
+        return submitSelected('gerbers')
+      case TabsNames.BOMFile:
+        return submitSelected('bom')
+      case TabsNames.READMEFile:
+        return submitSelected('readme')
+      default:
+        return false
+    }
+  }
+
+  const populateChecked = () => {
+    switch (activeTab()) {
+      case TabsNames.PCBFiles:
+        setKitspaceYAMLAsset(kitspaceYAML?.gerbers || defaultAssetsPaths.PCBFiles)
+        break
+      case TabsNames.BOMFile:
+        setKitspaceYAMLAsset(kitspaceYAML?.bom || defaultAssetsPaths.BOMFile)
+        break
+      case TabsNames.READMEFile:
+        setKitspaceYAMLAsset(kitspaceYAML?.readme || defaultAssetsPaths.READMEFile)
+        break
+      default:
+        break
+    }
+  }
+
+  const hasChangedSelectedAsset = () => {
+    switch (activeTab()) {
+      case TabsNames.PCBFiles:
+        return (
+          selected.path !== (kitspaceYAML.gerbers || defaultAssetsPaths.PCBFiles)
+        )
+      case TabsNames.BOMFile:
+        return selected.path !== (kitspaceYAML.bom || defaultAssetsPaths.BOMFile)
+      case TabsNames.READMEFile:
+        return (
+          selected.path !== (kitspaceYAML.readme || defaultAssetsPaths.READMEFile)
+        )
+      default:
+        return false
+    }
+  }
+
   /**
    * Passed to checkboxes to select the asset(file/folder).
    * @param {object} node gitea file or directory.
@@ -64,60 +124,6 @@ const UploadModal = ({
 
   useEffect(() => populateChecked(), [open, kitspaceYAML])
 
-  const activeTab = () => document.querySelector('.menu > .active')?.innerHTML
-
-  const submit = async () => {
-    const submitSelected = assetName =>
-      submitKitspaceYaml(
-        selected,
-        kitspaceYAML,
-        assetName,
-        projectFullname,
-        user,
-        csrf,
-        kitspaceYAMLExists,
-      )
-
-    switch (activeTab()) {
-      case TabsNames.PCBFiles:
-        return await submitSelected('gerbers')
-      case TabsNames.BOMFile:
-        return await submitSelected('bom')
-      case TabsNames.READMEFile:
-        return await submitSelected('readme')
-    }
-  }
-
-  const populateChecked = () => {
-    switch (activeTab()) {
-      case TabsNames.PCBFiles:
-        setKitspaceYAMLAsset(kitspaceYAML?.gerbers || defaultAssetsPaths.PCBFiles)
-        break
-      case TabsNames.BOMFile:
-        setKitspaceYAMLAsset(kitspaceYAML?.bom || defaultAssetsPaths.BOMFile)
-        break
-      case TabsNames.READMEFile:
-        setKitspaceYAMLAsset(kitspaceYAML?.readme || defaultAssetsPaths.READMEFile)
-        break
-    }
-  }
-
-  const hasChangedSelectedAsset = () => {
-    switch (activeTab()) {
-      case TabsNames.PCBFiles:
-        return (
-          selected.path !== (kitspaceYAML.gerbers || defaultAssetsPaths.PCBFiles)
-        )
-      case TabsNames.BOMFile:
-        return selected.path !== (kitspaceYAML.bom || defaultAssetsPaths.BOMFile)
-      case TabsNames.READMEFile:
-        return (
-          selected.path !== (kitspaceYAML.readme || defaultAssetsPaths.READMEFile)
-        )
-      default:
-        break
-    }
-  }
   const TabsProps = {
     files,
     select,
@@ -242,5 +248,32 @@ const UploadTab = ({
     </div>
   </Tab.Pane>
 )
+
+UploadModal.propTypes = {
+  kitspaceYAMLExists: bool.isRequired,
+  files: array.isRequired,
+  kitspaceYAMLPreloaded: objectOf(string).isRequired,
+  projectFullname: string.isRequired,
+  onDrop: func.isRequired,
+}
+
+Tabs.propTypes = {
+  files: array.isRequired,
+  select: func.isRequired,
+  selected: object.isRequired,
+  externallyMarked: string.isRequired,
+  onTabChange: func.isRequired,
+  onDrop: func.isRequired,
+}
+
+UploadTab.propTypes = {
+  files: array.isRequired,
+  select: func.isRequired,
+  selected: object.isRequired,
+  externallyMarked: string.isRequired,
+  allowFiles: bool.isRequired,
+  allowFolders: bool.isRequired,
+  onDrop: func.isRequired,
+}
 
 export default UploadModal

@@ -107,12 +107,14 @@ const Product = ({
 }
 
 Product.propTypes = {
-  name: string,
-  imgUri: string,
-  price: number,
-  shippingPrice: number,
-  description: string,
-  projectLink: string,
+  name: string.isRequired,
+  imgUri: string.isRequired,
+  price: number.isRequired,
+  priceId: string.isRequired,
+  shippingPriceId: string.isRequired,
+  shippingPrice: number.isRequired,
+  description: string.isRequired,
+  projectLink: string.isRequired,
 }
 
 export default Product

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Table } from 'semantic-ui-react'
 import { flattenDeep } from 'lodash'
 
+import { array, bool, string } from 'prop-types'
 import MpnPopup from './MpnPopup'
 import styles from './TsvTable.module.scss'
 
@@ -36,6 +37,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     const number = contents[1]
     if (number !== '') {
       const part =
+        // eslint-disable-next-line no-shadow, array-callback-return, consistent-return
         parts.reduce((prev, part) => {
           if (prev) {
             return prev
@@ -89,6 +91,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     </Table.Header>
   )
   const bodyLinesJSX = bodyLines.map((line, rowIndex) => {
+    // eslint-disable-next-line no-shadow
     const grouped = line.reduce((grouped, text, columnIndex) => {
       const heading = headings[columnIndex]
       if (heading === 'Manufacturer') {
@@ -141,6 +144,12 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       <tbody>{bodyLinesJSX}</tbody>
     </Table>
   )
+}
+
+TsvTable.propTypes = {
+  parts: array.isRequired,
+  tsv: string.isRequired,
+  collapsed: bool.isRequired,
 }
 
 export default TsvTable

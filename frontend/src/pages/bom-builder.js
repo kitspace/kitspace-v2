@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 
 const BomBuilder = () => (
   <Page title="BOM Builder">

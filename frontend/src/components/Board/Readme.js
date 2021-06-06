@@ -1,4 +1,6 @@
 import React from 'react'
+import { string } from 'prop-types'
+// eslint-disable-next-line no-unused-vars
 import _JSXStyle from 'styled-jsx/style'
 
 const Readme = ({ renderedReadme }) => (
@@ -40,5 +42,9 @@ const Readme = ({ renderedReadme }) => (
     `}</style>
   </div>
 )
+
+Readme.propTypes = {
+  renderedReadme: string.isRequired,
+}
 
 export default Readme

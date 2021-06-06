@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax, no-param-reassign */
 export const formatTotalPrice = ({ amount, currency, quantity, shipping }) => {
   const numberFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -43,9 +44,9 @@ export const formatPrice = ({ amount, currency, quantity }) => {
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case 'setQuantity':
-      const n = parseInt(action.payload)
-      if (isNaN(n) || n < 1) {
+    case 'setQuantity': {
+      const n = parseInt(action.payload, 10)
+      if (Number.isNaN(n) || n < 1) {
         return state
       }
       return {
@@ -58,6 +59,7 @@ export const reducer = (state, action) => {
           shipping: state.shippingPrice,
         }),
       }
+    }
     case 'increment':
       return {
         ...state,
