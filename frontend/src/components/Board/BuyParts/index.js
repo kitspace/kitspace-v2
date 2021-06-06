@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { array, bool, func, number, object, string } from 'prop-types'
+import { array, bool, func, number, string } from 'prop-types'
 import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
 

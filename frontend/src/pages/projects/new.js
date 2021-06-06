@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { number, objectOf, shape, string } from 'prop-types'
+import { number, shape, string } from 'prop-types'
 import {
   Grid,
   Divider,
