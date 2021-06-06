@@ -163,7 +163,6 @@ const SignUpForm = () => {
     if (response.ok) {
       await reload()
     } else {
-      // eslint-disable-next-line no-console
       console.error('Failed to auto sign in the user.')
     }
   }

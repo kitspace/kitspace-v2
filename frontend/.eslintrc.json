@@ -29,6 +29,7 @@
   "plugins": ["react", "prettier"],
   "rules": {
     "react/forbid-prop-types": "off",
+    "no-console": ["error", {"allow": ["warn", "error"]}],
     "no-underscore-dangle": "off",
     "prettier/prettier": "error",
     "react/react-in-jsx-scope": "off",

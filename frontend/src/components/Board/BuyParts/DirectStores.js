@@ -38,7 +38,6 @@ const DirectStores = ({ items, multiplier }) => {
       }
       return code
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err)
       return 'Other'
     }

@@ -135,7 +135,6 @@ export const commitInitialFiles = async ({
   let filePaths = files.map(file => {
     let filePath = file.path
     if (!filePath) {
-      // eslint-disable-next-line no-console
       console.warn(
         'File object in commitInitialFiles does not have a "path" property. Using "name" instead:',
         file.name,

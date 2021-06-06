@@ -66,7 +66,6 @@ const TreeNode = ({
         .then(setNodeData)
         .catch(e => {
           setFailed(true)
-          // eslint-disable-next-line no-console
           console.error(e)
         })
     }
