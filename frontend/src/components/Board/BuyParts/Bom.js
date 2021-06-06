@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Icon, Table } from 'semantic-ui-react'
 import DoubleScrollBar from 'react-double-scrollbar'
 
-import { bool, func, number, object, string } from 'prop-types'
+import { array, bool, func, number, object, string } from 'prop-types'
 import styles from './Bom.module.scss'
 import TsvTable from './TsvTable'
 
@@ -71,7 +71,7 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
 
 Bom.propTypes = {
   length: number.isRequired,
-  parts: object.isRequired,
+  parts: array.isRequired,
   tsv: string.isRequired,
 }
 

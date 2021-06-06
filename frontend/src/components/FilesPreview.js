@@ -148,9 +148,10 @@ const FilesPreview = props => (
 )
 
 Tree.propTypes = {
-  files: arrayOf(object).isRequired,
+  /* eslint-disable react/require-default-props */
+  files: arrayOf(object),
   select: func.isRequired,
-  selected: object.isRequired,
+  selected: object,
   externallyMarked: string.isRequired,
   allowFiles: bool.isRequired,
   allowFolders: bool.isRequired,
@@ -159,7 +160,8 @@ Tree.propTypes = {
 TreeNode.propTypes = {
   node: object.isRequired,
   select: func.isRequired,
-  selected: object.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  selected: object,
   marked: bool.isRequired,
   externallyMarked: string.isRequired,
   allowFiles: bool.isRequired,

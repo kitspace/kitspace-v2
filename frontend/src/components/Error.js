@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import { number, string } from 'prop-types'
 
-import styles from './Error.scss'
+import styles from './Error.module.scss'
 
 const statusCodes = {
   400: 'Bad Request',

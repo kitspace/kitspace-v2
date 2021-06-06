@@ -35,7 +35,7 @@ const Search = ({ repos, q }) => {
   const username = user?.login || 'unknown user'
 
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFromModel)
-  const [query, setQuery] = useState(q || '')
+  const [query, setQuery] = useState(q)
   const { repos: projects } = useSearchRepos(query, { initialData: repos })
 
   useEffect(() => {
@@ -85,7 +85,11 @@ const Search = ({ repos, q }) => {
 
 Search.propTypes = {
   repos: array.isRequired,
-  q: string.isRequired,
+  q: string,
+}
+
+Search.defaultProps = {
+  q: '',
 }
 
 export default Search

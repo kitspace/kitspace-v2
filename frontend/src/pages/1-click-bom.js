@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Page from '@components/Page'
 
 const OneClickBom = () => (
-  <Page>
+  <Page title="1-click-bom">
     <p style={{ textAlign: 'center', minHeight: 86 }}>
       <a href="https://chrome.google.com/webstore/detail/1clickbom/mflpmlediakefinapghmabapjeippfdi">
         <img

@@ -41,7 +41,7 @@ import BuyParts from '@components/Board/BuyParts/index'
 import InfoBar from '@components/Board/InfoBar'
 import Readme from '@components/Board/Readme'
 import UploadModal from '@components/UploadModal'
-import { arrayOf, bool, objectOf, string, object } from 'prop-types'
+import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -104,7 +104,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
 const UpdateProject = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
-
+  const title = `${props.projectName} on Kitspace`
   const {
     repo: project,
     isLoading,
@@ -129,21 +129,21 @@ const UpdateProject = props => {
 
   if (isLoading) {
     return (
-      <Page>
+      <Page title={title}>
         <Loader active />
       </Page>
     )
   }
   if (isSyncing) {
     return (
-      <Page>
+      <Page title={title}>
         <Loader active>Syncing repository...</Loader>
       </Page>
     )
   }
   if (status === 'Failed') {
     return (
-      <Page>
+      <Page title={title}>
         <Loader active>Migration Failed, please try again later!</Loader>
       </Page>
     )
@@ -153,7 +153,7 @@ const UpdateProject = props => {
   }
 
   return (
-    <Page>
+    <Page title={title}>
       {props.isSynced && props.hasUploadPermission ? (
         <Message data-cy="sync-msg" color="yellow">
           <Message.Header>A synced repository!</Message.Header>
@@ -423,14 +423,14 @@ const AssetPlaceholder = ({ asset }) => (
 )
 
 UpdateForm.propTypes = {
-  repoFiles: arrayOf({}).isRequired,
+  repoFiles: arrayOf(object).isRequired,
   hasUploadPermission: bool.isRequired,
   hasIBOM: bool.isRequired,
   kitspaceYAML: objectOf(string).isRequired,
-  boardInfo: objectOf(string).isRequired,
+  boardInfo: object.isRequired,
   zipUrl: string.isRequired,
   renderedReadme: string.isRequired,
-  boardSpecs: objectOf(string).isRequired,
+  boardSpecs: objectOf(number).isRequired,
   isNew: bool.isRequired,
   previewOnly: bool.isRequired,
   owner: string.isRequired,
@@ -444,8 +444,8 @@ UpdateForm.propTypes = {
 }
 
 UpdateProject.propTypes = {
-  repo: objectOf(object).isRequired,
-  user: objectOf(string).isRequired,
+  repo: object.isRequired,
+  user: string.isRequired,
   projectName: string.isRequired,
   isEmpty: bool.isRequired,
   isSynced: bool.isRequired,

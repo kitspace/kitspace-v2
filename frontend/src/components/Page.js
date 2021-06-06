@@ -6,16 +6,16 @@ import { useRouter } from 'next/router'
 import Head from './Head'
 import NavBar from './NavBar'
 
-const Content = ({ reqSignIn, reqSignOut, children }) => {
+const Content = ({ requireSignIn, requireSignOut, children }) => {
   const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
-    if (reqSignIn && !isAuthenticated) {
+    if (requireSignIn && !isAuthenticated) {
       push(`/login?redirect=${pathname}`).then()
-    } else if (reqSignOut && isAuthenticated) {
+    } else if (requireSignOut && isAuthenticated) {
       push('/').then()
     } else {
       setLoading(false)
@@ -32,13 +32,11 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
   return <Container style={{ marginTop: 30 }}>{children}</Container>
 }
 
-const Page = ({ title, reqSignIn, reqSignOut, children }) => (
+const Page = ({ title, requireSignIn, requireSignOut, children }) => (
   <>
-    <Head>
-      <title>{title}</title>
-    </Head>
+    <Head title={title} />
     <NavBar />
-    <Content reqSignIn={reqSignIn} reqSignOut={reqSignOut}>
+    <Content requireSignIn={requireSignIn} requireSignOut={requireSignOut}>
       {children}
     </Content>
   </>
@@ -46,14 +44,19 @@ const Page = ({ title, reqSignIn, reqSignOut, children }) => (
 
 Page.propTypes = {
   title: string.isRequired,
-  reqSignIn: bool.isRequired,
-  reqSignOut: bool.isRequired,
+  requireSignIn: bool,
+  requireSignOut: bool,
   children: node.isRequired,
 }
 
+Page.defaultProps = {
+  requireSignIn: false,
+  requireSignOut: false,
+}
+
 Content.propTypes = {
-  reqSignIn: bool.isRequired,
-  reqSignOut: bool.isRequired,
+  requireSignIn: bool.isRequired,
+  requireSignOut: bool.isRequired,
   children: node.isRequired,
 }
 

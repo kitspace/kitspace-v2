@@ -21,7 +21,7 @@ const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname }) => {
         </div>
       </Button>
       {hasInteractiveBom && (
-        <Link passHref prefetch href={ibomUrl}>
+        <Link passHref href={ibomUrl}>
           <Button basic as="a">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <Header as="h4">

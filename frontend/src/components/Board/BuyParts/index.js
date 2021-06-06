@@ -40,7 +40,7 @@ const BuyParts = ({ project, lines, parts }) => {
           <RetailerButton
             name={name}
             adding={adding[name]}
-            extensionPresence={name === 'Digikey' ? false : extensionPresence}
+            extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
             buyParts={() => install1ClickBOM()}
             numberOfParts={numberOfParts}
             numberOfLines={numberOfLines}
@@ -282,7 +282,7 @@ const StoreIcon = ({ retailer, disabled }) => {
 BuyParts.propTypes = {
   project: string.isRequired,
   lines: array.isRequired,
-  parts: object.isRequired,
+  parts: array.isRequired,
 }
 
 AdjustQuantity.propTypes = {
@@ -299,11 +299,19 @@ RetailerButton.propTypes = {
   numberOfLines: number.isRequired,
   totalLines: number.isRequired,
   numberOfParts: number.isRequired,
-  adding: bool.isRequired,
+  adding: bool,
 }
+RetailerButton.defaultProps = {
+  adding: false,
+}
+
 StoreIcon.propTypes = {
   retailer: string.isRequired,
-  disabled: bool.isRequired,
+  disabled: bool,
+}
+
+StoreIcon.defaultProps = {
+  disabled: false,
 }
 
 export default BuyParts

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { objectOf, string } from 'prop-types'
+import { number, objectOf, shape, string } from 'prop-types'
 import {
   Grid,
   Divider,
@@ -308,13 +308,21 @@ const Sync = ({ user, csrf }) => {
 }
 
 Upload.propTypes = {
-  user: objectOf({ username: string, id: string }).isRequired,
+  user: shape({ username: string, id: number }),
   csrf: string.isRequired,
 }
 
+Upload.defaultProps = {
+  user: null,
+}
+
 Sync.propTypes = {
-  user: objectOf({ username: string, id: string }).isRequired,
+  user: shape({ username: string, id: number }),
   csrf: string.isRequired,
+}
+
+Sync.defaultProps = {
+  user: null,
 }
 
 export default New

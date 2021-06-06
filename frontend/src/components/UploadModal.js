@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React, { useEffect, useState, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { Button, Modal, Tab } from 'semantic-ui-react'
@@ -252,7 +253,7 @@ const UploadTab = ({
 UploadModal.propTypes = {
   kitspaceYAMLExists: bool.isRequired,
   files: array.isRequired,
-  kitspaceYAMLPreloaded: objectOf(string).isRequired,
+  kitspaceYAMLPreloaded: objectOf(string),
   projectFullname: string.isRequired,
   onDrop: func.isRequired,
 }
@@ -260,7 +261,7 @@ UploadModal.propTypes = {
 Tabs.propTypes = {
   files: array.isRequired,
   select: func.isRequired,
-  selected: object.isRequired,
+  selected: object,
   externallyMarked: string.isRequired,
   onTabChange: func.isRequired,
   onDrop: func.isRequired,
@@ -269,7 +270,7 @@ Tabs.propTypes = {
 UploadTab.propTypes = {
   files: array.isRequired,
   select: func.isRequired,
-  selected: object.isRequired,
+  selected: object,
   externallyMarked: string.isRequired,
   allowFiles: bool.isRequired,
   allowFolders: bool.isRequired,
