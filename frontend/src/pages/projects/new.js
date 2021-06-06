@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { objectOf, string } from 'prop-types'
 import {
   Grid,
   Divider,
@@ -79,24 +80,13 @@ const Upload = ({ user, csrf }) => {
   const [originalProjectName, setOriginalProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
 
-  useEffect(() => {
-    populate({ name: projectName }, true)
-  }, [projectName])
-
-  useEffect(() => {
-    if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
-      validateProjectName()
-    }
-  }, [form.name])
-
-  const onDrop = async files => {
-    const tempProjectName = slugifiedNameFromFiles(files)
+  const onDrop = async droppedFiles => {
+    const tempProjectName = slugifiedNameFromFiles(droppedFiles)
     const repo = await createRepo(tempProjectName, '', csrf)
 
     setProjectName(tempProjectName)
     setOriginalProjectName(tempProjectName)
-    setFiles(files)
+    setFiles(droppedFiles)
 
     if (repo === '') {
       // In the case of failing to create the repo, i.e., it already exits.
@@ -106,7 +96,7 @@ const Upload = ({ user, csrf }) => {
     } else {
       // Commit files to gitea server on drop
       await commitInitialFiles({
-        files,
+        files: droppedFiles,
         repo: `${user.username}/${tempProjectName}`,
         csrf,
       })
@@ -162,6 +152,17 @@ const Upload = ({ user, csrf }) => {
         }
       : null
   }
+
+  useEffect(() => {
+    populate({ name: projectName }, true)
+  }, [projectName])
+
+  useEffect(() => {
+    if (form.name) {
+      // noinspection JSIgnoredPromiseFromCall
+      validateProjectName()
+    }
+  }, [form.name])
 
   return (
     <>
@@ -304,6 +305,16 @@ const Sync = ({ user, csrf }) => {
       ) : null}
     </div>
   )
+}
+
+Upload.propTypes = {
+  user: objectOf({ username: string, id: string }).isRequired,
+  csrf: string.isRequired,
+}
+
+Sync.propTypes = {
+  user: objectOf({ username: string, id: string }).isRequired,
+  csrf: string.isRequired,
 }
 
 export default New

@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import React, { useEffect, useState } from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -5,6 +6,7 @@ import NextHead from 'next/head'
 
 import { Page } from '@components/Page'
 import { Loader } from 'semantic-ui-react'
+import { object, string } from 'prop-types'
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(
@@ -101,6 +103,11 @@ const IBOM = ({ html, pcbData }) => {
       <Loader active>Loading IBOM</Loader>
     </Page>
   )
+}
+
+IBOM.propTypes = {
+  html: string.isRequired,
+  pcbData: object.isRequired,
 }
 
 export default IBOM

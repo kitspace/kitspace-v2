@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 // TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
@@ -40,6 +41,7 @@ import BuyParts from '@components/Board/BuyParts/index'
 import InfoBar from '@components/Board/InfoBar'
 import Readme from '@components/Board/Readme'
 import UploadModal from '@components/UploadModal'
+import { arrayOf, bool, objectOf, string, object } from 'prop-types'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -156,7 +158,7 @@ const UpdateProject = props => {
         <Message data-cy="sync-msg" color="yellow">
           <Message.Header>A synced repository!</Message.Header>
           <Message.Content>
-            <p>Files uploading isn't supported for synced repositories.</p>
+            <p>Files uploading isn&apos;t supported for synced repositories.</p>
             Please commit files to the original git repository and it will be synced
             automatically.
           </Message.Content>
@@ -213,34 +215,6 @@ const UpdateForm = ({
   )
   const [canUpload, setCanUpload] = useState(hasUploadPermission && !previewOnly)
 
-  // Set values of the form as the values of the project stored in the Gitea repo
-  useEffect(() => {
-    populate({ name, description }, true)
-  }, [])
-
-  useEffect(() => {
-    // Handle client side rendering for uploading permissions,
-    // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
-    if (!hasUploadPermission) {
-      canCommit(projectFullname, user?.username).then(res => {
-        setCanUpload(res && !previewOnly)
-      })
-    }
-  }, [hasUploadPermission, previewOnly, user])
-
-  // A disjoint between the newly uploaded files(waiting for submission) and the files
-  // on the Gitea repo for this project
-  useEffect(() => {
-    setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
-  }, [remoteFiles, newlyUploadedDetails])
-
-  useEffect(() => {
-    if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
-      validateProjectName()
-    }
-  }, [form.name])
-
   const submit = async e => {
     e.preventDefault()
     setLoading(true)
@@ -270,9 +244,9 @@ const UpdateForm = ({
     })
     if (committedSuccessfully) {
       // After uploading the files successfully, revalidate the files from gitea, and clear `newlyUploadedDetails`
-      mutate().then(files => {
+      mutate().then(mutatedFiles => {
         setNewlyUploadedDetails([])
-        setAllFiles(files)
+        setAllFiles(mutatedFiles)
       })
     }
   }
@@ -284,13 +258,11 @@ const UpdateForm = ({
     // If the project name hasn't changed it's valid
     if (repoFullname === `${owner}/${name}`) {
       setIsValidProjectName(isValid)
-    } else {
+    } else if (!(await repoExists(repoFullname))) {
       // Otherwise check if there's no repo with same name
-      if (!(await repoExists(repoFullname))) {
-        setIsValidProjectName(isValid)
-      } else {
-        setIsValidProjectName(false)
-      }
+      setIsValidProjectName(isValid)
+    } else {
+      setIsValidProjectName(false)
     }
   }
 
@@ -308,6 +280,34 @@ const UpdateForm = ({
         }
       : null
   }
+
+  // Set values of the form as the values of the project stored in the Gitea repo
+  useEffect(() => {
+    populate({ name, description }, true)
+  }, [])
+
+  useEffect(() => {
+    // Handle client side rendering for uploading permissions,
+    // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
+    if (!hasUploadPermission) {
+      canCommit(projectFullname, user.username).then(res => {
+        setCanUpload(res && !previewOnly)
+      })
+    }
+  }, [hasUploadPermission, previewOnly, user])
+
+  // A disjoint between the newly uploaded files(waiting for submission) and the files
+  // on the Gitea repo for this project
+  useEffect(() => {
+    setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
+  }, [remoteFiles, newlyUploadedDetails])
+
+  useEffect(() => {
+    if (form.name) {
+      // noinspection JSIgnoredPromiseFromCall
+      validateProjectName()
+    }
+  }, [form.name])
 
   if (isLoading) return <Loader active />
 
@@ -421,5 +421,39 @@ const AssetPlaceholder = ({ asset }) => (
     No {asset} files were found, upload some.
   </div>
 )
+
+UpdateForm.propTypes = {
+  repoFiles: arrayOf({}).isRequired,
+  hasUploadPermission: bool.isRequired,
+  hasIBOM: bool.isRequired,
+  kitspaceYAML: objectOf(string).isRequired,
+  boardInfo: objectOf(string).isRequired,
+  zipUrl: string.isRequired,
+  renderedReadme: string.isRequired,
+  boardSpecs: objectOf(string).isRequired,
+  isNew: bool.isRequired,
+  previewOnly: bool.isRequired,
+  owner: string.isRequired,
+  name: string.isRequired,
+  description: string.isRequired,
+  projectFullname: string.isRequired,
+  url: string.isRequired,
+  boardAssetsExist: bool.isRequired,
+  readmeExists: bool.isRequired,
+  kitspaceYAMLExists: bool.isRequired,
+}
+
+UpdateProject.propTypes = {
+  repo: objectOf(object).isRequired,
+  user: objectOf(string).isRequired,
+  projectName: string.isRequired,
+  isEmpty: bool.isRequired,
+  isSynced: bool.isRequired,
+  hasUploadPermission: bool.isRequired,
+}
+
+AssetPlaceholder.propTypes = {
+  asset: string.isRequired,
+}
 
 export default UpdateProject

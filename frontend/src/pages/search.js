@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { string, array } from 'prop-types'
 
 import { Input, Form } from 'semantic-ui-react'
 
@@ -42,7 +43,11 @@ const Search = ({ repos, q }) => {
   }, [form])
 
   useEffect(() => {
-    query ? push(`/search?q=${query}`) : push(`/search`)
+    if (query) {
+      push(`/search?q=${query}`)
+    } else {
+      push(`/search`)
+    }
   }, [query])
 
   return (
@@ -76,6 +81,11 @@ const Search = ({ repos, q }) => {
       </div>
     </Page>
   )
+}
+
+Search.propTypes = {
+  repos: array.isRequired,
+  q: string.isRequired,
 }
 
 export default Search

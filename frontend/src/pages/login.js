@@ -24,6 +24,7 @@ const Login = () => {
   const { query } = useRouter()
 
   useEffect(() => {
+    // eslint-disable-next-line no-prototype-builtins
     if (query.hasOwnProperty('sign_up')) {
       setOpenPane(0)
     } else {
@@ -150,6 +151,23 @@ const SignUpForm = () => {
   const [apiResponse, setApiResponse] = useState({})
   const { reload } = useRouter()
 
+  const autoSignIn = async (username, password) => {
+    const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
+    const response = await fetch(signInEndpoint, {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+
+    if (response.ok) {
+      await reload()
+    } else {
+      // eslint-disable-next-line no-console
+      console.error('Failed to auto sign in the user.')
+    }
+  }
+
   const submit = async () => {
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -169,23 +187,6 @@ const SignUpForm = () => {
         error: error || 'API error',
         message: message || 'Something went wrong. Please, try again later.',
       })
-    }
-  }
-
-  const autoSignIn = async (username, password) => {
-    const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
-    const response = await fetch(signInEndpoint, {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    })
-
-    if (response.ok) {
-      await reload()
-    } else {
-      // eslint-disable-next-line no-console
-      console.error('Failed to auto sign in the user.')
     }
   }
 

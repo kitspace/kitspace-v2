@@ -11,6 +11,7 @@ const BomBuilder = () => (
       alternatives across distributors and lets you add entire bill of materials
       directly to shopping carts by connecting up to{' '}
       <Link href="/1-click-bom">
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
         <a>1-click BOM</a>
       </Link>
     </p>
@@ -24,6 +25,7 @@ const BomBuilder = () => (
       A quick demo of the alpha version
     </h2>
     <iframe
+      title="A quick demo of the alpha version"
       style={{ maxWidth: '90%' }}
       width="560"
       height="315"
@@ -37,6 +39,7 @@ const BomBuilder = () => (
       A demo of all the features of the beta version
     </h2>
     <iframe
+      title="A demo of all the features of the beta version"
       style={{ maxWidth: '90%' }}
       width="560"
       height="315"

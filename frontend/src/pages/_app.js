@@ -31,6 +31,7 @@ import 'semantic-ui-css/components/table.min.css'
 
 import './_app.scss'
 import AuthProvider from '@contexts/AuthContext'
+import { node, objectOf, bool } from 'prop-types'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setSession = session ? (
@@ -50,6 +51,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
     />
   ) : null
   if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-param-reassign
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
@@ -85,6 +87,13 @@ function ErrorMessage() {
       </Message>
     </div>
   )
+}
+
+KitspaceApp.propTypes = {
+  Component: node.isRequired,
+  pageProps: objectOf.isRequired,
+  session: objectOf.isRequired,
+  isStaticFallback: bool.isRequired,
 }
 
 export default KitspaceApp

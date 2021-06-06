@@ -1,4 +1,5 @@
 import React from 'react'
+import { number } from 'prop-types'
 
 import Head from '@components/Head'
 import NavBar from '@components/NavBar'
@@ -13,14 +14,14 @@ const ErrorPage = ({ statusCode }) => (
 )
 
 ErrorPage.getInitialProps = ({ res, err, query }) => {
-  const statusCode = query.staticStatusCode
-    ? query.staticStatusCode
-    : res
-    ? res.statusCode
-    : err
-    ? err.statusCode
-    : 404
+  const statusCode =
+    query?.staticStatusCode ?? res?.staticStatusCode ?? err?.statusCode ?? 404
+
   return { statusCode }
+}
+
+ErrorPage.propTypes = {
+  statusCode: number.isRequired,
 }
 
 export default ErrorPage

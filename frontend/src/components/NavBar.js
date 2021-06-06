@@ -7,7 +7,7 @@ import styles from './NavBar.module.scss'
 
 const logoSrc = '/static/logo.svg'
 
-export const NavBar = () => {
+const NavBar = () => {
   const { pathname } = useRouter()
 
   const isSubmitRoute = RegExp('^/projects/new').test(pathname)

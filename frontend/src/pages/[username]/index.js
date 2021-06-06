@@ -1,5 +1,6 @@
 import React from 'react'
 import { isEmpty } from 'lodash'
+import { arrayOf, string } from 'prop-types'
 
 import { Page } from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
@@ -36,6 +37,11 @@ const User = ({ userRepos, username }) => {
       </div>
     </Page>
   )
+}
+
+User.propTypes = {
+  userRepos: arrayOf({}).isRequired,
+  username: string.isRequired,
 }
 
 export default User
