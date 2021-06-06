@@ -15,7 +15,7 @@ import {
 
 import { Page } from '@components/Page'
 import useForm from '@hooks/useForm'
-import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
+import ProjectUpdateFormModel from '@models/ProjectUpdateForm'
 import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import { commitFiles } from '@utils/giteaInternalApi'
 import {

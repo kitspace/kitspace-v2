@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-import { SignInFormModel } from '../../src/models/SignInForm'
+import SignInFormModel from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
   before(() => {

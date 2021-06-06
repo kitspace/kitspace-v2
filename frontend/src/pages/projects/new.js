@@ -22,8 +22,8 @@ import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
-import { ExistingProjectFromModel } from '@models/ExistingProjectForm'
-import { SyncRepoFromModel } from '@models/SyncRepoForm'
+import ExistingProjectFromModel from '@models/ExistingProjectForm'
+import SyncRepoFromModel from '@models/SyncRepoForm'
 import styles from './new.module.scss'
 
 const New = () => {

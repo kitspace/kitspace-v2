@@ -14,9 +14,9 @@ import {
 
 import { Page } from '@components/Page'
 import useForm from '@hooks/useForm'
-import { SignInFormModel } from '@models/SignInForm'
+import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'
-import { SignUpFormModel } from '@models/SignUpForm'
+import SignUpFormModel from '@models/SignUpForm'
 import { isEmpty } from 'lodash'
 
 const Login = () => {

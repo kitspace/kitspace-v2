@@ -8,7 +8,7 @@ import useForm from '@hooks/useForm'
 import { AuthContext } from '@contexts/AuthContext'
 import { getAllRepos, searchRepos } from '@utils/giteaApi'
 import { useSearchRepos } from '@hooks/Gitea'
-import { SearchFromModel } from '@models/SearchFrom'
+import SearchFromModel from '@models/SearchFrom'
 import ProjectCard from '@components/ProjectCard'
 import { useRouter } from 'next/router'
 
