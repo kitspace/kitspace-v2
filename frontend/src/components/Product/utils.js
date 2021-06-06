@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-syntax, no-param-reassign */
+/* eslint-disable no-restricted-syntax */
 export const formatTotalPrice = ({ amount, currency, quantity, shipping }) => {
   const numberFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',

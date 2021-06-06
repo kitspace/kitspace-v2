@@ -30,6 +30,7 @@
   "rules": {
     "no-console": ["error", {"allow": ["warn", "error"]}],
     "no-unused-vars": ["error", {"varsIgnorePattern": "^_JSXStyle$"}],
+    "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "no-underscore-dangle": "off",
     "prettier/prettier": "error",

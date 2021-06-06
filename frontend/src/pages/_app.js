@@ -49,7 +49,6 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
     />
   ) : null
   if (typeof window !== 'undefined') {
-    // eslint-disable-next-line no-param-reassign
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (

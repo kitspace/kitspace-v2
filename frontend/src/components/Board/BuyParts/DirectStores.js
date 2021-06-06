@@ -56,7 +56,6 @@ const DirectStores = ({ items, multiplier }) => {
   const tildeDelimiter = part => `${part.sku}~${part.quantity}`
 
   const digikeyPartRenderer = (part, index) => {
-    // eslint-disable-next-line no-param-reassign
     index += 1
     return (
       <span key={`digikeyRenderer${index}`}>

@@ -59,7 +59,6 @@ const TreeNode = ({
 
   useEffect(() => {
     // Fetch files inside a directory when toggling it in the tree preview.
-    // eslint-disable-next-line no-prototype-builtins
     if (node.hasOwnProperty('url')) {
       fetch(node.url)
         .then(r => r.json())
