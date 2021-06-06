@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 import React, { useEffect, useState } from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -56,6 +55,7 @@ const IBOM = ({ html, pcbData }) => {
   iii. make the title anchor tag linking to the project page.
   iv.  prefetch project page.
    */
+  /* eslint-disable no-template-curly-in-string */
   const titleTemplate = '`<a href=/${pcbTitle}>${pcbTitle}</a>`'
   const hrefTemplate = '`/${pcbTitle}`'
   const initScript = `
@@ -90,11 +90,7 @@ const IBOM = ({ html, pcbData }) => {
           <script type="text/javascript">{initScript}</script>
           <link rel="stylesheet" href="/static/IBOM/index.css" />
         </NextHead>
-        <div
-          className="ibom"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
       </Page>
     )
   }

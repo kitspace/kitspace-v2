@@ -5,10 +5,7 @@ import _JSXStyle from 'styled-jsx/style'
 
 const Readme = ({ renderedReadme }) => (
   <div id="readme">
-    <div
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: renderedReadme }}
-    />
+    <div dangerouslySetInnerHTML={{ __html: renderedReadme }} />
     <style jsx global>{`
       #readme {
         margin: 2rem 0;

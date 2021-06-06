@@ -21,10 +21,7 @@ const Error = ({ statusCode, title }) => (
       </title>
     </Head>
     <div>
-      <style
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }}
-      />
+      <style dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }} />
       {statusCode ? <h1 className={styles.heading}>{statusCode}</h1> : null}
       <div className={styles.desc}>
         <h2 style={styles.title}>{title}.</h2>
