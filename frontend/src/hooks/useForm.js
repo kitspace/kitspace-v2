@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { AuthContext } from '@contexts/AuthContext'
 
 export default function UseForm(schema) {
@@ -7,9 +7,9 @@ export default function UseForm(schema) {
 
   const onChange = e => {
     e.persist()
-    setForm(form => ({
+    setForm(prevForm => ({
       _csrf: csrf,
-      ...form,
+      ...prevForm,
       [e.target.name]:
         e.target.type === 'checkbox' ? e.target.checked : e.target.value,
     }))

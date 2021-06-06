@@ -59,13 +59,6 @@ export const useRepo = (fullname, swrOpts = {}) => {
 }
 
 /**
- * A hook to get all repos on gitea
- * @param swrOpts{swrOptions}
- * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
- */
-export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
-
-/**
  * A hook to search all repos
  * @param sort{string}
  * @param order{string}
@@ -95,6 +88,13 @@ export const useSearchRepos = (
     mutate,
   }
 }
+
+/**
+ * A hook to get all repos on gitea
+ * @param swrOpts{swrOptions}
+ * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
+ */
+export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
 
 /**
  * A hook to get repos owned by as user
@@ -146,6 +146,9 @@ export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
 
   // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
   // Check if it returned repo details and replace it with an empty array.
+
+  // This is for sure not a builtin check.
+  // eslint-disable-next-line no-prototype-builtins
   if (data?.hasOwnProperty('owner')) {
     return {
       files: [],
