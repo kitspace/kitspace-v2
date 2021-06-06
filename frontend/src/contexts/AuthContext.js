@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react'
+import { node } from 'prop-types'
 
 export const AuthContext = createContext({
   isAuthenticated: false,
@@ -6,16 +7,16 @@ export const AuthContext = createContext({
   csrf: '',
 })
 
-export default function AuthProvider(props) {
+const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false)
   const [user, setUser] = useState(null)
   const [csrf, setCsrf] = useState('')
 
   useEffect(() => {
-    const csrf = window.session._csrf
-    setCsrf(csrf)
+    setCsrf(window.session._csrf)
   }, [user, auth])
 
+  // eslint-disable-next-line no-shadow
   const authorize = user => {
     setAuth(true)
     setUser(user)
@@ -38,7 +39,13 @@ export default function AuthProvider(props) {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated: auth, user, csrf }}>
-      {props.children}
+      {children}
     </AuthContext.Provider>
   )
 }
+
+AuthProvider.propTypes = {
+  children: node.isRequired,
+}
+
+export default AuthProvider
