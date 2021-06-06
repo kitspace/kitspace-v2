@@ -101,6 +101,7 @@ const Upload = ({ user, csrf }) => {
     if (repo === '') {
       // In the case of failing to create the repo, i.e., it already exits.
       setModalOpen(true)
+      // eslint-disable-next-line no-console
       console.error('Project already exists!')
     } else {
       // Commit files to gitea server on drop

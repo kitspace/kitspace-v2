@@ -25,7 +25,10 @@ export default class Error extends React.Component {
           </title>
         </Head>
         <div>
-          <style dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }} />
+          <style
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }}
+          />
           {statusCode ? <h1 style={styles.h1}>{statusCode}</h1> : null}
           <div style={styles.desc}>
             <h2 style={styles.h2}>{title}.</h2>
