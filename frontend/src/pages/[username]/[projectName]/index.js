@@ -220,7 +220,7 @@ const UpdateForm = ({
     // Handle client side rendering for uploading permissions,
     // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
     if (!hasUploadPermission) {
-      canCommit(projectFullname, user.username).then(res => {
+      canCommit(projectFullname, user?.username).then(res => {
         setCanUpload(res && !previewOnly)
       })
     }
