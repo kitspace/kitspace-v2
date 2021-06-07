@@ -183,7 +183,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browsers: [chrome, firefox, edge]
+        browsers: [chrome, edge, electron, firefox]
 
     steps:
       - name: Check out the repo
