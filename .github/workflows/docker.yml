@@ -180,6 +180,10 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - build
+    strategy:
+      fail-fast: false
+      matrix:
+        browsers: [chrome, edge, electron, firefox]
 
     steps:
       - name: Check out the repo
@@ -199,6 +203,17 @@ jobs:
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+      - name: Install Microsoft Edge
+        if: ${{ matrix.browsers == 'edge' }}
+        shell: bash
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
+          sudo rm microsoft.gpg
+          sudo apt update && sudo apt install microsoft-edge-beta
+
 
       - name: Configure /etc/hosts
         shell: bash
@@ -232,12 +247,14 @@ jobs:
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
-          command: yarn e2e --record --browser chrome
-          working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           # This value is in seconds
-          wait-on-timeout: 120
+          wait-on-timeout: 120         
+          working-directory: frontend
+          record: true
+          browser: ${{ matrix.browsers }}
+ 
 
   publish:
     name: Tag "latest"
