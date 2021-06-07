@@ -12,7 +12,8 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
   const jlcpcbUrl = `https://cart.jlcpcb.com/quote?fileurl=${zipUrl}&from=kitspace`
 
   // TODO
-  const trackClick = () => () => {
+  // eslint-disable-next-line no-unused-vars
+  const trackClick = vendor => e => {
     // window.plausible('Order PCBs', {
     //   props: { project: this.props.project, vendor },
     // })
