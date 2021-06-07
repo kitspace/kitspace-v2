@@ -180,6 +180,10 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
       - build
+    strategy:
+      fail-fast: false
+      matrix:
+        browsers: [chrome]
 
     steps:
       - name: Check out the repo
@@ -238,7 +242,7 @@ jobs:
           wait-on-timeout: 120         
           working-directory: frontend
           record: true
-          browser: chrome
+          browser: ${{ matrix.browser }}
  
 
   publish:
