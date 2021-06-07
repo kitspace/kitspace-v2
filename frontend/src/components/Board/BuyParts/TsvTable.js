@@ -37,7 +37,6 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     const number = contents[1]
     if (number !== '') {
       const part =
-        // eslint-disable-next-line array-callback-return, consistent-return
         parts.reduce((accumulator, currentPart) => {
           if (accumulator) {
             return accumulator
@@ -45,6 +44,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
           if (currentPart && currentPart.mpn && currentPart.mpn.part === number) {
             return currentPart
           }
+          return null
         }, null) || {}
       return cells.map(cell => (
         <MpnPopup

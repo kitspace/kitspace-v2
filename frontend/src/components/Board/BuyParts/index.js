@@ -20,7 +20,6 @@ const BuyParts = ({ project, lines, parts }) => {
 
   const retailerList = OneClickBom.getRetailers()
   const retailerButtons = retailerList
-    // eslint-disable-next-line array-callback-return, consistent-return
     .map(name => {
       const [numberOfLines, numberOfParts] = lines.reduce(
         ([numOfLines, numOfParts], line) => {
@@ -45,6 +44,7 @@ const BuyParts = ({ project, lines, parts }) => {
           />
         )
       }
+      return null
     })
     .filter(l => l != null)
 
