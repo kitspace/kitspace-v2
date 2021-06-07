@@ -28,6 +28,16 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
   const maxFiles = !allowFolders ? 1 : 0
   const filesButtonContent = !allowFolders ? 'Select a file' : 'Select files'
 
+  const dropZoneText = () => {
+    if (!allowFiles) {
+      return 'a folder'
+    }
+    if (!allowFolders) {
+      return 'a file'
+    }
+    return 'files or a folder'
+  }
+
   const DropZoneConfig = {
     onDropAccepted: _onDrop,
     noClick: true,
@@ -89,7 +99,6 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
   }, [FilePickerRejections, FolderPickerRejections])
 
   return (
-    /* eslint-disable no-nested-ternary */
     <div
       {...getRootProps({ className: 'dropzone' })}
       style={style || { margin: '2rem 0' }}
@@ -97,8 +106,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
       <Toaster />
       <input {...getInputProps()} />
       <p>
-        Drop{' '}
-        {!allowFiles ? 'a folder' : !allowFolders ? 'a file' : 'files or a folder'}
+        Drop {dropZoneText()}
         {' here, or'}
       </p>
       <div
