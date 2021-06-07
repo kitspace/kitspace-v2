@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { arrayOf, func, node, number as numberType, object } from 'prop-types'
+import { func, node, object } from 'prop-types'
 import { Popup, Image, Table, Icon, Button } from 'semantic-ui-react'
 import { flattenDeep } from 'lodash'
 
 import styles from './MpnPopup.module.scss'
 
-const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
+const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
   const [expanded, setExpanded] = useState(false)
 
   const popUpProps = {
@@ -16,7 +16,6 @@ const MpnPopup = ({ onOpen, onClose, trigger, part, offset }) => {
     trigger,
     onOpen,
     onClose,
-    offset,
     flowing: true,
   }
 
@@ -129,8 +128,6 @@ MpnPopup.propTypes = {
   onClose: func.isRequired,
   trigger: node.isRequired,
   part: object.isRequired,
-  // eslint-disable-next-line react/require-default-props
-  offset: arrayOf(numberType),
 }
 
 export default MpnPopup
