@@ -232,12 +232,14 @@ jobs:
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
-          command: yarn e2e --record --browser chrome
-          working-directory: frontend
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           # This value is in seconds
-          wait-on-timeout: 120
+          wait-on-timeout: 120         
+          working-directory: frontend
+          record: true
+          browser: chrome
+ 
 
   publish:
     name: Tag "latest"
