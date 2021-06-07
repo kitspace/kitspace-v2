@@ -12,9 +12,9 @@ import {
   TextArea,
 } from 'semantic-ui-react'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import useForm from '@hooks/useForm'
-import { ProjectUpdateFormModel } from '@models/ProjectUpdateForm'
+import ProjectUpdateFormModel from '@models/ProjectUpdateForm'
 import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import { commitFiles } from '@utils/giteaInternalApi'
 import {
@@ -40,6 +40,7 @@ import BuyParts from '@components/Board/BuyParts/index'
 import InfoBar from '@components/Board/InfoBar'
 import Readme from '@components/Board/Readme'
 import UploadModal from '@components/UploadModal'
+import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -95,15 +96,14 @@ export const getServerSideProps = async ({ params, query, req }) => {
         kitspaceYAMLExists,
       },
     }
-  } else {
-    return { notFound: true }
   }
+  return { notFound: true }
 }
 
 const UpdateProject = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
-
+  const title = `${props.projectName} on Kitspace`
   const {
     repo: project,
     isLoading,
@@ -128,33 +128,36 @@ const UpdateProject = props => {
 
   if (isLoading) {
     return (
-      <Page>
+      <Page title={title}>
         <Loader active />
       </Page>
     )
-  } else if (isSyncing) {
+  }
+  if (isSyncing) {
     return (
-      <Page>
+      <Page title={title}>
         <Loader active>Syncing repository...</Loader>
       </Page>
     )
-  } else if (status === 'Failed') {
+  }
+  if (status === 'Failed') {
     return (
-      <Page>
+      <Page title={title}>
         <Loader active>Migration Failed, please try again later!</Loader>
       </Page>
     )
-  } else if (isError) {
+  }
+  if (isError) {
     return <ErrorPage statusCode={404} />
   }
 
   return (
-    <Page>
+    <Page title={title}>
       {props.isSynced && props.hasUploadPermission ? (
         <Message data-cy="sync-msg" color="yellow">
           <Message.Header>A synced repository!</Message.Header>
           <Message.Content>
-            <p>Files uploading isn't supported for synced repositories.</p>
+            <p>Files uploading isn&apos;t supported for synced repositories.</p>
             Please commit files to the original git repository and it will be synced
             automatically.
           </Message.Content>
@@ -211,34 +214,6 @@ const UpdateForm = ({
   )
   const [canUpload, setCanUpload] = useState(hasUploadPermission && !previewOnly)
 
-  // Set values of the form as the values of the project stored in the Gitea repo
-  useEffect(() => {
-    populate({ name, description }, true)
-  }, [])
-
-  useEffect(() => {
-    // Handle client side rendering for uploading permissions,
-    // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
-    if (!hasUploadPermission) {
-      canCommit(projectFullname, user?.username).then(res => {
-        setCanUpload(res && !previewOnly)
-      })
-    }
-  }, [hasUploadPermission, previewOnly, user])
-
-  // A disjoint between the newly uploaded files(waiting for submission) and the files
-  // on the Gitea repo for this project
-  useEffect(() => {
-    setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
-  }, [remoteFiles, newlyUploadedDetails])
-
-  useEffect(() => {
-    if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
-      validateProjectName()
-    }
-  }, [form.name])
-
   const submit = async e => {
     e.preventDefault()
     setLoading(true)
@@ -268,9 +243,9 @@ const UpdateForm = ({
     })
     if (committedSuccessfully) {
       // After uploading the files successfully, revalidate the files from gitea, and clear `newlyUploadedDetails`
-      mutate().then(files => {
+      mutate().then(mutatedFiles => {
         setNewlyUploadedDetails([])
-        setAllFiles(files)
+        setAllFiles(mutatedFiles)
       })
     }
   }
@@ -282,13 +257,11 @@ const UpdateForm = ({
     // If the project name hasn't changed it's valid
     if (repoFullname === `${owner}/${name}`) {
       setIsValidProjectName(isValid)
-    } else {
+    } else if (!(await repoExists(repoFullname))) {
       // Otherwise check if there's no repo with same name
-      if (!(await repoExists(repoFullname))) {
-        setIsValidProjectName(isValid)
-      } else {
-        setIsValidProjectName(false)
-      }
+      setIsValidProjectName(isValid)
+    } else {
+      setIsValidProjectName(false)
     }
   }
 
@@ -298,15 +271,42 @@ const UpdateForm = ({
 
     if (formErrors) {
       return formErrors
-    } else {
-      return !isValidProjectName
-        ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
-        : null
     }
+    return !isValidProjectName
+      ? {
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
+      : null
   }
+
+  // Set values of the form as the values of the project stored in the Gitea repo
+  useEffect(() => {
+    populate({ name, description }, true)
+  }, [])
+
+  useEffect(() => {
+    // Handle client side rendering for uploading permissions,
+    // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
+    if (!hasUploadPermission) {
+      canCommit(projectFullname, user?.username).then(res => {
+        setCanUpload(res && !previewOnly)
+      })
+    }
+  }, [hasUploadPermission, previewOnly, user])
+
+  // A disjoint between the newly uploaded files(waiting for submission) and the files
+  // on the Gitea repo for this project
+  useEffect(() => {
+    setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
+  }, [remoteFiles, newlyUploadedDetails])
+
+  useEffect(() => {
+    if (form.name) {
+      // noinspection JSIgnoredPromiseFromCall
+      validateProjectName()
+    }
+  }, [form.name])
 
   if (isLoading) return <Loader active />
 
@@ -346,7 +346,7 @@ const UpdateForm = ({
           <>
             <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
             <BuyParts
-              project={'hard'}
+              project="hard"
               lines={boardInfo?.bom?.lines}
               parts={boardInfo?.bom?.parts}
             />
@@ -406,21 +406,53 @@ const UpdateForm = ({
   )
 }
 
-const AssetPlaceholder = ({ asset }) => {
-  return (
-    <div
-      style={{
-        width: '70%',
-        margin: 'auto',
-        textAlign: 'center',
-        padding: '5em',
-        borderStyle: 'dashed',
-        borderRadius: '0.8em',
-      }}
-    >
-      No {asset} files were found, upload some.
-    </div>
-  )
+const AssetPlaceholder = ({ asset }) => (
+  <div
+    style={{
+      width: '70%',
+      margin: 'auto',
+      textAlign: 'center',
+      padding: '5em',
+      borderStyle: 'dashed',
+      borderRadius: '0.8em',
+    }}
+  >
+    No {asset} files were found, upload some.
+  </div>
+)
+
+UpdateForm.propTypes = {
+  repoFiles: arrayOf(object).isRequired,
+  hasUploadPermission: bool.isRequired,
+  hasIBOM: bool.isRequired,
+  kitspaceYAML: objectOf(string).isRequired,
+  boardInfo: object.isRequired,
+  zipUrl: string.isRequired,
+  renderedReadme: string.isRequired,
+  boardSpecs: objectOf(number).isRequired,
+  isNew: bool.isRequired,
+  previewOnly: bool.isRequired,
+  owner: string.isRequired,
+  name: string.isRequired,
+  description: string.isRequired,
+  projectFullname: string.isRequired,
+  url: string.isRequired,
+  boardAssetsExist: bool.isRequired,
+  readmeExists: bool.isRequired,
+  kitspaceYAMLExists: bool.isRequired,
+}
+
+UpdateProject.propTypes = {
+  repo: object.isRequired,
+  user: string.isRequired,
+  projectName: string.isRequired,
+  isEmpty: bool.isRequired,
+  isSynced: bool.isRequired,
+  hasUploadPermission: bool.isRequired,
+}
+
+AssetPlaceholder.propTypes = {
+  asset: string.isRequired,
 }
 
 export default UpdateProject

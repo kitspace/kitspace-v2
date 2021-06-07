@@ -28,6 +28,16 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
   const maxFiles = !allowFolders ? 1 : 0
   const filesButtonContent = !allowFolders ? 'Select a file' : 'Select files'
 
+  const dropZoneText = () => {
+    if (!allowFiles) {
+      return 'a folder'
+    }
+    if (!allowFolders) {
+      return 'a file'
+    }
+    return 'files or a folder'
+  }
+
   const DropZoneConfig = {
     onDropAccepted: _onDrop,
     noClick: true,
@@ -96,8 +106,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
       <Toaster />
       <input {...getInputProps()} />
       <p>
-        Drop{' '}
-        {!allowFiles ? 'a folder' : !allowFolders ? 'a file' : 'files or a folder'}
+        Drop {dropZoneText()}
         {' here, or'}
       </p>
       <div
@@ -147,8 +156,8 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
 }
 
 DropZone.propTypes = {
-  onDrop: func,
-  style: object,
+  onDrop: func.isRequired,
+  style: object.isRequired,
   allowFolders: bool,
   allowFiles: bool,
 }

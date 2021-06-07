@@ -1,6 +1,8 @@
 import Joi from 'joi'
 
-export const ExistingProjectFromModel = Joi.object({
+const ExistingProjectFromModel = Joi.object({
   _csrf: Joi.string(),
   name: Joi.string().required().max(60),
 })
+
+export default ExistingProjectFromModel

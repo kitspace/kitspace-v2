@@ -1,6 +1,5 @@
 import slugify from 'slugify'
 import path from 'path'
-import { groupBy, zip } from 'lodash'
 import { matcher } from 'micromatch'
 import cheerio from 'cheerio'
 
@@ -34,7 +33,7 @@ export const slugifiedNameFromFiles = files => {
  * @param {string=} path a path(gitea path) to search into, if not passed searches repo path.
  * @returns {string} the readme file name if found and an empty string if no readme file were found.
  */
-export const findReadme = (repoFiles, path) => {
+export const findReadme = repoFiles => {
   // TODO: implement path search.
   /**
    * @type {string[]}
@@ -100,13 +99,13 @@ export const b64toBlob = base64 => fetch(base64).then(res => res.blob())
  * urlToName('https://github.com/emard/ulx3s/')
  */
 export const urlToName = url => {
-  url = new URL(url)
-  return path.basename(url.pathname, path.extname(url.pathname))
+  const urlObj = new URL(url)
+  return path.basename(urlObj.pathname, path.extname(urlObj.pathname))
 }
 
 /**
  * Get the project name from the `path` object in `next.router`.
- * @param path
+ * @param projectPath
  * @returns {string}
  * @example
  * // returns 'testUser/cool-project"
@@ -115,8 +114,8 @@ export const urlToName = url => {
  * // returns 'testUser/cool-project"
  * projectNameFromPath('/testUser/cool-project?create=true')
  */
-export const projectNameFromPath = path => {
-  const pathWithQuery = path.split('/').slice(1).join('/')
+export const projectNameFromPath = projectPath => {
+  const pathWithQuery = projectPath.split('/').slice(1).join('/')
   // In case if there's a query string remove it
   return pathWithQuery.split('?')[0]
 }
@@ -126,8 +125,8 @@ export const projectNameFromPath = path => {
  * @param file
  * @returns {Promise<string>}
  */
-export const readFileContent = file => {
-  return new Promise(resolve => {
+export const readFileContent = file =>
+  new Promise(resolve => {
     const reader = new FileReader()
     reader.onload = () => {
       const content = reader.result
@@ -135,7 +134,6 @@ export const readFileContent = file => {
     }
     reader.readAsDataURL(file)
   })
-}
 
 /**
  * Convert Megabytes to bytes

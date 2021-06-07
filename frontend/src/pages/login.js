@@ -12,11 +12,11 @@ import {
   Tab,
 } from 'semantic-ui-react'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import useForm from '@hooks/useForm'
-import { SignInFormModel } from '@models/SignInForm'
+import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'
-import { SignUpFormModel } from '@models/SignUpForm'
+import SignUpFormModel from '@models/SignUpForm'
 import { isEmpty } from 'lodash'
 
 const Login = () => {
@@ -145,11 +145,26 @@ const SignInForm = () => {
 const SignUpForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
-  const { form, onChange, isValid, errors, formatErrorPrompt } = useForm(
-    SignUpFormModel,
-  )
+  const { form, onChange, isValid, errors, formatErrorPrompt } =
+    useForm(SignUpFormModel)
   const [apiResponse, setApiResponse] = useState({})
   const { reload } = useRouter()
+
+  const autoSignIn = async (username, password) => {
+    const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
+    const response = await fetch(signInEndpoint, {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    })
+
+    if (response.ok) {
+      await reload()
+    } else {
+      console.error('Failed to auto sign in the user.')
+    }
+  }
 
   const submit = async () => {
     const response = await fetch(endpoint, {
@@ -170,22 +185,6 @@ const SignUpForm = () => {
         error: error || 'API error',
         message: message || 'Something went wrong. Please, try again later.',
       })
-    }
-  }
-
-  const autoSignIn = async (username, password) => {
-    const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
-    const response = await fetch(signInEndpoint, {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    })
-
-    if (response.ok) {
-      await reload()
-    } else {
-      console.error('Failed to auto sign in the user.')
     }
   }
 

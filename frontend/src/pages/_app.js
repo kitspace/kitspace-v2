@@ -28,14 +28,15 @@ import 'semantic-ui-css/components/list.min.css'
 import 'semantic-ui-css/components/modal.min.css'
 import 'semantic-ui-css/components/dimmer.min.css'
 import 'semantic-ui-css/components/table.min.css'
-import 'semantic-ui-css/components/checkbox.min.css'
 
 import './_app.scss'
 import AuthProvider from '@contexts/AuthContext'
+import { bool, func, object } from 'prop-types'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setSession = session ? (
     <script
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: `window.session = ${JSON.stringify(session)};`,
       }}
@@ -43,6 +44,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   ) : null
   const setStaticFallback = isStaticFallback ? (
     <script
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: `window.isStaticFallback = ${JSON.stringify(isStaticFallback)};`,
       }}
@@ -84,6 +86,18 @@ function ErrorMessage() {
       </Message>
     </div>
   )
+}
+
+KitspaceApp.propTypes = {
+  Component: func.isRequired,
+  pageProps: object.isRequired,
+  session: object,
+  isStaticFallback: bool,
+}
+
+KitspaceApp.defaultProps = {
+  isStaticFallback: false,
+  session: null,
 }
 
 export default KitspaceApp

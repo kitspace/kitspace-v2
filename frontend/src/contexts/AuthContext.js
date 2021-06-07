@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react'
+import { node } from 'prop-types'
 
 export const AuthContext = createContext({
   isAuthenticated: false,
@@ -6,24 +7,23 @@ export const AuthContext = createContext({
   csrf: '',
 })
 
-export default function AuthProvider(props) {
+const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false)
-  const [user, setUser] = useState(null)
+  const [authenticatedUser, setAuthenticatedUser] = useState(null)
   const [csrf, setCsrf] = useState('')
 
   useEffect(() => {
-    const csrf = window.session._csrf
-    setCsrf(csrf)
-  }, [user, auth])
+    setCsrf(window.session._csrf)
+  }, [authenticatedUser, auth])
 
   const authorize = user => {
     setAuth(true)
-    setUser(user)
+    setAuthenticatedUser(user)
   }
 
   const deAuthorize = () => {
     setAuth(false)
-    setUser(null)
+    setAuthenticatedUser(null)
   }
 
   useEffect(() => {
@@ -37,8 +37,16 @@ export default function AuthProvider(props) {
   })
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: auth, user, csrf }}>
-      {props.children}
+    <AuthContext.Provider
+      value={{ isAuthenticated: auth, user: authenticatedUser, csrf }}
+    >
+      {children}
     </AuthContext.Provider>
   )
 }
+
+AuthProvider.propTypes = {
+  children: node.isRequired,
+}
+
+export default AuthProvider

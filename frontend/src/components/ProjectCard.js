@@ -6,13 +6,17 @@ import Link from 'next/link'
 import useThumbnail from '@hooks/useThumbnail'
 import styles from './ProjectCard.module.scss'
 
-const ProjectCard = ({ name, full_name, description, owner }) => {
-  const { src, isLoading, isError } = useThumbnail(full_name)
+const ProjectCard = ({ name, full_name: fullname, description, owner }) => {
+  const { src, isLoading, isError } = useThumbnail(fullname)
   return (
-    <Link href={full_name}>
+    <Link href={fullname}>
       <Card className={styles.card}>
         <div className={styles.thumbnail}>
-          <div>{isLoading || isError ? null : <img src={src} />}</div>
+          <div>
+            {isLoading || isError ? null : (
+              <img src={src} alt={`${name} by ${owner}`} />
+            )}
+          </div>
         </div>
         <Card.Content>
           <Card.Header>{name}</Card.Header>
@@ -25,10 +29,10 @@ const ProjectCard = ({ name, full_name, description, owner }) => {
 }
 
 ProjectCard.propTypes = {
-  name: string,
-  full_name: string,
-  description: string,
-  owner: object,
+  name: string.isRequired,
+  full_name: string.isRequired,
+  description: string.isRequired,
+  owner: object.isRequired,
 }
 
 export default ProjectCard

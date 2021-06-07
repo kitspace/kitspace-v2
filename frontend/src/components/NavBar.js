@@ -3,11 +3,12 @@ import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
 
 import { AuthContext } from '@contexts/AuthContext'
+import { bool } from 'prop-types'
 import styles from './NavBar.module.scss'
 
 const logoSrc = '/static/logo.svg'
 
-export const NavBar = () => {
+const NavBar = () => {
   const { pathname } = useRouter()
 
   const isSubmitRoute = RegExp('^/projects/new').test(pathname)
@@ -181,7 +182,15 @@ function SigningButton() {
   const { isAuthenticated } = useContext(AuthContext)
   const isLoginRoute = pathname === '/login'
 
-  return isAuthenticated ? <LogoutButton /> : isLoginRoute ? null : <LoginButton />
+  if (isAuthenticated) {
+    return <LogoutButton />
+  }
+
+  if (isLoginRoute) {
+    return null
+  }
+
+  return <LoginButton />
 }
 
 function LoginButton() {
@@ -227,6 +236,20 @@ function LogoutButton() {
       </Button>
     </Menu.Item>
   )
+}
+
+BigBar.propTypes = {
+  isProjectRoute: bool.isRequired,
+  isSubmitRoute: bool.isRequired,
+}
+
+SmallBar.propTypes = {
+  isProjectRoute: bool.isRequired,
+  isSubmitRoute: bool.isRequired,
+}
+
+SiteMenuItems.propTypes = {
+  isProjectRoute: bool.isRequired,
 }
 
 export default NavBar

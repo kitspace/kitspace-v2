@@ -6,27 +6,25 @@ import {
   GoogleLoginButton,
 } from 'react-social-login-buttons'
 
-const OAuthButtons = () => {
-  return (
-    <>
-      <Header as="h3" textAlign="center">
-        Or with
-      </Header>
-      <Grid columns={3} divided>
-        <Grid.Row>
-          <Grid.Column>
-            <TwitterLoginButton>Twitter</TwitterLoginButton>
-          </Grid.Column>
-          <Grid.Column>
-            <GithubLoginButton>GitHub</GithubLoginButton>
-          </Grid.Column>
-          <Grid.Column>
-            <GoogleLoginButton>Google</GoogleLoginButton>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </>
-  )
-}
+const OAuthButtons = () => (
+  <>
+    <Header as="h3" textAlign="center">
+      Or with
+    </Header>
+    <Grid columns={3} divided>
+      <Grid.Row>
+        <Grid.Column>
+          <TwitterLoginButton>Twitter</TwitterLoginButton>
+        </Grid.Column>
+        <Grid.Column>
+          <GithubLoginButton>GitHub</GithubLoginButton>
+        </Grid.Column>
+        <Grid.Column>
+          <GoogleLoginButton>Google</GoogleLoginButton>
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>
+  </>
+)
 
 export default OAuthButtons

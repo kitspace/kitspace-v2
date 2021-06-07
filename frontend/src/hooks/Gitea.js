@@ -23,7 +23,7 @@ import useSWR from 'swr'
  * @property {function(err, key, config)} [onError(err, key, config)]: callback function when a request returns an error
  * @property {function(err, key, config, revalidate, revalidateOps)} [onErrorRetry(err, key, config, revalidate, revalidateOps)]: handler for error retry
  * @property {function(a, b)} [compare(a, b)]: comparison function used to detect when returned data has changed, to avoid spurious rerenders. By default, [dequal](https://github.com/lukeed/dequal) is used.
- **/
+ * */
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 /**
@@ -59,13 +59,6 @@ export const useRepo = (fullname, swrOpts = {}) => {
 }
 
 /**
- * A hook to get all repos on gitea
- * @param swrOpts{swrOptions}
- * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
- */
-export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
-
-/**
  * A hook to search all repos
  * @param sort{string}
  * @param order{string}
@@ -95,6 +88,13 @@ export const useSearchRepos = (
     mutate,
   }
 }
+
+/**
+ * A hook to get all repos on gitea
+ * @param swrOpts{swrOptions}
+ * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
+ */
+export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
 
 /**
  * A hook to get repos owned by as user
@@ -146,19 +146,19 @@ export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
 
   // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
   // Check if it returned repo details and replace it with an empty array.
+
   if (data?.hasOwnProperty('owner')) {
     return {
       files: [],
       isLoading: !(data || error),
       isError: error,
     }
-  } else {
-    return {
-      files: data,
-      isLoading: !(data || error),
-      isError: error,
-      mutate,
-    }
+  }
+  return {
+    files: data,
+    isLoading: !(data || error),
+    isError: error,
+    mutate,
   }
 }
 

@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { string, array } from 'prop-types'
 
 import { Input, Form } from 'semantic-ui-react'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import { AuthContext } from '@contexts/AuthContext'
 import { getAllRepos, searchRepos } from '@utils/giteaApi'
 import { useSearchRepos } from '@hooks/Gitea'
-import { SearchFromModel } from '@models/SearchFrom'
+import SearchFromModel from '@models/SearchFrom'
 import ProjectCard from '@components/ProjectCard'
 import { useRouter } from 'next/router'
 
@@ -20,12 +21,11 @@ export const getServerSideProps = async ({ query }) => {
         q,
       },
     }
-  } else {
-    return {
-      props: {
-        repos: await getAllRepos(),
-      },
-    }
+  }
+  return {
+    props: {
+      repos: await getAllRepos(),
+    },
   }
 }
 
@@ -35,7 +35,7 @@ const Search = ({ repos, q }) => {
   const username = user?.login || 'unknown user'
 
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFromModel)
-  const [query, setQuery] = useState(q || '')
+  const [query, setQuery] = useState(q)
   const { repos: projects } = useSearchRepos(query, { initialData: repos })
 
   useEffect(() => {
@@ -43,7 +43,11 @@ const Search = ({ repos, q }) => {
   }, [form])
 
   useEffect(() => {
-    query ? push(`/search?q=${query}`) : push(`/search`)
+    if (query) {
+      push(`/search?q=${query}`)
+    } else {
+      push(`/search`)
+    }
   }, [query])
 
   return (
@@ -77,6 +81,15 @@ const Search = ({ repos, q }) => {
       </div>
     </Page>
   )
+}
+
+Search.propTypes = {
+  repos: array.isRequired,
+  q: string,
+}
+
+Search.defaultProps = {
+  q: '',
 }
 
 export default Search

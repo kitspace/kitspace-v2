@@ -1,4 +1,5 @@
 import React from 'react'
+import { string } from 'prop-types'
 
 import styles from './InfoBar.module.scss'
 
@@ -29,6 +30,13 @@ const InfoBar = ({ name, url, site, description }) => {
       </div>
     </div>
   )
+}
+
+InfoBar.propTypes = {
+  name: string.isRequired,
+  url: string.isRequired,
+  site: string.isRequired,
+  description: string.isRequired,
 }
 
 export default InfoBar

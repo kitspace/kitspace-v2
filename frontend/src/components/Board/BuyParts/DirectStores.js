@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
+import { array, number } from 'prop-types'
 import DigikeyData from '1-click-bom-minimal/lib/data/digikey.json'
 import FarnellData from '1-click-bom-minimal/lib/data/farnell.json'
 import countriesData from '1-click-bom-minimal/lib/data/countries.json'
@@ -10,8 +11,40 @@ const DirectStores = ({ items, multiplier }) => {
   const [farnellParts, setFarnellParts] = useState([])
   const [newarkParts, setNewarkParts] = useState([])
 
+  const getParts = retailer =>
+    items
+      .filter(part => retailer in part.retailers && part.retailers[retailer] !== '')
+      .map(part => ({
+        sku: part.retailers[retailer],
+        reference: part.reference,
+        quantity: Math.ceil(multiplier * part.quantity),
+      }))
+
+  const getLocation = async () => {
+    const usedCountryCodes = Object.keys(countriesData).map(
+      key => countriesData[key],
+    )
+    const freegeoipEndpoint = 'https://freegeoip.kitspace.org'
+
+    try {
+      const res = await fetch(freegeoipEndpoint)
+      const body = await res.json()
+      const { country_code: code } = body
+      if (code === 'GB') {
+        return 'UK'
+      }
+      if (usedCountryCodes.indexOf(code) < 0) {
+        return 'Other'
+      }
+      return code
+    } catch (err) {
+      console.error(err)
+      return 'Other'
+    }
+  }
+
   useEffect(() => {
-    if (typeof window != null) {
+    if (typeof window !== 'undefined') {
       getLocation().then(code => setCountryCode(code))
     }
 
@@ -20,46 +53,10 @@ const DirectStores = ({ items, multiplier }) => {
     setNewarkParts(getParts('Newark'))
   }, [])
 
-  const getLocation = () => {
-    const usedCountryCodes = Object.keys(countriesData).map(
-      key => countriesData[key],
-    )
-    const freegeoipEndpoint = 'https://freegeoip.kitspace.org'
-
-    return fetch(freegeoipEndpoint)
-      .then(res => res.json())
-      .then(body => {
-        const { country_code: code } = body
-        if (code === 'GB') {
-          return 'UK'
-        } else if (usedCountryCodes.indexOf(code) < 0) {
-          return 'Other'
-        } else {
-          return code
-        }
-      })
-      .catch(err => {
-        console.error(err)
-        return 'Other'
-      })
-  }
-
-  const getParts = retailer => {
-    return items
-      .filter(part => retailer in part.retailers && part.retailers[retailer] != '')
-      .map(part => ({
-        sku: part.retailers[retailer],
-        reference: part.reference,
-        quantity: Math.ceil(multiplier * part.quantity),
-      }))
-  }
-
-  const tildeDelimiter = part => {
-    return part.sku + '~' + part.quantity
-  }
+  const tildeDelimiter = part => `${part.sku}~${part.quantity}`
 
   const digikeyPartRenderer = (part, index) => {
-    index++
+    index += 1
     return (
       <span key={`digikeyRenderer${index}`}>
         <input type="hidden" name={`part${index}`} value={part.sku} />
@@ -69,25 +66,23 @@ const DirectStores = ({ items, multiplier }) => {
     )
   }
 
-  const digikey = (countryCode, parts) => {
-    const site = DigikeyData.sites[DigikeyData.lookup[countryCode]]
+  const digikey = (code, parts) => {
+    const site = DigikeyData.sites[DigikeyData.lookup[code]]
     return (
       <form
         target="_blank"
         key="DigikeyForm"
         id="DigikeyForm"
         method="POST"
-        action={
-          `https${site}/classic/ordering/fastadd.aspx` + '?WT.z_cid=ref_kitnic'
-        }
+        action={`https${site}/classic/ordering/fastadd.aspx?WT.z_cid=ref_kitnic`}
       >
         {parts?.map(digikeyPartRenderer)}
       </form>
     )
   }
 
-  const farnell = (countryCode, parts) => {
-    const site = FarnellData.sites[FarnellData.lookup[countryCode]]
+  const farnell = (code, parts) => {
+    const site = FarnellData.sites[FarnellData.lookup[code]]
     const queryString = parts.map(tildeDelimiter).join('~')
     return (
       <form
@@ -132,4 +127,8 @@ const DirectStores = ({ items, multiplier }) => {
   )
 }
 
+DirectStores.propTypes = {
+  items: array.isRequired,
+  multiplier: number.isRequired,
+}
 export default DirectStores

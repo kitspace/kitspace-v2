@@ -79,9 +79,9 @@ const Product = ({
       <div className={styles.product__details}>
         <h2 className={styles.product__title}>{name}</h2>
         <p>
-          {description + ' '}
+          {`${description} `}
           See full project details{' '}
-          <a href={projectLink} target="_blank">
+          <a href={projectLink} target="_blank" rel="noreferrer">
             here.
           </a>
         </p>
@@ -107,12 +107,14 @@ const Product = ({
 }
 
 Product.propTypes = {
-  name: string,
-  imgUri: string,
-  price: number,
-  shippingPrice: number,
-  description: string,
-  projectLink: string,
+  name: string.isRequired,
+  imgUri: string.isRequired,
+  price: number.isRequired,
+  priceId: string.isRequired,
+  shippingPriceId: string.isRequired,
+  shippingPrice: number.isRequired,
+  description: string.isRequired,
+  projectLink: string.isRequired,
 }
 
 export default Product

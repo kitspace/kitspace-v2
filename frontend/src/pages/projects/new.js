@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
+import { number, shape, string } from 'prop-types'
 import {
   Grid,
   Divider,
@@ -14,16 +15,16 @@ import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
 import { useMediaPredicate } from 'react-media-hook'
 
-import styles from './new.module.scss'
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
 import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
 import useForm from '@hooks/useForm'
-import { ExistingProjectFromModel } from '@models/ExistingProjectForm'
-import { SyncRepoFromModel } from '@models/SyncRepoForm'
+import ExistingProjectFromModel from '@models/ExistingProjectForm'
+import SyncRepoFromModel from '@models/SyncRepoForm'
+import styles from './new.module.scss'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
@@ -79,24 +80,13 @@ const Upload = ({ user, csrf }) => {
   const [originalProjectName, setOriginalProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
 
-  useEffect(() => {
-    populate({ name: projectName }, true)
-  }, [projectName])
-
-  useEffect(() => {
-    if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
-      validateProjectName()
-    }
-  }, [form.name])
-
-  const onDrop = async files => {
-    const tempProjectName = slugifiedNameFromFiles(files)
+  const onDrop = async droppedFiles => {
+    const tempProjectName = slugifiedNameFromFiles(droppedFiles)
     const repo = await createRepo(tempProjectName, '', csrf)
 
     setProjectName(tempProjectName)
     setOriginalProjectName(tempProjectName)
-    setFiles(files)
+    setFiles(droppedFiles)
 
     if (repo === '') {
       // In the case of failing to create the repo, i.e., it already exits.
@@ -105,7 +95,7 @@ const Upload = ({ user, csrf }) => {
     } else {
       // Commit files to gitea server on drop
       await commitInitialFiles({
-        files,
+        files: droppedFiles,
         repo: `${user.username}/${tempProjectName}`,
         csrf,
       })
@@ -153,15 +143,25 @@ const Upload = ({ user, csrf }) => {
 
     if (formErrors) {
       return formErrors
-    } else {
-      return !isValidProjectName
-        ? {
-            content: `A project named "${form.name}" already exists!`,
-            pointing: 'below',
-          }
-        : null
     }
+    return !isValidProjectName
+      ? {
+          content: `A project named "${form.name}" already exists!`,
+          pointing: 'below',
+        }
+      : null
   }
+
+  useEffect(() => {
+    populate({ name: projectName }, true)
+  }, [projectName])
+
+  useEffect(() => {
+    if (form.name) {
+      // noinspection JSIgnoredPromiseFromCall
+      validateProjectName()
+    }
+  }, [form.name])
 
   return (
     <>
@@ -304,6 +304,24 @@ const Sync = ({ user, csrf }) => {
       ) : null}
     </div>
   )
+}
+
+Upload.propTypes = {
+  user: shape({ username: string, id: number }),
+  csrf: string.isRequired,
+}
+
+Upload.defaultProps = {
+  user: null,
+}
+
+Sync.propTypes = {
+  user: shape({ username: string, id: number }),
+  csrf: string.isRequired,
+}
+
+Sync.defaultProps = {
+  user: null,
 }
 
 export default New

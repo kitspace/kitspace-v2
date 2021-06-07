@@ -3,7 +3,7 @@
 import faker from 'faker'
 
 // noinspection ES6PreferShortImport
-import { SignUpFormModel } from '../../src/models/SignUpForm'
+import SignUpFormModel from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
   beforeEach(() => {

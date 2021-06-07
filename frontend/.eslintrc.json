@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json",
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["@components", "./src/components"],
+          ["@contexts", "./src/contexts"],
+          ["@hooks", "./src/hooks"],
+          ["@models", "./src/models"],
+          ["@utils", "./src/utils"],
+          ["@pages", "./src/pages"]
+        ]
+      }
+    }
+  },
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:react/recommended", "airbnb", "prettier"],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "prettier"],
+  "rules": {
+    "no-console": ["error", {"allow": ["warn", "error"]}],
+    "no-unused-vars": ["error", {"varsIgnorePattern": "^_JSXStyle$"}],
+    "no-param-reassign": "off",
+    "no-prototype-builtins": "off",
+    "no-underscore-dangle": "off",
+    "prettier/prettier": "error",
+    "react/forbid-prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/destructuring-assignment": "off",
+    "react/jsx-filename-extension": [1, { "extensions": [".js"] }]
+  }
+}

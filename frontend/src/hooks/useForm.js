@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { AuthContext } from '@contexts/AuthContext'
 
 export default function UseForm(schema) {
@@ -7,9 +7,9 @@ export default function UseForm(schema) {
 
   const onChange = e => {
     e.persist()
-    setForm(form => ({
+    setForm(prevForm => ({
       _csrf: csrf,
-      ...form,
+      ...prevForm,
       [e.target.name]:
         e.target.type === 'checkbox' ? e.target.checked : e.target.value,
     }))
@@ -36,9 +36,8 @@ export default function UseForm(schema) {
 
   const isErrorField = field => errors.field === field && form[field] != null
 
-  const formatErrorPrompt = field => {
-    return isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
-  }
+  const formatErrorPrompt = field =>
+    isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
 
   return { form, onChange, populate, isValid, errors, formatErrorPrompt }
 }

@@ -3,8 +3,9 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import NextHead from 'next/head'
 
-import { Page } from '@components/Page'
+import Page from '@components/Page'
 import { Loader } from 'semantic-ui-react'
+import { object, string } from 'prop-types'
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(
@@ -26,10 +27,9 @@ export const getServerSideProps = async ({ params }) => {
     return {
       props: { html: IBOMHtml, pcbData },
     }
-  } else {
-    return {
-      notFound: true,
-    }
+  }
+  return {
+    notFound: true,
   }
 }
 
@@ -55,6 +55,7 @@ const IBOM = ({ html, pcbData }) => {
   iii. make the title anchor tag linking to the project page.
   iv.  prefetch project page.
    */
+  /* eslint-disable no-template-curly-in-string */
   const titleTemplate = '`<a href=/${pcbTitle}>${pcbTitle}</a>`'
   const hrefTemplate = '`/${pcbTitle}`'
   const initScript = `
@@ -85,20 +86,28 @@ const IBOM = ({ html, pcbData }) => {
             type="text/javascript"
             src="/static/IBOM/index.js"
             id="IBOM_script"
-          ></script>
+          />
           <script type="text/javascript">{initScript}</script>
-          <link rel="stylesheet" href="/static/IBOM/index.css"></link>
+          <link rel="stylesheet" href="/static/IBOM/index.css" />
         </NextHead>
-        <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
-      </Page>
-    )
-  } else {
-    return (
-      <Page>
-        <Loader active>Loading IBOM</Loader>
+        <div
+          className="ibom"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </Page>
     )
   }
+  return (
+    <Page>
+      <Loader active>Loading IBOM</Loader>
+    </Page>
+  )
+}
+
+IBOM.propTypes = {
+  html: string.isRequired,
+  pcbData: object.isRequired,
 }
 
 export default IBOM

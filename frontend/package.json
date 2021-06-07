@@ -6,12 +6,14 @@
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node server.js",
     "e2e": "cypress run",
-    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)"
+    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)",
+    "lint": "eslint src/"
   },
   "license": "AGPL-3.0",
   "dependencies": {
     "1-click-bom-minimal": "https://github.com/kitspace/npm-1-click-bom-minimal",
     "@babel/core": "^7.12.10",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.2",
     "@babel/plugin-proposal-optional-chaining": "^7.12.7",
     "@stripe/react-stripe": "^7.0.0-beta.0",
     "@stripe/stripe-js": "^1.10.0",
@@ -30,6 +32,7 @@
     "morgan": "^1.10.0",
     "next": "^10.0.5",
     "node-sass": "^4.13.0",
+    "prop-types": "^15.7.2",
     "raw-loader": "^4.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -51,10 +54,18 @@
     "cypress": "6.8.0",
     "cypress-fail-fast": "^2.0.0",
     "cypress-terminal-report": "^3.2.1",
+    "eslint": ">=7.0.0",
+    "eslint-config-airbnb": "18.2.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^1.7.0",
     "faker": "^5.1.0",
     "lint-staged": ">=10",
     "nodemon": "^2.0.2",
-    "prettier": "^2.0.5",
-    "prop-types": "^15.7.2"
+    "prettier": "^2.0.5"
   }
 }

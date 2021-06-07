@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import useProjectAssets from '@hooks/useProjectAssets'
+import { string } from 'prop-types'
 import styles from './BoardShowcase.module.scss'
 
 const BoardShowcase = ({ projectFullname }) => {
@@ -13,6 +14,7 @@ const BoardShowcase = ({ projectFullname }) => {
         <div className={styles.boardShowcaseContainer}>
           <div className={`${styles.toggleBoardView} ${styles.responsiveTabs}`}>
             <button
+              type="button"
               onClick={() => setSelected('top')}
               disabled={selected === 'top'}
               className={`${styles.circuitToggleBtn}`}
@@ -20,6 +22,7 @@ const BoardShowcase = ({ projectFullname }) => {
               Top
             </button>
             <button
+              type="button"
               onClick={() => setSelected('bottom')}
               disabled={selected === 'bottom'}
               className={`${styles.circuitToggleBtn}`}
@@ -34,17 +37,19 @@ const BoardShowcase = ({ projectFullname }) => {
                   selected === 'top' ? styles.selectedBoard : ''
                 }`}
               >
-                {isLoading || isError ? null : <img src={top} />}
+                {isLoading || isError ? null : <img src={top} alt="PCB top view" />}
               </div>
               <div className={styles.circuitBorderContainer}>
-                <div className={styles.circuitBorder}></div>
+                <div className={styles.circuitBorder} />
               </div>
               <div
                 className={`${styles.boardDiagram} ${
                   selected === 'bottom' ? styles.selectedBoard : ''
                 }`}
               >
-                {isLoading || isError ? null : <img src={bottom} />}
+                {isLoading || isError ? null : (
+                  <img src={bottom} alt="PCB bottom view" />
+                )}
               </div>
             </div>
           </div>
@@ -52,6 +57,10 @@ const BoardShowcase = ({ projectFullname }) => {
       </div>
     </div>
   )
+}
+
+BoardShowcase.propTypes = {
+  projectFullname: string.isRequired,
 }
 
 export default BoardShowcase

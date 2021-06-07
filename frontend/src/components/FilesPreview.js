@@ -1,3 +1,4 @@
+import { arrayOf, bool, func, object, string } from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { Icon, List } from 'semantic-ui-react'
 
@@ -71,7 +72,14 @@ const TreeNode = ({
 
   if (node.type === 'file') {
     return (
-      <div className={styles.file} onClick={() => setChecked(!checked)}>
+      <div
+        className={styles.file}
+        onClick={() => setChecked(!checked)}
+        onKeyPress={() => setChecked(!checked)}
+        role="menuitemcheckbox"
+        aria-checked={checked}
+        tabIndex={-1}
+      >
         <input
           className={styles.checkbox}
           type="checkbox"
@@ -87,7 +95,8 @@ const TreeNode = ({
         </div>
       </div>
     )
-  } else if (node.type === 'dir') {
+  }
+  if (node.type === 'dir') {
     return (
       <div className={styles.dir}>
         <input
@@ -102,7 +111,7 @@ const TreeNode = ({
           onToggle={() => setToggled(!toggled)}
         >
           <summary>
-            <Icon name="folder"></Icon>
+            <Icon name="folder" />
             {node.name}
           </summary>
           <div style={{ paddingLeft: '1.3rem' }}>
@@ -119,23 +128,49 @@ const TreeNode = ({
         </details>
       </div>
     )
-  } else {
-    return (
-      <span>
-        {node.path || node.name
-          ? `Uploading ${node.path || node.name}`
-          : 'Loading...'}
-      </span>
-    )
   }
-}
-
-const FilesPreview = props => {
   return (
-    <div>
-      <p>Select from previously uploaded files:</p>
-      <Tree {...props} />
-    </div>
+    <span>
+      {node.path || node.name
+        ? `Uploading ${node.path || node.name}`
+        : 'Loading...'}
+    </span>
   )
 }
+
+const FilesPreview = props => (
+  <div>
+    <p>Select from previously uploaded files:</p>
+    <Tree {...props} />
+  </div>
+)
+
+Tree.propTypes = {
+  files: arrayOf(object),
+  select: func.isRequired,
+  selected: object,
+  externallyMarked: string.isRequired,
+  allowFiles: bool.isRequired,
+  allowFolders: bool.isRequired,
+}
+
+Tree.defaultProps = {
+  files: [],
+  selected: null,
+}
+
+TreeNode.propTypes = {
+  node: object.isRequired,
+  select: func.isRequired,
+  selected: object,
+  marked: bool.isRequired,
+  externallyMarked: string.isRequired,
+  allowFiles: bool.isRequired,
+  allowFolders: bool.isRequired,
+}
+
+TreeNode.defaultProps = {
+  selected: null,
+}
+
 export default FilesPreview

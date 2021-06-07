@@ -1,0 +1,11 @@
+name: Lint frontend
+
+on: [push]
+
+jobs:
+  lint_frontend:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: 'cd frontend && yarn install'
+      - run: 'cd frontend && yarn lint'
