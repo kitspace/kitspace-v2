@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 // TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
 import { useRouter } from 'next/router'
@@ -101,6 +100,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
   return { notFound: true }
 }
 
+/* eslint-disable react/destructuring-assignment */
 const UpdateProject = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
@@ -290,7 +290,7 @@ const UpdateForm = ({
     // Handle client side rendering for uploading permissions,
     // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
     if (!hasUploadPermission) {
-      canCommit(projectFullname, user.username).then(res => {
+      canCommit(projectFullname, user?.username).then(res => {
         setCanUpload(res && !previewOnly)
       })
     }

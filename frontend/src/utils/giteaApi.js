@@ -88,7 +88,7 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
   const repoName = urlToName(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate?_csrf=${csrf}`
   const giteaOptions = {
-    remoteRepo,
+    clone_addr: remoteRepo,
     uid,
     repo_name: repoName,
     mirror: true,
