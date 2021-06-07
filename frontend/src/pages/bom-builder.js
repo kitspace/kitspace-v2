@@ -11,8 +11,7 @@ const BomBuilder = () => (
       alternatives across distributors and lets you add entire bill of materials
       directly to shopping carts by connecting up to{' '}
       <Link href="/1-click-bom">
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a>1-click BOM</a>
+        <a href="/1-click-bom">1-click BOM</a>
       </Link>
     </p>
     <p>

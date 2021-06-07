@@ -25,8 +25,7 @@ const OneClickBom = () => (
       parts&quot; links on Kitspace to get the right parts. You can also use it
       directly with your own spreadsheets or with our{' '}
       <Link href="/bom-builder">
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a>BOM Builder</a>
+        <a href="/bom-builder">BOM Builder</a>
       </Link>{' '}
       tool.
     </p>
