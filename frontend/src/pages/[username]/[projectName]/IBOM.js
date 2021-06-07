@@ -90,7 +90,11 @@ const IBOM = ({ html, pcbData }) => {
           <script type="text/javascript">{initScript}</script>
           <link rel="stylesheet" href="/static/IBOM/index.css" />
         </NextHead>
-        <div className="ibom" dangerouslySetInnerHTML={{ __html: html }} />
+        <div
+          className="ibom"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </Page>
     )
   }

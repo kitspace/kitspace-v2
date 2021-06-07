@@ -36,6 +36,7 @@ import { bool, func, object } from 'prop-types'
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setSession = session ? (
     <script
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: `window.session = ${JSON.stringify(session)};`,
       }}
@@ -43,6 +44,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   ) : null
   const setStaticFallback = isStaticFallback ? (
     <script
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: `window.isStaticFallback = ${JSON.stringify(isStaticFallback)};`,
       }}
