@@ -242,7 +242,7 @@ jobs:
           wait-on-timeout: 120         
           working-directory: frontend
           record: true
-          browser: ${{ matrix.browser }}
+          command: yarn e2e --record --browser ${{ matrix.browser }}
  
 
   publish:
