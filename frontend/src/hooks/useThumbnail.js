@@ -7,7 +7,7 @@ const fetcher = (...args) => fetch(...args).then(r => r.json())
 const useThumbnail = full_name => {
   const img = `/${full_name}/HEAD/images/top.png`
   const statusUrl = processorUrl + '/status/' + img
-  const { data, error } = useSWR(statusUrl, fetcher, { refreshInterval: 1000 })
+  const { data, error } = useSWR(statusUrl, fetcher)
   const isError = error || data?.status === 'failed'
   return {
     src: processorUrl + '/files/' + img,

@@ -1,0 +1,42 @@
+.topAreaContainer {
+  display: flex;
+  align-items: stretch;
+}
+
+.componentFigure {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.imageContainer {
+  display: flex;
+  min-width: 160px;
+  min-height: 160px;
+  align-items: center;
+}
+
+.linkContainer {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px;
+  align-items: flex-end;
+  flex-direction: column;
+}
+.octopartLinkContainer {
+  font-size: 10px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.datasheetContainer {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.expansionButton {
+  display: flex;
+  justify-content: center;
+}

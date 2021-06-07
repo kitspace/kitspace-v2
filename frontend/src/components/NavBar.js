@@ -15,7 +15,7 @@ export const NavBar = () => {
     isSubmitRoute || pathname === '/' || RegExp('^/projects/').test(pathname)
 
   return (
-    <div className={styles.titleBar}>
+    <div className={styles.titleBar} id="nav">
       <BigBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
       <SmallBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
     </div>
@@ -185,10 +185,10 @@ function SigningButton() {
 }
 
 function LoginButton() {
-  const router = useRouter()
+  const { asPath, push } = useRouter()
 
   const onClick = async () => {
-    await router.push(`/login?redirect=${router.pathname}`)
+    await push(`/login?redirect=${asPath}`)
   }
 
   return (

@@ -199,6 +199,35 @@ export const userExists = async username => {
 }
 
 /**
+ * Check if a user is a collaborator in a Gitea repo.
+ * @param {string} repo
+ * @param {string} username
+ * @returns {Promise<boolean>}
+ */
+const isCollaborator = async (repo, username) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/collaborators/${username}`
+
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    mode,
+    headers,
+  })
+
+  return res.ok
+}
+
+/**
+ * Check if a user can commit to a Gitea repo.
+ * @param {string} repo
+ * @param {string} username
+ * @returns
+ */
+export const canCommit = async (repo, username) => {
+  const repoOwner = repo.split('/')[0]
+  return repoOwner === username || isCollaborator(repo, username)
+}
+
+/**
  * Get all repos
  * @returns {Promise<[Object]>}
  */
@@ -232,6 +261,25 @@ export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
 }
 
 /**
+ *
+ * @param {string} repo repo fullname
+ * @param {string} path file path
+ * @returns {Promise<string>} file's raw content or empty string if the file doesn't exist.
+ */
+export const getFileRawContent = async (repo, path) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/raw/${path}`
+
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    credentials,
+    mode,
+    headers,
+  })
+
+  return res.ok ? await res.blob().then(b => b.text()) : ''
+}
+
+/**
  * Get the repos owned by a user.
  * @param username{string}
  * @returns {Promise<[Object]>}
@@ -250,15 +298,80 @@ export const getUserRepos = async username => {
 }
 
 /**
- * uploads a file to an existing gitea repo
+ * get a file in gitea repo
+ * @param {string} repo
+ * @param {string} path
+ * @returns
+ */
+export const getFile = async (repo, path) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
+
+  const res = await fetch(endpoint, { method: 'GET', credentials, mode, headers })
+
+  return res.ok ? await res.json() : {}
+}
+
+/**
+ * update existing file in gitea
  * @param repo {string} full repo name, i.e., {user}/{repoName}
- * @param path
- * @param content: must be Base64 encoded
- * @param csrf
+ * @param path{string}
+ * @param content{string}: must be Base64 encoded
+ * @param user{object}
+ * @param csrf{string}
  * @returns {Promise<boolean>}
  */
-export const uploadFile = async (repo, path, content, csrf) => {
-  const user = window.session.user
+export const updateFile = async (repo, path, content, user, csrf) => {
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
+
+  const { sha } = await getFile(repo, path)
+  const reqBody = {
+    author: {
+      email: user.email,
+      name: user.login,
+    },
+    committer: {
+      email: user.email,
+      name: user.email,
+    },
+    // content must be Base64 encoded
+    content: btoa(content),
+    sha,
+  }
+
+  const res = await fetch(endpoint, {
+    method: 'PUT',
+    credentials,
+    mode,
+    headers,
+    body: JSON.stringify(reqBody),
+  })
+
+  return res.ok
+}
+
+export const renderMarkdown = async markdown => {
+  const endpoint = `${giteaApiUrl}/markdown/raw`
+
+  const res = await fetch(endpoint, {
+    method: 'Post',
+    mode,
+    headers,
+    body: markdown,
+  })
+
+  return res.ok ? await res.blob().then(b => b.text()) : ''
+}
+
+/**
+ * Upload file to gitea
+ * @param repo {string} full repo name, i.e., {user}/{repoName}
+ * @param path{string}
+ * @param content{string}: must be Base64 encoded
+ * @param user{object}
+ * @param csrf{string}
+ * @returns {Promise<boolean>}
+ */
+export const uploadFile = async (repo, path, content, user, csrf) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
 
   const reqBody = {
@@ -270,10 +383,8 @@ export const uploadFile = async (repo, path, content, csrf) => {
       email: user.email,
       name: user.email,
     },
-    branch: 'master',
     // content must be Base64 encoded
     content: btoa(content),
-    message: `Automated commit on behalf of ${user.login} (${user.email})`,
   }
 
   const res = await fetch(endpoint, {

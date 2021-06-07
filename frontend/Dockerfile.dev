@@ -2,6 +2,9 @@ FROM node:14-alpine
 
 ENV NODE_ENV=development
 
+# `git` is needed in the container to install `1-click-bom-minimal` in `package.json`.
+RUN apk --no-cache add git
+
 RUN mkdir /app
 WORKDIR /app
 

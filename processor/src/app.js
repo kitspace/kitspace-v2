@@ -5,7 +5,7 @@ const path = require('path')
 
 const watcher = require('./watcher')
 
-const { ALLOWED_CORS_DOMAINS, DATA_DIR } = require('./env')
+const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
 
 function createApp(repoDir = '/gitea-data/git/repositories') {
@@ -36,21 +36,6 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
   const app = express()
 
   app.stop = unwatch
-
-  app.use((req, res, next) => {
-    const origin = req.get('origin')
-    if (!origin) {
-      return next()
-    }
-    if (ALLOWED_CORS_DOMAINS.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin)
-      res.header('Access-Control-Allow-Methods', 'GET,OPTIONS')
-      res.header('Access-Control-Allow-Headers', 'Content-Type')
-      res.header('Access-Control-Allow-Credentials', 'true')
-      return next()
-    }
-    return res.sendStatus(403)
-  })
 
   app.get('/status/*', (req, res, next) => {
     let x = path.relative('/status/', req.path)

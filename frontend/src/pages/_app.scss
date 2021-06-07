@@ -1,32 +1,32 @@
-@import "../components/colors";
+@import '../components/colors';
 
 html,
 head,
 body {
-    margin: 0;
+  margin: 0;
 }
 
 body {
-    font-family: 'Noto Sans','Helvetica', 'Arial', sans-serif;
-    font-size: 16px;
-    overflow-y: auto;
+  font-family: 'Noto Sans', 'Helvetica', 'Arial', sans-serif;
+  font-size: 16px;
+  overflow-y: auto;
 }
 
 a {
-    color: $mine-shaft;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
+  color: $mine-shaft;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 a:hover {
-    color: $mine-shaft;
-    text-decoration: underline;
+  color: $mine-shaft;
+  text-decoration: underline;
 }
 
 .notSelectable {
-    user-select: none;
-    cursor: default;
+  user-select: none;
+  cursor: default;
 }
 
 .errorMessage {
@@ -54,7 +54,7 @@ a:hover {
   background-color: #fafafa;
   color: #bdbdbd;
   outline: none;
-  transition: border .24s ease-in-out;
+  transition: border 0.24s ease-in-out;
 }
 
 @media (max-width: 368px) {

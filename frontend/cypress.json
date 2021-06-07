@@ -10,5 +10,8 @@
   "viewportHeight": 660,
   "retries": {
     "runMode": 3
+  },
+  "env": {
+    "home_url": "search"
   }
 }

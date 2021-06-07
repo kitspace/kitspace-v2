@@ -31,7 +31,7 @@ const New = () => {
   const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 
   return (
-    <Page title="new" reqSignIn>
+    <Page title="new" requireSignIn>
       {isBigScreen ? (
         <div
           className={`${styles.projectsNew} ui two column stackable center aligned grid`}
@@ -119,12 +119,20 @@ const Upload = ({ user, csrf }) => {
     setProjectName(differentName)
     await createRepo(differentName, '', csrf)
 
-    await commitInitialFiles({ files, repo: `${user.username}/${differentName}`, csrf })
+    await commitInitialFiles({
+      files,
+      repo: `${user.username}/${differentName}`,
+      csrf,
+    })
     await push(`/${user.username}/${differentName}?create=true`)
   }
 
   const onUpdateExisting = async () => {
-    await commitInitialFiles({ files, repo: `${user.username}/${projectName}`, csrf })
+    await commitInitialFiles({
+      files,
+      repo: `${user.username}/${projectName}`,
+      csrf,
+    })
     await push(`/${user.username}/${projectName}`)
   }
 

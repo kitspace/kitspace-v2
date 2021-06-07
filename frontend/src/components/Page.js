@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react'
-import { string, object, bool } from 'prop-types'
+import { string, bool } from 'prop-types'
+import { Loader } from 'semantic-ui-react'
+import { useRouter } from 'next/router'
 
 import Head from './Head'
 import NavBar from './NavBar'
-import { Container, Loader } from 'semantic-ui-react'
-import { useRouter } from 'next/router'
+import styles from './Page.module.scss'
 
-const Content = ({ reqSignIn, reqSignOut, children }) => {
-  const { push, pathname } = useRouter()
+const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
+  const { replace, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const isAuthenticated = window.session?.user !== null
 
-    if (reqSignIn && !isAuthenticated) {
-      push(`/login?redirect=${pathname}`).then()
-    } else if (reqSignOut && isAuthenticated) {
-      push('/').then()
+    if (requireSignIn && !isAuthenticated) {
+      replace(`/login?redirect=${pathname}`).then()
+    } else if (requireSignOut && isAuthenticated) {
+      replace('/').then()
     } else {
       setLoading(false)
     }
@@ -29,7 +30,14 @@ const Content = ({ reqSignIn, reqSignOut, children }) => {
       </Loader>
     )
   } else {
-    return <Container style={{ marginTop: 30 }}>{children}</Container>
+    return (
+      <div
+        className={contentFullSize ? styles.minimalContainer : styles.container}
+        data-cy="page-container"
+      >
+        {children}
+      </div>
+    )
   }
 }
 
@@ -40,9 +48,7 @@ export const Page = props => {
         <title>{props.title}</title>
       </Head>
       <NavBar />
-      <Content reqSignIn={props.reqSignIn} reqSignOut={props.reqSignOut}>
-        {props.children}
-      </Content>
+      <Content {...props}>{props.children}</Content>
     </>
   )
 }
@@ -51,10 +57,11 @@ Page.propTypes = {
   title: string,
   reqSignIn: bool,
   reqSignOut: bool,
-  head: object,
+  contentFullSize: bool,
 }
 
 Content.propTypes = {
-  reqSignIn: bool,
-  reqSignOut: bool,
+  requireSignIn: bool,
+  requireSignOut: bool,
+  contentFullSize: bool,
 }

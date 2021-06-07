@@ -1,0 +1,23 @@
+.file {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.dir {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+}
+
+.tree {
+    padding-left: unset !important;
+}
+
+.file:hover {
+    text-decoration: underline;
+}
+
+.checkbox {
+    margin-right: 0.5rem;
+    cursor: pointer;
+}
