@@ -183,7 +183,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browsers: [chrome, firefox]
+        browsers: [chrome, firefox, edge]
 
     steps:
       - name: Check out the repo
@@ -203,6 +203,16 @@ jobs:
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+      - name: Install Microsoft Edge
+        shell: bash
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
+          sudo rm microsoft.gpg
+          sudo apt update && sudo apt install microsoft-edge-beta
+
 
       - name: Configure /etc/hosts
         shell: bash
