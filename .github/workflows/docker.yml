@@ -183,7 +183,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browsers: [chrome, firefox, edge]
+        browsers: [chrome]
 
     steps:
       - name: Check out the repo
@@ -242,7 +242,7 @@ jobs:
           wait-on-timeout: 120         
           working-directory: frontend
           record: true
-          command: yarn e2e --record --browser ${{ matrix.browser }}
+          browser: ${{ matrix.browsers }}
  
 
   publish:
