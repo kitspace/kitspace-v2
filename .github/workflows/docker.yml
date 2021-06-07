@@ -205,6 +205,7 @@ jobs:
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
       - name: Install Microsoft Edge
+        if: ${{ matrix.browsers == 'edge' }}
         shell: bash
         run: |
           curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
