@@ -37,6 +37,7 @@
     "react/forbid-prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/destructuring-assignment": "off",
     "react/no-danger": "off",
     "react/jsx-filename-extension": [1, { "extensions": [".js"] }]
   }

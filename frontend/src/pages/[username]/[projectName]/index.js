@@ -100,7 +100,6 @@ export const getServerSideProps = async ({ params, query, req }) => {
   return { notFound: true }
 }
 
-/* eslint-disable react/destructuring-assignment */
 const UpdateProject = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
