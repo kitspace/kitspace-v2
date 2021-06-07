@@ -4,6 +4,8 @@ import BrowserVersion from 'browser-version'
 import { Icon, Message } from 'semantic-ui-react'
 import { func, string } from 'prop-types'
 
+import styles from './InstallPrompt.module.scss'
+
 export const install1ClickBOM = () => {
   const version = BrowserVersion()
   let onClick
@@ -69,14 +71,17 @@ const InstallPrompt = ({ extensionPresence }) => {
   return null
 }
 
-/* eslint-disable jsx-a11y/anchor-is-valid ,jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus */
 const PleaseInstall = ({ install1ClickBOMCallback }) => (
   <Message attached warning>
     <Icon name="attention" />
     Please{' '}
-    <a onClick={() => install1ClickBOMCallback()} role="link">
+    <button
+      className={styles.extensionLinkButton}
+      type="button"
+      onClick={() => install1ClickBOMCallback()}
+    >
       install the 1-click BOM extension
-    </a>{' '}
+    </button>{' '}
     make full use of this feature.
   </Message>
 )

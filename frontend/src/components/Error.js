@@ -24,7 +24,7 @@ const Error = ({ statusCode, title }) => (
       <style dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }} />
       {statusCode ? <h1 className={styles.heading}>{statusCode}</h1> : null}
       <div className={styles.desc}>
-        <h2 style={styles.title}>{title}.</h2>
+        <h2 className={styles.title}>{title}.</h2>
       </div>
     </div>
   </div>

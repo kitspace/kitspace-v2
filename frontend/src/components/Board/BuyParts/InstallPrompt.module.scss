@@ -1,0 +1,14 @@
+@import '../../colors.scss';
+
+.extensionLinkButton {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    color:$mine-shaft;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.extensionLinkButton:hover {
+    text-decoration: underline;
+}
