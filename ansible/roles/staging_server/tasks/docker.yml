@@ -13,3 +13,11 @@
     name: '{{ ansible_user_id }}'
     groups: docker
     append: true
+
+- name: Ensure a cron job for pruning docker system and volumes exists
+  become: true
+  ansible.builtin.cron:
+    name: prune docker system and volumes
+    special_time: daily
+    user: root
+    job: "docker system prune --volumes --force"
