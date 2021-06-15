@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json",
+  "extends": ["next", "next/core-web-vitals", "prettier"],
   "settings": {
     "import/resolver": {
       "alias": {
@@ -18,7 +19,6 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "airbnb", "prettier"],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -26,10 +26,10 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier"],
+  "plugins": ["prettier"],
   "rules": {
-    "no-console": ["error", {"allow": ["warn", "error"]}],
-    "no-unused-vars": ["error", {"varsIgnorePattern": "^_JSXStyle$"}],
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_JSXStyle$" }],
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "no-underscore-dangle": "off",
