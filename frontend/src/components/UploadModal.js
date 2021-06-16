@@ -187,24 +187,24 @@ const Tabs = ({
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
-      // PCB Files should be a folder
-      render: () => (
-        <UploadTab {...commonTabProps} allowFiles={false} allowFolders />
-      ),
+      render: function PCBFilesTab() {
+        // PCB Files should be a folder
+        return <UploadTab {...commonTabProps} allowFiles={false} allowFolders />
+      },
     },
     {
       menuItem: TabsNames.BOMFile,
-      // BOM Files should be a single file
-      render: () => (
-        <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
-      ),
+      render: function BOMFileTab() {
+        // BOM Files should be a single file
+        return <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
+      },
     },
     {
       menuItem: TabsNames.READMEFile,
-      // README file should be a single file
-      render: () => (
-        <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
-      ),
+      render: function ReadmeFileTab() {
+        // README file should be a single file
+        return <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
+      },
     },
   ]
 

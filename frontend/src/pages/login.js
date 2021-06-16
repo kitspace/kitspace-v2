@@ -37,8 +37,18 @@ const Login = () => {
         <Grid.Column>
           <Tab
             panes={[
-              { menuItem: 'Sign up', render: () => <SignUpForm /> },
-              { menuItem: 'Log in', render: () => <SignInForm /> },
+              {
+                menuItem: 'Sign up',
+                render: function SignUpTab() {
+                  return <SignUpForm />
+                },
+              },
+              {
+                menuItem: 'Log in',
+                render: function SignInTab() {
+                  return <SignInForm />
+                },
+              },
             ]}
             defaultActiveIndex={openPane}
           />
