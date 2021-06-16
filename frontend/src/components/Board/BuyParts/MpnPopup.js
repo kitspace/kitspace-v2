@@ -75,7 +75,7 @@ const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
         <div className={styles.componentFigure}>
           <div>
             <div className={styles.imageContainer}>
-              <Image src={image?.url} />
+              <Image src={image?.url} alt="part image" />
             </div>
             <a style={{ fontSize: 9 }} href={image?.credit_url}>
               {image?.credit_string}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Image from 'next/image'
 
 import useProjectAssets from '@hooks/useProjectAssets'
 import { string } from 'prop-types'
@@ -37,7 +38,9 @@ const BoardShowcase = ({ projectFullname }) => {
                   selected === 'top' ? styles.selectedBoard : ''
                 }`}
               >
-                {isLoading || isError ? null : <img src={top} alt="PCB top view" />}
+                {isLoading || isError ? null : (
+                  <Image src={top} width={400} height={800} alt="PCB top view" />
+                )}
               </div>
               <div className={styles.circuitBorderContainer}>
                 <div className={styles.circuitBorder} />
@@ -48,7 +51,12 @@ const BoardShowcase = ({ projectFullname }) => {
                 }`}
               >
                 {isLoading || isError ? null : (
-                  <img src={bottom} alt="PCB bottom view" />
+                  <Image
+                    src={bottom}
+                    width={400}
+                    height={800}
+                    alt="PCB bottom view"
+                  />
                 )}
               </div>
             </div>

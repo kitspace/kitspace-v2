@@ -1,8 +1,11 @@
 import React from 'react'
+import Image from 'next/image'
 import { object, string } from 'prop-types'
 import { Icon } from 'semantic-ui-react'
 
 import styles from './OrderPCBs.module.scss'
+
+const retailerLogosDimensions = { height: 30, width: 100 }
 
 const OrderPCBs = ({ zipUrl, boardSpecs }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
@@ -45,7 +48,11 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('Aisler')}
             onAuxClick={trackClick('Aisler')}
           >
-            <img src="/static/images/aisler.png" alt="Aisler logo" />
+            <Image
+              src="/static/images/aisler.png"
+              alt="Aisler logo"
+              {...retailerLogosDimensions}
+            />
           </a>
 
           <a
@@ -56,7 +63,11 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('PCBWay')}
             onAuxClick={trackClick('PCBWay')}
           >
-            <img src="/static/images/pcbway.png" alt="PCBWay logo" />
+            <Image
+              src="/static/images/pcbway.png"
+              alt="PCBWay logo"
+              {...retailerLogosDimensions}
+            />
           </a>
 
           <a
@@ -67,7 +78,11 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('JLCPCB')}
             onAuxClick={trackClick('JLCPCB')}
           >
-            <img src="/static/images/jlcpcb.png" alt="JLCPCB logo" />
+            <Image
+              src="/static/images/jlcpcb.png"
+              alt="JLCPCB logo"
+              {...retailerLogosDimensions}
+            />
           </a>
 
           <a
@@ -78,7 +93,11 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('OSHPark')}
             onAuxClick={trackClick('OSHPark')}
           >
-            <img src="/static/images/oshpark.png" alt="OSHPARK logo" />
+            <Image
+              src="/static/images/oshpark.png"
+              alt="OSHPARK logo"
+              {...retailerLogosDimensions}
+            />
           </a>
         </div>
       </div>
@@ -96,7 +115,11 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
             onClick={trackClick('PCBShopper')}
             onAuxClick={trackClick('PCBShopper')}
           >
-            <img src="/static/images/pcbshopper.png" alt="PCBSHOPPER logo" />
+            <Image
+              src="/static/images/pcbshopper.png"
+              alt="PCBSHOPPER logo"
+              {...retailerLogosDimensions}
+            />
           </a>
         </div>
       </div>

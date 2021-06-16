@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 import BrowserVersion from 'browser-version'
 import { Icon, Message } from 'semantic-ui-react'
@@ -89,9 +90,10 @@ const PleaseInstall = ({ install1ClickBOMCallback }) => (
 const NotCompatible = () => (
   <Message attached warning>
     <Icon name="attention" />
-    Sorry, the <a href="/1-click-bom">1-click BOM extension</a> is not yet available
-    for your browser. Only the Digikey add-to-cart links work fully, Farnell and
-    Newark should work but the references will not be added as line-notes.
+    Sorry, the <Link href="/1-click-bom">1-click BOM extension</Link> is not yet
+    available for your browser. Only the Digikey add-to-cart links work fully,
+    Farnell and Newark should work but the references will not be added as
+    line-notes.
   </Message>
 )
 

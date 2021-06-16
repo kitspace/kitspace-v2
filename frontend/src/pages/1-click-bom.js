@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import Page from '@components/Page'
@@ -7,13 +8,13 @@ const OneClickBom = () => (
   <Page title="1-click-bom">
     <p style={{ textAlign: 'center', minHeight: 86 }}>
       <a href="https://chrome.google.com/webstore/detail/1clickbom/mflpmlediakefinapghmabapjeippfdi">
-        <img
+        <Image
           src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/chrome.png"
           alt="chrome extension marketplace"
         />
       </a>
       <a href="https://addons.mozilla.org/firefox/downloads/latest/634060/addon-634060-latest.xpi">
-        <img
+        <Image
           src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/firefox.png"
           alt="firefox extension marketplace"
         />
@@ -35,7 +36,7 @@ const OneClickBom = () => (
       </a>
     </p>
     <p style={{ textAlign: 'center', marginTop: 10, minHeight: 454 }}>
-      <img
+      <Image
         src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/demo.gif"
         alt="demo"
       />

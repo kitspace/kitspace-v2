@@ -4,21 +4,6 @@ module.exports = {
     KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
     MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
   },
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.(png|svg)$/,
-      use: {
-        loader: 'url-loader',
-        options: {
-          limit: 8192,
-          publicPath: '/_next/static/',
-          outputPath: 'static/',
-          name: '[name].[ext]',
-        },
-      },
-    })
-    return config
-  },
   exportPathMap(map) {
     for (const key in map) {
       map[key].query = map[key].query || {}
@@ -70,5 +55,23 @@ module.exports = {
       map['/error/' + err] = { page: '/_error', query: { staticStatusCode: err } }
     })
     return map
+  },
+  images: {
+    domains: ["processor.kitspace.test"]
+  },
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(png|svg)$/,
+      use: {
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+          publicPath: '/_next/static/',
+          outputPath: 'static/',
+          name: '[name].[ext]',
+        },
+      },
+    })
+    return config
   },
 }
