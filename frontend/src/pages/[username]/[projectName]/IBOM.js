@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
 import NextHead from 'next/head'
+import Script from 'next/script'
+import { string } from 'prop-types'
+import { Loader } from 'semantic-ui-react'
 
 import Page from '@components/Page'
-import { Loader } from 'semantic-ui-react'
-import { object, string } from 'prop-types'
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(
@@ -25,7 +26,7 @@ export const getServerSideProps = async ({ params }) => {
     ).then(res => res.blob().then(b => b.text()))
 
     return {
-      props: { html: IBOMHtml, pcbData },
+      props: { repoFullname, html: IBOMHtml, pcbData },
     }
   }
   return {
@@ -33,8 +34,9 @@ export const getServerSideProps = async ({ params }) => {
   }
 }
 
-const IBOM = ({ html, pcbData }) => {
+const IBOM = ({ repoFullname, html, pcbData }) => {
   const [ready, setReady] = useState(false)
+  const title = `${repoFullname} Kitspace Interactive Assembly Guide`
 
   /*
   i.   set the `pcbdata` var needed by IBOM
@@ -76,39 +78,40 @@ const IBOM = ({ html, pcbData }) => {
     }
 
     window.config = config
-    setReady(true)
   }, [])
 
-  if (ready) {
-    return (
-      <Page contentFullSize>
-        <NextHead>
-          <script
-            type="text/javascript"
-            src="/static/IBOM/index.js"
-            id="IBOM_script"
-          />
-          <script type="text/javascript">{initScript}</script>
-          <link rel="stylesheet" href="/static/IBOM/index.css" />
-        </NextHead>
+  return (
+    <Page title={title} contentFullSize>
+      <Script
+        src="/static/IBOM/index.js"
+        id="IBOM_script"
+        onLoad={() => {
+          setReady(true)
+          return
+        }}
+      />
+      <Script>{initScript}</Script>
+      <NextHead>
+        {/* eslint-disable-next-line @next/next/no-css-tags */}
+        <link rel="stylesheet" href="/static/IBOM/index.css" />
+      </NextHead>
+      {ready ? (
         <div
           className="ibom"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: html }}
         />
-      </Page>
-    )
-  }
-  return (
-    <Page>
-      <Loader active>Loading IBOM</Loader>
+      ) : (
+        <Loader active>Loading IBOM</Loader>
+      )}
     </Page>
   )
 }
 
 IBOM.propTypes = {
+  repoFullname: string.isRequired,
   html: string.isRequired,
-  pcbData: object.isRequired,
+  pcbData: string.isRequired,
 }
 
 export default IBOM
