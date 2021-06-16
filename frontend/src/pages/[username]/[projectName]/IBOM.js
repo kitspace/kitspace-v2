@@ -92,6 +92,10 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
       />
       <Script>{initScript}</Script>
       <NextHead>
+        {/* Styles for IBOM targets uses non pure selectors, e.g., `:root`, importing its style as
+         * a  module doesn't work. The other option was to add the style to `_app.scss`
+         * which will load on visiting any page.
+         */}
         {/* eslint-disable-next-line @next/next/no-css-tags */}
         <link rel="stylesheet" href="/static/IBOM/index.css" />
       </NextHead>
