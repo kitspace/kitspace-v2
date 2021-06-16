@@ -12,7 +12,7 @@ const OneClickBom = () => (
           height={200}
           width={400}
           objectFit="scale-down"
-          src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/chrome.png"
+          src="/static/images/chrome.png"
           alt="chrome extension marketplace"
         />
       </a>
@@ -21,7 +21,7 @@ const OneClickBom = () => (
           height={200}
           width={400}
           objectFit="scale-down"
-          src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/firefox.png"
+          src="/static/images/firefox.png"
           alt="firefox extension marketplace"
         />
       </a>
@@ -43,7 +43,7 @@ const OneClickBom = () => (
         height={450}
         width={600}
         objectFit="scale-down"
-        src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/demo.gif"
+        src="/static/images/demo.gif"
         alt="demo"
       />
     </p>
