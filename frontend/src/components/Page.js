@@ -21,7 +21,7 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
     } else {
       setLoading(false)
     }
-  }, [loading])
+  }, [loading, requireSignIn, requireSignOut, pathname, push])
 
   if (loading) {
     return (

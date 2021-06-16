@@ -170,7 +170,7 @@ export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
 
  * @returns {{isLoading: boolean, isError: boolean, status: statuses, mutate?: function}}
  */
-export const pollMigrationStatus = (repoId, shouldFetch, swrOpts = {}) => {
+export const useMigrationStatus = (repoId, shouldFetch, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/repos/migrate/status?repo_id=${repoId}`
   /**
    * Gitea repo migration statuses

@@ -40,7 +40,7 @@ const Search = ({ repos, q }) => {
 
   useEffect(() => {
     setQuery(isValid ? form.query : '')
-  }, [form])
+  }, [form, isValid])
 
   useEffect(() => {
     if (query) {
@@ -48,7 +48,7 @@ const Search = ({ repos, q }) => {
     } else {
       push(`/search`)
     }
-  }, [query])
+  }, [query, push])
 
   return (
     <Page title="home">

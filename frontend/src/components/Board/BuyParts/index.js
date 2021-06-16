@@ -91,7 +91,7 @@ const BuyParts = ({ project, lines, parts }) => {
       },
       false,
     )
-  }, [])
+  }, [mult, project])
 
   useEffect(() => {
     const multi = buyMultiplier

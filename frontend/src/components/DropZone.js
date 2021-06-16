@@ -16,7 +16,7 @@ const maxFileSize = process.env.MAX_FILE_SIZE
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
 const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => {
-  const _onDrop = useCallback(onDrop)
+  const _onDrop = useCallback(onDrop, [onDrop])
 
   /*
    * If folder upload isn't allowed:
@@ -96,7 +96,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
         }
       })
     }
-  }, [FilePickerRejections, FolderPickerRejections])
+  }, [FilePickerRejections, FolderPickerRejections, DropZoneConfig.maxFiles])
 
   return (
     <div

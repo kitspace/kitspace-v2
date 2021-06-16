@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 import { array, number } from 'prop-types'
 import DigikeyData from '1-click-bom-minimal/lib/data/digikey.json'
@@ -11,14 +11,19 @@ const DirectStores = ({ items, multiplier }) => {
   const [farnellParts, setFarnellParts] = useState([])
   const [newarkParts, setNewarkParts] = useState([])
 
-  const getParts = retailer =>
-    items
-      .filter(part => retailer in part.retailers && part.retailers[retailer] !== '')
-      .map(part => ({
-        sku: part.retailers[retailer],
-        reference: part.reference,
-        quantity: Math.ceil(multiplier * part.quantity),
-      }))
+  const getParts = useCallback(
+    retailer =>
+      items
+        .filter(
+          part => retailer in part.retailers && part.retailers[retailer] !== '',
+        )
+        .map(part => ({
+          sku: part.retailers[retailer],
+          reference: part.reference,
+          quantity: Math.ceil(multiplier * part.quantity),
+        })),
+    [items, multiplier],
+  )
 
   const getLocation = async () => {
     const usedCountryCodes = Object.keys(countriesData).map(
@@ -51,7 +56,7 @@ const DirectStores = ({ items, multiplier }) => {
     setDigikeyParts(getParts('Digikey'))
     setFarnellParts(getParts('Farnell'))
     setNewarkParts(getParts('Newark'))
-  }, [])
+  }, [getParts])
 
   const tildeDelimiter = part => `${part.sku}~${part.quantity}`
 

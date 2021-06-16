@@ -35,19 +35,6 @@ export const getServerSideProps = async ({ params }) => {
 
 const IBOM = ({ html, pcbData }) => {
   const [ready, setReady] = useState(false)
-  const config = {
-    dark_mode: false,
-    show_pads: true,
-    show_fabrication: false,
-    show_silkscreen: true,
-    highlight_pin1: true,
-    redraw_on_drag: true,
-    board_rotation: 0,
-    checkboxes: 'Sourced,Placed',
-    bom_view: 'left-right',
-    layer_view: 'FB',
-    extra_fields: [],
-  }
 
   /*
   i.   set the `pcbdata` var needed by IBOM
@@ -74,6 +61,20 @@ const IBOM = ({ html, pcbData }) => {
   `
 
   useEffect(() => {
+    const config = {
+      dark_mode: false,
+      show_pads: true,
+      show_fabrication: false,
+      show_silkscreen: true,
+      highlight_pin1: true,
+      redraw_on_drag: true,
+      board_rotation: 0,
+      checkboxes: 'Sourced,Placed',
+      bom_view: 'left-right',
+      layer_view: 'FB',
+      extra_fields: [],
+    }
+
     window.config = config
     setReady(true)
   }, [])

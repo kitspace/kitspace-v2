@@ -31,8 +31,15 @@ function BigBar({ isProjectRoute, isSubmitRoute }) {
     <>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          <Link href="/" passHref >
-            <Image width={160} height={46} objectFit='scale-down' className={styles.logoImg} src={logoSrc} alt="logo" />
+          <Link href="/" passHref>
+            <Image
+              width={160}
+              height={46}
+              objectFit="scale-down"
+              className={styles.logoImg}
+              src={logoSrc}
+              alt="logo"
+            />
           </Link>
           <SiteMenuItems isProjectRoute={isProjectRoute} />
         </Menu>
@@ -55,7 +62,14 @@ function SmallBar({ isProjectRoute, isSubmitRoute }) {
     <>
       <div className={styles.smallMenu}>
         <Link href="/" passHref>
-          <Image width={140} height={46} objectFit='scale-down' className="logoImg" src={logoSrc} alt="logo" />
+          <Image
+            width={140}
+            height={46}
+            objectFit="scale-down"
+            className="logoImg"
+            src={logoSrc}
+            alt="logo"
+          />
         </Link>
         <Popup
           trigger={

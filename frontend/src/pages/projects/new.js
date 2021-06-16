@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useCallback } from 'react'
 import { number, shape, string } from 'prop-types'
 import {
   Grid,
@@ -126,7 +126,7 @@ const Upload = ({ user, csrf }) => {
     await push(`/${user.username}/${projectName}`)
   }
 
-  const validateProjectName = async () => {
+  const validateProjectName = useCallback(async () => {
     // Check if the new name will also cause a conflict.
     const repoFullname = `${user.username}/${form.name}`
 
@@ -135,7 +135,7 @@ const Upload = ({ user, csrf }) => {
     } else {
       setIsValidProjectName(false)
     }
-  }
+  }, [user, form, isValid])
 
   const formatProjectNameError = () => {
     // disjoint form validation errors, e.g, maximum length, not empty, etc, with conflicting project name errors
@@ -154,14 +154,14 @@ const Upload = ({ user, csrf }) => {
 
   useEffect(() => {
     populate({ name: projectName }, true)
-  }, [projectName])
+  }, [projectName, populate])
 
   useEffect(() => {
     if (form.name) {
       // noinspection JSIgnoredPromiseFromCall
       validateProjectName()
     }
-  }, [form.name])
+  }, [form.name, validateProjectName])
 
   return (
     <>
