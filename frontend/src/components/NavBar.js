@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { forwardRef, useContext } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -25,6 +25,21 @@ const NavBar = () => {
   )
 }
 
+const Logo = forwardRef(function LogoWithRef({ onClick, href }, ref) {
+  return (
+    <a style={{ display: 'flex' }} href={href} onClick={onClick} ref={ref}>
+      <Image
+        width={160}
+        height={46}
+        objectFit="scale-down"
+        className={styles.logoImg}
+        src={logoSrc}
+        alt="logo"
+      />
+    </a>
+  )
+})
+
 function BigBar({ isProjectRoute, isSubmitRoute }) {
   /* This is the Navbar rendered on big screens */
   return (
@@ -32,14 +47,7 @@ function BigBar({ isProjectRoute, isSubmitRoute }) {
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
           <Link href="/" passHref>
-            <Image
-              width={160}
-              height={46}
-              objectFit="scale-down"
-              className={styles.logoImg}
-              src={logoSrc}
-              alt="logo"
-            />
+            <Logo />
           </Link>
           <SiteMenuItems isProjectRoute={isProjectRoute} />
         </Menu>
@@ -62,14 +70,7 @@ function SmallBar({ isProjectRoute, isSubmitRoute }) {
     <>
       <div className={styles.smallMenu}>
         <Link href="/" passHref>
-          <Image
-            width={140}
-            height={46}
-            objectFit="scale-down"
-            className="logoImg"
-            src={logoSrc}
-            alt="logo"
-          />
+          <Logo />
         </Link>
         <Popup
           trigger={
