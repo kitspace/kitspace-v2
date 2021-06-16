@@ -1,3 +1,4 @@
+import '../wydr'
 import React from 'react'
 
 import App from 'next/app'

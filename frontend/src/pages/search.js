@@ -43,12 +43,13 @@ const Search = ({ repos, q }) => {
   }, [form, isValid])
 
   useEffect(() => {
+    /* eslint-disable react-hooks/exhaustive-deps */
     if (query) {
       push(`/search?q=${query}`)
     } else {
       push(`/search`)
     }
-  }, [query, push])
+  }, [query])
 
   return (
     <Page title="home">

@@ -217,6 +217,8 @@ export const userExists = async username => {
  * @returns {Promise<boolean>}
  */
 const isCollaborator = async (repo, username) => {
+  if(username == null) return false
+  
   const endpoint = `${giteaApiUrl}/repos/${repo}/collaborators/${username}`
 
   const res = await fetch(endpoint, {
