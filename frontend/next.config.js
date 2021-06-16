@@ -4,6 +4,9 @@ module.exports = {
     KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
     MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   exportPathMap(map) {
     for (const key in map) {
       map[key].query = map[key].query || {}
