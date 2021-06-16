@@ -10,7 +10,7 @@ import styles from './ProjectCard.module.scss'
 const ProjectCard = ({ name, full_name: fullname, description, owner }) => {
   const { src, isLoading, isError } = useThumbnail(fullname)
   return (
-    <Link href={fullname}>
+    <Link href={fullname} passHref>
       <Card className={styles.card}>
         <div className={styles.thumbnail}>
           <div>

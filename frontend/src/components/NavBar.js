@@ -1,6 +1,8 @@
 import React, { useContext } from 'react'
-import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
 import { AuthContext } from '@contexts/AuthContext'
 import { bool } from 'prop-types'
@@ -29,9 +31,9 @@ function BigBar({ isProjectRoute, isSubmitRoute }) {
     <>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          <a href="/">
-            <Image className={styles.logoImg} src={logoSrc} alt="logo" />
-          </a>
+          <Link href="/" passHref >
+            <Image width={160} height={46} objectFit='scale-down' className={styles.logoImg} src={logoSrc} alt="logo" />
+          </Link>
           <SiteMenuItems isProjectRoute={isProjectRoute} />
         </Menu>
       </div>
@@ -52,9 +54,9 @@ function SmallBar({ isProjectRoute, isSubmitRoute }) {
   return (
     <>
       <div className={styles.smallMenu}>
-        <a href="/">
-          <Image className="logoImg" src={logoSrc} alt="logo" />
-        </a>
+        <Link href="/" passHref>
+          <Image width={140} height={46} objectFit='scale-down' className="logoImg" src={logoSrc} alt="logo" />
+        </Link>
         <Popup
           trigger={
             <Button icon size="large" basic inverted>
