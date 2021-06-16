@@ -36,7 +36,10 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
   const summary =
     diff > 0 && collapsed ? (
       <tr className={styles.expandSummary}>
-        <Table.Cell textAlign="center">{`... ${diff} more lines`}</Table.Cell>
+        <Table.Cell
+          key="diff cell"
+          textAlign="center"
+        >{`... ${diff} more lines`}</Table.Cell>
       </tr>
     ) : null
 
@@ -57,7 +60,7 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
         <tbody>
           {summary}
           <tr style={{ borderTop: 0 }}>
-            <Table.Cell textAlign="center">
+            <Table.Cell key="collapse cell" textAlign="center">
               <Icon name={collapsed ? 'eye' : 'arrow up'} />
               {collapsed ? 'View all' : 'Hide'}
             </Table.Cell>

@@ -63,8 +63,8 @@ const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
   const tableData = orderedSpecs.map(spec => [spec.name, spec.value])
   const renderBodyRow = args => (
     <Table.Row key={String(args)}>
-      {args.map(text => (
-        <Table.Cell>{text}</Table.Cell>
+      {args.map((text, i) => (
+        <Table.Cell key={`${text}_${i}`}>{text}</Table.Cell>
       ))}
     </Table.Row>
   )

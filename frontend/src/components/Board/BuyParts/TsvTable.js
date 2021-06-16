@@ -33,7 +33,11 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
   const mpnCells = (contents, rowIndex, columnIndex) => {
     const active =
       activePopup && activePopup[0] === rowIndex && activePopup[1] === columnIndex
-    const cells = contents.map(t => <Table.Cell active={active}>{t}</Table.Cell>)
+    const cells = contents.map((t, i) => (
+      <Table.Cell key={`${columnIndex}_${i}`} active={active}>
+        {t}
+      </Table.Cell>
+    ))
     const number = contents[1]
     if (number !== '') {
       const part =
@@ -46,8 +50,9 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
           }
           return null
         }, null) || {}
-      return cells.map(cell => (
+      return cells.map((cell, i) => (
         <MpnPopup
+          key={`MpnPopup_${rowIndex}_${columnIndex}_${i}`}
           onOpen={() => setActivePopup([rowIndex, columnIndex])}
           onClose={() => setActivePopup(null)}
           trigger={cell}
@@ -84,10 +89,12 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
 
   const headings = reducedLines[0]
   const bodyLines = reducedLines.slice(1)
-  let headingJSX = headings.map(text => <Table.HeaderCell>{text}</Table.HeaderCell>)
+  let headingJSX = headings.map((text, i) => (
+    <Table.HeaderCell key={`header_${i}`}>{text}</Table.HeaderCell>
+  ))
   headingJSX = (
     <Table.Header>
-      <Table.Row>{headingJSX}</Table.Row>
+      <Table.Row key="header">{headingJSX}</Table.Row>
     </Table.Header>
   )
   const bodyLinesJSX = bodyLines.map((line, rowIndex) => {
@@ -115,7 +122,11 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       const className =
         columnIndex === 0 ? `${styles.marked} ${styles[markerColor(contents)]}` : ''
       const cell = (
-        <Table.Cell error={error} className={className}>
+        <Table.Cell
+          key={`error_${rowIndex}_${columnIndex}`}
+          error={error}
+          className={className}
+        >
           {contents}
         </Table.Cell>
       )
@@ -124,7 +135,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
 
     const rowActivePopup = activePopup && activePopup[0] === rowIndex
     return (
-      <Table.Row className={rowActivePopup ? styles.selected : ''}>
+      <Table.Row key={rowIndex} className={rowActivePopup ? styles.selected : ''}>
         {flattenDeep(bodyCells)}
       </Table.Row>
     )
