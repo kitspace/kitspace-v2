@@ -15,8 +15,6 @@
     "@babel/core": "^7.12.10",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.2",
     "@babel/plugin-proposal-optional-chaining": "^7.12.7",
-    "@stripe/react-stripe": "^7.0.0-beta.0",
-    "@stripe/stripe-js": "^1.10.0",
     "babel-plugin-lodash": "^3.3.4",
     "body-parser": "^1.19.0",
     "browser-version": "^1.0.0",
@@ -42,11 +40,12 @@
     "react-media-hook": "^0.4.9",
     "react-social-login-buttons": "3.1.2",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.88.2",
+    "semantic-ui-react": "^2.0.3",
     "slugify": "^1.4.6",
     "styled-jsx": "^3.4.4",
     "swr": "^0.3.11",
-    "url-loader": "^4.1.0"
+    "url-loader": "^4.1.0",
+    "webpack": "^5.0.0"
   },
   "devDependencies": {
     "@types/faker": "^5.1.0",
@@ -62,6 +61,7 @@
     "eslint-plugin-prettier": "3.4.0",
     "faker": "^5.1.0",
     "lint-staged": ">=10",
+    "mocha": "^3.5.0",
     "nodemon": "^2.0.2",
     "prettier": "^2.0.5"
   }
