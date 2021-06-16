@@ -9,12 +9,18 @@ const OneClickBom = () => (
     <p style={{ textAlign: 'center', minHeight: 86 }}>
       <a href="https://chrome.google.com/webstore/detail/1clickbom/mflpmlediakefinapghmabapjeippfdi">
         <Image
+          height={200}
+          width={400}
+          objectFit="scale-down"
           src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/chrome.png"
           alt="chrome extension marketplace"
         />
       </a>
       <a href="https://addons.mozilla.org/firefox/downloads/latest/634060/addon-634060-latest.xpi">
         <Image
+          height={200}
+          width={400}
+          objectFit="scale-down"
           src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/firefox.png"
           alt="firefox extension marketplace"
         />
@@ -25,10 +31,7 @@ const OneClickBom = () => (
       sites like Digikey and Mouser. It lets you simply click on the &quot;buy
       parts&quot; links on Kitspace to get the right parts. You can also use it
       directly with your own spreadsheets or with our{' '}
-      <Link href="/bom-builder">
-        <a href="/bom-builder">BOM Builder</a>
-      </Link>{' '}
-      tool.
+      <Link href="/bom-builder">BOM Builder</Link> tool.
     </p>
     <p>
       <a href="https://github.com/kitspace/1clickBOM#readme">
@@ -37,6 +40,9 @@ const OneClickBom = () => (
     </p>
     <p style={{ textAlign: 'center', marginTop: 10, minHeight: 454 }}>
       <Image
+        height={450}
+        width={600}
+        objectFit="scale-down"
         src="https://raw.githubusercontent.com/kitspace/1clickBOM/master/readme_images/demo.gif"
         alt="demo"
       />

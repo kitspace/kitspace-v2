@@ -57,7 +57,7 @@ module.exports = {
     return map
   },
   images: {
-    domains: ["processor.kitspace.test"]
+    domains: [process.env.KITSPACE_PROCESSOR_URL, 'raw.githubusercontent.com']
   },
   webpack(config) {
     config.module.rules.push({
