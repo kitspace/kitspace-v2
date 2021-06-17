@@ -303,7 +303,6 @@ const UpdateForm = ({
     }
 
     if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
       validateProjectName()
     }
   }, [form.name, isValid, name, owner])

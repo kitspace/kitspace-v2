@@ -158,7 +158,6 @@ const Upload = ({ user, csrf }) => {
 
   useEffect(() => {
     if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
       validateProjectName()
     }
   }, [form.name, validateProjectName])
