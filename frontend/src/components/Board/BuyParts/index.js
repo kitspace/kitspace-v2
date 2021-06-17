@@ -266,8 +266,11 @@ const RetailerButton = ({
 const StoreIcon = ({ retailer, disabled }) => {
   const imgHref = `/static/images/${retailer}${disabled ? '-grey' : ''}.ico`
   return (
-    // Styling this as a Next Image is unnecessarily complicated, also the next optimizations for this image aren't that useful
-    // see https://github.com/vercel/next.js/discussions/22861.
+    /* 
+     * Styling this as a Next Image is unnecessarily complicated.
+     * Also, the next optimizations for this image aren't that useful.
+     * see https://github.com/vercel/next.js/discussions/22861.
+    */
     // eslint-disable-next-line @next/next/no-img-element
     <img
       className={styles.storeIcons}
