@@ -63,8 +63,8 @@ const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
   const tableData = orderedSpecs.map(spec => [spec.name, spec.value])
   const renderBodyRow = args => (
     <Table.Row key={String(args)}>
-      {args.map(text => (
-        <Table.Cell>{text}</Table.Cell>
+      {args.map((text, i) => (
+        <Table.Cell key={`${text}_${i}`}>{text}</Table.Cell>
       ))}
     </Table.Row>
   )
@@ -75,7 +75,7 @@ const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
         <div className={styles.componentFigure}>
           <div>
             <div className={styles.imageContainer}>
-              <Image src={image?.url} />
+              <Image src={image?.url} alt="part image" />
             </div>
             <a style={{ fontSize: 9 }} href={image?.credit_url}>
               {image?.credit_string}

@@ -15,7 +15,7 @@ import {
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import ProjectUpdateFormModel from '@models/ProjectUpdateForm'
-import { pollMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
+import { useMigrationStatus, useDefaultBranchFiles, useRepo } from '@hooks/Gitea'
 import { commitFiles } from '@utils/giteaInternalApi'
 import {
   canCommit,
@@ -113,7 +113,7 @@ const UpdateProject = props => {
   })
 
   // If the repo is migrating, poll for update every second, otherwise use default config.
-  const { status } = pollMigrationStatus(props.repo.id, props.isEmpty, {
+  const { status } = useMigrationStatus(props.repo.id, props.isEmpty, {
     refreshInterval: 1000,
   })
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
@@ -124,7 +124,7 @@ const UpdateProject = props => {
     if (props.isEmpty && !props.isSynced && status === 'Finished') {
       reload()
     }
-  }, [status])
+  }, [status, props.isEmpty, props.isSynced, reload])
 
   if (isLoading) {
     return (
@@ -250,21 +250,6 @@ const UpdateForm = ({
     }
   }
 
-  const validateProjectName = async () => {
-    // Check if the new name will cause a conflict.
-    const repoFullname = `${owner}/${form.name}`
-
-    // If the project name hasn't changed it's valid
-    if (repoFullname === `${owner}/${name}`) {
-      setIsValidProjectName(isValid)
-    } else if (!(await repoExists(repoFullname))) {
-      // Otherwise check if there's no repo with same name
-      setIsValidProjectName(isValid)
-    } else {
-      setIsValidProjectName(false)
-    }
-  }
-
   const formatProjectNameError = () => {
     // disjoint form validation errors, e.g, maximum length, not empty, etc, with conflicting project name errors
     const formErrors = formatErrorPrompt('name')
@@ -282,8 +267,8 @@ const UpdateForm = ({
 
   // Set values of the form as the values of the project stored in the Gitea repo
   useEffect(() => {
-    populate({ name, description }, true)
-  }, [])
+    populate({ name, description })
+  }, [name, description, populate])
 
   useEffect(() => {
     // Handle client side rendering for uploading permissions,
@@ -293,7 +278,7 @@ const UpdateForm = ({
         setCanUpload(res && !previewOnly)
       })
     }
-  }, [hasUploadPermission, previewOnly, user])
+  }, [user, projectFullname, hasUploadPermission, previewOnly])
 
   // A disjoint between the newly uploaded files(waiting for submission) and the files
   // on the Gitea repo for this project
@@ -302,11 +287,25 @@ const UpdateForm = ({
   }, [remoteFiles, newlyUploadedDetails])
 
   useEffect(() => {
+    const validateProjectName = async () => {
+      // Check if the new name will cause a conflict.
+      const repoFullname = `${owner}/${form.name}`
+
+      // If the project name hasn't changed it's valid
+      if (repoFullname === `${owner}/${name}`) {
+        setIsValidProjectName(isValid)
+      } else if (!(await repoExists(repoFullname))) {
+        // Otherwise check if there's no repo with same name
+        setIsValidProjectName(isValid)
+      } else {
+        setIsValidProjectName(false)
+      }
+    }
+
     if (form.name) {
-      // noinspection JSIgnoredPromiseFromCall
       validateProjectName()
     }
-  }, [form.name])
+  }, [form.name, isValid, name, owner])
 
   if (isLoading) return <Loader active />
 

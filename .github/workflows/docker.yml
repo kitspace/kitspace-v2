@@ -206,6 +206,7 @@ jobs:
 
       - name: Install Microsoft Edge
         if: ${{ matrix.browsers == 'edge' }}
+        timeout-minutes: 10
         shell: bash
         run: |
           curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg

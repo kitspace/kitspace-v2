@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react'
+import { useState, useContext, useCallback } from 'react'
 import { AuthContext } from '@contexts/AuthContext'
 
 export default function UseForm(schema) {
@@ -20,11 +20,14 @@ export default function UseForm(schema) {
    * @param {object} data form data
    * @param {boolean} predicate condition to use for populating
    */
-  const populate = (data, predicate = true) => {
-    if (predicate) {
-      setForm({ _csrf: csrf, ...data })
-    }
-  }
+  const populate = useCallback(
+    (data, predicate = true) => {
+      if (predicate) {
+        setForm({ _csrf: csrf, ...data })
+      }
+    },
+    [csrf],
+  )
 
   const { error } = schema.validate({ ...form })
   const isValid = error == null

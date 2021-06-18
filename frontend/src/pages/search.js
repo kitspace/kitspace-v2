@@ -40,9 +40,16 @@ const Search = ({ repos, q }) => {
 
   useEffect(() => {
     setQuery(isValid ? form.query : '')
-  }, [form])
+  }, [form, isValid])
 
   useEffect(() => {
+    /* eslint-disable react-hooks/exhaustive-deps */
+    /*
+      ! The ignored dependency is `push` which isn't actually a dependency for this usecase; it won't change.
+      ! Adding `push` to the deps array will cause infinite fetching;
+      ! on first page mount the value of `push` changes which triggers the hook.
+      ! The hook will call `push` and and a new page(the json from next SSR) will load resulting in infinite fetching.
+    */
     if (query) {
       push(`/search?q=${query}`)
     } else {

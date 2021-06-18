@@ -1,3 +1,4 @@
+import '../wdyr'
 import React from 'react'
 
 import App from 'next/app'

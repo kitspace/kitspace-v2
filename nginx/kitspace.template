@@ -16,15 +16,6 @@ server {
 		root /srv/frontend/static_fallback/;
 	}
 
-
-    # see https://github.com/vercel/next.js/issues/16874
-    location = /_next/static/development/_devPagesManifest.json {
-		access_log    off;
-		log_not_found off;
-		expires       -1;
-		proxy_pass    http://frontend:3000;
-	}
-
 	location /static/ {
 		root /srv/frontend/public/;
 		autoindex on;

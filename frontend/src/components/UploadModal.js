@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { Button, Modal, Tab } from 'semantic-ui-react'
 
@@ -41,7 +41,7 @@ const UploadModal = ({
 
   const activeTab = () => document.querySelector('.menu > .active')?.innerHTML
 
-  const submit = async () => {
+  const submit = useCallback(async () => {
     const submitSelected = assetName =>
       submitKitspaceYaml(
         selected,
@@ -63,9 +63,9 @@ const UploadModal = ({
       default:
         return false
     }
-  }
+  }, [kitspaceYAML, kitspaceYAMLExists, selected, projectFullname, user, csrf])
 
-  const populateChecked = () => {
+  const populateChecked = useCallback(() => {
     switch (activeTab()) {
       case TabsNames.PCBFiles:
         setKitspaceYAMLAsset(kitspaceYAML?.gerbers || defaultAssetsPaths.PCBFiles)
@@ -79,9 +79,9 @@ const UploadModal = ({
       default:
         break
     }
-  }
+  }, [kitspaceYAML])
 
-  const hasChangedSelectedAsset = () => {
+  const hasChangedSelectedAsset = useCallback(() => {
     switch (activeTab()) {
       case TabsNames.PCBFiles:
         return (
@@ -96,7 +96,7 @@ const UploadModal = ({
       default:
         return false
     }
-  }
+  }, [kitspaceYAML, selected?.path])
 
   /**
    * Passed to checkboxes to select the asset(file/folder).
@@ -120,9 +120,9 @@ const UploadModal = ({
       })
       setOpen(false)
     }
-  }, [selected])
+  }, [selected, hasChangedSelectedAsset, submit, mutate])
 
-  useEffect(() => populateChecked(), [open, kitspaceYAML])
+  useEffect(() => populateChecked(), [open, kitspaceYAML, populateChecked])
 
   const TabsProps = {
     files,
@@ -187,24 +187,24 @@ const Tabs = ({
   const panes = [
     {
       menuItem: TabsNames.PCBFiles,
-      // PCB Files should be a folder
-      render: () => (
-        <UploadTab {...commonTabProps} allowFiles={false} allowFolders />
-      ),
+      render: function PCBFilesTab() {
+        // PCB Files should be a folder
+        return <UploadTab {...commonTabProps} allowFiles={false} allowFolders />
+      },
     },
     {
       menuItem: TabsNames.BOMFile,
-      // BOM Files should be a single file
-      render: () => (
-        <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
-      ),
+      render: function BOMFileTab() {
+        // BOM Files should be a single file
+        return <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
+      },
     },
     {
       menuItem: TabsNames.READMEFile,
-      // README file should be a single file
-      render: () => (
-        <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
-      ),
+      render: function ReadmeFileTab() {
+        // README file should be a single file
+        return <UploadTab {...commonTabProps} allowFiles allowFolders={false} />
+      },
     },
   ]
 

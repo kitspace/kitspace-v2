@@ -48,7 +48,7 @@ const TreeNode = ({
 
   useEffect(() => {
     select(node, checked)
-  }, [checked])
+  }, [checked, node, select])
 
   useEffect(() => {
     // Used to control the checkbox externally.
@@ -59,7 +59,7 @@ const TreeNode = ({
 
   useEffect(() => {
     // Fetch files inside a directory when toggling it in the tree preview.
-    if (node.hasOwnProperty('url')) {
+    if (node.hasOwnProperty('url') && toggled) {
       fetch(node.url)
         .then(r => r.json())
         .then(setNodeData)
@@ -68,7 +68,7 @@ const TreeNode = ({
           console.error(e)
         })
     }
-  }, [toggled])
+  }, [toggled, node])
 
   if (node.type === 'file') {
     return (

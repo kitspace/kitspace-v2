@@ -1,6 +1,8 @@
-import React, { useContext } from 'react'
-import { Button, Icon, Image, Menu, Popup } from 'semantic-ui-react'
+import React, { forwardRef, useContext } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
 import { AuthContext } from '@contexts/AuthContext'
 import { bool } from 'prop-types'
@@ -23,15 +25,38 @@ const NavBar = () => {
   )
 }
 
+const Logo = forwardRef(function LogoWithRef({ onClick, href }, ref) {
+  /*
+   TODO: FIXME when there's a better way(w/o forwardRef) to wrap a functional component with `Link`.
+   * Wrapping the `Image` directly with `Link` causes a runtime error:
+    ```
+    ! Warning: Function components cannot be given refs.
+    ```
+   * To get around this the image is wrapped in `a` tag with `forwardRef`.
+  */
+  return (
+    <a style={{ display: 'flex' }} href={href} onClick={onClick} ref={ref}>
+      <Image
+        width={160}
+        height={46}
+        objectFit="scale-down"
+        className={styles.logoImg}
+        src={logoSrc}
+        alt="logo"
+      />
+    </a>
+  )
+})
+
 function BigBar({ isProjectRoute, isSubmitRoute }) {
   /* This is the Navbar rendered on big screens */
   return (
     <>
       <div className={styles.bigSiteMenu}>
         <Menu inverted pointing secondary>
-          <a href="/">
-            <Image className={styles.logoImg} src={logoSrc} />
-          </a>
+          <Link href="/" passHref>
+            <Logo />
+          </Link>
           <SiteMenuItems isProjectRoute={isProjectRoute} />
         </Menu>
       </div>
@@ -52,9 +77,9 @@ function SmallBar({ isProjectRoute, isSubmitRoute }) {
   return (
     <>
       <div className={styles.smallMenu}>
-        <a href="/">
-          <Image className="logoImg" src={logoSrc} />
-        </a>
+        <Link href="/" passHref>
+          <Logo />
+        </Link>
         <Popup
           trigger={
             <Button icon size="large" basic inverted>
