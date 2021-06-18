@@ -8,11 +8,17 @@ const processorUrl = process.env.KITSPACE_PROCESSOR_URL
  * @param {string} assetsPath
  * @returns {Promise<[boolean, object]>}
  */
-export const getBoardZipInfo = async assetsPath => {
-  const zipInfoFields = { zipPath: '', width: 0, height: 0, layers: 0 }
+export const getBoardGerberInfo = async assetsPath => {
+  const gerberInfoFields = {
+    zipPath: '',
+    width: 0,
+    height: 0,
+    layers: 0,
+    inputFiles: {},
+  }
 
-  const res = await fetch(`${assetsPath}/zip-info.json`)
-  return [res.ok, res.ok ? await res.json() : zipInfoFields]
+  const res = await fetch(`${assetsPath}/gerber-info.json`)
+  return [res.ok, res.ok ? await res.json() : gerberInfoFields]
 }
 
 /**
@@ -20,8 +26,8 @@ export const getBoardZipInfo = async assetsPath => {
  * @param {string} assetsPath
  * @returns {Promise<[boolean, object]>}
  */
-export const getBoardInfo = async assetsPath => {
-  const res = await fetch(`${assetsPath}/info.json`)
+export const getBoardBomInfo = async assetsPath => {
+  const res = await fetch(`${assetsPath}/bom-info.json`)
   return [res.ok, res.ok ? await res.json() : {}]
 }
 
