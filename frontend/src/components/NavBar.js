@@ -26,6 +26,14 @@ const NavBar = () => {
 }
 
 const Logo = forwardRef(function LogoWithRef({ onClick, href }, ref) {
+  /*
+   TODO: FIXME when there's a better way(w/o forwardRef) to wrap a functional component with `Link`.
+   * Wrapping the `Image` directly with `Link` causes a runtime error:
+    ```
+    ! Warning: Function components cannot be given refs.
+    ```
+   * To get around this the image is wrapped in `a` tag with `forwardRef`.
+  */
   return (
     <a style={{ display: 'flex' }} href={href} onClick={onClick} ref={ref}>
       <Image
