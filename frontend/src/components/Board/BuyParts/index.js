@@ -8,7 +8,7 @@ import InstallPrompt, { install1ClickBOM } from './InstallPrompt'
 import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
-const BuyParts = ({ project, lines, parts }) => {
+const BuyParts = ({ projectFullName, lines, parts }) => {
   const [extensionPresence, setExtensionPresence] = useState('unknown')
   // it's needed to fix the extension integration.
   // eslint-disable-next-line no-unused-vars
@@ -63,7 +63,7 @@ const BuyParts = ({ project, lines, parts }) => {
               setBuyParts(retailer => {
                 window.plausible('Buy Parts', {
                   props: {
-                    project,
+                    project: projectFullName,
                     vendor: retailer,
                     multiplier: mult,
                   },
@@ -91,7 +91,7 @@ const BuyParts = ({ project, lines, parts }) => {
       },
       false,
     )
-  }, [mult, project])
+  }, [mult, projectFullName])
 
   useEffect(() => {
     const multi = buyMultiplier
@@ -282,7 +282,7 @@ const StoreIcon = ({ retailer, disabled }) => {
 }
 
 BuyParts.propTypes = {
-  project: string.isRequired,
+  projectFullName: string.isRequired,
   lines: array.isRequired,
   parts: array.isRequired,
 }

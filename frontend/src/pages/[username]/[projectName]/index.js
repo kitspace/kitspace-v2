@@ -345,7 +345,7 @@ const UpdateForm = ({
           <>
             <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
             <BuyParts
-              project="hard"
+              projectFullName={projectFullname}
               lines={boardBomInfo?.bom?.lines}
               parts={boardBomInfo?.bom?.parts}
             />
