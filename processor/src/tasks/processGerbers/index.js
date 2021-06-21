@@ -48,7 +48,7 @@ async function _processGerbers(
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')
-  const zipInfoPath = path.join(outputDir, 'zip-info.json')
+  const gerberInfoPath = path.join(outputDir, 'gerber-info.json')
   const topPngPath = path.join(outputDir, 'images/top.png')
   const topLargePngPath = path.join(outputDir, 'images/top-large.png')
   const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
@@ -57,7 +57,7 @@ async function _processGerbers(
   const filePaths = [
     zipPath,
     bottomSvgPath,
-    zipInfoPath,
+    gerberInfoPath,
     topSvgPath,
     topPngPath,
     topLargePngPath,
@@ -84,15 +84,28 @@ async function _processGerbers(
 
     const files = globule.find(path.join(inputDir, '**'))
 
-    let gerbers = gerberFiles(files, path.join(inputDir, gerberDir))
+    const gerberTypes = gerberFiles(files, path.join(inputDir, gerberDir))
+    let gerbers = Object.keys(gerberTypes)
 
     // XXX this is 5 due to whats-that-gerber matching non-gerber files and 5
     // being a number that works for the projects currently on kitspace. it
     // could cause problems with new projects and should be fixed in
     // whats-that-gerber
     // https://github.com/tracespace/tracespace/issues/357
+    let inputFiles
     if (gerbers.length < 5) {
-      gerbers = await plotKicad(inputDir, files, kitspaceYaml)
+      const [plottedGerbers, kicadPcbFile] = await plotKicad(
+        inputDir,
+        files,
+        kitspaceYaml,
+      )
+      gerbers = plottedGerbers
+      const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
+      inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
+    } else {
+      inputFiles = gerbers.reduce((all, k) => {
+        return { ...all, [path.relative(inputDir, k)]: gerberTypes[k] }
+      }, {})
     }
 
     const gerberData = await readGerbers(gerbers)
@@ -113,9 +126,9 @@ async function _processGerbers(
     )
 
     promises.push(
-      generateZipInfo(zipPath, stackup, zipInfoPath)
-        .then(() => events.emit('done', zipInfoPath))
-        .catch(e => events.emit('failed', zipInfoPath, e)),
+      generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath)
+        .then(() => events.emit('done', gerberInfoPath))
+        .catch(e => events.emit('failed', gerberInfoPath, e)),
     )
 
     await writeFile(topSvgPath, stackup.top.svg)
@@ -199,28 +212,29 @@ function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
   return exec(cmd)
 }
 
-function generateZipInfo(zipPath, stackup, zipInfoPath) {
-  const zipInfo = {
+function generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath) {
+  const gerberInfo = {
     zipPath: path.basename(zipPath),
     width: Math.ceil(Math.max(stackup.top.width, stackup.bottom.width)),
     height: Math.ceil(Math.max(stackup.top.height, stackup.bottom.height)),
     layers: stackup.layers.filter(l => l.type === 'copper').length,
+    inputFiles,
   }
   if (stackup.top.units === 'in') {
     if (stackup.bottom.units !== 'in') {
       throw new Error('Disparate units in PCB files. Expecting in on bottom.')
     }
-    zipInfo.width *= 25.4
-    zipInfo.height *= 25.4
+    gerberInfo.width *= 25.4
+    gerberInfo.height *= 25.4
   } else {
     if (stackup.bottom.units === 'in') {
       throw new Error('Disparate units in PCB files. Expecting mm on bottom.')
     }
   }
-  zipInfo.width = Math.ceil(zipInfo.width)
-  zipInfo.height = Math.ceil(zipInfo.height)
+  gerberInfo.width = Math.ceil(gerberInfo.width)
+  gerberInfo.height = Math.ceil(gerberInfo.height)
 
-  return writeFile(path.join(zipInfoPath), JSON.stringify(zipInfo))
+  return writeFile(path.join(gerberInfoPath), JSON.stringify(gerberInfo))
 }
 
 function readGerbers(gerbers) {
@@ -266,7 +280,8 @@ async function plotKicad(inputDir, files, kitspaceYaml) {
   const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
   const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
   await exec(cmd_plot)
-  return globule.find(path.join(gerberFolder, '*'))
+  const gerbers = globule.find(path.join(gerberFolder, '*'))
+  return [gerbers, kicadPcbFile]
 }
 
 module.exports = processGerbers

@@ -26,8 +26,8 @@ import {
 } from '@utils/giteaApi'
 import { findReadme, renderReadme } from '@utils/index'
 import {
-  getBoardInfo,
-  getBoardZipInfo,
+  getBoardBomInfo,
+  getBoardGerberInfo,
   getKitspaceYAMLJson,
   hasInteractiveBom,
 } from '@utils/projectPage'
@@ -62,11 +62,11 @@ export const getServerSideProps = async ({ params, query, req }) => {
     // TODO: ALL assets aren't available for the repos the are being processed,
     // or the repos that don't have assets from first place.
     // This should be handled properly currently, it breaks the page.
-    const [zipInfoExists, zipInfo] = await getBoardZipInfo(assetsPath)
-    const [boardInfoExists, boardInfo] = await getBoardInfo(assetsPath)
+    const [gerberInfoExists, gerberInfo] = await getBoardGerberInfo(assetsPath)
+    const [boardBomInfoExists, boardBomInfo] = await getBoardBomInfo(assetsPath)
     const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(assetsPath)
 
-    const { zipPath, width, height, layers } = zipInfo
+    const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
     const readmeFile = findReadme(repoFiles)
@@ -82,7 +82,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         hasIBOM,
         kitspaceYAML,
         zipUrl,
-        boardInfo,
+        boardBomInfo,
         boardSpecs: { width, height, layers },
         renderedReadme,
         isSynced: repo?.mirror,
@@ -91,7 +91,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         user: params.username,
         projectName: params.projectName,
         isNew: query.create === 'true',
-        boardAssetsExist: zipInfoExists && boardInfoExists,
+        boardAssetsExist: gerberInfoExists && boardBomInfoExists,
         readmeExists: readmeFile !== '',
         kitspaceYAMLExists,
       },
@@ -181,7 +181,7 @@ const UpdateForm = ({
   hasUploadPermission,
   hasIBOM,
   kitspaceYAML,
-  boardInfo,
+  boardBomInfo,
   zipUrl,
   renderedReadme,
   boardSpecs,
@@ -314,7 +314,7 @@ const UpdateForm = ({
       <InfoBar
         name={name}
         url={url}
-        site={boardInfo?.site || kitspaceYAML?.site}
+        site={kitspaceYAML?.site}
         description={kitspaceYAML?.summary || description}
       />
       <div>
@@ -345,9 +345,9 @@ const UpdateForm = ({
           <>
             <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
             <BuyParts
-              project="hard"
-              lines={boardInfo?.bom?.lines}
-              parts={boardInfo?.bom?.parts}
+              projectFullName={projectFullname}
+              lines={boardBomInfo?.bom?.lines}
+              parts={boardBomInfo?.bom?.parts}
             />
           </>
         ) : (
@@ -425,7 +425,7 @@ UpdateForm.propTypes = {
   hasUploadPermission: bool.isRequired,
   hasIBOM: bool.isRequired,
   kitspaceYAML: objectOf(string).isRequired,
-  boardInfo: object.isRequired,
+  boardBomInfo: object.isRequired,
   zipUrl: string.isRequired,
   renderedReadme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,

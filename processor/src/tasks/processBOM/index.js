@@ -34,7 +34,7 @@ function processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
 
 async function _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
-  const infoJsonPath = path.join(outputDir, 'info.json')
+  const infoJsonPath = path.join(outputDir, 'bom-info.json')
 
   const filePaths = [bomOutputPath, infoJsonPath]
 
@@ -84,8 +84,7 @@ async function _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name
 
     bom.parts = await getPartinfo(bom.lines)
 
-    const site = kitspaceYaml.site || ''
-    const info = { site, bom }
+    const info = { bom, inputFile: path.relative(inputDir, bomInputPath) }
     await Promise.all([
       writeFile(infoJsonPath, JSON.stringify(info))
         .then(() => events.emit('done', infoJsonPath))

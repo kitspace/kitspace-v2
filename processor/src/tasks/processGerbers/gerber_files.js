@@ -5,24 +5,24 @@ function gerberFiles(files, gerberPath) {
   if (gerberPath != null) {
     files = files.filter(f => f.startsWith(gerberPath))
   }
-  const layers = whatsThatGerber(files)
-  const layerNames = Object.keys(layers).filter(k => layers[k].type != null)
+  const layerTypes = whatsThatGerber(files)
+  const layerNames = Object.keys(layerTypes).filter(k => layerTypes[k].type != null)
   let hasDuplicates = false
   const existingLayers = []
   for (const name of layerNames) {
     hasDuplicates = existingLayers.find(
       t =>
-        t.type === layers[name].type &&
-        t.side === layers[name].side &&
+        t.type === layerTypes[name].type &&
+        t.side === layerTypes[name].side &&
         t.side !== 'inner',
     )
     if (hasDuplicates) {
       break
     }
-    existingLayers.push(layers[name])
+    existingLayers.push(layerTypes[name])
   }
   if (!hasDuplicates) {
-    return layerNames
+    return toLayersWithTypes(layerNames, layerTypes)
   }
   //if we have duplicates we reduce it down to the folder with the most
   //gerbers
@@ -37,7 +37,19 @@ function gerberFiles(files, gerberPath) {
     }
     return result
   })
-  return layerNames.filter(fileName => path.dirname(fileName) === gerberFolder)
+  const inFolderLayerNames = layerNames.filter(
+    fileName => path.dirname(fileName) === gerberFolder,
+  )
+  return toLayersWithTypes(inFolderLayerNames, layerTypes)
+}
+
+// gives object layer info (type and side) for all layers in layerNames by
+// looking them up in layerTypes
+// e.g. {"whatever-F.Cu.gbr": {type: "copper", side: "top"}}
+function toLayersWithTypes(layerNames, layerTypes) {
+  return layerNames.reduce((all, name) => {
+    return { ...all, [name]: layerTypes[name] }
+  }, {})
 }
 
 module.exports = gerberFiles
