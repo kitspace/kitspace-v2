@@ -94,11 +94,11 @@ async function _processGerbers(
     // https://github.com/tracespace/tracespace/issues/357
     let inputFiles
     if (gerbers.length < 5) {
-      const [plottedGerbers, kicadPcbFile] = await plotKicad(
-        inputDir,
-        files,
-        kitspaceYaml,
-      )
+      const kicadPcbFile = findKicadPcbFile(inputDir, files, kitspaceYaml)
+      if (kicadPcbFile == null) {
+        throw Error('No PCB files found')
+      }
+      const plottedGerbers = await plotKicad(inputDir, kicadPcbFile, kitspaceYaml)
       gerbers = plottedGerbers
       const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
       inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
@@ -261,27 +261,25 @@ async function generateZip(zipPath, gerberData) {
     .then(content => writeFile(zipPath, content))
 }
 
-async function plotKicad(inputDir, files, kitspaceYaml) {
-  let kicadPcbFile
+function findKicadPcbFile(inputDir, files, kitspaceYaml) {
   if (
     kitspaceYaml.eda &&
     kitspaceYaml.eda.type === 'kicad' &&
     kitspaceYaml.eda.pcb
   ) {
-    kicadPcbFile = path.join(inputDir, kitspaceYaml.eda.pcb)
+    return path.join(inputDir, kitspaceYaml.eda.pcb)
   } else {
-    kicadPcbFile = files.find(file => file.endsWith('.kicad_pcb'))
+    return files.find(file => file.endsWith('.kicad_pcb'))
   }
-  if (kicadPcbFile == null) {
-    throw Error('No PCB files found')
-  }
+}
+
+async function plotKicad(inputDir, kicadPcbFile, kitspaceYaml) {
   const gerberFolder = path.join('/tmp/kitspace', inputDir, 'gerbers')
   await exec(`rm -rf ${gerberFolder} && mkdir -p ${gerberFolder}`)
   const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
   const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
   await exec(cmd_plot)
-  const gerbers = globule.find(path.join(gerberFolder, '*'))
-  return [gerbers, kicadPcbFile]
+  return globule.find(path.join(gerberFolder, '*'))
 }
 
 module.exports = processGerbers
