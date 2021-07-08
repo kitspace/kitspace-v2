@@ -14,6 +14,7 @@
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#78df7bb0ebfbdb7beee99d13514b3737f010508f",
     "chokidar": "^3.4.3",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "globule": "^1.0.0",
     "js-yaml": "^3.3.1",
     "jszip": "^3.1.1",

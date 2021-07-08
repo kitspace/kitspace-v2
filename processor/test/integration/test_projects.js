@@ -8,7 +8,7 @@ const exec = util.promisify(cp.exec)
 
 const { createApp } = require('../../src/app')
 
-const tmpDir = '/tmp/kitspace-processor-test'
+const tmpDir = '/tmp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
 
@@ -26,7 +26,7 @@ const standardProjectFiles = [
   'bom-info.json',
 ]
 
-describe('app', () => {
+describe('from folder', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)

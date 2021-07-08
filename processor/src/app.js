@@ -2,6 +2,7 @@ const EventEmitter = require('events')
 const express = require('express')
 const log = require('loglevel')
 const path = require('path')
+const fileUpload = require('express-fileupload')
 
 const watcher = require('./watcher')
 
@@ -73,6 +74,28 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
       }
     }
     return res.sendStatus(404)
+  })
+
+  app.use(fileUpload())
+
+  app.post('/process-file', (req, res) => {
+    try {
+      if (req.files == null) {
+        return res.status(422).send('No file uploaded')
+      }
+
+      const upload = req.files.upload
+      res.send({
+        message: 'File is uploaded',
+        data: {
+          name: upload.name,
+          mimetype: upload.mimetype,
+          size: upload.size,
+        },
+      })
+    } catch (err) {
+      res.status(500).send(err)
+    }
   })
 
   return app

@@ -72,7 +72,9 @@ or
         - as above but prefixed with the multi-project name i.e. `[user]/[project]/[git-ref]/[multi-project-name]/zip-info.json` etc.
         - except for `kitspace-yaml.json` which is still `[user]/[project]/[git-ref]/kitspace-yaml.json`
 
+### Processing of remote files through API
 
+#### POST `/process-file`
 
 ## Development
 
