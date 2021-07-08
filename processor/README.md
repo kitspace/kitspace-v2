@@ -63,6 +63,7 @@ or
         - `images/top-large.png`
         - `images/top-meta.png`
         - `images/top-with-background.png`
+        - `images/layout.svg`
         - `1-click-BOM.tsv`
         - `bom-info.json`
         - `interactive_bom.json`
