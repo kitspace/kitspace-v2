@@ -119,6 +119,9 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
       }
       const uploadFolder = path.join(remoteProcessInputDir, upload.md5)
       const ext = path.extname(upload.name)
+      if (ext !== '.kicad_pcb') {
+        return res.status(422).send('Only accepting .kicad_pcb files')
+      }
       const uploadPath = path.join(uploadFolder, upload.md5 + ext)
       const outputDir = path.join(remoteProcessOutputDir, upload.md5)
       await exec(`mkdir -p ${uploadFolder}`)
