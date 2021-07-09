@@ -1,14 +1,9 @@
 const fs = require('fs')
 const globule = require('globule')
 const path = require('path')
-const cp = require('child_process')
 const Jszip = require('jszip')
-const util = require('util')
 
-const { existsAll } = require('../../utils')
-const exec = util.promisify(cp.exec)
-const writeFile = util.promisify(fs.writeFile)
-const readFile = util.promisify(fs.readFile)
+const { existsAll, writeFile, readFile, exec } = require('../../utils')
 
 const findGerberFiles = require('./findGerberFiles')
 const boardBuilder = require('./board_builder')
@@ -18,7 +13,7 @@ function processGerbers(
   inputDir,
   kitspaceYaml,
   outputDir,
-  hash,
+  zipVersion,
   name,
   plottedGerbers,
 ) {
@@ -34,7 +29,7 @@ function processGerbers(
           inputDir,
           projectKitspaceYaml,
           projectOutputDir,
-          hash,
+          zipVersion,
           projectName,
           projectPlottedGerbers,
         )
@@ -46,7 +41,7 @@ function processGerbers(
     inputDir,
     kitspaceYaml,
     outputDir,
-    hash,
+    zipVersion,
     name,
     plottedGerbers,
   )
@@ -57,13 +52,13 @@ async function _processGerbers(
   inputDir,
   kitspaceYaml,
   outputDir,
-  hash,
+  zipVersion,
   name,
   plottedGerbers,
 ) {
   const nameSplit = name.split('/')
   const zipFileName =
-    nameSplit[nameSplit.length - 1] + '-' + hash.slice(0, 7) + '-gerbers.zip'
+    nameSplit[nameSplit.length - 1] + '-' + zipVersion + '-gerbers.zip'
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')

@@ -8,17 +8,18 @@ const watcher = require('./watcher')
 
 const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
+const remoteProcessDir = path.join(DATA_DIR, 'remote-process')
 
 function createApp(repoDir = '/gitea-data/git/repositories') {
   const fileStatus = {}
-  const links = {}
+  const redirects = {}
 
   const events = new EventEmitter()
   events.on('in_progress', x => {
     x = path.relative(filesDir, x)
     fileStatus[x] = { status: 'in_progress' }
     const headPath = getHeadPath(x)
-    links[headPath] = x
+    redirects[headPath] = x
     log.debug('in_progress', x)
   })
   events.on('done', x => {
@@ -41,8 +42,8 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
   app.get('/status/*', (req, res, next) => {
     let x = path.relative('/status/', req.path)
     x = lowerCaseProject(x)
-    if (x in links) {
-      x = links[x]
+    if (x in redirects) {
+      x = redirects[x]
     }
     if (x in fileStatus) {
       return res.send(fileStatus[x])
@@ -56,8 +57,8 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
     let x = path.relative('/files/', req.path)
     x = lowerCaseProject(x)
 
-    if (x in links) {
-      return res.redirect(302, path.join('/files/', links[x]))
+    if (x in redirects) {
+      return res.redirect(302, path.join('/files/', redirects[x]))
     }
     if (x in fileStatus) {
       if (fileStatus[x].status === 'in_progress') {

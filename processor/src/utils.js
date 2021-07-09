@@ -1,7 +1,12 @@
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
+const cp = require('child_process')
 const accessPromise = util.promisify(fs.access)
+
+const exec = util.promisify(cp.exec)
+const writeFile = util.promisify(fs.writeFile)
+const readFile = util.promisify(fs.readFile)
 
 function exists(file) {
   return accessPromise(file, fs.constants.F_OK)
@@ -35,4 +40,4 @@ function findKicadPcbFile(inputDir, files, kitspaceYaml) {
   }
 }
 
-module.exports = { exists, existsAll, findKicadPcbFile }
+module.exports = { exists, existsAll, findKicadPcbFile, exec, writeFile, readFile }

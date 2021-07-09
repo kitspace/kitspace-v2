@@ -1,22 +1,15 @@
 const chokidar = require('chokidar')
-const cp = require('child_process')
 const debounce = require('lodash.debounce')
-const fs = require('fs')
 const jsYaml = require('js-yaml')
 const log = require('loglevel')
 const path = require('path')
-const util = require('util')
 
 const { DATA_DIR } = require('./env')
-const { exists } = require('./utils')
+const { exists, exec, writeFile, readFile } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
 const processCAD = require('./tasks/processCAD')
-
-const exec = util.promisify(cp.exec)
-const readFile = util.promisify(fs.readFile)
-const writeFile = util.promisify(fs.writeFile)
 
 const running = {}
 function watch(events, repoDir = '/repositories') {
@@ -102,14 +95,14 @@ async function processRepo(events, repoDir, gitDir) {
       checkoutDir,
       kitspaceYaml,
       filesDir,
-      name,
     )
+    const zipVersion = hash.slice(0, 7)
     return processGerbers(
       events,
       checkoutDir,
       kitspaceYaml,
       filesDir,
-      hash,
+      zipVersion,
       name,
       plottedGerbers,
     )

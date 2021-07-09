@@ -1,13 +1,8 @@
 const oneClickBOM = require('1-click-bom')
-const fs = require('fs')
 const path = require('path')
-const util = require('util')
 const getPartinfo = require('./get_partinfo')
 
-const { exists, existsAll } = require('../../utils')
-
-const writeFile = util.promisify(fs.writeFile)
-const readFile = util.promisify(fs.readFile)
+const { exists, existsAll, writeFile, readFile } = require('../../utils')
 
 function processBOM(events, inputDir, kitspaceYaml, outputDir) {
   if (kitspaceYaml.multi) {

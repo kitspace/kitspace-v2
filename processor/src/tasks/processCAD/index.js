@@ -6,15 +6,7 @@ const globule = require('globule')
 const { existsAll, findKicadPcbFile } = require('../../utils')
 const exec = util.promisify(cp.exec)
 
-function processCAD(
-  events,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  hash,
-  name,
-  plottedGerbers,
-) {
+function processCAD(events, inputDir, kitspaceYaml, outputDir) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
@@ -40,15 +32,7 @@ function processCAD(
       ),
     )
   }
-  return _processCAD(
-    events,
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    hash,
-    name,
-    plottedGerbers,
-  )
+  return _processCAD(events, inputDir, kitspaceYaml, outputDir)
 }
 
 async function _processCAD(events, inputDir, kitspaceYaml, outputDir) {
