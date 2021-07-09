@@ -62,6 +62,7 @@ services:
   processor:
     environment:
       - LOG_LEVEL=info
+      - REMOTE_API_TOKEN=${KITSPACE_PROCESSOR_REMOTE_API_TOKEN}
     volumes:
       - gitea-data:/gitea-data
       - processor-data:/data

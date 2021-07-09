@@ -104,6 +104,11 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
 
   app.post('/process-file', async (req, res) => {
     try {
+      if (
+        req.headers.authorization !== `Bearer ${process.env.REMOTE_API_TOKEN}`
+      ) {
+        return res.sendStatus(403)
+      }
       if (req.files == null) {
         return res.status(422).send('No file uploaded')
       }
