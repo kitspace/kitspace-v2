@@ -10,7 +10,7 @@ const exec = util.promisify(cp.exec)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
 
-const gerberFiles = require('./gerber_files')
+const findGerberFiles = require('./findGerberFiles')
 const boardBuilder = require('./board_builder')
 
 function processGerbers(events, inputDir, kitspaceYaml, outputDir, hash, name) {
@@ -86,7 +86,7 @@ async function _processGerbers(
 
     const files = globule.find(path.join(inputDir, '**'))
 
-    const gerberTypes = gerberFiles(files, path.join(inputDir, gerberDir))
+    const gerberTypes = findGerberFiles(files, path.join(inputDir, gerberDir))
     let gerbers = Object.keys(gerberTypes)
     const kicadPcbFile = findKicadPcbFile(inputDir, files, kitspaceYaml)
 

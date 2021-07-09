@@ -1,7 +1,7 @@
 const whatsThatGerber = require('whats-that-gerber')
 const path = require('path')
 
-function gerberFiles(files, gerberPath) {
+function findGerberFiles(files, gerberPath) {
   if (gerberPath != null) {
     files = files.filter(f => f.startsWith(gerberPath))
   }
@@ -24,8 +24,8 @@ function gerberFiles(files, gerberPath) {
   if (!hasDuplicates) {
     return toLayersWithTypes(layerNames, layerTypes)
   }
-  //if we have duplicates we reduce it down to the folder with the most
-  //gerbers
+  // if we have duplicates we reduce it down to the folder with the most
+  // gerbers
   const fileCounts = layerNames.reduce((result, fileName) => {
     const folderName = path.dirname(fileName)
     const fileCount = result[folderName] ? result[folderName] + 1 : 1
@@ -47,9 +47,9 @@ function gerberFiles(files, gerberPath) {
 // looking them up in layerTypes
 // e.g. {"whatever-F.Cu.gbr": {type: "copper", side: "top"}}
 function toLayersWithTypes(layerNames, layerTypes) {
-  return layerNames.reduce((all, name) => {
-    return { ...all, [name]: layerTypes[name] }
+  return layerNames.reduce((result, name) => {
+    return { ...result, [name]: layerTypes[name] }
   }, {})
 }
 
-module.exports = gerberFiles
+module.exports = findGerberFiles
