@@ -26,7 +26,7 @@ const standardProjectFiles = [
   'bom-info.json',
 ]
 
-describe('from folder', () => {
+describe('projects API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)
@@ -122,7 +122,9 @@ describe('from folder', () => {
       assert(r.status === 200)
       assert(
         r.body.status === 'done',
-        `expecting body.status to be 'done' but got '${r.body.status}'`,
+        `expecting body.status to be 'done' but got '${
+          r.body.status
+        }' for ${f}\n${JSON.stringify(r.body, null, 2)}`,
       )
 
       // getting the file from HEAD should re-direct to the exact hash
@@ -199,7 +201,8 @@ describe('from folder', () => {
         assert(r.status === 200)
         assert(
           r.body.status === 'done',
-          `expecting body.status to be 'done' but got '${r.body.status}'`,
+          `expecting body.status to be 'done' but got '${r.body.status}' for ${f}`
+          + `\n ${JSON.stringify(r.body, null, 2)}`
         )
 
         // getting the file from HEAD should re-direct to the exact hash

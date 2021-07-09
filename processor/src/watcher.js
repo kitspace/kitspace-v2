@@ -1,4 +1,3 @@
-const EventEmitter = require('events')
 const chokidar = require('chokidar')
 const cp = require('child_process')
 const debounce = require('lodash.debounce')
@@ -13,6 +12,7 @@ const { exists } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
+const processCAD = require('./tasks/processCAD')
 
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
@@ -96,12 +96,31 @@ async function processRepo(events, repoDir, gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
+  const processPCB = async () => {
+    const plottedGerbers = await processCAD(
+      events,
+      checkoutDir,
+      kitspaceYaml,
+      filesDir,
+      name,
+    )
+    return processGerbers(
+      events,
+      checkoutDir,
+      kitspaceYaml,
+      filesDir,
+      hash,
+      name,
+      plottedGerbers,
+    )
+  }
+
   await Promise.all([
     writeFile(kitspaceYamlJson, JSON.stringify(kitspaceYaml, null, 2))
       .then(() => events.emit('done', kitspaceYamlJson))
       .catch(err => events.emit('failed', kitspaceYamlJson, err)),
-    processGerbers(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
-    processBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processPCB(),
+    processBOM(events, checkoutDir, kitspaceYaml, filesDir),
     processIBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
   ])
 }

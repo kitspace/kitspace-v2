@@ -13,13 +13,22 @@ const readFile = util.promisify(fs.readFile)
 const findGerberFiles = require('./findGerberFiles')
 const boardBuilder = require('./board_builder')
 
-function processGerbers(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+function processGerbers(
+  events,
+  inputDir,
+  kitspaceYaml,
+  outputDir,
+  hash,
+  name,
+  plottedGerbers,
+) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
         const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        const projectPlottedGerbers = plottedGerbers[projectName]
         return _processGerbers(
           events,
           inputDir,
@@ -27,11 +36,20 @@ function processGerbers(events, inputDir, kitspaceYaml, outputDir, hash, name) {
           projectOutputDir,
           hash,
           projectName,
+          projectPlottedGerbers,
         )
       }),
     )
   }
-  return _processGerbers(events, inputDir, kitspaceYaml, outputDir, hash, name)
+  return _processGerbers(
+    events,
+    inputDir,
+    kitspaceYaml,
+    outputDir,
+    hash,
+    name,
+    plottedGerbers,
+  )
 }
 
 async function _processGerbers(
@@ -41,6 +59,7 @@ async function _processGerbers(
   outputDir,
   hash,
   name,
+  plottedGerbers,
 ) {
   const nameSplit = name.split('/')
   const zipFileName =
@@ -53,7 +72,6 @@ async function _processGerbers(
   const topLargePngPath = path.join(outputDir, 'images/top-large.png')
   const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
   const topWithBgndPath = path.join(outputDir, 'images/top-with-background.png')
-  const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
   const filePaths = [
     zipPath,
@@ -64,7 +82,6 @@ async function _processGerbers(
     topLargePngPath,
     topMetaPngPath,
     topWithBgndPath,
-    layoutSvgPath,
   ]
 
   for (const f of filePaths) {
@@ -88,7 +105,6 @@ async function _processGerbers(
 
     const gerberTypes = findGerberFiles(files, path.join(inputDir, gerberDir))
     let gerbers = Object.keys(gerberTypes)
-    const kicadPcbFile = findKicadPcbFile(inputDir, files, kitspaceYaml)
 
     let inputFiles
     // XXX this is 5 due to whats-that-gerber matching non-gerber files and 5
@@ -97,32 +113,20 @@ async function _processGerbers(
     // whats-that-gerber
     // https://github.com/tracespace/tracespace/issues/357
     if (gerbers.length < 5) {
-      if (kicadPcbFile == null) {
+      if (plottedGerbers.gerbers.length === 0) {
         throw Error('No PCB files found')
       }
-      gerbers = await plotKicadGerbers(inputDir, kicadPcbFile, kitspaceYaml)
-      const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
-      inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
+      gerbers = plottedGerbers.gerbers
+      inputFiles = plottedGerbers.inputFiles
     } else {
-      inputFiles = gerbers.reduce((all, k) => {
-        return { ...all, [path.relative(inputDir, k)]: gerberTypes[k] }
+      inputFiles = gerbers.reduce((result, k) => {
+        return { ...result, [path.relative(inputDir, k)]: gerberTypes[k] }
       }, {})
-    }
-
-    const promises = []
-
-    if (kicadPcbFile == null) {
-      events.emit('failed', layoutSvgPath, Error('No .kicad_pcb file found'))
-    } else {
-      promises.push(
-        plotKicadLayoutSvg(inputDir, layoutSvgPath, kicadPcbFile)
-          .then(() => events.emit('done', layoutSvgPath))
-          .catch(e => events.emit('failed', layoutSvgPath, e)),
-      )
     }
 
     const gerberData = await readGerbers(gerbers)
 
+    const promises = []
     promises.push(
       generateZip(zipPath, gerberData)
         .then(() => events.emit('done', zipPath))
@@ -271,38 +275,6 @@ async function generateZip(zipPath, gerberData) {
       compressionOptions: { level: 6 },
     })
     .then(content => writeFile(zipPath, content))
-}
-
-function findKicadPcbFile(inputDir, files, kitspaceYaml) {
-  if (
-    kitspaceYaml.eda &&
-    kitspaceYaml.eda.type === 'kicad' &&
-    kitspaceYaml.eda.pcb
-  ) {
-    return path.join(inputDir, kitspaceYaml.eda.pcb)
-  } else {
-    return files.find(file => file.endsWith('.kicad_pcb'))
-  }
-}
-
-async function plotKicadGerbers(inputDir, kicadPcbFile, kitspaceYaml) {
-  const gerberFolder = path.join('/tmp/kitspace', inputDir, 'gerbers')
-  await exec(`rm -rf ${gerberFolder} && mkdir -p ${gerberFolder}`)
-  const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
-  const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
-  await exec(cmd_plot)
-  return globule.find(path.join(gerberFolder, '*'))
-}
-
-async function plotKicadLayoutSvg(inputDir, layoutSvgPath, kicadPcbFile) {
-  const svgFolder = path.join('/tmp/kitspace', inputDir, 'svg')
-  await exec(`rm -rf ${svgFolder} && mkdir -p ${svgFolder}`)
-  const plot_kicad_layout_svg = path.join(__dirname, 'plot_kicad_layout_svg')
-  const cmd_plot = `${plot_kicad_layout_svg} ${kicadPcbFile} ${svgFolder}`
-  await exec(cmd_plot)
-  const [svgFile] = globule.find(path.join(svgFolder, '*.svg'))
-  // process SVG with scour to make it suitable for kicad-web-viewer
-  await exec(`scour -i ${svgFile} -o ${layoutSvgPath} --enable-viewboxing`)
 }
 
 module.exports = processGerbers
