@@ -75,14 +75,17 @@ async function _processCAD(events, inputDir, kitspaceYaml, outputDir) {
       return { inputFiles: {}, gerbers: [] }
     }
 
-    const gerbers = await plotKicadGerbers(outputDir, kicadPcbFile)
-    const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
-    const inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
+    const gerbersPromise = plotKicadGerbers(outputDir, kicadPcbFile)
 
-    await plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
+    const layoutPromise = plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
       .then(() => events.emit('done', layoutSvgPath))
       .catch(e => events.emit('failed', layoutSvgPath, e))
 
+    const gerbers = await gerbersPromise
+    await layoutPromise
+
+    const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
+    const inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
     return { inputFiles, gerbers }
   } catch (e) {
     for (const f of filePaths) {
@@ -96,8 +99,8 @@ async function plotKicadGerbers(outputDir, kicadPcbFile) {
   const gerberFolder = path.join('/tmp/kitspace', outputDir, 'gerbers')
   await exec(`rm -rf ${gerberFolder} && mkdir -p ${gerberFolder}`)
   const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
-  const cmd_plot = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
-  await exec(cmd_plot)
+  const plotCommand = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
+  await exec(plotCommand)
   return globule.find(path.join(gerberFolder, '*'))
 }
 
@@ -105,8 +108,8 @@ async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
   const svgFolder = path.join('/tmp/kitspace', outputDir, 'svg')
   await exec(`rm -rf ${svgFolder} && mkdir -p ${svgFolder}`)
   const plot_kicad_layout_svg = path.join(__dirname, 'plot_kicad_layout_svg')
-  const cmd_plot = `${plot_kicad_layout_svg} ${kicadPcbFile} ${svgFolder}`
-  await exec(cmd_plot)
+  const plotCommand = `${plot_kicad_layout_svg} ${kicadPcbFile} ${svgFolder}`
+  await exec(plotCommand)
   const [svgFile] = globule.find(path.join(svgFolder, '*.svg'))
   if (svgFile == null) {
     throw new Error(`Could not plot .kicad_pcb layout.svg from ${kicadPcbFile}`)
