@@ -5,7 +5,7 @@ const cp = require('child_process')
 const accessPromise = util.promisify(fs.access)
 
 const exec = util.promisify(cp.exec)
-const writeFile = util.promisify(fs.writeFile)
+const writeFile = fs.promises.writeFile
 const readFile = util.promisify(fs.readFile)
 
 function exists(file) {

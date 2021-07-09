@@ -4,11 +4,14 @@ const log = require('loglevel')
 const path = require('path')
 const fileUpload = require('express-fileupload')
 
+const processCAD = require('./tasks/processCAD')
 const watcher = require('./watcher')
+const { writeFile, exec } = require('./utils')
 
 const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
-const remoteProcessDir = path.join(DATA_DIR, 'remote-process')
+const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-files')
+const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
 function createApp(repoDir = '/gitea-data/git/repositories') {
   const fileStatus = {}
@@ -79,22 +82,54 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
 
   app.use(fileUpload())
 
-  app.post('/process-file', (req, res) => {
+  const processFileEvents = new EventEmitter()
+
+  const processFileStatus = {}
+
+  processFileEvents.on('in_progress', x => {
+    x = path.relative(remoteProcessOutputDir, x)
+    processFileStatus[x] = { status: 'in_progress' }
+    log.debug('in_progress', x)
+  })
+  processFileEvents.on('done', x => {
+    x = path.relative(remoteProcessOutputDir, x)
+    processFileStatus[x] = { status: 'done' }
+    log.debug('done', x)
+  })
+  processFileEvents.on('failed', (x, e) => {
+    const error = e.message || e.stderr || 'Unknown error'
+    processFileStatus[x] = { status: 'failed', error }
+    log.debug('failed', x, error)
+  })
+
+  app.post('/process-file', async (req, res) => {
     try {
       if (req.files == null) {
         return res.status(422).send('No file uploaded')
       }
 
       const upload = req.files.upload
-      res.send({
-        message: 'File is uploaded',
-        data: {
-          name: upload.name,
-          mimetype: upload.mimetype,
-          size: upload.size,
-        },
+      if (upload == null) {
+        return res
+          .status(422)
+          .send('Form input name for uploaded file needs to be "upload"')
+      }
+      if (upload.md5 == null) {
+        throw Error('Could not hash file')
+      }
+      const uploadFolder = path.join(remoteProcessInputDir, upload.md5)
+      const ext = path.extname(upload.name)
+      const uploadPath = path.join(uploadFolder, upload.md5 + ext)
+      const outputDir = path.join(remoteProcessOutputDir, upload.md5)
+      await exec(`mkdir -p ${uploadFolder}`)
+      await writeFile(uploadPath, upload.data).then(() => {
+        processCAD(processFileEvents, uploadFolder, {}, outputDir)
+      })
+      res.status(202).send({
+        path: `/processed/${upload.md5}/`,
       })
     } catch (err) {
+      log.error(err)
       res.status(500).send(err)
     }
   })

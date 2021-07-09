@@ -9,7 +9,7 @@ const exec = util.promisify(cp.exec)
 const { createApp } = require('../../src/app')
 
 const tmpDir = '/tmp/kitspace-processor-test-from-remote'
-const emptyRepoDir = '/tmp/kitspace-proecessor-test-empty-repo-dir'
+const emptyRepoDir = '/tmp/kitspace-processor-test-empty-repo-dir'
 
 describe('remote API', () => {
   beforeEach(async () => {
@@ -27,13 +27,11 @@ describe('remote API', () => {
     await this.supertest
       .post('/process-file')
       .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.kicad_pcb'))
-      .expect(200)
+      .expect(202)
   })
 
   it('gives a 422 error when no file uploaded ', async () => {
-    await this.supertest
-      .post('/process-file')
-      .expect(422)
+    await this.supertest.post('/process-file').expect(422)
   })
 
   afterEach(async () => {
