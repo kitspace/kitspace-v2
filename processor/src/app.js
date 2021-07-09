@@ -10,7 +10,7 @@ const { writeFile, exec } = require('./utils')
 
 const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
-const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-files')
+const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
 function createApp(repoDir = '/gitea-data/git/repositories') {
@@ -129,12 +129,43 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
         processCAD(processFileEvents, uploadFolder, {}, outputDir)
       })
       res.status(202).send({
-        path: `/processed/${upload.md5}/`,
+        id: upload.md5,
       })
     } catch (err) {
       log.error(err)
       res.status(500).send(err)
     }
+  })
+
+  app.get('/processed/status/*', (req, res, next) => {
+    let x = path.relative('/processed/status/', req.path)
+    if (x in processFileStatus) {
+      return res.send(processFileStatus[x])
+    }
+    return res.sendStatus(404)
+  })
+
+  const processStaticFiles = express.static(remoteProcessOutputDir)
+
+  app.get('/processed/files/*', (req, res, next) => {
+    let x = path.relative('/processed/files/', req.url)
+
+    if (x in processFileStatus) {
+      if (processFileStatus[x].status === 'in_progress') {
+        // send a 202, "Accepted" status when the asset processing is in progress
+        return res.sendStatus(202)
+      }
+      if (processFileStatus[x].status === 'done') {
+        req.url = x
+        return processStaticFiles(req, res, next)
+      }
+      if (processFileStatus[x].status === 'failed') {
+        // send a 424, "Failed Dependency" error when the asset processing failed
+        res.status(424)
+        return res.send(processFileStatus[x].error)
+      }
+    }
+    return res.sendStatus(404)
   })
 
   return app

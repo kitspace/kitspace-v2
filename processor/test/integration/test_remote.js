@@ -34,6 +34,23 @@ describe('remote API', () => {
     await this.supertest.post('/process-file').expect(422)
   })
 
+  it('plots layout.svg', async () => {
+    let r = await this.supertest
+      .post('/process-file')
+      .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.kicad_pcb'))
+      .expect(202)
+    assert(r.body.id != null)
+    const layoutSvgStatus = path.join('/processed/status', r.body.id, 'images/layout.svg')
+    const layoutSvg = path.join('/processed/files', r.body.id, 'images/layout.svg')
+    r = await this.supertest.get(layoutSvgStatus)
+    assert(r.body.status === 'in_progress')
+    while (r.body.status === 'in_progress') {
+      r = await this.supertest.get(layoutSvgStatus)
+    }
+    assert(r.body.status === 'done')
+    r = await this.supertest.get(layoutSvg).expect(200)
+  })
+
   afterEach(async () => {
     this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
