@@ -9,7 +9,7 @@ const { exists, exec, writeFile, readFile } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
-const processCAD = require('./tasks/processCAD')
+const processKicadPCB = require('./tasks/processKicadPCB')
 
 const running = {}
 function watch(events, repoDir = '/repositories') {
@@ -90,7 +90,7 @@ async function processRepo(events, repoDir, gitDir) {
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
   const processPCB = async () => {
-    const plottedGerbers = await processCAD(
+    const plottedGerbers = await processKicadPCB(
       events,
       checkoutDir,
       kitspaceYaml,

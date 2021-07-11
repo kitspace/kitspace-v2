@@ -6,7 +6,7 @@ const globule = require('globule')
 const { existsAll, findKicadPcbFile } = require('../../utils')
 const exec = util.promisify(cp.exec)
 
-function processCAD(events, inputDir, kitspaceYaml, outputDir) {
+function processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
@@ -14,7 +14,7 @@ function processCAD(events, inputDir, kitspaceYaml, outputDir) {
         const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return {
-          [projectName]: await _processCAD(
+          [projectName]: await _processKicadPCB(
             events,
             inputDir,
             projectKitspaceYaml,
@@ -32,10 +32,10 @@ function processCAD(events, inputDir, kitspaceYaml, outputDir) {
       ),
     )
   }
-  return _processCAD(events, inputDir, kitspaceYaml, outputDir)
+  return _processKicadPCB(events, inputDir, kitspaceYaml, outputDir)
 }
 
-async function _processCAD(events, inputDir, kitspaceYaml, outputDir) {
+async function _processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
   const filePaths = [layoutSvgPath]
@@ -48,7 +48,8 @@ async function _processCAD(events, inputDir, kitspaceYaml, outputDir) {
     for (const f of filePaths) {
       events.emit('done', f)
     }
-    return
+    // XXX should really return gerbers here, but they are temp files
+    return { inputFiles: {}, gerbers: [] }
   }
 
   try {
@@ -104,4 +105,4 @@ async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
   await exec(`scour -i ${svgFile} -o ${layoutSvgPath} --enable-viewboxing`)
 }
 
-module.exports = processCAD
+module.exports = processKicadPCB

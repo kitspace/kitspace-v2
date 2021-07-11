@@ -4,7 +4,7 @@ const log = require('loglevel')
 const path = require('path')
 const fileUpload = require('express-fileupload')
 
-const processCAD = require('./tasks/processCAD')
+const processKicadPCB = require('./tasks/processKicadPCB')
 const watcher = require('./watcher')
 const { writeFile, exec } = require('./utils')
 
@@ -131,7 +131,7 @@ function createApp(repoDir = '/gitea-data/git/repositories') {
       const outputDir = path.join(remoteProcessOutputDir, upload.md5)
       await exec(`mkdir -p ${uploadFolder}`)
       await writeFile(uploadPath, upload.data).then(() => {
-        processCAD(processFileEvents, uploadFolder, {}, outputDir)
+        processKicadPCB(processFileEvents, uploadFolder, {}, outputDir)
       })
       res.status(202).send({
         id: upload.md5,
