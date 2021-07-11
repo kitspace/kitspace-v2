@@ -61,8 +61,10 @@ export const hasInteractiveBom = async repoFullname => {
   const res = await fetch(
     `${processorUrl}/status/${repoFullname}/HEAD/interactive_bom.json`,
   )
-  const body = await res.json()
 
+  if (!res.ok) return false
+
+  const body = await res.json()
   return body.status === 'done'
 }
 
