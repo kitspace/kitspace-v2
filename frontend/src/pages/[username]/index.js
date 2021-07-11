@@ -32,7 +32,7 @@ const subProjects = async project => {
       full_name: project.full_name,
       description: multi[projectName].summary,
       owner: project.owner,
-      isSubProject: true,
+      isMultiProject: true,
     }
   })
 }
@@ -75,7 +75,7 @@ const User = ({ userRepos, username }) => {
       <h1>Projects by {username}</h1>
       <div className={styles}>
         {projects?.map(project => (
-          <ProjectCard {...project} key={project.id} />
+          <ProjectCard {...project} key={`${project.id}/${project.name}`} />
         ))}
       </div>
     </Page>
