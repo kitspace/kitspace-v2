@@ -1,7 +1,60 @@
 import yaml from 'js-yaml'
 import { updateFile, uploadFile } from '@utils/giteaApi'
+import { flatten } from 'lodash'
 
 const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+
+/**
+ * Given an array of kitspace repos return the an array of projects.
+ * Each multi project is treated as a standalone project.
+ * @param {object[]} repos
+ * @returns {Promise<[]object>}
+ */
+export const getFlatProjects = async repos => {
+  /**
+   * @param {string} fullname
+   * @returns {Promise<[boolean, object?]>} The first item is whether the project is multi, the second is the multi projects in kitspace.yaml.
+   */
+  const isMultiProject = async fullname => {
+    const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+    const res = await fetch(
+      `${processorUrl}/files/${fullname}/HEAD/kitspace-yaml.json`,
+    )
+
+    if (!res.ok) return [false, null]
+
+    const kitspaceYAML = await res.json()
+    return [kitspaceYAML.hasOwnProperty('multi'), kitspaceYAML?.multi]
+  }
+
+  /**
+   * Get an array of multi projects in a project.
+   * @param {object} project
+   * @param {object} multi
+   * @returns{object[]}
+   */
+  const multiProjects = async (project, multi) =>
+    Object.keys(multi).map(projectName => ({
+      name: projectName,
+      full_name: project.full_name,
+      description: multi[projectName].summary,
+      owner: project.owner,
+      isMultiProject: true,
+    }))
+
+  return flatten(
+    await Promise.all(
+      repos.map(async repo => {
+        const [isMulti, multi] = await isMultiProject(repo.full_name)
+        if (!isMulti) {
+          return repo
+        } else {
+          return multiProjects(repo, multi)
+        }
+      }),
+    ),
+  )
+}
 
 /**
  *

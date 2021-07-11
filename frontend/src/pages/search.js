@@ -11,20 +11,21 @@ import { useSearchRepos } from '@hooks/Gitea'
 import SearchFromModel from '@models/SearchFrom'
 import ProjectCard from '@components/ProjectCard'
 import { useRouter } from 'next/router'
+import { getFlatProjects } from '@utils/projectPage'
 
 export const getServerSideProps = async ({ query }) => {
   const { q } = query
   if (q) {
     return {
       props: {
-        repos: await searchRepos(q),
+        repos: await getFlatProjects(await searchRepos(q)),
         q,
       },
     }
   }
   return {
     props: {
-      repos: await getAllRepos(),
+      repos: await getFlatProjects(await getAllRepos()),
     },
   }
 }
