@@ -52,6 +52,17 @@ export const getKitspaceYAMLJson = async assetsPath => {
   return [res.ok, res.ok ? await res.json() : kitspaceYAMLFields]
 }
 
+export const processedKitspaceYaml = async repoFullname => {
+  const res = await fetch(
+    `${processorUrl}/status/${repoFullname}/HEAD/kitspace-yaml.json`,
+  )
+
+  if (!res.ok) return false
+
+  const { status } = await res.json()
+  return status !== 'in_progress'
+}
+
 /**
  *
  * @param {string} repoFullname
@@ -64,8 +75,8 @@ export const hasInteractiveBom = async repoFullname => {
 
   if (!res.ok) return false
 
-  const body = await res.json()
-  return body.status === 'done'
+  const { status } = await res.json()
+  return status === 'done'
 }
 
 /**

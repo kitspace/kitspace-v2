@@ -1,5 +1,6 @@
 // TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
+import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
 import { useRouter } from 'next/router'
 import { uniqBy } from 'lodash'
 import {
@@ -30,6 +31,7 @@ import {
   getBoardGerberInfo,
   getKitspaceYAMLJson,
   hasInteractiveBom,
+  processedKitspaceYaml,
 } from '@utils/projectPage'
 import { AuthContext } from '@contexts/AuthContext'
 import ErrorPage from '@pages/_error'
@@ -40,7 +42,7 @@ import BuyParts from '@components/Board/BuyParts/index'
 import InfoBar from '@components/Board/InfoBar'
 import Readme from '@components/Board/Readme'
 import UploadModal from '@components/UploadModal'
-import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
+import useKitspaceYAML from '@hooks/useKitspaceYAML'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -59,12 +61,13 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const repo = await getRepo(repoFullname)
     const repoFiles = await getDefaultBranchFiles(repoFullname)
 
-    // TODO: ALL assets aren't available for the repos the are being processed,
+    // TODO: ALL assets aren't available for the repos which are being processed,
     // or the repos that don't have assets from first place.
     // This should be handled properly currently, it breaks the page.
     const [gerberInfoExists, gerberInfo] = await getBoardGerberInfo(assetsPath)
     const [boardBomInfoExists, boardBomInfo] = await getBoardBomInfo(assetsPath)
     const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(assetsPath)
+    const finishedProcessing = await processedKitspaceYaml(repoFullname)
 
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
@@ -94,6 +97,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         boardAssetsExist: gerberInfoExists && boardBomInfoExists,
         readmeExists: readmeFile !== '',
         kitspaceYAMLExists,
+        finishedProcessing,
       },
     }
   }
@@ -116,6 +120,14 @@ const UpdateProject = props => {
   const { status } = useMigrationStatus(props.repo.id, props.isEmpty, {
     refreshInterval: 1000,
   })
+
+  const { isError: isProcessingKitspaceYaml } = useKitspaceYAML(
+    projectFullname,
+    !props.finishedProcessing,
+    {
+      refreshInterval: 1000,
+    },
+  )
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
 
   useEffect(() => {
@@ -137,6 +149,14 @@ const UpdateProject = props => {
     return (
       <Page title={title}>
         <Loader active>Syncing repository...</Loader>
+      </Page>
+    )
+  }
+
+  if (isProcessingKitspaceYaml) {
+    return (
+      <Page title={title}>
+        <Loader active>Processing Repo...</Loader>
       </Page>
     )
   }

@@ -14,11 +14,7 @@ describe('Render correct numbers of cards', () => {
     cy.visit('/')
   })
 
-  beforeEach(() => {
-    cy.clearCookies()
-  })
-
-  it('should render a card for each sub project', () => {
+  it('should render a card for each multiproject', () => {
     const username = faker.name.firstName()
     const email = faker.internet.email()
     const password = '123456'

@@ -30,7 +30,7 @@ const UploadModal = ({
   onDrop,
 }) => {
   const { user, csrf } = useContext(AuthContext)
-  const { kitspaceYAML, mutate } = useKitspaceYAML(projectFullname, {
+  const { kitspaceYAML, mutate } = useKitspaceYAML(projectFullname, true, {
     initialData: kitspaceYAMLPreloaded,
   })
 
