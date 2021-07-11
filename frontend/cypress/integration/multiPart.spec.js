@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-describe('Render correct numbers of cards', () => {
+describe('Render project cards', () => {
   const syncedRepoUrlMultiParts =
     'https://github.com/kitspace-forks/DIY_particle_detector'
   const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
