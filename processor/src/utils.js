@@ -40,4 +40,28 @@ function findKicadPcbFile(inputDir, files, kitspaceYaml) {
   }
 }
 
-module.exports = { exists, existsAll, findKicadPcbFile, exec, writeFile, readFile }
+function findKicadSchematic(inputDir, files, kitspaceYaml) {
+  if (kitspaceYaml.eda && kitspaceYaml.eda.type === 'kicad') {
+    const pcb = kitspaceYaml.eda.pcb
+    const sch = kitspaceYaml.eda.schematic || pcb.replace(/\.kicad_pcb$/, '.sch')
+    return path.join(inputDir, sch)
+  } else {
+    // since there can be more than one .sch, better to find the .pro and
+    // deduce the schematic file from that
+    const pcb = files.find(file => file.endsWith('.pro'))
+    if (pcb != null) {
+      return pcb.replace(/\.pro/, '.sch')
+    }
+    return files.find(file => file.endsWith('.sch'))
+  }
+}
+
+module.exports = {
+  exists,
+  existsAll,
+  findKicadPcbFile,
+  findKicadSchematic,
+  exec,
+  writeFile,
+  readFile,
+}
