@@ -19,6 +19,7 @@ const standardProjectFiles = [
   'images/top-large.png',
   'images/top-meta.png',
   'images/top-with-background.png',
+  'images/layout.svg',
   '1-click-BOM.tsv',
   'interactive_bom.json',
   'gerber-info.json',
