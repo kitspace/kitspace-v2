@@ -46,6 +46,7 @@ plot_options.SetNegative(False)
 plot_options.SetPlotReference(True)
 plot_options.SetPlotValue(True)
 plot_options.SetPlotInvisibleText(False)
+plot_options.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
 
 # remove solder mask from silk to be sure there is no silk on pads
 plot_options.SetSubtractMaskFromSilk(True)
@@ -66,8 +67,6 @@ plot_plan = (
     ]
 )
 
-plot_options.SetMirror(False)
-plot_options.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
 
 for (layer_name, layer_id, layer_description) in plot_plan:
     plot_control.SetLayer(layer_id)
@@ -110,7 +109,7 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
     os.makedirs(folder, exist_ok=True)
     new_tree.write(output_file)
 
-if plot_format == pcbnew.PLOT_FORMAT_GERBER:
+elif plot_format == pcbnew.PLOT_FORMAT_GERBER:
     drill_writer = pcbnew.EXCELLON_WRITER(board)
     drill_writer.SetMapFileFormat(pcbnew.PLOT_FORMAT_PDF)
 
