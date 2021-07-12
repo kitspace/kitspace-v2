@@ -7,19 +7,17 @@ import styles from './OrderPCBs.module.scss'
 
 const retailerLogosDimensions = { height: 30, width: 100 }
 
-const OrderPCBs = ({ zipUrl, boardSpecs }) => {
+const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
   const pcbwayUrl = `https://www.pcbway.com/QuickOrderOnline.aspx?fileurl=${zipUrl}&from=kitspace`
   const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
   const pcbShopperUrl = `https://pcbshopper.com/?Width=${boardSpecs.width}&Height=${boardSpecs.height}&Units=mm&Layers=${boardSpecs.layers}&Quantity=1&GetPrices`
   const jlcpcbUrl = `https://cart.jlcpcb.com/quote?fileurl=${zipUrl}&from=kitspace`
 
-  // TODO
-  // eslint-disable-next-line no-unused-vars
-  const trackClick = vendor => e => {
-    // window.plausible('Order PCBs', {
-    //   props: { project: this.props.project, vendor },
-    // })
+  const trackClick = vendor => () => {
+    window.plausible('Order PCBs', {
+      props: { project: projectFullName, vendor },
+    })
   }
 
   return (
@@ -128,6 +126,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs }) => {
 }
 
 OrderPCBs.propTypes = {
+  projectFullname: string.isRequired,
   zipUrl: string.isRequired,
   boardSpecs: object.isRequired,
 }

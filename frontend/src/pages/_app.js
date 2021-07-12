@@ -60,6 +60,11 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
         <Head>
           {setSession}
           {setStaticFallback}
+          <script>
+            {
+              'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }'
+            }
+          </script>
         </Head>
         <Component {...pageProps} />
         {isStaticFallback ? <ErrorMessage /> : null}

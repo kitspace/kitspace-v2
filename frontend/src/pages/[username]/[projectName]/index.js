@@ -104,11 +104,7 @@ const UpdateProject = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
   const title = `${props.projectName} on Kitspace`
-  const {
-    repo: project,
-    isLoading,
-    isError,
-  } = useRepo(projectFullname, {
+  const { repo: project, isLoading, isError } = useRepo(projectFullname, {
     initialData: props.repo,
   })
 
@@ -343,7 +339,11 @@ const UpdateForm = ({
       <div>
         {boardAssetsExist ? (
           <>
-            <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
+            <OrderPCBs
+              projectFullname={projectFullname}
+              zipUrl={zipUrl}
+              boardSpecs={boardSpecs}
+            />
             <BuyParts
               projectFullName={projectFullname}
               lines={boardBomInfo?.bom?.lines}
