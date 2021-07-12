@@ -38,7 +38,6 @@ const PageElements = ({
   boardAssetsExist,
   readmeExists,
   kitspaceYAMLExists,
-  multiProjectName,
 }) => {
   // The files in the Gitea repo associated with this project and the newly loaded files
   const {
@@ -174,15 +173,7 @@ const PageElements = ({
         {boardAssetsExist ? (
           <>
             <BoardShowcase assetsPath={assetsPath} />
-            <BoardExtraMenus
-              projectFullname={
-                multiProjectName
-                  ? `${projectFullname}/${multiProjectName}`
-                  : projectFullname
-              }
-              hasInteractiveBom={hasIBOM}
-              zipUrl={zipUrl}
-            />
+            <BoardExtraMenus hasInteractiveBom={hasIBOM} zipUrl={zipUrl} />
           </>
         ) : (
           <AssetPlaceholder asset="board" />

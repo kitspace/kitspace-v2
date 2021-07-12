@@ -77,7 +77,6 @@ export const getServerSideProps = async ({ params, query, req }) => {
         readmeExists: readmeFile !== '',
         kitspaceYAMLExists,
         finishedProcessing,
-        multiProjectName,
       },
     }
   }
