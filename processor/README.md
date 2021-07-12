@@ -72,7 +72,35 @@ or
         - as above but prefixed with the multi-project name i.e. `[user]/[project]/[git-ref]/[multi-project-name]/zip-info.json` etc.
         - except for `kitspace-yaml.json` which is still `[user]/[project]/[git-ref]/kitspace-yaml.json`
 
+### Processing of remote files through API
 
+#### POST `/process-file`
+
+- Multi-part form data with an input name of "upload" and a filename that ends with `.kicad_pcb`
+- Must include a header `Authorization` with contents `Bearer ${KITSPACE_PROCESSOR_REMOTE_API_TOKEN}`
+
+Responds with:
+```
+{
+    "id": string
+}
+```
+
+Where `id` is a md5 sum of the uploaded file.
+
+#### GET `/processed/status/[id]/[file]
+
+Responds like "GET `/status/[user]/[project]/[git-ref]/[file]`" above.
+
+#### GET `/processed/files/[id]/images/layout.svg`
+
+Responds like "GET `/files/[user]/[project]/[git-ref]/[file]`" above.
+
+#### Supported files on remote API
+
+The remote API only supports:
+
+- `images/layout.svg`
 
 ## Development
 

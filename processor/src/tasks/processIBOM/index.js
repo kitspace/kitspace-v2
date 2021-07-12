@@ -60,6 +60,9 @@ async function _processIBOM(events, inputDir, kitspaceYaml, outputDir, hash, nam
     return
   }
 
+  const ibomOutputFolder = path.dirname(ibomOutputPath)
+  await exec(`mkdir -p ${ibomOutputFolder}`)
+
   const run_ibom = path.join(__dirname, 'run_ibom')
   await exec(`${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`)
     .then(() => events.emit('done', ibomOutputPath))
@@ -67,7 +70,7 @@ async function _processIBOM(events, inputDir, kitspaceYaml, outputDir, hash, nam
 }
 
 async function findBoardFile(path, ext, check) {
-  let f = globule.find(`${path}/**/*.` + ext)[0]
+  const f = globule.find(`${path}/**/*.` + ext)[0]
   if (check == null || (f != null && (await check(f)))) {
     return f
   }

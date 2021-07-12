@@ -10,3 +10,6 @@ nginx/default.conf
 frontend/cypress/videos
 frontend/cypress/screenshots
 frontend/cypress/fixtures/auto-gen
+
+#python
+__pycache__/

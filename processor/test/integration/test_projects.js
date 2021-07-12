@@ -8,7 +8,7 @@ const exec = util.promisify(cp.exec)
 
 const { createApp } = require('../../src/app')
 
-const tmpDir = '/tmp/kitspace-processor-test'
+const tmpDir = '/tmp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
 
@@ -26,7 +26,7 @@ const standardProjectFiles = [
   'bom-info.json',
 ]
 
-describe('app', () => {
+describe('projects API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)
@@ -122,7 +122,9 @@ describe('app', () => {
       assert(r.status === 200)
       assert(
         r.body.status === 'done',
-        `expecting body.status to be 'done' but got '${r.body.status}'`,
+        `expecting body.status to be 'done' but got '${
+          r.body.status
+        }' for ${f}\n${JSON.stringify(r.body, null, 2)}`,
       )
 
       // getting the file from HEAD should re-direct to the exact hash
@@ -199,7 +201,8 @@ describe('app', () => {
         assert(r.status === 200)
         assert(
           r.body.status === 'done',
-          `expecting body.status to be 'done' but got '${r.body.status}'`,
+          `expecting body.status to be 'done' but got '${r.body.status}' for ${f}`
+          + `\n ${JSON.stringify(r.body, null, 2)}`
         )
 
         // getting the file from HEAD should re-direct to the exact hash

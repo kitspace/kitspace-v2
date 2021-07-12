@@ -157,6 +157,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
           GITEA_SECRET_KEY: ${{ secrets.STAGING_GITEA_SECRET }}
+          KITSPACE_PROCESSOR_REMOTE_API_TOKEN: ${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}
           KITSPACE_DOMAIN: ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
@@ -251,11 +252,11 @@ jobs:
           # wait for 2 minutes for the server to respond
           wait-on: 'http://kitspace.test:3000'
           # This value is in seconds
-          wait-on-timeout: 120         
+          wait-on-timeout: 120
           working-directory: frontend
           record: true
           browser: ${{ matrix.browsers }}
- 
+
 
   publish:
     name: Tag "latest"

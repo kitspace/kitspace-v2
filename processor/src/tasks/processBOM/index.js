@@ -1,38 +1,24 @@
 const oneClickBOM = require('1-click-bom')
-const fs = require('fs')
 const path = require('path')
-const util = require('util')
-const cp = require('child_process')
 const getPartinfo = require('./get_partinfo')
 
-const { exists, existsAll } = require('../../utils')
+const { exists, existsAll, writeFile, readFile } = require('../../utils')
 
-const exec = util.promisify(cp.exec)
-const writeFile = util.promisify(fs.writeFile)
-const readFile = util.promisify(fs.readFile)
-
-function processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+function processBOM(events, inputDir, kitspaceYaml, outputDir) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
         const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        return _processBOM(
-          events,
-          inputDir,
-          projectKitspaceYaml,
-          projectOutputDir,
-          hash,
-          projectName,
-        )
+        return _processBOM(events, inputDir, projectKitspaceYaml, projectOutputDir)
       }),
     )
   }
-  return _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name)
+  return _processBOM(events, inputDir, kitspaceYaml, outputDir)
 }
 
-async function _processBOM(events, inputDir, kitspaceYaml, outputDir, hash, name) {
+async function _processBOM(events, inputDir, kitspaceYaml, outputDir) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
 
