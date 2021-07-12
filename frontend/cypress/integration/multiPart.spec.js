@@ -217,10 +217,12 @@ describe('Multi project page', () => {
     cy.visit('/')
     cy.get('[data-cy=project-card]').contains(multiPartName).click()
 
-    // Different page elements should be visible
+    // Different page elements should be visible.
     const pageComponents = [
       'info-bar',
       'board-showcase',
+      'board-showcase-top',
+      'board-showcase-bottom',
       'board-extra-menus',
       'order-pcb',
       'buy-parts',

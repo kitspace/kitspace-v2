@@ -1,6 +1,5 @@
-// TODO: this page became monolithic, it needs global refactoring.
 import React, { useEffect, useState, useContext } from 'react'
-import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
+// import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
 import { useRouter } from 'next/router'
 import { uniqBy } from 'lodash'
 import {
@@ -48,8 +47,10 @@ export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
-  const repoFullname = `${params.username}/${params.projectName}`
-  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+  const { multiProjectName, username, projectName } = params
+  const repoFullname = `${username}/${projectName}`
+
+  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
 
   // The repo owner and collaborators can upload files.
   const hasUploadPermission = await canCommit(
@@ -105,7 +106,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
   return { notFound: true }
 }
 
-const UpdateProject = props => {
+const MultiProjectName = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
   const title = `${props.projectName} on Kitspace`
@@ -365,11 +366,7 @@ const UpdateForm = ({
       <div>
         {boardAssetsExist ? (
           <>
-            <OrderPCBs
-              projectFullname={projectFullname}
-              zipUrl={zipUrl}
-              boardSpecs={boardSpecs}
-            />
+            <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
             <BuyParts
               projectFullName={projectFullname}
               lines={boardBomInfo?.bom?.lines}
@@ -445,40 +442,4 @@ const AssetPlaceholder = ({ asset }) => (
     No {asset} files were found, upload some.
   </div>
 )
-
-UpdateForm.propTypes = {
-  assetsPath: string.isRequired,
-  repoFiles: arrayOf(object).isRequired,
-  hasUploadPermission: bool.isRequired,
-  hasIBOM: bool.isRequired,
-  kitspaceYAML: objectOf(string).isRequired,
-  boardBomInfo: object.isRequired,
-  zipUrl: string.isRequired,
-  renderedReadme: string.isRequired,
-  boardSpecs: objectOf(number).isRequired,
-  isNew: bool.isRequired,
-  previewOnly: bool.isRequired,
-  owner: string.isRequired,
-  name: string.isRequired,
-  description: string.isRequired,
-  projectFullname: string.isRequired,
-  url: string.isRequired,
-  boardAssetsExist: bool.isRequired,
-  readmeExists: bool.isRequired,
-  kitspaceYAMLExists: bool.isRequired,
-}
-
-UpdateProject.propTypes = {
-  repo: object.isRequired,
-  user: string.isRequired,
-  projectName: string.isRequired,
-  isEmpty: bool.isRequired,
-  isSynced: bool.isRequired,
-  hasUploadPermission: bool.isRequired,
-}
-
-AssetPlaceholder.propTypes = {
-  asset: string.isRequired,
-}
-
-export default UpdateProject
+export default MultiProjectName
