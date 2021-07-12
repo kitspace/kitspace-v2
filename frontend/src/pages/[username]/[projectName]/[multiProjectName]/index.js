@@ -50,6 +50,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
   const { multiProjectName, username, projectName } = params
   const repoFullname = `${username}/${projectName}`
 
+  const kitspaceYAMLPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
 
   // The repo owner and collaborators can upload files.
@@ -67,13 +68,16 @@ export const getServerSideProps = async ({ params, query, req }) => {
     // This should be handled properly currently, it breaks the page.
     const [gerberInfoExists, gerberInfo] = await getBoardGerberInfo(assetsPath)
     const [boardBomInfoExists, boardBomInfo] = await getBoardBomInfo(assetsPath)
-    const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(assetsPath)
+    const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(
+      kitspaceYAMLPath,
+    )
     const finishedProcessing = await processedKitspaceYaml(repoFullname)
 
+    const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
-    const readmeFile = findReadme(repoFiles)
+    const readmeFile = projectKitspaceYAML?.readme || findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
     const hasIBOM = await hasInteractiveBom(repoFullname)

@@ -72,7 +72,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
-    const readmeFile = findReadme(repoFiles)
+    const readmeFile = kitspaceYAML?.readme || findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
     const hasIBOM = await hasInteractiveBom(repoFullname)
