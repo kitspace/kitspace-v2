@@ -118,13 +118,12 @@ export const processedKitspaceYaml = async repoFullname => {
 
 /**
  *
- * @param {string} repoFullname
+ * @param {string} assetsPath
  * @returns{Promise<boolean>}
  */
-export const hasInteractiveBom = async repoFullname => {
-  const res = await fetch(
-    `${processorUrl}/status/${repoFullname}/HEAD/interactive_bom.json`,
-  )
+export const hasInteractiveBom = async assetsPath => {
+  const statusPath = assetsPath.replace(/\/files/, '/status')
+  const res = await fetch(`${statusPath}/interactive_bom.json`)
 
   if (!res.ok) return false
 
