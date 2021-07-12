@@ -19,7 +19,7 @@ const ProjectCard = ({
     isMultiProject ? name : null,
   )
   return (
-    <Link href={fullname} passHref>
+    <Link href={`${fullname}/${isMultiProject ? name : ''}`} passHref>
       <Card data-cy="project-card" className={styles.card}>
         <div className={styles.thumbnail}>
           <div>

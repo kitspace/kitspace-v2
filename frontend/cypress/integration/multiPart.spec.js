@@ -134,7 +134,7 @@ describe('Render project cards', () => {
       }
     })
 
-    // Migrate the multipart repo
+    /* Migrate the multipart repo */
     cy.get('input:first').type(syncedRepoUrlMultiParts)
     cy.get('button').contains('Sync').click()
 
@@ -143,14 +143,37 @@ describe('Render project cards', () => {
     // Wait for the repo to finish migration, by checking if sync message has appeared.
     cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
 
+    /* Migrate the normal repo */
+    cy.visit('/projects/new')
+
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
+
+    cy.url().then(url => {
+      if (!url.endsWith('/projects/new')) {
+        cy.visit('/projects/new')
+      }
+    })
+
+    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('button').contains('Sync').click()
+
+    // Wait for redirection for project page
+    cy.url().should('contain', `${username}/${normalRepoName}`)
+    // Wait for the repo to finish migration, by checking if sync message has appeared.
+    cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
+
     // Go to the home page and click on a multipart project card
+    const multiPartName = multiPartsNames[0]
     cy.visit('/')
-    cy.get('[data-cy=project-card]').contains(multiPartsNames[0]).click()
+    cy.get('[data-cy=project-card]').contains(multiPartName).click()
 
     // Should redirect to the `[username]/[projectName]/[multiProject]`
-    cy.url().should(
-      'contain',
-      `${username}/${multiPartsRepoName}/${multiPartsNames[0]}`,
-    )
+    cy.url().should('contain', `${username}/${multiPartsRepoName}/${multiPartName}`)
+
+    // Go to the home page and click on a normal project card
+    cy.visit('/')
+    cy.get('[data-cy=project-card]').contains(normalRepoName).click()
+    // Should redirect to the `[username]/[projectName]/[multiProject]`
+    cy.url().should('contain', `${username}/${normalRepoName}`)
   })
 })
