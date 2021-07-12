@@ -4,38 +4,36 @@
     A python script to create various plot files from a board:
     Fab files
     Gerber files
+    SVG Files
 
     Adapted from: https://github.com/gregdavill/kicadScripts
 """
 
 import pcbnew
 import time
-import os.path
+import os
 import sys
 import glob
 import xml.etree.ElementTree as ET
-import cssutils
 import copy
 
 
 plot_format = sys.argv[1]
+input_file = sys.argv[2]
+temp_directory = os.path.abspath(sys.argv[3])
 if plot_format == "svg":
     plot_format = pcbnew.PLOT_FORMAT_SVG
+    output_file = sys.argv[4]
 elif plot_format == "gerber":
     plot_format = pcbnew.PLOT_FORMAT_GERBER
 else:
-    print(f"Only 'svg' or 'gerber' supported, got:'{plot_format}'")
+    print(f"Only 'svg' or 'gerber' supported, got: '{plot_format}'")
     sys.exit(1)
 
-filename = sys.argv[2]
-output_directory = os.path.abspath(sys.argv[3])
-project_name = os.path.splitext(os.path.split(filename)[1])[0]
-project_path = os.path.abspath(os.path.split(filename)[0])
-
-board = pcbnew.LoadBoard(filename)
+board = pcbnew.LoadBoard(input_file)
 plot_control = pcbnew.PLOT_CONTROLLER(board)
 plot_options = plot_control.GetPlotOptions()
-plot_options.SetOutputDirectory(output_directory)
+plot_options.SetOutputDirectory(temp_directory)
 plot_options.SetPlotFrameRef(False)
 plot_options.SetLineWidth(pcbnew.FromMM(0.35))
 plot_options.SetAutoScale(False)
@@ -110,7 +108,7 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
     ET.register_namespace("", "http://www.w3.org/2000/svg")
     layers = []
     for (layer_name, _, __) in plot_plan:
-        fileglob = os.path.join(output_directory, f"*-{layer_name}.svg")
+        fileglob = os.path.join(temp_directory, f"*-{layer_name}.svg")
         (filepath,) = glob.glob(fileglob)
         tree = ET.parse(filepath)
         layers.append((layer_name, tree))
@@ -135,7 +133,9 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
                 remove_color(e)
             g.append(child)
 
-    new_tree.write(os.path.join(output_directory, "layout.svg"))
+    folder = os.path.dirname(output_file)
+    os.makedirs(folder, exist_ok=True)
+    new_tree.write(output_file)
 
 if plot_format == pcbnew.PLOT_FORMAT_GERBER:
     # Fabricators need drill files.
@@ -154,8 +154,8 @@ if plot_format == pcbnew.PLOT_FORMAT_GERBER:
 
     gen_drl = True
     gen_map = False
-    drill_writer.CreateDrillandMapFilesSet(output_directory, gen_drl, gen_map)
+    drill_writer.CreateDrillandMapFilesSet(temp_directory, gen_drl, gen_map)
 
     # A text file to report drill statistics
-    drill_report_filename = output_directory + "/drill_report.txt"
+    drill_report_filename = temp_directory + "/drill_report.txt"
     drill_writer.GenDrillReportFile(drill_report_filename)

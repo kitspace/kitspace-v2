@@ -81,28 +81,20 @@ async function _processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
 }
 
 async function plotKicadGerbers(outputDir, kicadPcbFile) {
-  const gerberFolder = path.join('/tmp/kitspace', outputDir, 'gerbers')
-  await exec(`rm -rf ${gerberFolder} && mkdir -p ${gerberFolder}`)
-  const plot_kicad_gerbers = path.join(__dirname, 'plot_kicad_gerbers')
-  const plotCommand = `${plot_kicad_gerbers} ${kicadPcbFile} ${gerberFolder}`
+  const tempGerberFolder = path.join('/tmp/kitspace', outputDir, 'gerbers')
+  await exec(`rm -rf ${tempGerberFolder} && mkdir -p ${tempGerberFolder}`)
+  const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
+  const plotCommand = `${plot_kicad_pcb} gerber ${kicadPcbFile} ${tempGerberFolder}`
   await exec(plotCommand)
-  return globule.find(path.join(gerberFolder, '*'))
+  return globule.find(path.join(tempGerberFolder, '*'))
 }
 
 async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
-  const svgFolder = path.join('/tmp/kitspace', outputDir, 'svg')
-  await exec(`rm -rf ${svgFolder} && mkdir -p ${svgFolder}`)
-  const plot_kicad_layout_svg = path.join(__dirname, 'plot_kicad_layout_svg')
-  const plotCommand = `${plot_kicad_layout_svg} ${kicadPcbFile} ${svgFolder}`
-  await exec(plotCommand)
-  const [svgFile] = globule.find(path.join(svgFolder, '*.svg'))
-  if (svgFile == null) {
-    throw new Error(`Could not plot .kicad_pcb layout.svg from ${kicadPcbFile}`)
-  }
-  const layoutSvgFolder = path.dirname(layoutSvgPath)
-  await exec(`mkdir -p ${layoutSvgFolder}`)
-  // process SVG with scour to make it suitable for kicad-web-viewer
-  await exec(`scour -i ${svgFile} -o ${layoutSvgPath} --enable-viewboxing`)
+  const tempSvgFolder = path.join('/tmp/kitspace', outputDir, 'svg')
+  await exec(`rm -rf ${tempSvgFolder} && mkdir -p ${tempSvgFolder}`)
+  const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
+  const plotCommand = `${plot_kicad_pcb} svg ${kicadPcbFile} ${tempSvgFolder} ${layoutSvgPath}`
+  return exec(plotCommand)
 }
 
 module.exports = processKicadPCB
