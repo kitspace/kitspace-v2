@@ -1,13 +1,13 @@
 module.exports = function (api) {
-  const isServer = api.caller((caller) => caller?.isServer)
-  const isCallerDevelopment = api.caller((caller) => caller?.isDev)
+  const isServer = api.caller(caller => caller?.isServer)
+  const isCallerDevelopment = api.caller(caller => caller?.isDev)
 
   const presets = [
     [
       'next/babel',
       {
         'preset-react': {
-          runtime: "automatic",
+          runtime: 'automatic',
           importSource:
             !isServer && isCallerDevelopment
               ? '@welldone-software/why-did-you-render'
@@ -17,10 +17,10 @@ module.exports = function (api) {
     ],
   ]
   const plugins = [
-    "lodash",
-    "@babel/plugin-proposal-nullish-coalescing-operator",
-    "@babel/plugin-proposal-optional-chaining",
-    ["styled-jsx/babel", { "optimizeForSpeed": true }]
+    'lodash',
+    '@babel/plugin-proposal-nullish-coalescing-operator',
+    '@babel/plugin-proposal-optional-chaining',
+    ['styled-jsx/babel', { optimizeForSpeed: true }],
   ]
 
   return { presets, plugins }

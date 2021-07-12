@@ -104,7 +104,11 @@ const UpdateProject = props => {
   const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
   const title = `${props.projectName} on Kitspace`
-  const { repo: project, isLoading, isError } = useRepo(projectFullname, {
+  const {
+    repo: project,
+    isLoading,
+    isError,
+  } = useRepo(projectFullname, {
     initialData: props.repo,
   })
 
