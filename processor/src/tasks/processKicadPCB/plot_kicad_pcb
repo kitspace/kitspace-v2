@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 """
-    A python script to create various plot files from a board:
-    Fab files
-    Gerber files
-    SVG Files
+Generates Gerber or SVG files from .kicad_pcb
 
-    Adapted from: https://github.com/gregdavill/kicadScripts
+USAGE:
+./plot_kicad_pcb gerber x.kicad_pcb output_directory/
+./plot_kicad_pcb svg x.kicad_pcb /tmp/directory/ output.svg
 """
 
 import pcbnew
@@ -17,10 +16,11 @@ import glob
 import xml.etree.ElementTree as ET
 import copy
 
+from util import remove_color
 
 plot_format = sys.argv[1]
 input_file = sys.argv[2]
-temp_directory = os.path.abspath(sys.argv[3])
+plot_directory = os.path.abspath(sys.argv[3])
 if plot_format == "svg":
     plot_format = pcbnew.PLOT_FORMAT_SVG
     output_file = sys.argv[4]
@@ -33,11 +33,10 @@ else:
 board = pcbnew.LoadBoard(input_file)
 plot_control = pcbnew.PLOT_CONTROLLER(board)
 plot_options = plot_control.GetPlotOptions()
-plot_options.SetOutputDirectory(temp_directory)
+plot_options.SetOutputDirectory(plot_directory)
 plot_options.SetPlotFrameRef(False)
 plot_options.SetLineWidth(pcbnew.FromMM(0.35))
 plot_options.SetAutoScale(False)
-plot_options.SetScale(1)
 plot_options.SetMirror(False)
 plot_options.SetUseGerberAttributes(False)
 plot_options.SetExcludeEdgeLayer(True)
@@ -79,36 +78,10 @@ for (layer_name, layer_id, layer_description) in plot_plan:
 
 if plot_format == pcbnew.PLOT_FORMAT_SVG:
 
-    def remove_color(element):
-        """
-        Removes `stroke` and `fill` properties from inline styles. Also removes
-        `stroke-opacity` and `fill-opacity` when they are not set to 0.
-        """
-        style = element.get("style")
-        if style is not None:
-            style = style.split(";")
-            style = [rule.split(":") for rule in style if rule != ""]
-            style = [(key.strip(), value.strip()) for (key, value) in style]
-            new_style = []
-            for key, value in style:
-                is_opacity = key == "fill-opacity" or key == "stroke-opacity"
-                if (not is_opacity) and key != "fill" and key != "stroke":
-                    new_style.append((key, value))
-
-                # allow hiding fill or stroke through setting opacity to 0
-                elif is_opacity and float(value) == 0:
-                    new_style.append((key, value))
-
-            new_style_string = ""
-            for key, value in new_style:
-                new_style_string += f"{key}:{value}; "
-
-            element.set("style", new_style_string.strip())
-
     ET.register_namespace("", "http://www.w3.org/2000/svg")
     layers = []
     for (layer_name, _, __) in plot_plan:
-        fileglob = os.path.join(temp_directory, f"*-{layer_name}.svg")
+        fileglob = os.path.join(plot_directory, f"*-{layer_name}.svg")
         (filepath,) = glob.glob(fileglob)
         tree = ET.parse(filepath)
         layers.append((layer_name, tree))
@@ -138,8 +111,6 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
     new_tree.write(output_file)
 
 if plot_format == pcbnew.PLOT_FORMAT_GERBER:
-    # Fabricators need drill files.
-    # sometimes a drill map file is asked (for verification purpose)
     drill_writer = pcbnew.EXCELLON_WRITER(board)
     drill_writer.SetMapFileFormat(pcbnew.PLOT_FORMAT_PDF)
 
@@ -154,8 +125,8 @@ if plot_format == pcbnew.PLOT_FORMAT_GERBER:
 
     gen_drl = True
     gen_map = False
-    drill_writer.CreateDrillandMapFilesSet(temp_directory, gen_drl, gen_map)
+    drill_writer.CreateDrillandMapFilesSet(plot_directory, gen_drl, gen_map)
 
     # A text file to report drill statistics
-    drill_report_filename = temp_directory + "/drill_report.txt"
+    drill_report_filename = plot_directory + "/drill_report.txt"
     drill_writer.GenDrillReportFile(drill_report_filename)
