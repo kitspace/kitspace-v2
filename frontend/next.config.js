@@ -23,7 +23,11 @@ module.exports = {
     return map
   },
   images: {
-    domains: [process.env.KITSPACE_PROCESSOR_HOST],
+    domains: [
+      process.env.KITSPACE_PROCESSOR_HOST,
+      'github.com',
+      'raw.githubusercontent.com',
+    ],
   },
   webpack(config) {
     config.module.rules.push({
