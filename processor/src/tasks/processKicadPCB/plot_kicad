@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+
+"""
+    A python script to create various plot files from a board:
+    Fab files
+    Gerber files
+
+    Adapted from: https://github.com/gregdavill/kicadScripts
+"""
+
+import pcbnew
+import time
+import os.path
+import sys
+import glob
+import xml.etree.ElementTree as ET
+import cssutils
+import copy
+
+
+plot_format = sys.argv[1]
+if plot_format == "svg":
+    plot_format = pcbnew.PLOT_FORMAT_SVG
+elif plot_format == "gerber":
+    plot_format = pcbnew.PLOT_FORMAT_GERBER
+else:
+    print(f"Only 'svg' or 'gerber' supported, got:'{plot_format}'")
+    sys.exit(1)
+
+filename = sys.argv[2]
+output_directory = os.path.abspath(sys.argv[3])
+project_name = os.path.splitext(os.path.split(filename)[1])[0]
+project_path = os.path.abspath(os.path.split(filename)[0])
+
+board = pcbnew.LoadBoard(filename)
+plot_control = pcbnew.PLOT_CONTROLLER(board)
+plot_options = plot_control.GetPlotOptions()
+plot_options.SetOutputDirectory(output_directory)
+plot_options.SetPlotFrameRef(False)
+plot_options.SetLineWidth(pcbnew.FromMM(0.35))
+plot_options.SetAutoScale(False)
+plot_options.SetScale(1)
+plot_options.SetMirror(False)
+plot_options.SetUseGerberAttributes(False)
+plot_options.SetExcludeEdgeLayer(True)
+plot_options.SetScale(1)
+plot_options.SetUseAuxOrigin(True)
+plot_options.SetNegative(False)
+plot_options.SetPlotReference(True)
+plot_options.SetPlotValue(True)
+plot_options.SetPlotInvisibleText(False)
+
+# remove solder mask from silk to be sure there is no silk on pads
+plot_options.SetSubtractMaskFromSilk(True)
+
+copper_layer_count = board.GetCopperLayerCount()
+plot_plan = (
+    [("F_Cu", pcbnew.F_Cu, "Top layer")]
+    + [(f"Inner{n}", n, "Inner") for n in range(1, copper_layer_count - 1)]
+    + [
+        ("B_Cu", pcbnew.B_Cu, "Bottom layer"),
+        ("B_Mask", pcbnew.B_Mask, "Mask Bottom"),
+        ("F_Mask", pcbnew.F_Mask, "Mask top"),
+        ("B_Paster", pcbnew.B_Paste, "Paste Bottom"),
+        ("F_Paste", pcbnew.F_Paste, "Paste Top"),
+        ("F_SilkS", pcbnew.F_SilkS, "Silk Top"),
+        ("B_SilkS", pcbnew.B_SilkS, "Silk Bottom"),
+        ("Edge_Cuts", pcbnew.Edge_Cuts, "Edges"),
+    ]
+)
+
+plot_options.SetMirror(False)
+plot_options.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
+
+for (layer_name, layer_id, layer_description) in plot_plan:
+    plot_control.SetLayer(layer_id)
+    plot_control.OpenPlotfile(layer_name, plot_format, layer_description)
+    plot_control.PlotLayer()
+    time.sleep(0.01)
+    plot_control.ClosePlot()
+
+if plot_format == pcbnew.PLOT_FORMAT_SVG:
+
+    def remove_color(element):
+        """
+        Removes `stroke` and `fill` properties from inline styles. Also removes
+        `stroke-opacity` and `fill-opacity` when they are not set to 0.
+        """
+        style = element.get("style")
+        if style is not None:
+            style = style.split(";")
+            style = [rule.split(":") for rule in style if rule != ""]
+            style = [(key.strip(), value.strip()) for (key, value) in style]
+            new_style = []
+            for key, value in style:
+                is_opacity = key == "fill-opacity" or key == "stroke-opacity"
+                if (not is_opacity) and key != "fill" and key != "stroke":
+                    new_style.append((key, value))
+
+                # allow hiding fill or stroke through setting opacity to 0
+                elif is_opacity and float(value) == 0:
+                    new_style.append((key, value))
+
+            new_style_string = ""
+            for key, value in new_style:
+                new_style_string += f"{key}:{value}; "
+
+            element.set("style", new_style_string.strip())
+
+    ET.register_namespace("", "http://www.w3.org/2000/svg")
+    layers = []
+    for (layer_name, _, __) in plot_plan:
+        fileglob = os.path.join(output_directory, f"*-{layer_name}.svg")
+        (filepath,) = glob.glob(fileglob)
+        tree = ET.parse(filepath)
+        layers.append((layer_name, tree))
+
+    new_tree = copy.deepcopy(layers[0][1])
+    new_root = new_tree.getroot()
+
+    for child in new_root[:]:
+        new_root.remove(child)
+
+    for (layer_name, tree) in layers:
+        layer = tree.getroot()
+        g = ET.SubElement(
+            new_root,
+            "g",
+            {
+                "class": f"layer {layer_name.lower()}",
+            },
+        )
+        for child in layer:
+            for e in child.iter():
+                remove_color(e)
+            g.append(child)
+
+    new_tree.write(os.path.join(output_directory, "layout.svg"))
+
+if plot_format == pcbnew.PLOT_FORMAT_GERBER:
+    # Fabricators need drill files.
+    # sometimes a drill map file is asked (for verification purpose)
+    drill_writer = pcbnew.EXCELLON_WRITER(board)
+    drill_writer.SetMapFileFormat(pcbnew.PLOT_FORMAT_PDF)
+
+    mirror = False
+    minimal_header = False
+    offset = board.GetAuxOrigin()
+    merge_npth = True
+    drill_writer.SetOptions(mirror, minimal_header, offset, merge_npth)
+
+    metric_format = True
+    drill_writer.SetFormat(metric_format)
+
+    gen_drl = True
+    gen_map = False
+    drill_writer.CreateDrillandMapFilesSet(output_directory, gen_drl, gen_map)
+
+    # A text file to report drill statistics
+    drill_report_filename = output_directory + "/drill_report.txt"
+    drill_writer.GenDrillReportFile(drill_report_filename)
