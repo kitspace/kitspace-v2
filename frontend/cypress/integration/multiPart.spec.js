@@ -1,14 +1,13 @@
 import faker from 'faker'
+const syncedRepoUrlMultiParts =
+  'https://github.com/kitspace-forks/DIY_particle_detector'
+const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
+// Currently hardcoded but preferably it should get it from the yaml
+const multiPartsNames = ['alpha-spectrometer', 'electron-detector']
+const multiPartsRepoName = syncedRepoUrlMultiParts.split('/').slice(-1).toString()
+const normalRepoName = 'CH330_Hardware'
 
 describe('Render project cards', () => {
-  const syncedRepoUrlMultiParts =
-    'https://github.com/kitspace-forks/DIY_particle_detector'
-  const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
-  // Currently hardcoded but preferably it should get it from the yaml
-  const multiPartsNames = ['alpha-spectrometer', 'electron-detector']
-  const multiPartsRepoName = syncedRepoUrlMultiParts.split('/').slice(-1).toString()
-  const normalRepoName = 'CH330_Hardware'
-
   before(() => {
     // visit home before running the tests, instead of using `wait`.
     cy.visit('/')
@@ -45,7 +44,7 @@ describe('Render project cards', () => {
     // Wait for redirection for project page
     cy.url().should('contain', `${username}/${repoName}`)
     // Wait for the repo to finish migration, by checking if sync message has appeared.
-    cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit(`/${username}`)
 
@@ -54,7 +53,7 @@ describe('Render project cards', () => {
     })
   })
 
-  it('should display card thumbnails', () => {
+  it('should display card thumbnail', () => {
     const username = faker.name.firstName()
     const email = faker.internet.email()
     const password = '123456'
@@ -82,8 +81,8 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url().should('contain', `${username}/${multiPartsRepoName}`)
-    // Wait for the repo to finish migration, by checking if sync message has appeared.
-    cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
+    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     /* Migrate the normal repo */
     cy.visit('/projects/new')
@@ -101,8 +100,8 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url().should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish migration, by checking if sync message has appeared.
-    cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
+    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit(`/${username}`)
     // There should be 3 thumbnails = 2 form multiparts + 1 normal project
@@ -140,8 +139,8 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url().should('contain', `${username}/${multiPartsRepoName}`)
-    // Wait for the repo to finish migration, by checking if sync message has appeared.
-    cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
+    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     /* Migrate the normal repo */
     cy.visit('/projects/new')
@@ -159,9 +158,8 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url().should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish migration, by checking if sync message has appeared.
-    cy.get('[data-cy=sync-msg]', { timeout: 60_000 }).should('be.visible')
-
+    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
     // Go to the home page and click on a multipart project card
     const multiPartName = multiPartsNames[0]
     cy.visit('/')
@@ -175,5 +173,62 @@ describe('Render project cards', () => {
     cy.get('[data-cy=project-card]').contains(normalRepoName).click()
     // Should redirect to the `[username]/[projectName]/[multiProject]`
     cy.url().should('contain', `${username}/${normalRepoName}`)
+  })
+})
+
+describe('Multi project page', () => {
+  before(() => {
+    // visit home before running the tests, instead of using `wait`.
+    cy.visit('/')
+  })
+
+  it('should render the page components', () => {
+    const username = faker.name.firstName()
+    const email = faker.internet.email()
+    const password = '123456'
+
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+
+    cy.createUser(username, email, password)
+    cy.visit('/login')
+    cy.signIn(username, password)
+    cy.wait('@sign_in')
+
+    cy.visit('/projects/new')
+
+    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
+
+    cy.url().then(url => {
+      if (!url.endsWith('/projects/new')) {
+        cy.visit('/projects/new')
+      }
+    })
+
+    // Migrate the multipart repo
+    cy.get('input:first').type(syncedRepoUrlMultiParts)
+    cy.get('button').contains('Sync').click()
+
+    cy.url().should('contain', `${username}/${multiPartsRepoName}`)
+    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+
+    // Go to the home page and click on a multipart project card
+    const multiPartName = multiPartsNames[0]
+    cy.visit('/')
+    cy.get('[data-cy=project-card]').contains(multiPartName).click()
+
+    // Different page elements should be visible
+    const pageComponents = [
+      'info-bar',
+      'board-showcase',
+      'board-extra-menus',
+      'order-pcb',
+      'buy-parts',
+      'readme',
+    ]
+
+    pageComponents.forEach(c => {
+      cy.get(`[data-cy=${c}]`)
+    })
   })
 })

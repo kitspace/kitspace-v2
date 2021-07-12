@@ -21,7 +21,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
   }
 
   return (
-    <div className={styles.PCBMenu}>
+    <div data-cy="order-pcb" className={styles.PCBMenu}>
       <div className={`${styles.PCBMenu__group} ${styles.PCBMenu__download}`}>
         <a href={zipUrl} className={styles.PCBMenu__link}>
           <Icon name="download" />

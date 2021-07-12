@@ -114,7 +114,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
   }
 
   return (
-    <div className={styles.BuyParts}>
+    <div data-cy="buy-parts" className={styles.BuyParts}>
       <Header textAlign="center" as="h3" attached="top">
         <Icon
           style={{ fontSize: '14pt', marginBottom: 5 }}

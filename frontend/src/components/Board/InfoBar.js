@@ -15,7 +15,7 @@ const InfoBar = ({ name, url, site, description }) => {
   ) : null
 
   return (
-    <div className={styles.infoBar}>
+    <div data-cy="info-bar" className={styles.infoBar}>
       <div className={styles.infoBarInner}>
         <div className={styles.infoBarTitle}>
           <div className={styles.titleText}>{name}</div>

@@ -156,7 +156,7 @@ const UpdateProject = props => {
   if (isProcessingKitspaceYaml) {
     return (
       <Page title={title}>
-        <Loader active>Processing Repo...</Loader>
+        <Loader active>Processing repository...</Loader>
       </Page>
     )
   }

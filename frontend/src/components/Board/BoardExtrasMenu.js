@@ -10,7 +10,10 @@ const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, projectFullname }) => {
   const ibomUrl = `/${projectFullname}/IBOM/`
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0' }}>
+    <div
+      data-cy="board-extra-menus"
+      style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0' }}
+    >
       <Button basic as="a" href={`https://tracespace.io/view/?boardUrl=${zipUrl}`}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <Header as="h4">

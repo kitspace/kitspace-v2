@@ -10,7 +10,7 @@ const BoardShowcase = ({ projectFullname }) => {
   const [selected, setSelected] = useState('top')
 
   return (
-    <div className={styles.showcaseContainer}>
+    <div data-cy="board-showcase" className={styles.showcaseContainer}>
       <div className={styles.boardShowcaseWithMenu}>
         <div className={styles.boardShowcaseContainer}>
           <div className={`${styles.toggleBoardView} ${styles.responsiveTabs}`}>
