@@ -1,105 +1,105 @@
 server {
-	listen 80;
-	listen [::]:80;
+    listen 80;
+    listen [::]:80;
 
-	server_name @KITSPACE_DOMAIN;
+    server_name @KITSPACE_DOMAIN;
 
     location /robots.txt {
         add_header Content-Type text/plain;
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
-	error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status/index.html;
+    error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status/index.html;
 
-	location /error/ {
-		internal;
-		root /srv/frontend/static_fallback/;
-	}
+    location /error/ {
+        internal;
+        root /srv/frontend/static_fallback/;
+    }
 
-	location /static/ {
-		root /srv/frontend/public/;
-		autoindex on;
-	}
+    location /static/ {
+        root /srv/frontend/public/;
+        autoindex on;
+    }
 
-	location /_next {
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection "upgrade";
-		proxy_pass http://frontend:3000;
-	}
+    location /_next {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://frontend:3000;
+    }
 
-	location / {
-		proxy_intercept_errors on;
-		proxy_set_header    Host                $http_host;
-		proxy_set_header    X-Real-IP           $remote_addr;
-		proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
-		proxy_set_header    X-Forwarded-Proto   $scheme;
-		proxy_cookie_path ~^(.+)$ "$1; domain=.@KITSPACE_DOMAIN";
-		proxy_pass http://gitea:3000/__kitspace/;
-	}
+    location / {
+        proxy_intercept_errors on;
+        proxy_set_header    Host                $http_host;
+        proxy_set_header    X-Real-IP           $remote_addr;
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        proxy_cookie_path ~^(.+)$ "$1; domain=.@KITSPACE_DOMAIN";
+        proxy_pass http://gitea:3000/__kitspace/;
+    }
 
 }
 
 server {
-	listen 80;
-	listen [::]:80;
+    listen 80;
+    listen [::]:80;
 
-	server_name gitea.@KITSPACE_DOMAIN;
+    server_name gitea.@KITSPACE_DOMAIN;
 
     location /robots.txt {
         add_header Content-Type text/plain;
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
-	location ^~ / {
-		proxy_set_header           Host                               $http_host;
-		proxy_set_header           X-Real-IP                          $remote_addr;
-		proxy_set_header           X-Forwarded-For                    $proxy_add_x_forwarded_for;
-		proxy_set_header           X-Forwarded-Proto                  $scheme;
-		add_header                 'Access-Control-Allow-Origin'      '@KITSPACE_URL' always;
-		add_header                 'Access-Control-Allow-Methods'     'GET, POST, PUT, PATCH, DELETE, OPTIONS';
-		add_header                 'Access-Control-Allow-Credentials' 'true' always;
-		add_header                 'Access-Control-Allow-Headers'     'cache-control, pragma, user-agent, content-type';
-		proxy_cookie_path          ~^(.+)$                            '$1; domain=.@KITSPACE_DOMAIN';
-		proxy_set_header           Origin                             gitea.@KITSPACE_DOMAIN;
-		proxy_pass_request_headers on;
-		client_max_body_size       @MAX_FILE_SIZE;
+    location ^~ / {
+        proxy_set_header           Host                               $http_host;
+        proxy_set_header           X-Real-IP                          $remote_addr;
+        proxy_set_header           X-Forwarded-For                    $proxy_add_x_forwarded_for;
+        proxy_set_header           X-Forwarded-Proto                  $scheme;
+        add_header                 'Access-Control-Allow-Origin'      '@KITSPACE_URL' always;
+        add_header                 'Access-Control-Allow-Methods'     'GET, POST, PUT, PATCH, DELETE, OPTIONS';
+        add_header                 'Access-Control-Allow-Credentials' 'true' always;
+        add_header                 'Access-Control-Allow-Headers'     'cache-control, pragma, user-agent, content-type';
+        proxy_cookie_path          ~^(.+)$                            '$1; domain=.@KITSPACE_DOMAIN';
+        proxy_set_header           Origin                             gitea.@KITSPACE_DOMAIN;
+        proxy_pass_request_headers on;
+        client_max_body_size       @MAX_FILE_SIZE;
 
-		if ($request_method = OPTIONS) {
-			return 204;
-		}
-		proxy_pass http://gitea:3000;
-	}
+        if ($request_method = OPTIONS) {
+            return 204;
+        }
+        proxy_pass http://gitea:3000;
+    }
 }
 
 server {
-	listen 80;
-	listen [::]:80;
+    listen 80;
+    listen [::]:80;
 
-	server_name processor.@KITSPACE_DOMAIN;
+    server_name processor.@KITSPACE_DOMAIN;
 
     location /robots.txt {
         add_header Content-Type text/plain;
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
-	location / {
-		proxy_intercept_errors on;
-		proxy_set_header    Host                          $http_host;
-		proxy_set_header    X-Real-IP                     $remote_addr;
-		proxy_set_header    X-Forwarded-For               $proxy_add_x_forwarded_for;
-		proxy_set_header    X-Forwarded-Proto             $scheme;
-		add_header          'Access-Control-Allow-Origin' '*' always;
+    location / {
+        proxy_intercept_errors on;
+        proxy_set_header    Host                          $http_host;
+        proxy_set_header    X-Real-IP                     $remote_addr;
+        proxy_set_header    X-Forwarded-For               $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto             $scheme;
+        add_header          'Access-Control-Allow-Origin' '*' always;
         add_header          'Access-Control-Allow-Methods' 'GET, OPTIONS, POST';
         add_header          'Access-Control-Allow-Headers' 'Content-Type, Authorization';
 
 
-		if ($request_method = OPTIONS) {
-			return 204;
-		}
+        if ($request_method = OPTIONS) {
+            return 204;
+        }
 
-		proxy_pass http://processor:5000;
-	}
+        proxy_pass http://processor:5000;
+    }
 
 }
 
