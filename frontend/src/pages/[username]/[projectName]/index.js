@@ -343,7 +343,11 @@ const UpdateForm = ({
       <div>
         {boardAssetsExist ? (
           <>
-            <OrderPCBs zipUrl={zipUrl} boardSpecs={boardSpecs} />
+            <OrderPCBs
+              projectFullname={projectFullname}
+              zipUrl={zipUrl}
+              boardSpecs={boardSpecs}
+            />
             <BuyParts
               projectFullName={projectFullname}
               lines={boardBomInfo?.bom?.lines}
