@@ -229,5 +229,5 @@ export const submitKitspaceYaml = async (
  * @returns {string} url for assets processing status.
  */
 export const getStatusPathFrom = assetsPath => {
-  return assetsPath.replace(/\/files/, '/status')
+  return assetsPath.replace(/\/files\//, '/status')
 }
