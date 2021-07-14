@@ -45,6 +45,7 @@ describe('Render project cards', () => {
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
     // Wait for the repo to finish migration, by checking if sync message has appeared.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+    cy.reload()
 
     cy.visit(`/${username}`)
 
@@ -105,6 +106,7 @@ describe('Render project cards', () => {
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
     // Wait for the repo to finish migration, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+    cy.reload()
 
     cy.visit(`/${username}`)
     // There should be 3 thumbnails = 2 form multiparts + 1 normal project
@@ -147,38 +149,18 @@ describe('Render project cards', () => {
     )
     // Wait for the repo to finish migration, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+    cy.reload()
 
-    /* Migrate the normal repo */
-    cy.visit('/projects/new')
-
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
-
-    cy.get('input:first').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
-
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish migration, by checking the visibility of info-bar.
-    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
     // Go to the home page and click on a multipart project card
     const multiPartName = multiPartsNames[0]
     cy.visit('/')
     cy.get('[data-cy=project-card]').contains(multiPartName).click()
 
     // Should redirect to the `[username]/[projectName]/[multiProject]`
-    cy.url().should('contain', `${username}/${multiPartsRepoName}/${multiPartName}`)
-
-    // Go to the home page and click on a normal project card
-    cy.visit('/')
-    cy.get('[data-cy=project-card]').contains(normalRepoName).click()
-    // Should redirect to the `[username]/[projectName]/[multiProject]`
-    cy.url().should('contain', `${username}/${normalRepoName}`)
+    cy.url({ timeout: 10_000 }).should(
+      'contain',
+      `${username}/${multiPartsRepoName}/${multiPartName}`,
+    )
   })
 })
 
@@ -187,6 +169,8 @@ describe('Multi project page', () => {
     // visit home before running the tests, instead of using `wait`.
     cy.visit('/')
   })
+
+  beforeEach(() => cy.clearCookies())
 
   it('should render the page components', () => {
     const username = faker.name.firstName()
@@ -225,7 +209,10 @@ describe('Multi project page', () => {
     const multiPartName = multiPartsNames[0]
     cy.visit('/')
     cy.get('[data-cy=project-card]').contains(multiPartName).click()
-    cy.url().should('contain', `${username}/${multiPartsRepoName}/${multiPartName}`)
+    cy.url({ timeout: 10_000 }).should(
+      'contain',
+      `${username}/${multiPartsRepoName}/${multiPartName}`,
+    )
 
     // Different page elements should be visible.
     const pageComponents = [

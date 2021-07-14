@@ -5,8 +5,8 @@ import { Loader, Message } from 'semantic-ui-react'
 import Page from '@components/Page'
 import { useMigrationStatus, useRepo } from '@hooks/Gitea'
 import ErrorPage from '@pages/_error'
-import useKitspaceYAML from '@hooks/useKitspaceYAML'
 import PageElements from './elements'
+import useProcessingStatus from '@hooks/useProcessingStatus'
 
 const SharedProjectPage = props => {
   const { full_name: projectFullname } = props.repo
@@ -21,26 +21,31 @@ const SharedProjectPage = props => {
   })
 
   // If the repo is migrating, poll for update every second, otherwise use default config.
-  const { status } = useMigrationStatus(props.repo.id, props.isEmpty, {
-    refreshInterval: 1000,
-  })
+  const { status: migrationStatus } = useMigrationStatus(
+    props.repo.id,
+    props.isEmpty,
+    {
+      refreshInterval: 1000,
+    },
+  )
 
-  const { isError: isProcessingKitspaceYaml } = useKitspaceYAML(
-    projectFullname,
+  const { done } = useProcessingStatus(
+    props.assetsPath,
     !props.finishedProcessing,
     {
       refreshInterval: 1000,
     },
   )
+
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
 
   useEffect(() => {
-    setIsSyncing(status === 'Queue' || status === 'Running')
+    setIsSyncing(migrationStatus === 'Queue' || migrationStatus === 'Running')
 
-    if (props.isEmpty && !props.isSynced && status === 'Finished') {
+    if (props.isEmpty && !props.isSynced && migrationStatus === 'Finished') {
       reload()
     }
-  }, [status, props.isEmpty, props.isSynced, reload])
+  }, [migrationStatus, props.isEmpty, props.isSynced, reload])
 
   if (isLoading) {
     return (
@@ -49,6 +54,16 @@ const SharedProjectPage = props => {
       </Page>
     )
   }
+
+  if (!props.finishedProcessing && done === false) {
+    // done === false because done can be `undefined`.
+    return (
+      <Page title={title}>
+        <Loader active>Processing repository...</Loader>
+      </Page>
+    )
+  }
+
   if (isSyncing) {
     return (
       <Page title={title}>
@@ -56,15 +71,7 @@ const SharedProjectPage = props => {
       </Page>
     )
   }
-
-  if (isProcessingKitspaceYaml) {
-    return (
-      <Page title={title}>
-        <Loader active>Processing repository...</Loader>
-      </Page>
-    )
-  }
-  if (status === 'Failed') {
+  if (migrationStatus === 'Failed') {
     return (
       <Page title={title}>
         <Loader active>Migration Failed, please try again later!</Loader>

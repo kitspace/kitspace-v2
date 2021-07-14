@@ -12,7 +12,7 @@ import {
   getBoardGerberInfo,
   getKitspaceYAMLJson,
   hasInteractiveBom,
-  processedKitspaceYaml,
+  processedAssets,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
 
@@ -44,7 +44,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(
       kitspaceYAMLPath,
     )
-    const finishedProcessing = await processedKitspaceYaml(repoFullname)
+    const finishedProcessing = await processedAssets(assetsPath)
 
     const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
     const { zipPath, width, height, layers } = gerberInfo

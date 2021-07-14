@@ -16,7 +16,6 @@ export const getFlatProjects = async repos => {
    * @returns {Promise<[boolean, object?]>} The first item is whether the project is multi, the second is the multi projects in kitspace.yaml.
    */
   const isMultiProject = async fullname => {
-    const processorUrl = process.env.KITSPACE_PROCESSOR_URL
     const res = await fetch(
       `${processorUrl}/files/${fullname}/HEAD/kitspace-yaml.json`,
     )
@@ -105,15 +104,66 @@ export const getKitspaceYAMLJson = async assetsPath => {
   return [res.ok, res.ok ? await res.json() : kitspaceYAMLFields]
 }
 
-export const processedKitspaceYaml = async repoFullname => {
-  const res = await fetch(
-    `${processorUrl}/status/${repoFullname}/HEAD/kitspace-yaml.json`,
+export const processedAssets = async assetsPath => {
+  const statusPath = assetsPath.replace(/\/files/, '/status')
+  const rootStatusPath = statusPath.replace(/HEAD.+/, 'HEAD/')
+  const rootAssetsPath = assetsPath.replace(/HEAD.+/, 'HEAD/')
+
+  // https://github.com/kitspace/kitspace-v2/tree/master/processor#parameters
+  const assetsNames = [
+    'gerber-info.json',
+    'images/bottom.svg',
+    'images/top.svg',
+    'images/top.png',
+    'images/top-large.png',
+    'images/top-meta.png',
+    'images/top-with-background.png',
+    // 'images/layout.svg',
+    '1-click-BOM.tsv',
+    'bom-info.json',
+    'interactive_bom.json',
+    // 'kitspace-yaml.json',
+  ]
+
+  const kitspaceYAML = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
+
+  if (!kitspaceYAML.ok) return false
+
+  const kitspaceYAMLBody = await kitspaceYAML.json()
+
+  if (kitspaceYAMLBody.hasOwnProperty('multi')) {
+    const multiProjectsNames = Object.keys(kitspaceYAMLBody.multi)
+    const allMultiProjectsAssetsStatus = flatten(
+      await Promise.all(
+        multiProjectsNames.map(
+          async multiProjectsName =>
+            await Promise.all(
+              assetsNames.map(assetName =>
+                fetch(`${rootStatusPath}/${multiProjectsName}/${assetName}`),
+              ),
+            ),
+        ),
+      ),
+    )
+
+    if (allMultiProjectsAssetsStatus.some(r => !r.ok)) return false
+
+    return allMultiProjectsAssetsStatus.every(async r => {
+      const { status } = await r.json()
+      return status !== 'in_progress'
+    })
+  }
+
+  const allAssetsStatus = await Promise.all(
+    assetsNames.map(assetName => fetch(`${rootStatusPath}/${assetName}`)),
   )
 
-  if (!res.ok) return false
+  if (allAssetsStatus.some(r => !r.ok)) return false
 
-  const { status } = await res.json()
-  return status !== 'in_progress'
+  return allAssetsStatus.every(async r => {
+    const { status } = await r.json()
+    return status !== 'in_progress'
+  })
 }
 
 /**
