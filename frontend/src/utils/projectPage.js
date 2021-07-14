@@ -118,11 +118,9 @@ export const processedAssets = async assetsPath => {
     'images/top-large.png',
     'images/top-meta.png',
     'images/top-with-background.png',
-    // 'images/layout.svg',
     '1-click-BOM.tsv',
     'bom-info.json',
     'interactive_bom.json',
-    // 'kitspace-yaml.json',
   ]
 
   const kitspaceYAML = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
