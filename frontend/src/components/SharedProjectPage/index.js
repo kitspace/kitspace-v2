@@ -20,10 +20,12 @@ const SharedProjectPage = props => {
     initialData: props.repo,
   })
 
+  const [isSyncing, setIsSyncing] = useState(props.isEmpty)
   // If the repo is migrating, poll for update every second, otherwise use default config.
+
   const { status: migrationStatus } = useMigrationStatus(
     props.repo.id,
-    props.isEmpty,
+    props.isEmpty && isSyncing,
     {
       refreshInterval: 1000,
     },
@@ -36,8 +38,6 @@ const SharedProjectPage = props => {
       refreshInterval: 1000,
     },
   )
-
-  const [isSyncing, setIsSyncing] = useState(props.isEmpty)
 
   useEffect(() => {
     setIsSyncing(migrationStatus === 'Queue' || migrationStatus === 'Running')
@@ -59,7 +59,9 @@ const SharedProjectPage = props => {
     // done === false because done can be `undefined`.
     return (
       <Page title={title}>
-        <Loader active>Processing repository...</Loader>
+        <Loader data-cy="processing-loader" active>
+          Processing repository...
+        </Loader>
       </Page>
     )
   }
