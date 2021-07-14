@@ -22,7 +22,6 @@ const SharedProjectPage = props => {
 
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
   // If the repo is migrating, poll for update every second, otherwise use default config.
-
   const { status: migrationStatus } = useMigrationStatus(
     props.repo.id,
     props.isEmpty && isSyncing,

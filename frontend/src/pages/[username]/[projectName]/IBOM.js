@@ -30,5 +30,5 @@ export const getServerSideProps = async ({ params }) => {
   }
 }
 
-const _IBOM = props => <IBOM {...props} />
-export default _IBOM
+const IBOMPage = props => <IBOM {...props} />
+export default IBOMPage

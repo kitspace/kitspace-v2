@@ -105,7 +105,7 @@ export const getKitspaceYAMLJson = async assetsPath => {
 }
 
 export const processedAssets = async assetsPath => {
-  const statusPath = assetsPath.replace(/\/files/, '/status')
+  const statusPath = getStatusPathFrom(assetsPath)
   const rootStatusPath = statusPath.replace(/HEAD.+/, 'HEAD/')
   const rootAssetsPath = assetsPath.replace(/HEAD.+/, 'HEAD/')
 
@@ -130,13 +130,15 @@ export const processedAssets = async assetsPath => {
   if (!kitspaceYAML.ok) return false
 
   const kitspaceYAMLBody = await kitspaceYAML.json()
+  const isMultiProject = kitspaceYAMLBody.hasOwnProperty('multi')
 
-  if (kitspaceYAMLBody.hasOwnProperty('multi')) {
+  if (isMultiProject) {
     const multiProjectsNames = Object.keys(kitspaceYAMLBody.multi)
     const allMultiProjectsAssetsStatus = flatten(
       await Promise.all(
         multiProjectsNames.map(
           async multiProjectsName =>
+            // A multi project assets processing status
             await Promise.all(
               assetsNames.map(assetName =>
                 fetch(`${rootStatusPath}/${multiProjectsName}/${assetName}`),
@@ -146,24 +148,29 @@ export const processedAssets = async assetsPath => {
       ),
     )
 
+    // If any request failed
     if (allMultiProjectsAssetsStatus.some(r => !r.ok)) return false
 
+    // If any asset is still in progress
     return allMultiProjectsAssetsStatus.every(async r => {
       const { status } = await r.json()
       return status !== 'in_progress'
     })
+  } else {
+    // If it's a normal project
+    const allAssetsStatus = await Promise.all(
+      assetsNames.map(assetName => fetch(`${rootStatusPath}/${assetName}`)),
+    )
+
+    // If any request failed
+    if (allAssetsStatus.some(r => !r.ok)) return false
+
+    // If any asset is still in progress
+    return allAssetsStatus.every(async r => {
+      const { status } = await r.json()
+      return status !== 'in_progress'
+    })
   }
-
-  const allAssetsStatus = await Promise.all(
-    assetsNames.map(assetName => fetch(`${rootStatusPath}/${assetName}`)),
-  )
-
-  if (allAssetsStatus.some(r => !r.ok)) return false
-
-  return allAssetsStatus.every(async r => {
-    const { status } = await r.json()
-    return status !== 'in_progress'
-  })
 }
 
 /**
@@ -172,7 +179,7 @@ export const processedAssets = async assetsPath => {
  * @returns{Promise<boolean>}
  */
 export const hasInteractiveBom = async assetsPath => {
-  const statusPath = assetsPath.replace(/\/files/, '/status')
+  const statusPath = getStatusPathFrom(assetsPath)
   const res = await fetch(`${statusPath}/interactive_bom.json`)
 
   if (!res.ok) return false
@@ -216,4 +223,13 @@ export const submitKitspaceYaml = async (
     return updateFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
   }
   return uploadFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
+}
+
+/**
+ *
+ * @param {string} assetsPath url for project assets.
+ * @returns {string} url for assets processing status.
+ */
+export const getStatusPathFrom = assetsPath => {
+  return assetsPath.replace(/\/files/, '/status')
 }

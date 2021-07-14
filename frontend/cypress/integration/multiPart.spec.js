@@ -2,7 +2,6 @@ import faker from 'faker'
 const syncedRepoUrlMultiParts =
   'https://github.com/kitspace-forks/DIY_particle_detector'
 const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
-// Currently hardcoded but preferably it should get it from the yaml
 const multiPartsNames = ['alpha-spectrometer', 'electron-detector']
 const multiPartsRepoName = syncedRepoUrlMultiParts.split('/').slice(-1).toString()
 const normalRepoName = 'CH330_Hardware'
@@ -43,10 +42,12 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
-    // Wait for the repo to finish migration, by checking if sync message has appeared.
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
-    cy.reload()
 
+    // should render a card for each multiproject
     cy.visit(`/${username}`)
 
     multiPartsNames.forEach(name => {
@@ -85,7 +86,9 @@ describe('Render project cards', () => {
       'contain',
       `${username}/${multiPartsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     /* Migrate the normal repo */
@@ -104,9 +107,10 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
-    cy.reload()
 
     cy.visit(`/${username}`)
     // There should be 3 thumbnails = 2 form multiparts + 1 normal project
@@ -147,17 +151,21 @@ describe('Render project cards', () => {
       'contain',
       `${username}/${multiPartsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
-    cy.reload()
 
     // Go to the home page and click on a multipart project card
     const multiPartName = multiPartsNames[0]
     cy.visit('/')
-    cy.get('[data-cy=project-card]').contains(multiPartName).click()
+    cy.get('[data-cy=project-card]').within(() => {
+      cy.contains(username)
+      cy.contains(multiPartName).click({ force: true })
+    })
 
     // Should redirect to the `[username]/[projectName]/[multiProject]`
-    cy.url({ timeout: 10_000 }).should(
+    cy.url({ timeout: 20_000 }).should(
       'contain',
       `${username}/${multiPartsRepoName}/${multiPartName}`,
     )
@@ -202,13 +210,18 @@ describe('Multi project page', () => {
       'contain',
       `${username}/${multiPartsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     // Go to the home page and click on a multipart project card
     const multiPartName = multiPartsNames[0]
     cy.visit('/')
-    cy.get('[data-cy=project-card]').contains(multiPartName).click()
+    cy.get('[data-cy=project-card]').within(() => {
+      cy.contains(username)
+      cy.contains(multiPartName).click()
+    })
     cy.url({ timeout: 10_000 }).should(
       'contain',
       `${username}/${multiPartsRepoName}/${multiPartName}`,
@@ -261,13 +274,18 @@ describe('Multi project page', () => {
       'contain',
       `${username}/${multiPartsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of info-bar.
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     // Go to the home page and click on a multipart project card
     const multiPartName = multiPartsNames[0]
     cy.visit('/')
-    cy.get('[data-cy=project-card]').contains(multiPartName).click({ force: true })
+    cy.get('[data-cy=project-card]').within(() => {
+      cy.contains(username)
+      cy.contains(multiPartName).click({ force: true })
+    })
 
     /*
      ! The `Alpha-Spectrometer Variant` is dependant on the chosen repo for testing.

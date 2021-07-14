@@ -36,7 +36,7 @@ const ProjectCard = ({
           </div>
         </div>
         <Card.Content>
-          <Card.Header>{name}</Card.Header>
+          <Card.Header data-cy="project-card-name">{name}</Card.Header>
           <Card.Meta>{owner.username}</Card.Meta>
           <Card.Description>{description}</Card.Description>
         </Card.Content>

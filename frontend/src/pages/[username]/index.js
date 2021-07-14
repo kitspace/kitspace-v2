@@ -5,9 +5,9 @@ import { arrayOf, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
-import styles from './username.module.scss'
 import { getFlatProjects } from '@utils/projectPage'
 import { useUserRepos } from '@hooks/Gitea'
+import styles from './username.module.scss'
 
 export const getServerSideProps = async ({ params }) => {
   const userRepos = await getUserRepos(params.username)
