@@ -34,8 +34,8 @@ const User = ({ userRepos, username }) => {
     <Page title={username}>
       <h1>Projects by {username}</h1>
       <div className={styles}>
-        {projects?.map(project => (
-          <ProjectCard {...project} key={`${project.id}/${project.name}`} />
+        {projects?.map((project, i) => (
+          <ProjectCard {...project} key={i} />
         ))}
       </div>
     </Page>
