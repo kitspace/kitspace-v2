@@ -110,7 +110,7 @@ export const getKitspaceYAMLJson = async assetsPath => {
 }
 
 export const processedAssets = async assetsPath => {
-  const statusPath = getStatusPathFrom(assetsPath)
+  const statusPath = getStatusPath(assetsPath)
   const rootStatusPath = statusPath.replace(/HEAD.+/, 'HEAD/')
   const rootAssetsPath = assetsPath.replace(/HEAD.+/, 'HEAD/')
 
@@ -182,7 +182,7 @@ export const processedAssets = async assetsPath => {
  * @returns{Promise<boolean>}
  */
 export const hasInteractiveBom = async assetsPath => {
-  const statusPath = getStatusPathFrom(assetsPath)
+  const statusPath = getStatusPath(assetsPath)
   const res = await fetch(`${statusPath}/interactive_bom.json`)
 
   if (!res.ok) return false
@@ -233,6 +233,6 @@ export const submitKitspaceYaml = async (
  * @param {string} assetsPath url for project assets.
  * @returns {string} url for assets processing status.
  */
-export const getStatusPathFrom = assetsPath => {
-  return assetsPath.replace(/\/files/, '/status')
+export const getStatusPath = assetsPath => {
+  return assetsPath.replace(/\/files\//, '/status/')
 }

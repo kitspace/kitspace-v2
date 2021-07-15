@@ -1,15 +1,15 @@
 import useSWR from 'swr'
 
-import { getStatusPathFrom } from '@utils/projectPage'
+import { getStatusPath } from '@utils/projectPage'
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
 const useProjectAssets = assetsPath => {
   const top = `${assetsPath}/images/top.svg`
-  const topStatusUrl = getStatusPathFrom(top)
+  const topStatusUrl = getStatusPath(top)
 
   const bottom = `${assetsPath}/images/bottom.svg`
-  const bottomStatusUrl = getStatusPathFrom(bottom)
+  const bottomStatusUrl = getStatusPath(bottom)
 
   const { data: topStatus, error: topErr } = useSWR(topStatusUrl, fetcher)
   const { data: bottomStatus, error: bottomErr } = useSWR(bottomStatusUrl, fetcher)
