@@ -35,6 +35,11 @@ export const getFlatProjects = async repos => {
   const multiProjects = async (project, multi) =>
     Object.keys(multi).map(projectName => ({
       name: projectName,
+      /*
+       * `full_name` = `[username]/[top-level-project-name]`
+       * For multi projects the `full_name` can't be `[top-level-project-name]/[multiproject]`;
+       * because the processor uses `[top-level-project-name]/[git-ref]/[multiproject].
+       */
       full_name: project.full_name,
       description: multi[projectName].summary,
       owner: project.owner,
