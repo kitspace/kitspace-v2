@@ -4,19 +4,13 @@ import { Loader, Message } from 'semantic-ui-react'
 
 import Page from '@components/Page'
 import { useMigrationStatus, useRepo } from '@hooks/Gitea'
-import ErrorPage from '@pages/_error'
 import PageElements from './elements'
 import useProcessingStatus from '@hooks/useProcessingStatus'
 
 const SharedProjectPage = props => {
-  const { full_name: projectFullname } = props.repo
   const { reload } = useRouter()
   const title = `${props.projectName} on Kitspace`
-  const {
-    repo: project,
-    isLoading,
-    isError,
-  } = useRepo(projectFullname, {
+  const { repo: project } = useRepo(props.projectFullname, {
     initialData: props.repo,
   })
 
@@ -50,14 +44,6 @@ const SharedProjectPage = props => {
     if (!props.finishedProcessing && done) reload()
   }, [props.finishedProcessing, done, reload])
 
-  if (isLoading) {
-    return (
-      <Page title={title}>
-        <Loader active />
-      </Page>
-    )
-  }
-
   if (!props.finishedProcessing) {
     return (
       <Page title={title}>
@@ -82,9 +68,6 @@ const SharedProjectPage = props => {
       </Page>
     )
   }
-  if (isError) {
-    return <ErrorPage statusCode={404} />
-  }
 
   return (
     <Page title={title}>
@@ -100,12 +83,9 @@ const SharedProjectPage = props => {
       ) : null}
       <PageElements
         {...props}
-        projectFullname={projectFullname}
-        description={project?.description}
+        description={project.description || props.description}
         previewOnly={props.isSynced}
-        url={project?.original_url}
         owner={props.user}
-        name={props.projectName}
       />
     </Page>
   )

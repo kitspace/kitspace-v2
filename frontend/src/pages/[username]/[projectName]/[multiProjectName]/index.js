@@ -56,10 +56,11 @@ export const getServerSideProps = async ({ params, query, req }) => {
       props: {
         assetsPath,
         repo,
+        projectFullname: repoFullname,
         hasUploadPermission,
         repoFiles,
         hasIBOM,
-        kitspaceYAML,
+        kitspaceYAML: projectKitspaceYAML,
         zipUrl,
         boardBomInfo,
         boardSpecs: { width, height, layers },
@@ -68,12 +69,14 @@ export const getServerSideProps = async ({ params, query, req }) => {
         // Whether the project were empty or not at the time of requesting the this page from the server.
         isEmpty: repo?.empty,
         user: params.username,
-        projectName: params.projectName,
+        projectName: multiProjectName,
         isNew: query.create === 'true',
         boardAssetsExist: gerberInfoExists && boardBomInfoExists,
         readmeExists: readmeFile !== '',
         kitspaceYAMLExists,
         finishedProcessing,
+        description: projectKitspaceYAML?.summary || repo?.description,
+        url: repo?.original_url,
       },
     }
   }

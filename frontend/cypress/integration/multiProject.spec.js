@@ -247,7 +247,7 @@ describe('Multi project page', () => {
     })
   })
 
-  it('should render the readme specified in kitspace.yaml', () => {
+  it('should render the details from multi project in kitspace.yaml', () => {
     const username = faker.name.firstName()
     const email = faker.internet.email()
     const password = '123456'
@@ -289,11 +289,22 @@ describe('Multi project page', () => {
       cy.contains(username)
       cy.contains(multiProjectName).click({ force: true })
     })
+    cy.url({ timeout: 20_000 }).should(
+      'contain',
+      `${username}/${multiProjectsRepoName}/${multiProjectName}`,
+    )
+    // The info bar should have the correct title.
+    cy.get('[data-cy=project-title]').should('have.text', multiProjectName)
 
     /*
      ! The `Alpha-Spectrometer Variant` is dependant on the chosen repo for testing.
      ! Note, a kitspace fork is used not the upstream.
     */
+    // The info bar should have the correct description.
+    cy.get('[data-cy=project-description]').should(
+      'contain',
+      'Low-cost DIY particle detector for radioactivity: Alpha-spectrometer variant',
+    )
     cy.get('[data-cy=readme]').should('contain', 'Alpha-Spectrometer Variant')
   })
 })

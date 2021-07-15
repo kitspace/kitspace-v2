@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { arrayOf, bool, objectOf, string, object, number } from 'prop-types'
+import { arrayOf, bool, objectOf, string, object, number, shape } from 'prop-types'
 import { useRouter } from 'next/router'
 import { uniqBy } from 'lodash'
 import { Button, Form, Input, Loader, Segment, TextArea } from 'semantic-ui-react'
@@ -31,8 +31,8 @@ const PageElements = ({
   isNew,
   previewOnly,
   owner,
-  name,
   description,
+  projectName,
   projectFullname,
   url,
   boardAssetsExist,
@@ -69,7 +69,7 @@ const PageElements = ({
 
     // If the user changed the project name redirect to the new project page
     if (updatedSuccessfully) {
-      if (name !== `${owner}/${form.name}`) {
+      if (projectName !== `${owner}/${form.name}`) {
         await push(`/${owner}/${form.name}`)
       }
       setLoading(false)
@@ -110,8 +110,8 @@ const PageElements = ({
 
   // Set values of the form as the values of the project stored in the Gitea repo
   useEffect(() => {
-    populate({ name, description })
-  }, [name, description, populate])
+    populate({ name: projectName, description })
+  }, [projectName, description, populate])
 
   useEffect(() => {
     // Handle client side rendering for uploading permissions,
@@ -135,7 +135,7 @@ const PageElements = ({
       const repoFullname = `${owner}/${form.name}`
 
       // If the project name hasn't changed it's valid
-      if (repoFullname === `${owner}/${name}`) {
+      if (repoFullname === `${owner}/${projectName}`) {
         setIsValidProjectName(isValid)
       } else if (!(await repoExists(repoFullname))) {
         // Otherwise check if there's no repo with same name
@@ -148,17 +148,17 @@ const PageElements = ({
     if (form.name) {
       validateProjectName()
     }
-  }, [form.name, isValid, name, owner])
+  }, [form.name, isValid, projectName, owner])
 
   if (isLoading) return <Loader active />
 
   return (
     <>
       <InfoBar
-        name={name}
+        name={projectName}
         url={url}
         site={kitspaceYAML?.site}
-        description={kitspaceYAML?.summary || description}
+        description={description}
       />
       <div>
         {canUpload && (
@@ -272,7 +272,15 @@ PageElements.propTypes = {
   repoFiles: arrayOf(object).isRequired,
   hasUploadPermission: bool.isRequired,
   hasIBOM: bool.isRequired,
-  kitspaceYAML: objectOf(string).isRequired,
+  kitspaceYAML: shape({
+    summary: string,
+    site: string,
+    color: string,
+    bom: string,
+    gerbers: string,
+    eda: shape({ type: string, pcb: string }),
+    readme: string,
+  }).isRequired,
   boardBomInfo: object.isRequired,
   zipUrl: string.isRequired,
   renderedReadme: string.isRequired,
@@ -280,8 +288,8 @@ PageElements.propTypes = {
   isNew: bool.isRequired,
   previewOnly: bool.isRequired,
   owner: string.isRequired,
-  name: string.isRequired,
   description: string.isRequired,
+  projectName: string.isRequired,
   projectFullname: string.isRequired,
   url: string.isRequired,
   boardAssetsExist: bool.isRequired,

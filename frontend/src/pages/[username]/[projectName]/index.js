@@ -51,6 +51,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
       props: {
         assetsPath,
         repo,
+        projectFullname: repoFullname,
         hasUploadPermission,
         repoFiles,
         hasIBOM,
@@ -69,6 +70,8 @@ export const getServerSideProps = async ({ params, query, req }) => {
         readmeExists: readmeFile !== '',
         kitspaceYAMLExists,
         finishedProcessing,
+        description: kitspaceYAML?.summary || repo?.description,
+        url: repo?.original_url,
       },
     }
   }
