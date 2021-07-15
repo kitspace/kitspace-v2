@@ -1,9 +1,9 @@
 import faker from 'faker'
-const syncedRepoUrlMultiParts =
+const syncedRepoUrlMultiProjects =
   'https://github.com/kitspace-forks/DIY_particle_detector'
 const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
-const multiPartsNames = ['alpha-spectrometer', 'electron-detector']
-const multiPartsRepoName = syncedRepoUrlMultiParts.split('/').slice(-1).toString()
+const multiProjectsNames = ['alpha-spectrometer', 'electron-detector']
+const multiProjectsRepoName = 'DIY_particle_detector'
 const normalRepoName = 'CH330_Hardware'
 
 describe('Render project cards', () => {
@@ -17,7 +17,7 @@ describe('Render project cards', () => {
     const email = faker.internet.email()
     const password = '123456'
 
-    const repoName = syncedRepoUrlMultiParts.split('/').slice(-1).toString()
+    const repoName = syncedRepoUrlMultiProjects.split('/').slice(-1).toString()
 
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
 
@@ -36,8 +36,8 @@ describe('Render project cards', () => {
       }
     })
 
-    // Migrate the multipart repo
-    cy.get('input:first').type(syncedRepoUrlMultiParts)
+    // Migrate the multiproject repo
+    cy.get('input:first').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
@@ -50,7 +50,7 @@ describe('Render project cards', () => {
     // should render a card for each multiproject
     cy.visit(`/${username}`)
 
-    multiPartsNames.forEach(name => {
+    multiProjectsNames.forEach(name => {
       cy.get('[data-cy=project-card]').contains(name)
     })
   })
@@ -77,14 +77,14 @@ describe('Render project cards', () => {
       }
     })
 
-    // Migrate the multipart repo
-    cy.get('input:first').type(syncedRepoUrlMultiParts)
+    // Migrate the multiproject repo
+    cy.get('input:first').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should(
       'contain',
-      `${username}/${multiPartsRepoName}`,
+      `${username}/${multiProjectsRepoName}`,
     )
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
@@ -113,10 +113,10 @@ describe('Render project cards', () => {
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit(`/${username}`)
-    // There should be 3 thumbnails = 2 form multiparts + 1 normal project
+    // There should be 3 thumbnails = 2 form multiprojects + 1 normal project
     cy.get('[data-cy=project-card-thumbnail]').should(
       'have.length',
-      multiPartsNames.length + 1,
+      multiProjectsNames.length + 1,
     )
   })
 
@@ -142,32 +142,32 @@ describe('Render project cards', () => {
       }
     })
 
-    /* Migrate the multipart repo */
-    cy.get('input:first').type(syncedRepoUrlMultiParts)
+    /* Migrate the multiproject repo */
+    cy.get('input:first').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should(
       'contain',
-      `${username}/${multiPartsRepoName}`,
+      `${username}/${multiProjectsRepoName}`,
     )
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
-    // Go to the home page and click on a multipart project card
-    const multiPartName = multiPartsNames[0]
+    // Go to the home page and click on a multiproject project card
+    const multiProjectName = multiProjectsNames[0]
     cy.visit('/')
     cy.get('[data-cy=project-card]').within(() => {
       cy.contains(username)
-      cy.contains(multiPartName).click({ force: true })
+      cy.contains(multiProjectName).click({ force: true })
     })
 
     // Should redirect to the `[username]/[projectName]/[multiProject]`
     cy.url({ timeout: 20_000 }).should(
       'contain',
-      `${username}/${multiPartsRepoName}/${multiPartName}`,
+      `${username}/${multiProjectsRepoName}/${multiProjectName}`,
     )
   })
 })
@@ -202,29 +202,29 @@ describe('Multi project page', () => {
       }
     })
 
-    // Migrate the multipart repo
-    cy.get('input:first').type(syncedRepoUrlMultiParts)
+    // Migrate the multiproject repo
+    cy.get('input:first').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     cy.url({ timeout: 60_000 }).should(
       'contain',
-      `${username}/${multiPartsRepoName}`,
+      `${username}/${multiProjectsRepoName}`,
     )
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
-    // Go to the home page and click on a multipart project card
-    const multiPartName = multiPartsNames[0]
+    // Go to the home page and click on a multiproject project card
+    const multiProjectName = multiProjectsNames[0]
     cy.visit('/')
     cy.get('[data-cy=project-card]').within(() => {
       cy.contains(username)
-      cy.contains(multiPartName).click()
+      cy.contains(multiProjectName).click()
     })
     cy.url({ timeout: 10_000 }).should(
       'contain',
-      `${username}/${multiPartsRepoName}/${multiPartName}`,
+      `${username}/${multiProjectsRepoName}/${multiProjectName}`,
     )
 
     // Different page elements should be visible.
@@ -266,25 +266,25 @@ describe('Multi project page', () => {
       }
     })
 
-    // Migrate the multipart repo
-    cy.get('input:first').type(syncedRepoUrlMultiParts)
+    // Migrate the multiproject repo
+    cy.get('input:first').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     cy.url({ timeout: 60_000 }).should(
       'contain',
-      `${username}/${multiPartsRepoName}`,
+      `${username}/${multiProjectsRepoName}`,
     )
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
-    // Go to the home page and click on a multipart project card
-    const multiPartName = multiPartsNames[0]
+    // Go to the home page and click on a multiproject project card
+    const multiProjectName = multiProjectsNames[0]
     cy.visit('/')
     cy.get('[data-cy=project-card]').within(() => {
       cy.contains(username)
-      cy.contains(multiPartName).click({ force: true })
+      cy.contains(multiProjectName).click({ force: true })
     })
 
     /*
