@@ -109,7 +109,12 @@ export const getKitspaceYAMLJson = async assetsPath => {
   return [res.ok, res.ok ? await res.json() : kitspaceYAMLFields]
 }
 
-export const processedAssets = async assetsPath => {
+/**
+ *
+ * @param {string} assetsPath
+ * @returns {Promise<boolean>} whether the processor is done whether the processor is still processing or not.
+ */
+export const getIsProcessingDone = async assetsPath => {
   const statusPath = getStatusPath(assetsPath)
   const rootStatusPath = statusPath.replace(/HEAD.+/, 'HEAD/')
   const rootAssetsPath = assetsPath.replace(/HEAD.+/, 'HEAD/')

@@ -13,7 +13,7 @@ import {
   getBoardGerberInfo,
   getKitspaceYAMLJson,
   hasInteractiveBom,
-  processedAssets,
+  getIsProcessingDone,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
 
@@ -37,7 +37,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const [gerberInfoExists, gerberInfo] = await getBoardGerberInfo(assetsPath)
     const [boardBomInfoExists, boardBomInfo] = await getBoardBomInfo(assetsPath)
     const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(assetsPath)
-    const finishedProcessing = await processedAssets(assetsPath)
+    const finishedProcessing = await getIsProcessingDone(assetsPath)
 
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`

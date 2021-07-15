@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-import { processedAssets } from '@utils/projectPage'
+import { getIsProcessingDone } from '@utils/projectPage'
 
 /**
  *
@@ -12,7 +12,7 @@ import { processedAssets } from '@utils/projectPage'
 const useProcessingStatus = (assetsPath, shouldFetch, swrOpts = {}) => {
   const { data, error, mutate } = useSWR(
     shouldFetch ? assetsPath : null,
-    processedAssets,
+    getIsProcessingDone,
     swrOpts,
   )
 
