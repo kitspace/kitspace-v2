@@ -45,7 +45,7 @@ const PageElements = ({
     isLoading,
     mutate,
   } = useDefaultBranchFiles(projectFullname, { initialData: repoFiles })
-  // Details(name, path, last_modified, etc...) for files dropped in the update page
+  // Details (name, path, last_modified, etc...) for files dropped in the update page
   const [newlyUploadedDetails, setNewlyUploadedDetails] = useState([])
   const [allFiles, setAllFiles] = useState([])
   const [isValidProjectName, setIsValidProjectName] = useState(false)
@@ -123,7 +123,7 @@ const PageElements = ({
     }
   }, [user, projectFullname, hasUploadPermission, previewOnly])
 
-  // A disjoint between the newly uploaded files(waiting for submission) and the files
+  // A disjoint between the newly uploaded files (waiting for submission) and the files
   // on the Gitea repo for this project
   useEffect(() => {
     setAllFiles(uniqBy([...remoteFiles, ...newlyUploadedDetails], 'name'))
