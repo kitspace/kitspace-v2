@@ -26,31 +26,35 @@ export const getServerSideProps = async ({ params, query, req }) => {
   const kitspaceYAMLPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
 
-  // The repo owner and collaborators can upload files.
-  const hasUploadPermission = await canCommit(
-    repoFullname,
-    req?.session?.user?.username,
-  )
-
   if (await repoExists(repoFullname)) {
-    const repo = await getRepo(repoFullname)
-    const repoFiles = await getDefaultBranchFiles(repoFullname)
-
-    const [gerberInfoExists, gerberInfo] = await getBoardGerberInfo(assetsPath)
-    const [boardBomInfoExists, boardBomInfo] = await getBoardBomInfo(assetsPath)
-    const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(
-      kitspaceYAMLPath,
-    )
-    const finishedProcessing = await getIsProcessingDone(assetsPath)
+    const [
+      repo,
+      repoFiles,
+      [boardBomInfoExists, boardBomInfo],
+      [gerberInfoExists, gerberInfo],
+      [kitspaceYAMLExists, kitspaceYAML],
+      finishedProcessing,
+      hasIBOM,
+      hasUploadPermission,
+    ] = await Promise.all([
+      getRepo(repoFullname),
+      getDefaultBranchFiles(repoFullname),
+      getBoardBomInfo(assetsPath),
+      getBoardGerberInfo(assetsPath),
+      getKitspaceYAMLJson(kitspaceYAMLPath),
+      getIsProcessingDone(assetsPath),
+      hasInteractiveBom(assetsPath),
+      // The repo owner and collaborators can upload files.
+      canCommit(repoFullname, req?.session?.user?.username),
+    ])
 
     const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
-    const { zipPath, width, height, layers } = gerberInfo
-    const zipUrl = `${assetsPath}/${zipPath}`
 
     const readmeFile = projectKitspaceYAML?.readme || findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
-    const hasIBOM = await hasInteractiveBom(assetsPath)
+    const { zipPath, width, height, layers } = gerberInfo
+    const zipUrl = `${assetsPath}/${zipPath}`
 
     return {
       props: {
