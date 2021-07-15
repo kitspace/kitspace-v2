@@ -46,6 +46,10 @@ const SharedProjectPage = props => {
     }
   }, [migrationStatus, props.isEmpty, props.isSynced, reload])
 
+  useEffect(() => {
+    if (!props.finishedProcessing && done) reload()
+  }, [props.finishedProcessing, done, reload])
+
   if (isLoading) {
     return (
       <Page title={title}>
@@ -54,8 +58,7 @@ const SharedProjectPage = props => {
     )
   }
 
-  if (!props.finishedProcessing && done === false) {
-    // done === false because done can be `undefined`.
+  if (!props.finishedProcessing) {
     return (
       <Page title={title}>
         <Loader data-cy="processing-loader" active>
