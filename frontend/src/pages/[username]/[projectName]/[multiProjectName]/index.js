@@ -36,9 +36,6 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const repo = await getRepo(repoFullname)
     const repoFiles = await getDefaultBranchFiles(repoFullname)
 
-    // TODO: ALL assets aren't available for the repos which are being processed,
-    // or the repos that don't have assets from first place.
-    // This should be handled properly currently, it breaks the page.
     const [gerberInfoExists, gerberInfo] = await getBoardGerberInfo(assetsPath)
     const [boardBomInfoExists, boardBomInfo] = await getBoardBomInfo(assetsPath)
     const [kitspaceYAMLExists, kitspaceYAML] = await getKitspaceYAMLJson(
