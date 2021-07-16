@@ -16,8 +16,8 @@ describe('Render project cards', () => {
   })
 
   it('should render a card for each multiproject', () => {
-    const username = faker.name.firstName()
-    const email = faker.internet.email()
+    const username = faker.unique(faker.name.firstName)
+    const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     const repoName = syncedRepoUrlMultiProjects.split('/').slice(-1).toString()
@@ -60,8 +60,8 @@ describe('Render project cards', () => {
   })
 
   it('should display card thumbnail', () => {
-    const username = faker.name.firstName()
-    const email = faker.internet.email()
+    const username = faker.unique(faker.name.firstName)
+    const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
@@ -123,8 +123,8 @@ describe('Render project cards', () => {
   })
 
   it('should redirect to the multi project page', () => {
-    const username = faker.name.firstName()
-    const email = faker.internet.email()
+    const username = faker.unique(faker.name.firstName)
+    const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
@@ -183,8 +183,8 @@ describe('Multi project page', () => {
   beforeEach(() => cy.clearCookies())
 
   it('should render the page components', () => {
-    const username = faker.name.firstName()
-    const email = faker.internet.email()
+    const username = faker.unique(faker.name.firstName)
+    const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
@@ -241,8 +241,8 @@ describe('Multi project page', () => {
   })
 
   it('should render the details from multi project in kitspace.yaml', () => {
-    const username = faker.name.firstName()
-    const email = faker.internet.email()
+    const username = faker.unique(faker.name.firstName)
+    const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')

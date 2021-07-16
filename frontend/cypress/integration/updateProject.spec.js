@@ -2,8 +2,8 @@
 // import faker from 'faker'
 
 // describe('Updating a project behavior validation', () => {
-//   const username = faker.name.firstName()
-//   const email = faker.internet.email()
+//   const username = faker.unique(faker.name.firstName)
+//   const email = faker.unique(faker.internet.email)
 //   const password = '123456'
 
 //   const testRepoName = 'example'
@@ -131,8 +131,8 @@
 // })
 
 // describe('Update project form validation', () => {
-//   const username = faker.name.firstName()
-//   const email = faker.internet.email()
+//   const username = faker.unique(faker.name.firstName)
+//   const email = faker.unique(faker.internet.email)
 //   const password = '123456'
 
 //   const syncedRepoName = 'light-test-repo'

@@ -45,8 +45,8 @@ describe('Log in form validation', () => {
 })
 
 describe('Log in form submission', () => {
-  const username = faker.name.firstName()
-  const email = faker.internet.email()
+  const username = faker.unique(faker.name.firstName)
+  const email = faker.unique(faker.internet.email)
   const password = '123456'
 
   before(() => {
