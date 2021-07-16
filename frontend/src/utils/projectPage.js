@@ -13,17 +13,17 @@ const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 export const getFlatProjects = async repos => {
   /**
    * @param {string} fullname
-   * @returns {Promise<[boolean, object?]>} The first item is whether the project is multi, the second is the multi projects in kitspace.yaml.
+   * @returns {Promise<object?>} The multi projects in kitspace.yaml.
    */
-  const isMultiProject = async fullname => {
+  const getMultiInfo = async fullname => {
     const res = await fetch(
       `${processorUrl}/files/${fullname}/HEAD/kitspace-yaml.json`,
     )
 
-    if (!res.ok) return [false, null]
+    if (!res.ok) return null
 
     const kitspaceYAML = await res.json()
-    return [kitspaceYAML.hasOwnProperty('multi'), kitspaceYAML?.multi]
+    return kitspaceYAML?.multi
   }
 
   /**
@@ -49,7 +49,8 @@ export const getFlatProjects = async repos => {
   return flatten(
     await Promise.all(
       repos.map(async repo => {
-        const [isMulti, multi] = await isMultiProject(repo.full_name)
+        const multi = await getMultiInfo(repo.full_name)
+        const isMulti = multi != null
         if (!isMulti) {
           return repo
         } else {
