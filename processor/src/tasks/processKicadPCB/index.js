@@ -90,10 +90,10 @@ async function plotKicadGerbers(outputDir, kicadPcbFile) {
 }
 
 async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
-  const tempSvgFolder = path.join('/tmp/kitspace', outputDir, 'svg')
-  await exec(`rm -rf ${tempSvgFolder} && mkdir -p ${tempSvgFolder}`)
+  const tempFolder = path.join('/tmp/kitspace', outputDir, 'svg')
+  await exec(`rm -rf ${tempFolder} && mkdir -p ${tempFolder}`)
   const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
-  const plotCommand = `${plot_kicad_pcb} svg ${kicadPcbFile} ${tempSvgFolder} ${layoutSvgPath}`
+  const plotCommand = `${plot_kicad_pcb} svg ${kicadPcbFile} ${tempFolder} ${layoutSvgPath}`
   return exec(plotCommand)
 }
 

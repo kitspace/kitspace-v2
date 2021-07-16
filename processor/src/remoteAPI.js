@@ -5,6 +5,7 @@ const path = require('path')
 const fileUpload = require('express-fileupload')
 
 const processKicadPCB = require('./tasks/processKicadPCB')
+const processSchematics = require('./tasks/processSchematics')
 const { writeFile, exec } = require('./utils')
 
 const { DATA_DIR } = require('./env')
@@ -54,14 +55,18 @@ function createRemoteAPI(app) {
       }
       const uploadFolder = path.join(remoteProcessInputDir, upload.md5)
       const ext = path.extname(upload.name)
-      if (ext !== '.kicad_pcb') {
-        return res.status(422).send('Only accepting .kicad_pcb files')
+      if (!['.kicad_pcb', '.sch'].includes(ext)) {
+        return res.status(422).send('Only accepting .kicad_pcb and .sch files')
       }
       const uploadPath = path.join(uploadFolder, upload.md5 + ext)
       const outputDir = path.join(remoteProcessOutputDir, upload.md5)
       await exec(`mkdir -p ${uploadFolder}`)
       await writeFile(uploadPath, upload.data).then(() => {
-        processKicadPCB(events, uploadFolder, {}, outputDir)
+        if (ext === '.kicad_pcb') {
+          processKicadPCB(events, uploadFolder, {}, outputDir)
+        } else if (ext === '.sch') {
+          processSchematics(events, uploadFolder, {}, outputDir)
+        }
       })
       res.status(202).send({
         id: upload.md5,

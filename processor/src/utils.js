@@ -48,9 +48,9 @@ function findKicadSchematic(inputDir, files, kitspaceYaml) {
   } else {
     // since there can be more than one .sch, better to find the .pro and
     // deduce the schematic file from that
-    const pcb = files.find(file => file.endsWith('.pro'))
-    if (pcb != null) {
-      return pcb.replace(/\.pro/, '.sch')
+    const pro = files.find(file => file.endsWith('.pro'))
+    if (pro != null) {
+      return pro.replace(/\.pro/, '.sch')
     }
     return files.find(file => file.endsWith('.sch'))
   }
