@@ -6,29 +6,31 @@ import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
 import { getFlatProjects } from '@utils/projectPage'
-import { useUserRepos } from '@hooks/Gitea'
+import { useUserProjects } from '@hooks/Gitea'
 import styles from './username.module.scss'
 
 export const getServerSideProps = async ({ params }) => {
   const userRepos = await getUserRepos(params.username)
-
-  const flattenedUserRepos = await getFlatProjects(userRepos)
 
   if (isEmpty(userRepos) && !(await userExists(params.username))) {
     return {
       notFound: true,
     }
   }
+
+  const flattenedUserProjects = await getFlatProjects(userRepos)
   return {
     props: {
-      userRepos: flattenedUserRepos,
+      userProjects: flattenedUserProjects,
       username: params.username,
     },
   }
 }
 
-const User = ({ userRepos, username }) => {
-  const { repos: projects } = useUserRepos(username, { initialData: userRepos })
+const User = ({ userProjects, username }) => {
+  const { repos: projects } = useUserProjects(username, {
+    initialData: userProjects,
+  })
 
   return (
     <Page title={username}>

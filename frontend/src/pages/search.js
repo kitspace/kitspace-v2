@@ -18,26 +18,26 @@ export const getServerSideProps = async ({ query }) => {
   if (q) {
     return {
       props: {
-        repos: await getFlatProjects(await searchRepos(q)),
+        flatProjects: await getFlatProjects(await searchRepos(q)),
         q,
       },
     }
   }
   return {
     props: {
-      repos: await getFlatProjects(await getAllRepos()),
+      flatProjects: await getFlatProjects(await getAllRepos()),
     },
   }
 }
 
-const Search = ({ repos, q }) => {
+const Search = ({ flatProjects, q }) => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
   const username = user?.login || 'unknown user'
 
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFromModel)
   const [query, setQuery] = useState(q)
-  const { repos: projects } = useSearchRepos(query, { initialData: repos })
+  const { repos: projects } = useSearchRepos(query, { initialData: flatProjects })
 
   useEffect(() => {
     setQuery(isValid ? form.query : '')

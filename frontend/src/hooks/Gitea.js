@@ -28,7 +28,7 @@ import useSWR from 'swr'
 const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 
 /**
- * The default fetcher.
+ *
  * @param url
  * @returns {Promise<Promise<any>>}
  */
@@ -38,20 +38,6 @@ const fetcher = url =>
     mode: 'cors',
     headers: { Accept: 'application/json' },
   }).then(r => r.json())
-
-/**
- * Fetch repos then flatten it into projects, i.e., each multi project as a standalone project.
- * @param {string} url
- * @returns
- */
-const fetchThenFlatten = url =>
-  fetch(url, {
-    method: 'GET',
-    mode: 'cors',
-    headers: { Accept: 'application/json' },
-  })
-    .then(r => r.json())
-    .then(repos => getFlatProjects(repos))
 
 /**
  * A hook to get repo details
@@ -93,7 +79,7 @@ export const useSearchRepos = (
 
   const { data, error, mutate } = useSWR(
     [endpoint, { sort, order, q }],
-    fetchThenFlatten,
+    url => fetcher(url).then(getFlatProjects),
     swrOpts,
   )
   return {
@@ -117,9 +103,13 @@ export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
  * @param swrOpts{swrOptions}
  * @returns {{isLoading: boolean, isError: boolean, repos: [Object], mutate: function}}
  */
-export const useUserRepos = (username, swrOpts = {}) => {
+export const useUserProjects = (username, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/users/${username}/repos`
-  const { data, error, mutate } = useSWR(endpoint, fetchThenFlatten, swrOpts)
+  const { data, error, mutate } = useSWR(
+    endpoint,
+    url => fetcher(url).then(getFlatProjects),
+    swrOpts,
+  )
 
   return {
     repos: data || [],
