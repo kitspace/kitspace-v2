@@ -20,4 +20,4 @@
     name: prune docker system and volumes
     special_time: daily
     user: root
-    job: "docker system prune --volumes --force"
+    job: "docker system prune --all --volumes --force"
