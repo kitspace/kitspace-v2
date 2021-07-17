@@ -61,7 +61,7 @@ services:
 
   processor:
     environment:
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${KITSPACE_PROCESSOR_LOG_LEVEL}
       - REMOTE_API_TOKEN=${KITSPACE_PROCESSOR_REMOTE_API_TOKEN}
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
     volumes:

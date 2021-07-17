@@ -169,6 +169,7 @@ jobs:
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
           remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
           ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
