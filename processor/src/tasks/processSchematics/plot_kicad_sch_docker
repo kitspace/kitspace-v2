@@ -5,6 +5,10 @@ set -eu -o pipefail -o verbose
 input_sch="$1"
 output_dir="$2"
 
+# how volumes work here is a bit confusing but this docker is essentially the
+# outer-most docker since it shares the docker.sock. we mount the
+# processor-data volume in the same place meaning all our paths match up as
+# long as they are under /data
 docker run --rm \
     --volume="${COMPOSE_PROJECT_NAME}_processor-data:/data:rw" \
     setsoft/kicad_auto /bin/bash -c \
