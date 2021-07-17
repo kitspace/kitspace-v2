@@ -82,6 +82,24 @@ describe('remote API', () => {
     r = await this.supertest.get(schematicSvg).expect(200)
   })
 
+  it('plots push-on-hold-off schematic.svg', async () => {
+    let r = await this.supertest
+      .post('/process-file')
+      .set('Authorization', `Bearer ${process.env.REMOTE_API_TOKEN}`)
+      .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.sch'))
+      .expect(202)
+    assert(r.body.id != null)
+    const schematicSvgStatus = `/processed/status/${r.body.id}/images/schematic.svg`
+    const schematicSvg = `/processed/files/${r.body.id}/images/schematic.svg`
+    r = await this.supertest.get(schematicSvgStatus)
+    assert(r.body.status === 'in_progress')
+    while (r.body.status === 'in_progress') {
+      r = await this.supertest.get(schematicSvgStatus)
+    }
+    assert(r.body.status === 'done')
+    r = await this.supertest.get(schematicSvg).expect(200)
+  })
+
   afterEach(async () => {
     this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
