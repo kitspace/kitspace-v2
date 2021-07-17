@@ -63,9 +63,12 @@ services:
     environment:
       - LOG_LEVEL=info
       - REMOTE_API_TOKEN=${KITSPACE_PROCESSOR_REMOTE_API_TOKEN}
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
     volumes:
       - gitea-data:/gitea-data
       - processor-data:/data
+      # share docker daemon when running docker inside docker
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   frontend-next:

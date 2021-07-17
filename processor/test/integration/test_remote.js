@@ -8,8 +8,8 @@ const exec = util.promisify(cp.exec)
 
 const { createApp } = require('../../src/app')
 
-const tmpDir = '/tmp/kitspace-processor-test-from-remote'
-const emptyRepoDir = '/tmp/kitspace-processor-test-empty-repo-dir'
+const tmpDir = '/data/test/kitspace-processor-test-from-remote'
+const emptyRepoDir = '/data/test/kitspace-processor-test-empty-repo-dir'
 
 describe('remote API', () => {
   beforeEach(async () => {

@@ -8,6 +8,8 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
 RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
     kicad \
     kicad-symbols \
@@ -18,6 +20,7 @@ RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
     python3-pip \
     xdotool \
     xvfb \
+    docker-ce \
     git
 
 RUN mkdir /app

@@ -60,9 +60,13 @@ async function _processSchematics(events, inputDir, kitspaceYaml, outputDir) {
 
 async function plotKicadSchematic(outputSvgPath, schematicPath) {
   const outputFolder = path.dirname(outputSvgPath)
-  const tempFolder = path.join('/tmp/kitspace', outputFolder, 'schematics')
+  // tempFolder needs to be in shared /data volume as we are using the outer
+  // docker daemon for docker in docker
+  const tempFolder = path.join('/data/temp/kitspace', outputFolder, 'schematics')
   await exec(`rm -rf ${tempFolder} && mkdir -p ${tempFolder}`)
-  await exec(`eeschema_do export -f svg '${schematicPath}' '${tempFolder}'`)
+  const plot_kicad_sch_docker = path.join(__dirname, 'plot_kicad_sch_docker')
+  const r = await exec(`${plot_kicad_sch_docker} '${schematicPath}' '${tempFolder}'`)
+  log.debug(r)
   const [tempSvg] = globule.find(path.join(tempFolder, '*.svg'))
   if (tempSvg == null) {
     throw Error('Could not process KiCad .sch file')

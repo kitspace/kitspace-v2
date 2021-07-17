@@ -8,7 +8,7 @@ const exec = util.promisify(cp.exec)
 
 const { createApp } = require('../../src/app')
 
-const tmpDir = '/tmp/kitspace-processor-test-from-folder'
+const tmpDir = '/data/test/temp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
 

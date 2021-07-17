@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -eu -o pipefail -o verbose
+
+input_sch="$1"
+output_dir="$2"
+
+docker run --rm \
+    --volume="${COMPOSE_PROJECT_NAME}_processor-data:/data:rw" \
+    setsoft/kicad_auto /bin/bash -c \
+    "eeschema_do export -f svg '${input_sch}' '${output_dir}'"
