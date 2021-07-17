@@ -73,6 +73,7 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
   }
   await exec(`mkdir -p ${outputFolder}`)
   await exec(`mv ${tempSvg} ${outputSvgPath}`)
+  await exec(`rm -rf ${tempFolder}`)
 }
 
 module.exports = processSchematics
