@@ -17,9 +17,6 @@ RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
     imagemagick \
     nodejs \
     yarn \
-    python3-pip \
-    xdotool \
-    xvfb \
     docker-ce \
     git
 
@@ -28,7 +25,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip3 install -r requirements.txt
 RUN yarn install
 
 CMD ["yarn", "start"]
