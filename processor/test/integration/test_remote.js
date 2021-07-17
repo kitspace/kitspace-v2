@@ -56,7 +56,6 @@ describe('remote API', () => {
     const layoutSvgStatus = `/processed/status/${r.body.id}/images/layout.svg`
     const layoutSvg = `/processed/files/${r.body.id}/images/layout.svg`
     r = await this.supertest.get(layoutSvgStatus)
-    assert(r.body.status === 'in_progress')
     while (r.body.status === 'in_progress') {
       r = await this.supertest.get(layoutSvgStatus)
     }
@@ -74,7 +73,6 @@ describe('remote API', () => {
     const schematicSvgStatus = `/processed/status/${r.body.id}/images/schematic.svg`
     const schematicSvg = `/processed/files/${r.body.id}/images/schematic.svg`
     r = await this.supertest.get(schematicSvgStatus)
-    assert(r.body.status === 'in_progress')
     while (r.body.status === 'in_progress') {
       r = await this.supertest.get(schematicSvgStatus)
     }
@@ -92,7 +90,6 @@ describe('remote API', () => {
     const schematicSvgStatus = `/processed/status/${r.body.id}/images/schematic.svg`
     const schematicSvg = `/processed/files/${r.body.id}/images/schematic.svg`
     r = await this.supertest.get(schematicSvgStatus)
-    assert(r.body.status === 'in_progress')
     while (r.body.status === 'in_progress') {
       r = await this.supertest.get(schematicSvgStatus)
     }
