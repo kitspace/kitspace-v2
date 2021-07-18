@@ -220,18 +220,11 @@ describe('Multi project page', () => {
 
     // Go to the home page and click on a multiproject project card
     const multiProjectName = multiProjectsNames[0]
-    cy.visit('/')
-    cy.get('[data-cy=project-card]').within(() => {
-      cy.contains(username)
-      cy.contains(multiProjectName).click()
-    })
-    cy.url({ timeout: 10_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}/${multiProjectName}`,
-    )
+    cy.visit(`${username}/${multiProjectsRepoName}/${multiProjectName}`)
 
     // Different page elements should be visible.
     const pageComponents = [
+      'sync-msg',
       'info-bar',
       'board-showcase',
       'board-showcase-top',
