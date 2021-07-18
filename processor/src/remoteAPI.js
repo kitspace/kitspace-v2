@@ -37,7 +37,7 @@ function createRemoteAPI(app) {
 
   app.post('/process-file', async (req, res) => {
     try {
-      if (REMOTE_API_TOKENS.includes(req.headers.authorization)) {
+      if (!REMOTE_API_TOKENS.includes(req.headers.authorization)) {
         return res.sendStatus(403)
       }
       if (req.files == null) {
