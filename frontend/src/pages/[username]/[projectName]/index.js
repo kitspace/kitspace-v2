@@ -1,4 +1,3 @@
-// TODO: this page became monolithic, it needs global refactoring.
 import React from 'react'
 
 import {
@@ -14,8 +13,12 @@ import {
   getKitspaceYAMLJson,
   hasInteractiveBom,
   getIsProcessingDone,
+  getFlatProjects,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
+import { arrayOf, object, string } from 'prop-types'
+import Page from '@components/Page'
+import ProjectCard from '@components/ProjectCard'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -45,6 +48,18 @@ export const getServerSideProps = async ({ params, query, req }) => {
       hasInteractiveBom(assetsPath),
       canCommit(repoFullname, req?.session?.user?.username),
     ])
+
+    const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
+
+    if (isMultiProject && finishedProcessing) {
+      const flattenedProjects = await getFlatProjects([repo])
+      return {
+        props: {
+          subProjects: flattenedProjects,
+          parentProject: params.projectName,
+        },
+      }
+    }
 
     const readmeFile = kitspaceYAML?.readme || findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
@@ -83,6 +98,34 @@ export const getServerSideProps = async ({ params, query, req }) => {
   return { notFound: true }
 }
 
-const ProjectPage = props => <SharedProjectPage {...props} />
+const SubProjectsGrid = ({ projects, parentProject }) => {
+  return (
+    <Page title={parentProject}>
+      <h1>{parentProject}</h1>
+      <div>
+        {projects.map((project, i) => (
+          <ProjectCard {...project} key={i} />
+        ))}
+      </div>
+    </Page>
+  )
+}
+
+const ProjectPage = props => {
+  if (props?.subProjects)
+    return (
+      <SubProjectsGrid
+        projects={props.subProjects}
+        parentProject={props.parentProject}
+      />
+    )
+
+  return <SharedProjectPage {...props} />
+}
+
+SubProjectsGrid.defaultProps = {
+  projects: arrayOf(object).isRequired,
+  parentProject: string,
+}
 
 export default ProjectPage
