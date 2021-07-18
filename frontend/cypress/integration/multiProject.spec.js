@@ -46,7 +46,7 @@ describe('Render project cards', () => {
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card-thumbnail]', { timeout: 60_000 }).should(
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
@@ -91,7 +91,7 @@ describe('Render project cards', () => {
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card-thumbnail]', { timeout: 60_000 }).should(
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
@@ -154,7 +154,7 @@ describe('Render project cards', () => {
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card-thumbnail]', { timeout: 60_000 }).should(
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
@@ -213,7 +213,7 @@ describe('Multi project page', () => {
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card-thumbnail]', { timeout: 60_000 }).should(
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
@@ -271,7 +271,7 @@ describe('Multi project page', () => {
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card-thumbnail]', { timeout: 60_000 }).should(
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
