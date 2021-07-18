@@ -8,7 +8,7 @@ const processKicadPCB = require('./tasks/processKicadPCB')
 const processSchematics = require('./tasks/processSchematics')
 const { writeFile, exec } = require('./utils')
 
-const { DATA_DIR } = require('./env')
+const { DATA_DIR, REMOTE_API_TOKENS } = require('./env')
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
@@ -37,7 +37,7 @@ function createRemoteAPI(app) {
 
   app.post('/process-file', async (req, res) => {
     try {
-      if (req.headers.authorization !== `Bearer ${process.env.REMOTE_API_TOKEN}`) {
+      if (REMOTE_API_TOKENS.includes(req.headers.authorization)) {
         return res.sendStatus(403)
       }
       if (req.files == null) {
