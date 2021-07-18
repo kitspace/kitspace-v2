@@ -214,31 +214,39 @@ export const userExists = async username => {
  * Check if a user is a collaborator in a Gitea repo.
  * @param {string} repo
  * @param {string} username
+ * @param csrf{string}
  * @returns {Promise<boolean>}
  */
-const isCollaborator = async (repo, username) => {
+const isCollaborator = async (repo, username, csrf) => {
   if (username == null) return false
 
-  const endpoint = `${giteaApiUrl}/repos/${repo}/collaborators/${username}`
+  const endpoint = `${giteaApiUrl}/repos/${repo}/collaborators`
 
   const res = await fetch(endpoint, {
     method: 'GET',
     mode,
-    headers,
+    credentials,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
   })
 
-  return res.ok
+  if (res.ok) {
+    const collaborators = await res.json()
+    return collaborators.find(x => x.login === username) != null
+  }
+
+  return false
 }
 
 /**
  * Check if a user can commit to a Gitea repo.
  * @param {string} repo
  * @param {string} username
+ * @param csrf{string}
  * @returns
  */
-export const canCommit = async (repo, username) => {
+export const canCommit = async (repo, username, csrf) => {
   const repoOwner = repo.split('/')[0]
-  return repoOwner === username || isCollaborator(repo, username)
+  return repoOwner === username || isCollaborator(repo, username, csrf)
 }
 
 export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
