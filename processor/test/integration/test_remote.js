@@ -11,6 +11,10 @@ const { createApp } = require('../../src/app')
 const tmpDir = '/data/test/kitspace-processor-test-from-remote'
 const emptyRepoDir = '/data/test/kitspace-processor-test-empty-repo-dir'
 
+const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS.split(',')
+  .map(x => x.trim())
+  .filter(x => x)[0]
+
 describe('remote API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
@@ -33,7 +37,7 @@ describe('remote API', () => {
   it('accepts post on /process-file ', async () => {
     await this.supertest
       .post('/process-file')
-      .set('Authorization', `Bearer ${process.env.REMOTE_API_TOKEN}`)
+      .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
       .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.kicad_pcb'))
       .expect(202)
   })
@@ -41,7 +45,7 @@ describe('remote API', () => {
   it('gives a 422 error when no file uploaded ', async () => {
     await this.supertest
       .post('/process-file')
-      .set('Authorization', `Bearer ${process.env.REMOTE_API_TOKEN}`)
+      .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
 
       .expect(422)
   })
@@ -49,7 +53,7 @@ describe('remote API', () => {
   it('plots layout.svg', async () => {
     let r = await this.supertest
       .post('/process-file')
-      .set('Authorization', `Bearer ${process.env.REMOTE_API_TOKEN}`)
+      .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
       .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.kicad_pcb'))
       .expect(202)
     assert(r.body.id != null)
@@ -66,7 +70,7 @@ describe('remote API', () => {
   it('plots schematic.svg', async () => {
     let r = await this.supertest
       .post('/process-file')
-      .set('Authorization', `Bearer ${process.env.REMOTE_API_TOKEN}`)
+      .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
       .attach('upload', path.join(__dirname, 'fixtures/ulx3s.sch'))
       .expect(202)
     assert(r.body.id != null)
@@ -83,7 +87,7 @@ describe('remote API', () => {
   it('plots push-on-hold-off schematic.svg', async () => {
     let r = await this.supertest
       .post('/process-file')
-      .set('Authorization', `Bearer ${process.env.REMOTE_API_TOKEN}`)
+      .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
       .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.sch'))
       .expect(202)
     assert(r.body.id != null)
