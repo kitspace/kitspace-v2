@@ -31,8 +31,6 @@ describe('Render project cards', () => {
 
     cy.visit('/projects/new')
 
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
-
     cy.url().then(url => {
       if (!url.endsWith('/projects/new')) {
         cy.visit('/projects/new')
@@ -72,8 +70,6 @@ describe('Render project cards', () => {
 
     cy.visit('/projects/new')
 
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
-
     cy.url().then(url => {
       if (!url.endsWith('/projects/new')) {
         cy.visit('/projects/new')
@@ -96,8 +92,6 @@ describe('Render project cards', () => {
 
     /* Migrate the normal repo */
     cy.visit('/projects/new')
-
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
 
     cy.url().then(url => {
       if (!url.endsWith('/projects/new')) {
@@ -136,8 +130,6 @@ describe('Render project cards', () => {
     cy.wait('@sign_in')
 
     cy.visit('/projects/new')
-
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
 
     cy.url().then(url => {
       if (!url.endsWith('/projects/new')) {
@@ -197,8 +189,6 @@ describe('Multi project page', () => {
 
     cy.visit('/projects/new')
 
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
-
     cy.url().then(url => {
       if (!url.endsWith('/projects/new')) {
         cy.visit('/projects/new')
@@ -253,8 +243,6 @@ describe('Multi project page', () => {
     cy.wait('@sign_in')
 
     cy.visit('/projects/new')
-
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**')
 
     cy.url().then(url => {
       if (!url.endsWith('/projects/new')) {
