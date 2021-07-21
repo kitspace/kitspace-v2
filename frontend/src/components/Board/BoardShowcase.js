@@ -39,7 +39,13 @@ const BoardShowcase = ({ projectFullname }) => {
                 }`}
               >
                 {isLoading || isError ? null : (
-                  <Image src={top} width={400} height={800} alt="PCB top view" />
+                  <Image
+                    src={top}
+                    objectFit="contain"
+                    width={600}
+                    height={800}
+                    alt="PCB top view"
+                  />
                 )}
               </div>
               <div className={styles.circuitBorderContainer}>
@@ -53,7 +59,8 @@ const BoardShowcase = ({ projectFullname }) => {
                 {isLoading || isError ? null : (
                   <Image
                     src={bottom}
-                    width={400}
+                    objectFit="contain"
+                    width={600}
                     height={800}
                     alt="PCB bottom view"
                   />
