@@ -233,7 +233,7 @@ const UploadTab = ({
       <DropZone
         allowFiles={allowFiles}
         allowFolders={allowFolders}
-        style={{ maxHeight: '200px' }}
+        overrideStyle={{ maxHeight: '200px' }}
         onDrop={onDrop}
       />
       <FilesPreview
