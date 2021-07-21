@@ -136,7 +136,7 @@ const DropZone = ({
   }, [FilePickerRejections, FolderPickerRejections, DropZoneConfig.maxFiles])
 
   return (
-    <div {...getRootProps({ style })}>
+    <div data-cy="dropzone" {...getRootProps({ style })}>
       <Toaster />
       <input {...getInputProps()} />
       <p>
