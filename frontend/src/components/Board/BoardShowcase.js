@@ -42,8 +42,8 @@ const BoardShowcase = ({ projectFullname }) => {
                   <Image
                     src={top}
                     objectFit="contain"
-                    width={600}
-                    height={800}
+                    width={450}
+                    height={250}
                     alt="PCB top view"
                   />
                 )}
@@ -60,8 +60,8 @@ const BoardShowcase = ({ projectFullname }) => {
                   <Image
                     src={bottom}
                     objectFit="contain"
-                    width={600}
-                    height={800}
+                    width={450}
+                    height={250}
                     alt="PCB bottom view"
                   />
                 )}

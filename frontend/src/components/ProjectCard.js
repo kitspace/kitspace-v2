@@ -18,7 +18,7 @@ const ProjectCard = ({ name, full_name: fullname, description, owner }) => {
               <Image
                 height={180}
                 width={240}
-                objectFit="scale-down"
+                objectFit="contain"
                 src={src}
                 alt={`${name} by ${owner}`}
               />
