@@ -257,6 +257,7 @@ jobs:
           working-directory: frontend
           record: true
           browser: ${{ matrix.browser }}
+          group: ${{ matrix.browser }}
 
   publish:
     name: Tag "latest"
