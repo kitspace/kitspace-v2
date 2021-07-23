@@ -14,7 +14,7 @@ const headers = { 'Content-Type': 'application/json' }
  * @returns {Promise<string>}
  */
 export const createRepo = async (name, description, csrf) => {
-  const endpoint = `${giteaApiUrl}/user/repos?_csrf=${csrf}`
+  const endpoint = `${giteaApiUrl}/user/repos`
   const giteaOptions = {
     _csrf: csrf,
     name: slugify(name),
@@ -31,7 +31,7 @@ export const createRepo = async (name, description, csrf) => {
     method: 'POST',
     credentials,
     mode,
-    headers,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
     body: JSON.stringify(giteaOptions),
   })
 
@@ -48,13 +48,13 @@ export const createRepo = async (name, description, csrf) => {
  * @returns {Promise<boolean>}
  */
 export const updateRepo = async (repo, updateFields, csrf) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}?_csrf=${csrf}`
+  const endpoint = `${giteaApiUrl}/repos/${repo}`
 
   const res = await fetch(endpoint, {
     method: 'PATCH',
     credentials,
     mode,
-    headers,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
     body: JSON.stringify(updateFields),
   })
 
@@ -86,7 +86,7 @@ const urlToName = url => {
  */
 export const mirrorRepo = async (remoteRepo, uid, csrf) => {
   const repoName = urlToName(remoteRepo)
-  const endpoint = `${giteaApiUrl}/repos/migrate?_csrf=${csrf}`
+  const endpoint = `${giteaApiUrl}/repos/migrate`
   const giteaOptions = {
     clone_addr: remoteRepo,
     uid,
@@ -102,7 +102,7 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     method: 'POST',
     mode,
     credentials: 'include',
-    headers,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
     body: JSON.stringify(giteaOptions),
   })
 }
@@ -114,12 +114,12 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
  * @returns {Promise<boolean>}
  */
 export const deleteRepo = async (repo, csrf) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}?_csrf=${csrf}`
+  const endpoint = `${giteaApiUrl}/repos/${repo}`
   const res = await fetch(endpoint, {
     method: 'DELETE',
     mode,
     credentials,
-    headers,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
   })
 
   return res.ok
@@ -335,7 +335,7 @@ export const getFile = async (repo, path) => {
  * @returns {Promise<boolean>}
  */
 export const updateFile = async (repo, path, content, user, csrf) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
 
   const { sha } = await getFile(repo, path)
   const reqBody = {
@@ -356,7 +356,7 @@ export const updateFile = async (repo, path, content, user, csrf) => {
     method: 'PUT',
     credentials,
     mode,
-    headers,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
     body: JSON.stringify(reqBody),
   })
 
@@ -386,7 +386,7 @@ export const renderMarkdown = async markdown => {
  * @returns {Promise<boolean>}
  */
 export const uploadFile = async (repo, path, content, user, csrf) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}?_csrf=${csrf}`
+  const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
 
   const reqBody = {
     author: {
@@ -405,7 +405,7 @@ export const uploadFile = async (repo, path, content, user, csrf) => {
     method: 'POST',
     credentials,
     mode,
-    headers,
+    headers: { ...headers, 'X-Csrf-Token': csrf },
     body: JSON.stringify(reqBody),
   })
 
