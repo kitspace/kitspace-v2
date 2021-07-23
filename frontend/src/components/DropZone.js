@@ -37,12 +37,7 @@ const activeStyle = {
   borderColor: '#0c9bef',
 }
 
-const DropZone = ({
-  onDrop,
-  overrideStyle,
-  allowFolders = true,
-  allowFiles = true,
-}) => {
+const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
   const _onDrop = useCallback(onDrop, [onDrop])
 
   /*
