@@ -157,7 +157,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
           GITEA_SECRET_KEY: ${{ secrets.STAGING_GITEA_SECRET }}
-          KITSPACE_PROCESSOR_REMOTE_API_TOKEN: ${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}
+          KITSPACE_PROCESSOR_REMOTE_API_TOKENS: ${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}
           KITSPACE_DOMAIN: ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
@@ -169,6 +169,7 @@ jobs:
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
           remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
           ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
