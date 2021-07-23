@@ -1,3 +1,4 @@
+import { getFlatProjects } from '@utils/projectPage'
 import useSWR from 'swr'
 
 /**
@@ -78,7 +79,7 @@ export const useSearchRepos = (
 
   const { data, error, mutate } = useSWR(
     [endpoint, { sort, order, q }],
-    fetcher,
+    url => fetcher(url).then(getFlatProjects),
     swrOpts,
   )
   return {
@@ -102,9 +103,13 @@ export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
  * @param swrOpts{swrOptions}
  * @returns {{isLoading: boolean, isError: boolean, repos: [Object], mutate: function}}
  */
-export const useUserRepos = (username, swrOpts = {}) => {
+export const useUserProjects = (username, swrOpts = {}) => {
   const endpoint = `${giteaApiUrl}/users/${username}/repos`
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
+  const { data, error, mutate } = useSWR(
+    endpoint,
+    url => fetcher(url).then(getFlatProjects),
+    swrOpts,
+  )
 
   return {
     repos: data || [],

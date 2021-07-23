@@ -5,12 +5,12 @@ import useProjectAssets from '@hooks/useProjectAssets'
 import { string } from 'prop-types'
 import styles from './BoardShowcase.module.scss'
 
-const BoardShowcase = ({ projectFullname }) => {
-  const { top, bottom, isLoading, isError } = useProjectAssets(projectFullname)
+const BoardShowcase = ({ assetsPath }) => {
+  const { top, bottom, isLoading, isError } = useProjectAssets(assetsPath)
   const [selected, setSelected] = useState('top')
 
   return (
-    <div className={styles.showcaseContainer}>
+    <div data-cy="board-showcase" className={styles.showcaseContainer}>
       <div className={styles.boardShowcaseWithMenu}>
         <div className={styles.boardShowcaseContainer}>
           <div className={`${styles.toggleBoardView} ${styles.responsiveTabs}`}>
@@ -39,7 +39,13 @@ const BoardShowcase = ({ projectFullname }) => {
                 }`}
               >
                 {isLoading || isError ? null : (
-                  <Image src={top} width={400} height={800} alt="PCB top view" />
+                  <Image
+                    data-cy="board-showcase-top"
+                    src={top}
+                    width={400}
+                    height={800}
+                    alt="PCB top view"
+                  />
                 )}
               </div>
               <div className={styles.circuitBorderContainer}>
@@ -52,6 +58,7 @@ const BoardShowcase = ({ projectFullname }) => {
               >
                 {isLoading || isError ? null : (
                   <Image
+                    data-cy="board-showcase-bottom"
                     src={bottom}
                     width={400}
                     height={800}
@@ -68,7 +75,7 @@ const BoardShowcase = ({ projectFullname }) => {
 }
 
 BoardShowcase.propTypes = {
-  projectFullname: string.isRequired,
+  assetsPath: string.isRequired,
 }
 
 export default BoardShowcase

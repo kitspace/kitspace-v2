@@ -182,10 +182,7 @@ function ContactMenu() {
           <Button labelPosition="right" icon color="blue">
             <Icon inverted name="comments" />
             {/* force the loading of brand-icons before the menu is visible */}
-            <Icon
-              name="twitter"
-              style={{ visibility: 'hidden', width: '0px', height: '0px' }}
-            />
+            <Icon className={styles.icon} name="twitter" />
             Make contact
           </Button>
         </Menu.Item>

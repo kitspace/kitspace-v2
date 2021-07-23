@@ -1,7 +1,6 @@
 import React from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
-
 import IBOM from '@components/Board/IBOM'
 
 export const getServerSideProps = async ({ params }) => {
@@ -13,12 +12,12 @@ export const getServerSideProps = async ({ params }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const repoFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
-    `${processorUrl}/status/${repoFullname}/HEAD/interactive_bom.json`,
+    `${processorUrl}/status/${repoFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
   ).then(r => r.json().then(body => body.status))
 
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
-      `${processorUrl}/files/${repoFullname}/HEAD/interactive_bom.json`,
+      `${processorUrl}/files/${repoFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
 
     return {

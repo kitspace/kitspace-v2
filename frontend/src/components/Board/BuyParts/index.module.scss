@@ -1,4 +1,4 @@
- @import '../../breakpoint.scss';
+@import '../../breakpoint.scss';
 
 .notSelectable {
   user-select: none;
@@ -65,8 +65,8 @@
   }
 
   .retailerLabel.green:hover {
-    color: #21ba45!important;
-    border-color: #21ba45!important;
+    color: #21ba45 !important;
+    border-color: #21ba45 !important;
   }
   .retailerLabel.pink {
     border: 1px solid #da8282 !important;
@@ -74,13 +74,23 @@
   }
 
   .retailerLabel.pink:hover {
-    color: #e61a8d!important;
-    border-color: #e61a8d!important
+    color: #e61a8d !important;
+    border-color: #e61a8d !important;
   }
 
   .AdjustQuantity {
     border-top: 0px !important;
     border-bottom: 0px !important;
     font-size: 16px;
+  }
+
+  .BuyPartsIcon {
+    font-size: 14pt !important;
+    margin-bottom: 5px;
+  }
+
+  .AdjustQuantityIcon {
+    margin: 5px;
+    margin-top: 0;
   }
 }

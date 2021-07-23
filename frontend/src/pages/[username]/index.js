@@ -1,11 +1,12 @@
 import React from 'react'
 import { isEmpty } from 'lodash'
-import { arrayOf, string } from 'prop-types'
+import { arrayOf, object, string } from 'prop-types'
 
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
-import { useUserRepos } from '@hooks/Gitea'
+import { getFlatProjects } from '@utils/projectPage'
+import { useUserProjects } from '@hooks/Gitea'
 import styles from './username.module.scss'
 
 export const getServerSideProps = async ({ params }) => {
@@ -16,23 +17,27 @@ export const getServerSideProps = async ({ params }) => {
       notFound: true,
     }
   }
+
+  const flattenedUserProjects = await getFlatProjects(userRepos)
   return {
     props: {
-      userRepos,
+      userProjects: flattenedUserProjects,
       username: params.username,
     },
   }
 }
 
-const User = ({ userRepos, username }) => {
-  const { repos: projects } = useUserRepos(username, { initialData: userRepos })
+const User = ({ userProjects, username }) => {
+  const { repos: projects } = useUserProjects(username, {
+    initialData: userProjects,
+  })
 
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
       <div className={styles}>
-        {projects?.map(project => (
-          <ProjectCard {...project} key={project.id} />
+        {projects?.map((project, i) => (
+          <ProjectCard {...project} key={i} />
         ))}
       </div>
     </Page>
@@ -40,7 +45,7 @@ const User = ({ userRepos, username }) => {
 }
 
 User.propTypes = {
-  userRepos: arrayOf({}).isRequired,
+  userRepos: arrayOf(object).isRequired,
   username: string.isRequired,
 }
 

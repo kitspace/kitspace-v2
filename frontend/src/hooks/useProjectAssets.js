@@ -1,15 +1,15 @@
 import useSWR from 'swr'
 
-const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+import { getStatusPath } from '@utils/projectPage'
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
-const useProjectAssets = projectFullname => {
-  const top = `${projectFullname}/HEAD/images/top.svg`
-  const topStatusUrl = `${processorUrl}/status/${top}`
+const useProjectAssets = assetsPath => {
+  const top = `${assetsPath}/images/top.svg`
+  const topStatusUrl = getStatusPath(top)
 
-  const bottom = `${projectFullname}/HEAD/images/bottom.svg`
-  const bottomStatusUrl = `${processorUrl}/status/${bottom}`
+  const bottom = `${assetsPath}/images/bottom.svg`
+  const bottomStatusUrl = getStatusPath(bottom)
 
   const { data: topStatus, error: topErr } = useSWR(topStatusUrl, fetcher)
   const { data: bottomStatus, error: bottomErr } = useSWR(bottomStatusUrl, fetcher)
@@ -21,8 +21,8 @@ const useProjectAssets = projectFullname => {
     bottomStatus?.status === 'failed'
 
   return {
-    top: `${processorUrl}/files/${top}`,
-    bottom: `${processorUrl}/files/${bottom}`,
+    top,
+    bottom,
     isLoading:
       !isError && topStatus?.status !== 'done' && bottomStatus?.status !== 'done',
     isError,
