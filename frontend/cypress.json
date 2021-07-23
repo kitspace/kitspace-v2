@@ -8,6 +8,7 @@
   "pageLoadTimeout": 80000,
   "viewportWidth": 1200,
   "viewportHeight": 660,
+  "videoUploadOnPasses": false,
   "retries": {
     "runMode": 3
   },
