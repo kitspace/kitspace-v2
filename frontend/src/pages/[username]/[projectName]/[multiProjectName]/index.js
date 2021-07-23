@@ -13,19 +13,18 @@ import {
   getKitspaceYAMLJson,
   hasInteractiveBom,
   getIsProcessingDone,
-  getFlatProjects,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
-import { arrayOf, object, string } from 'prop-types'
-import Page from '@components/Page'
-import ProjectCard from '@components/ProjectCard'
 
 export const getServerSideProps = async ({ params, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
-  const repoFullname = `${params.username}/${params.projectName}`
-  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+  const { multiProjectName, username, projectName } = params
+  const repoFullname = `${username}/${projectName}`
+
+  const kitspaceYAMLPath = `${processorUrl}/files/${repoFullname}/HEAD`
+  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
 
   if (await repoExists(repoFullname)) {
     const [
@@ -36,32 +35,22 @@ export const getServerSideProps = async ({ params, query, req }) => {
       [kitspaceYAMLExists, kitspaceYAML],
       finishedProcessing,
       hasIBOM,
-      // The repo owner and collaborators can upload files.
       hasUploadPermission,
     ] = await Promise.all([
       getRepo(repoFullname),
       getDefaultBranchFiles(repoFullname),
       getBoardBomInfo(assetsPath),
       getBoardGerberInfo(assetsPath),
-      getKitspaceYAMLJson(assetsPath),
+      getKitspaceYAMLJson(kitspaceYAMLPath),
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
+      // The repo owner and collaborators can upload files.
       canCommit(repoFullname, req?.session?.user?.username),
     ])
 
-    const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
+    const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
 
-    if (isMultiProject && finishedProcessing) {
-      const flattenedProjects = await getFlatProjects([repo])
-      return {
-        props: {
-          subProjects: flattenedProjects,
-          parentProject: params.projectName,
-        },
-      }
-    }
-
-    const readmeFile = kitspaceYAML?.readme || findReadme(repoFiles)
+    const readmeFile = projectKitspaceYAML?.readme || findReadme(repoFiles)
     const renderedReadme = await renderReadme(repoFullname, readmeFile)
 
     const { zipPath, width, height, layers } = gerberInfo
@@ -75,7 +64,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         hasUploadPermission,
         repoFiles,
         hasIBOM,
-        kitspaceYAML,
+        kitspaceYAML: projectKitspaceYAML,
         zipUrl,
         boardBomInfo,
         boardSpecs: { width, height, layers },
@@ -84,13 +73,13 @@ export const getServerSideProps = async ({ params, query, req }) => {
         // Whether the project were empty or not at the time of requesting the this page from the server.
         isEmpty: repo?.empty,
         user: params.username,
-        projectName: params.projectName,
+        projectName: multiProjectName,
         isNew: query.create === 'true',
         boardAssetsExist: gerberInfoExists && boardBomInfoExists,
         readmeExists: readmeFile !== '',
         kitspaceYAMLExists,
         finishedProcessing,
-        description: kitspaceYAML?.summary || repo?.description,
+        description: projectKitspaceYAML?.summary || repo?.description,
         url: repo?.original_url,
       },
     }
@@ -98,34 +87,5 @@ export const getServerSideProps = async ({ params, query, req }) => {
   return { notFound: true }
 }
 
-const SubProjectsGrid = ({ projects, parentProject }) => {
-  return (
-    <Page title={parentProject}>
-      <h1>{parentProject}</h1>
-      <div>
-        {projects.map((project, i) => (
-          <ProjectCard {...project} key={i} />
-        ))}
-      </div>
-    </Page>
-  )
-}
-
-const ProjectPage = props => {
-  if (props?.subProjects)
-    return (
-      <SubProjectsGrid
-        projects={props.subProjects}
-        parentProject={props.parentProject}
-      />
-    )
-
-  return <SharedProjectPage {...props} />
-}
-
-SubProjectsGrid.defaultProps = {
-  projects: arrayOf(object).isRequired,
-  parentProject: string,
-}
-
-export default ProjectPage
+const MultiProjectPage = props => <SharedProjectPage {...props} />
+export default MultiProjectPage

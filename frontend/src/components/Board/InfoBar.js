@@ -15,17 +15,21 @@ const InfoBar = ({ name, url, site, description }) => {
   ) : null
 
   return (
-    <div className={styles.infoBar}>
+    <div data-cy="info-bar" className={styles.infoBar}>
       <div className={styles.infoBarInner}>
         <div className={styles.infoBarTitle}>
-          <div className={styles.titleText}>{name}</div>
+          <div data-cy="project-title" className={styles.titleText}>
+            {name}
+          </div>
           <div className={styles.subtitleText}>
             <a href={url}>{ownerText}</a>
             {siteCom}
           </div>
         </div>
         <div className={styles.infoBarTitle}>
-          <div className={styles.infoBarSummary}>{description}</div>
+          <div data-cy="project-description" className={styles.infoBarSummary}>
+            {description}
+          </div>
         </div>
       </div>
     </div>

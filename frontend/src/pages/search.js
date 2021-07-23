@@ -11,32 +11,33 @@ import { useSearchRepos } from '@hooks/Gitea'
 import SearchFromModel from '@models/SearchFrom'
 import ProjectCard from '@components/ProjectCard'
 import { useRouter } from 'next/router'
+import { getFlatProjects } from '@utils/projectPage'
 
 export const getServerSideProps = async ({ query }) => {
   const { q } = query
   if (q) {
     return {
       props: {
-        repos: await searchRepos(q),
+        flatProjects: await getFlatProjects(await searchRepos(q)),
         q,
       },
     }
   }
   return {
     props: {
-      repos: await getAllRepos(),
+      flatProjects: await getFlatProjects(await getAllRepos()),
     },
   }
 }
 
-const Search = ({ repos, q }) => {
+const Search = ({ flatProjects, q }) => {
   const { user } = useContext(AuthContext)
   const { push } = useRouter()
   const username = user?.login || 'unknown user'
 
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFromModel)
   const [query, setQuery] = useState(q)
-  const { repos: projects } = useSearchRepos(query, { initialData: repos })
+  const { repos: projects } = useSearchRepos(query, { initialData: flatProjects })
 
   useEffect(() => {
     setQuery(isValid ? form.query : '')

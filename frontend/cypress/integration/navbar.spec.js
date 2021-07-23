@@ -1,5 +1,3 @@
-/// <reference types="../support" />
-
 import faker from 'faker'
 
 describe('It validates `Add Project` behavior', () => {

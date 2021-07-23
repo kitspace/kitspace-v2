@@ -7,13 +7,18 @@ const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 /**
  * A hook to get the kitspace-yaml.json
  * @param projectFullname{string}
+ * @param shouldFetch{boolean}
  * @param swrOpts{swrOptions}
  * @returns {{isLoading: boolean, isError: boolean, kitspaceYAML: object, mutate: function}}
  */
-const useKitspaceYAML = (projectFullname, swrOpts = {}) => {
+const useKitspaceYAML = (projectFullname, shouldFetch, swrOpts = {}) => {
   const endpoint = `${processorUrl}/files/${projectFullname}/HEAD/kitspace-yaml.json`
 
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
+  const { data, error, mutate } = useSWR(
+    shouldFetch ? endpoint : null,
+    fetcher,
+    swrOpts,
+  )
 
   return {
     kitspaceYAML: data || {},

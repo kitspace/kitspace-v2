@@ -5,14 +5,24 @@ export default function UseForm(schema) {
   const [form, setForm] = useState({})
   const { csrf } = useContext(AuthContext)
 
-  const onChange = e => {
-    e.persist()
-    setForm(prevForm => ({
-      _csrf: csrf,
-      ...prevForm,
-      [e.target.name]:
-        e.target.type === 'checkbox' ? e.target.checked : e.target.value,
-    }))
+  const onChange = (event, data) => {
+    event.persist()
+
+    const isCheckBox = data?.type === 'checkbox'
+
+    if (isCheckBox) {
+      setForm(prevForm => ({
+        _csrf: csrf,
+        ...prevForm,
+        [data.name]: data.checked,
+      }))
+    } else {
+      setForm(prevForm => ({
+        _csrf: csrf,
+        ...prevForm,
+        [event.target.name]: event.target.value,
+      }))
+    }
   }
 
   /**

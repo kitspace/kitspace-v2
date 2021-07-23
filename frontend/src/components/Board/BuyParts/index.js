@@ -114,12 +114,9 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
   }
 
   return (
-    <div className={styles.BuyParts}>
+    <div data-cy="buy-parts" className={styles.BuyParts}>
       <Header textAlign="center" as="h3" attached="top">
-        <Icon
-          style={{ fontSize: '14pt', marginBottom: 5 }}
-          name="shopping basket"
-        />
+        <Icon className={styles.BuyPartsIcon} name="shopping basket" />
         Buy Parts
       </Header>
       <InstallPrompt extensionPresence={extensionPresence} />
@@ -146,13 +143,7 @@ const AdjustQuantity = ({
 }) => (
   <Segment textAlign="center" attached className={styles.AdjustQuantity}>
     Adjust quantity:
-    <Icon
-      style={{
-        margin: 5,
-        marginTop: 0,
-      }}
-      name="delete"
-    />
+    <Icon className={styles.AdjustQuantityIcon} name="delete" />
     <Input
       type="number"
       size="mini"
@@ -171,13 +162,7 @@ const AdjustQuantity = ({
         setBuyMultiplier(v)
       }}
     />
-    <Icon
-      style={{
-        margin: 10,
-        marginTop: 0,
-      }}
-      name="plus"
-    />
+    <Icon className={styles.AdjustQuantityIcon} name="plus" />
     <Input
       type="number"
       min={0}

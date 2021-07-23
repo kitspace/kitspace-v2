@@ -8,6 +8,10 @@ describe('It validates authentication redirects', () => {
   const password = '123456'
 
   before(() => {
+    /*
+     * The purpose of this isn't actually visiting the homepage.
+     * Sometimes, the frontend has a slow startup time which results in a random failure.
+     */
     cy.visit('/')
     cy.createUser(username, email, password)
   })

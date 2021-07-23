@@ -9,7 +9,10 @@ describe('Syncing a project behavior validation', () => {
   const repoName = 'light-test-repo'
 
   before(() => {
-    // visit home before running the tests, instead of using `wait`.
+    /*
+     * The purpose of this isn't actually visiting the homepage.
+     * Sometimes, the frontend has a slow startup time which results in a random failure.
+     */
     cy.visit('/')
   })
 
