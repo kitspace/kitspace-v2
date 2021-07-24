@@ -243,6 +243,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MOZ_FORCE_DISABLE_E10S: 1
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
