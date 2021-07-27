@@ -88,8 +88,7 @@ $black-10: rgba(0, 0, 0, 0.1);
 .boardDiagram {
   img,
   svg {
-    height: 240px;
-    width: 100%;
+    max-height: 250px;
   }
   width: 100%;
   display: flex;

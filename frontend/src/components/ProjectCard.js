@@ -28,7 +28,7 @@ const ProjectCard = ({
                 data-cy="project-card-thumbnail"
                 height={180}
                 width={240}
-                objectFit="scale-down"
+                objectFit="contain"
                 src={src}
                 alt={`${name} by ${owner.username}`}
               />

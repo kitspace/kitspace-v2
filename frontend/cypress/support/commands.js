@@ -124,6 +124,6 @@ Cypress.Commands.add(
     })
     const waitedRequests = newProject ? ['@createRepo', '@getRepo'] : '@getRepo'
     // Wait until getting a response from the server
-    cy.wait(waitedRequests)
+    cy.wait(waitedRequests, { timeout: 20_000 })
   },
 )

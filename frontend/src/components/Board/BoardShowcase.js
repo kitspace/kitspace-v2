@@ -42,8 +42,9 @@ const BoardShowcase = ({ assetsPath }) => {
                   <Image
                     data-cy="board-showcase-top"
                     src={top}
-                    width={400}
-                    height={800}
+                    objectFit="contain"
+                    width={450}
+                    height={250}
                     alt="PCB top view"
                   />
                 )}
@@ -60,8 +61,9 @@ const BoardShowcase = ({ assetsPath }) => {
                   <Image
                     data-cy="board-showcase-bottom"
                     src={bottom}
-                    width={400}
-                    height={800}
+                    objectFit="contain"
+                    width={450}
+                    height={250}
                     alt="PCB bottom view"
                   />
                 )}

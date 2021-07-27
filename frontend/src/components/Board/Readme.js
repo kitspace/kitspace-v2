@@ -22,7 +22,7 @@ const Readme = ({ renderedReadme }) => (
         max-width: 100%;
       }
 
-      #readme .highlight {
+      #readme pre {
         overflow-x: auto;
       }
 

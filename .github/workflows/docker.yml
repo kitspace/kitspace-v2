@@ -124,7 +124,6 @@ jobs:
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
-
       - name: Get branch name
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
@@ -217,7 +216,6 @@ jobs:
           sudo rm microsoft.gpg
           sudo apt update && sudo apt install microsoft-edge-beta
 
-
       - name: Configure /etc/hosts
         shell: bash
         run: cat ./config/hosts | sudo tee -a /etc/hosts
@@ -239,11 +237,13 @@ jobs:
 
       - name: e2e
         uses: cypress-io/github-action@v2
+        timeout-minutes: 35
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MOZ_FORCE_DISABLE_E10S: 1
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
@@ -257,7 +257,6 @@ jobs:
           working-directory: frontend
           record: true
           browser: ${{ matrix.browsers }}
-
 
   publish:
     name: Tag "latest"

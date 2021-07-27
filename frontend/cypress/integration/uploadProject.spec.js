@@ -3,28 +3,32 @@ import faker from 'faker'
 const updateProjectUrl = 'http://kitspace.test:3000'
 
 describe('Upload project', () => {
-  const username = faker.name.firstName()
-  const email = faker.internet.email()
-  const password = '123456'
-
   before(() => {
-    cy.clearCookies()
-    cy.createUser(username, email, password)
-  })
-
-  beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
-
-    cy.visit('/login')
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
-    cy.signIn(username, password)
-    cy.visit('/projects/new')
+    /*
+     * The purpose of this isn't actually visiting the homepage.
+     * Sometimes, the frontend has a slow startup time which results in a random failure.
+     */
+    cy.visit('/')
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
+    const username = faker.name.firstName()
+    const email = faker.internet.email()
+    const password = '123456'
+
+    cy.createUser(username, email, password)
+    cy.visit('/login')
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+    cy.signIn(username, password)
+    cy.wait('@sign_in')
+
     cy.visit('/projects/new')
+    cy.url().then(url => {
+      if (!url.endsWith('/projects/new')) {
+        cy.visit('/projects/new')
+      }
+    })
+
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'], username)
@@ -34,6 +38,45 @@ describe('Upload project', () => {
 
     // TODO FIXME, when writing test for project page
     // cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')
+  })
+})
+
+describe('User projects name collision', () => {
+  const username = faker.name.firstName()
+  const email = faker.internet.email()
+  const password = '123456'
+
+  before(() => {
+    /*
+     * The purpose of this isn't actually visiting the homepage.
+     * Sometimes, the frontend has a slow startup time which results in a random failure.
+     */
+    cy.visit('/')
+
+    // User authentication is done in `before` because this spec test name collisions for the same user.
+    // i.e., the same user is used for all tests in this spec.
+    cy.createUser(username, email, password)
+    cy.visit('/login')
+    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+    cy.signIn(username, password)
+    cy.wait('@sign_in')
+
+    cy.visit('/projects/new')
+    cy.url().then(url => {
+      if (!url.endsWith('/projects/new')) {
+        cy.visit('/projects/new')
+      }
+    })
+
+    // Simulate dropping a single file('example.png') in the dropzone.
+    cy.fixture('example.png', 'base64').then(file => {
+      cy.get('.dropzone').dropFiles([file], ['example.png'], username)
+    })
+  })
+
+  beforeEach(() => {
+    // Don't sign out before each test; the same user is used for all tests in this spec.
+    Cypress.Cookies.preserveOnce('_csrf', 'i_like_gitea')
   })
 
   it('should show modal on project names collision', () => {
