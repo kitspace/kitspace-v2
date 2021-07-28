@@ -1,0 +1,9 @@
+.searchForm {
+  display: grid !important;
+  grid-template-columns: 4fr 1fr;
+}
+
+.searchButton {
+  display: flex;
+  align-items: center;
+}
