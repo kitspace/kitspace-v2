@@ -23,10 +23,11 @@ const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
   formData.append('file', blobFromFile, filePath)
 
   return new Promise((resolve, reject) => {
-    const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file?_csrf=${csrf}`
+    const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file`
     const req = new XMLHttpRequest()
     req.withCredentials = true
     req.open('POST', endpoint)
+    req.setRequestHeader('X-Csrf-Token', csrf)
 
     req.onload = () => {
       if (req.status >= 200 && req.status < 300) {
@@ -81,7 +82,7 @@ export const commitFilesWithUUIDs = async ({
   newBranchName = 'patch-1',
   csrf,
 }) => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload/master?_csrf=${csrf}`
+  const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload/master`
 
   // The body of the request must be url encoded
   const body = new URLSearchParams({
@@ -102,7 +103,10 @@ export const commitFilesWithUUIDs = async ({
     method: 'POST',
     credentials: 'include',
     mode: 'cors',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      'X-Csrf-Token': csrf,
+    },
     body,
   })
 
