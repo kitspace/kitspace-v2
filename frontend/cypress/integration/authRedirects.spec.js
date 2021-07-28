@@ -1,10 +1,8 @@
-/// <reference types="../support" />
-
 import faker from 'faker'
 
 describe('It validates authentication redirects', () => {
-  const username = faker.name.firstName()
-  const email = faker.internet.email()
+  const username = faker.unique(faker.name.firstName)
+  const email = faker.unique(faker.internet.email)
   const password = '123456'
 
   before(() => {

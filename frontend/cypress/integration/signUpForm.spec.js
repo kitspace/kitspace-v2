@@ -1,8 +1,5 @@
-/// <reference types="../support" />
-
 import faker from 'faker'
 
-// noinspection ES6PreferShortImport
 import SignUpFormModel from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
@@ -89,8 +86,8 @@ describe('Sign up form validation', () => {
 })
 
 describe('Sign up form submission', () => {
-  const username = faker.name.firstName()
-  const email = faker.internet.email()
+  const username = faker.unique(faker.name.firstName)
+  const email = faker.unique(faker.internet.email)
   const password = '123456'
 
   before(() => {
@@ -121,8 +118,8 @@ describe('Sign up form submission', () => {
   })
 
   it('should automatically sign the user in after submitting a valid form', () => {
-    const newUsername = faker.name.firstName()
-    const newEmail = faker.internet.email()
+    const newUsername = faker.unique(faker.name.firstName)
+    const newEmail = faker.unique(faker.internet.email)
     const newPassword = '123456'
 
     cy.signUp(newUsername, newEmail, newPassword)

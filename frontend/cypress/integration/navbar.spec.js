@@ -1,8 +1,8 @@
 import faker from 'faker'
 
 describe('It validates `Add Project` behavior', () => {
-  const username = faker.name.firstName()
-  const email = faker.internet.email()
+  const username = faker.unique(faker.name.firstName)
+  const email = faker.unique(faker.internet.email)
   const password = '123456'
 
   before(() => {
@@ -41,8 +41,8 @@ describe('It validates `Add Project` behavior', () => {
 })
 
 describe('It validates redirects after login', () => {
-  const username = faker.name.firstName()
-  const email = faker.internet.email()
+  const username = faker.unique(faker.name.firstName)
+  const email = faker.unique(faker.internet.email)
   const password = '123456'
 
   before(() => {
