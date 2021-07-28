@@ -184,7 +184,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browsers: [chrome, edge, electron, firefox]
+        browser: [chrome, edge, electron]
 
     steps:
       - name: Check out the repo
@@ -206,7 +206,7 @@ jobs:
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
       - name: Install Microsoft Edge
-        if: ${{ matrix.browsers == 'edge' }}
+        if: ${{ matrix.browser == 'edge' }}
         timeout-minutes: 10
         shell: bash
         run: |
@@ -256,7 +256,8 @@ jobs:
           wait-on-timeout: 120
           working-directory: frontend
           record: true
-          browser: ${{ matrix.browsers }}
+          browser: ${{ matrix.browser }}
+          group: ${{ matrix.browser }}
 
   publish:
     name: Tag "latest"
