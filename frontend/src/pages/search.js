@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { array } from 'prop-types'
 
 import { Input, Form, Loader } from 'semantic-ui-react'
@@ -20,20 +20,20 @@ export const getServerSideProps = async ({ query }) => {
   if (q) {
     return {
       props: {
-        projects: await getFlatProjects(await searchRepos(q)),
+        initialProjects: await getFlatProjects(await searchRepos(q)),
         q,
       },
     }
   }
   return {
     props: {
-      projects: await getFlatProjects(await getAllRepos()),
+      initialProjects: await getFlatProjects(await getAllRepos()),
     },
   }
 }
 
-const Search = ({ projects: initialProjects, q }) => {
-  const { query } = useRouter()
+const Search = ({ initialProjects, q }) => {
+  const { query, push } = useRouter()
   const { user } = useContext(AuthContext)
 
   const username = user?.login || 'unknown user'
@@ -47,6 +47,15 @@ const Search = ({ projects: initialProjects, q }) => {
     initialData: initialProjects,
     revalidateOnMount: false,
   })
+
+  const afterSubmit = useCallback(() => {
+    // mutate after ms to make sure the `path` has been updated
+    setTimeout(() => {
+      mutate()
+    }, 50)
+  }, [mutate])
+
+  const onClearSearch = () => push('/search')
 
   useEffect(() => {
     setSwrQuery(query.q)
@@ -65,17 +74,27 @@ const Search = ({ projects: initialProjects, q }) => {
   return (
     <Page title="Kitspace | Home">
       <div>Hi there {username}</div>
-      <SearchForm setSwrQuery={setSwrQuery} mutate={mutate} />
-      <div>
-        {projects?.map(project => (
-          <ProjectCard {...project} key={project.id} />
-        ))}
-      </div>
+      <SearchForm
+        afterSubmit={afterSubmit}
+        onClear={onClearSearch}
+        initialQuery={q}
+      />
+      <CardsGrid projects={projects} />
     </Page>
   )
 }
 
-const SearchForm = ({ mutate }) => {
+const CardsGrid = ({ projects }) => {
+  return (
+    <div>
+      {projects?.map(project => (
+        <ProjectCard {...project} key={project.id} />
+      ))}
+    </div>
+  )
+}
+
+const SearchForm = ({ afterSubmit, onClear, initialQuery }) => {
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFormModel)
   const { push, asPath } = useRouter()
 
@@ -89,12 +108,20 @@ const SearchForm = ({ mutate }) => {
     } else {
       // If the form is submitted from `/search` page, shallow redirect and delegate updating page content to swr.
       push(`/search?q=${form.query}`, undefined, { shallow: true })
-      setTimeout(() => {
-        // Delay mutation to make sure the `path` has been updated
-        mutate()
-      }, 50)
+      afterSubmit()
     }
   }
+
+  useEffect(() => {
+    /* eslint-disable react-hooks/exhaustive-deps */
+    /*
+      ! The ignored dependency is `push` which isn't actually a dependency for this usecase; it won't change.
+      ! Adding `push` to the deps array will cause infinite fetching;
+      ! on first page mount the value of `push` changes which triggers the hook.
+      ! The hook will call `push` and and a new page(the json from next SSR) will load resulting in infinite fetching.
+    */
+    if (form.query === '') onClear()
+  }, [form.query])
 
   return (
     <div
@@ -114,7 +141,7 @@ const SearchForm = ({ mutate }) => {
             control={Input}
             placeholder="Search for projects"
             name="query"
-            value={form.query || ''}
+            value={form.query || initialQuery}
             onChange={onChange}
             error={form.query !== '' && formatErrorPrompt('query')}
           />
