@@ -65,7 +65,7 @@ export const useRepo = (fullname, swrOpts = {}) => {
  * @param order{string}
  * @param swrOpts{swrOptions}
  * @param q{string=}: search query, leave undefined to return all repos
- * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
+ * @returns {{repos: [Object], isLoading: boolean, isError: boolean, mutate: function}}
  */
 export const useSearchRepos = (
   q,
@@ -78,12 +78,12 @@ export const useSearchRepos = (
   }`
 
   const { data, error, mutate } = useSWR(
-    [endpoint, { sort, order, q }],
-    url => fetcher(url).then(getFlatProjects),
+    endpoint,
+    url => fetcher(url).then(({ data }) => getFlatProjects(data ?? [])),
     swrOpts,
   )
   return {
-    repos: data || [],
+    repos: data,
     isLoading: !(data || error),
     isError: error,
     mutate,
