@@ -127,3 +127,8 @@ Cypress.Commands.add(
     cy.wait(waitedRequests, { timeout: 20_000 })
   },
 )
+
+Cypress.Commands.add('forceVisit', (path, timeout) => {
+  cy.visit('/', { timeout })
+  cy.window().then(win => win.open(path, '_self'))
+})

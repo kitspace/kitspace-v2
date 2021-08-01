@@ -31,7 +31,7 @@ describe('It validates authentication redirects', () => {
     // sign in, and migrate `light-test-repo`
     cy.visit('/login')
     // `/project/new` is marked as `reqSignIn`.
-    cy.visit('/projects/new')
+    cy.forceVisit('/projects/new')
     cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
