@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { string, bool, node } from 'prop-types'
-
-import { Loader } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
+import { Loader } from 'semantic-ui-react'
+
+import { AuthContext } from '@contexts/AuthContext'
+
 import Head from './Head'
 import NavBar from './NavBar'
 import styles from './Page.module.scss'
@@ -10,18 +12,25 @@ import styles from './Page.module.scss'
 const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
   const { push, pathname } = useRouter()
   const [loading, setLoading] = useState(true)
+  const { isAuthenticated } = useContext(AuthContext)
 
   useEffect(() => {
-    const isAuthenticated = window.session?.user !== null
+    const isAuthenticated = window?.session.user != null
 
     if (requireSignIn && !isAuthenticated) {
-      push(`/login?redirect=${pathname}`).then()
+      push(`/login?redirect=${pathname}`)
     } else if (requireSignOut && isAuthenticated) {
-      push('/').then()
+      push('/')
     } else {
       setLoading(false)
     }
-  }, [loading, requireSignIn, requireSignOut, pathname, push])
+  }, [loading, requireSignIn, requireSignOut, pathname, isAuthenticated, push])
+
+  const isPublicPath = !(requireSignIn || requireSignOut)
+  if (isPublicPath) {
+    // render the page immediately without checking the authentication status.
+    return <Container contentFullSize={contentFullSize}>{children}</Container>
+  }
 
   if (loading) {
     return (
@@ -30,15 +39,18 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
       </Loader>
     )
   }
-  return (
-    <div
-      className={contentFullSize ? styles.minimalContainer : styles.container}
-      data-cy="page-container"
-    >
-      {children}
-    </div>
-  )
+
+  return <Container contentFullSize={contentFullSize}>{children}</Container>
 }
+
+const Container = ({ contentFullSize, children }) => (
+  <main
+    data-cy="page-container"
+    className={contentFullSize ? styles.minimalContainer : styles.container}
+  >
+    {children}
+  </main>
+)
 
 const Page = ({
   title,
