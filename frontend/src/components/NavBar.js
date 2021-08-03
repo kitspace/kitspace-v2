@@ -1,14 +1,12 @@
 import React, { forwardRef, useContext } from 'react'
+import { bool } from 'prop-types'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
 import { AuthContext } from '@contexts/AuthContext'
-import { bool } from 'prop-types'
 import styles from './NavBar.module.scss'
-
-const logoSrc = '/static/logo.svg'
 
 const NavBar = () => {
   const { pathname } = useRouter()
@@ -41,69 +39,62 @@ const Logo = forwardRef(function LogoWithRef({ onClick, href }, ref) {
         height={46}
         objectFit="scale-down"
         className={styles.logoImg}
-        src={logoSrc}
+        src="/static/logo.svg"
         alt="logo"
       />
     </a>
   )
 })
 
-function BigBar({ isProjectRoute, isSubmitRoute }) {
+const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
   /* This is the Navbar rendered on big screens */
-  return (
-    <>
-      <div className={styles.bigSiteMenu}>
-        <Menu inverted pointing secondary>
-          <Link href="/" passHref>
-            <Logo />
-          </Link>
-          <SiteMenuItems isProjectRoute={isProjectRoute} />
-        </Menu>
-      </div>
-      <div className={styles.bigSocialMenu}>
-        <Menu inverted pointing secondary>
-          {isSubmitRoute ? null : <AddProjectButton />}
-          <ContactMenu />
-          <SigningButton />
-        </Menu>
-      </div>
-    </>
-  )
-}
-
-function SmallBar({ isProjectRoute, isSubmitRoute }) {
-  /* This is the Navbar render on small screens */
-
-  return (
-    <>
-      <div className={styles.smallMenu}>
+  <>
+    <div className={styles.bigSiteMenu}>
+      <Menu inverted pointing secondary>
         <Link href="/" passHref>
           <Logo />
         </Link>
-        <Popup
-          trigger={
-            <Button icon size="large" basic inverted>
-              <Icon inverted name="bars" />
-            </Button>
-          }
-          on="click"
-          position="bottom right"
-          inverted
-          basic
-        >
-          <Menu inverted vertical>
-            {isSubmitRoute ? null : <AddProjectButton />}
-            <SiteMenuItems isProjectRoute={isProjectRoute} />
-            <SocialMenuItems />
-            <SigningButton />
-          </Menu>
-        </Popup>
-      </div>
-    </>
-  )
-}
+        <SiteMenuItems isProjectRoute={isProjectRoute} />
+      </Menu>
+    </div>
+    <div className={styles.bigSocialMenu}>
+      <Menu inverted pointing secondary>
+        {isSubmitRoute ? null : <AddProjectButton />}
+        <ContactMenu />
+        <SigningButton />
+      </Menu>
+    </div>
+  </>
+)
 
-function AddProjectButton() {
+const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
+  /* This is the Navbar render on small screens */
+  <div className={styles.smallMenu}>
+    <Link href="/" passHref>
+      <Logo />
+    </Link>
+    <Popup
+      trigger={
+        <Button icon size="large" basic inverted>
+          <Icon inverted name="bars" />
+        </Button>
+      }
+      on="click"
+      position="bottom right"
+      inverted
+      basic
+    >
+      <Menu inverted vertical>
+        {isSubmitRoute ? null : <AddProjectButton />}
+        <SiteMenuItems isProjectRoute={isProjectRoute} />
+        <SocialMenuItems />
+        <SigningButton />
+      </Menu>
+    </Popup>
+  </div>
+)
+
+const AddProjectButton = () => {
   const { push, pathname } = useRouter()
 
   const onClick = async e => {
@@ -129,7 +120,7 @@ function AddProjectButton() {
   ) : null
 }
 
-function SiteMenuItems({ isProjectRoute }) {
+const SiteMenuItems = ({ isProjectRoute }) => {
   const { pathname } = useRouter()
 
   return (
@@ -147,58 +138,54 @@ function SiteMenuItems({ isProjectRoute }) {
   )
 }
 
-function SocialMenuItems() {
-  return (
-    <>
-      <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
-        <Icon name="chat" />
-        Chat
-      </Menu.Item>
-      <Menu.Item as="a" href="/newsletter/">
-        <Icon name="envelope" />
-        Email & Newsletter
-      </Menu.Item>
-      <Menu.Item as="a" href="https://twitter.com/kitspaceorg">
-        <Icon name="twitter" />
-        Twitter
-      </Menu.Item>
-      <Menu.Item as="a" href="https://github.com/kitspace">
-        <Icon name="github" />
-        GitHub
-      </Menu.Item>
-      <Menu.Item as="a" href="https://opencollective.com/kitspace">
-        <Icon name="heart" />
-        Donate
-      </Menu.Item>
-    </>
-  )
-}
+const SocialMenuItems = () => (
+  <>
+    <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
+      <Icon name="chat" />
+      Chat
+    </Menu.Item>
+    <Menu.Item as="a" href="/newsletter/">
+      <Icon name="envelope" />
+      Email & Newsletter
+    </Menu.Item>
+    <Menu.Item as="a" href="https://twitter.com/kitspaceorg">
+      <Icon name="twitter" />
+      Twitter
+    </Menu.Item>
+    <Menu.Item as="a" href="https://github.com/kitspace">
+      <Icon name="github" />
+      GitHub
+    </Menu.Item>
+    <Menu.Item as="a" href="https://opencollective.com/kitspace">
+      <Icon name="heart" />
+      Donate
+    </Menu.Item>
+  </>
+)
 
-function ContactMenu() {
-  return (
-    <Popup
-      trigger={
-        <Menu.Item className="contact-button">
-          <Button labelPosition="right" icon color="blue">
-            <Icon inverted name="comments" />
-            {/* force the loading of brand-icons before the menu is visible */}
-            <Icon className={styles.icon} name="twitter" />
-            Make contact
-          </Button>
-        </Menu.Item>
-      }
-      on="click"
-      position="bottom right"
-      color="blue"
-    >
-      <Menu secondary vertical>
-        <SocialMenuItems />
-      </Menu>
-    </Popup>
-  )
-}
+const ContactMenu = () => (
+  <Popup
+    trigger={
+      <Menu.Item className="contact-button">
+        <Button labelPosition="right" icon color="blue">
+          <Icon inverted name="comments" />
+          {/* force the loading of brand-icons before the menu is visible */}
+          <Icon className={styles.icon} name="twitter" />
+          Make contact
+        </Button>
+      </Menu.Item>
+    }
+    on="click"
+    position="bottom right"
+    color="blue"
+  >
+    <Menu secondary vertical>
+      <SocialMenuItems />
+    </Menu>
+  </Popup>
+)
 
-function SigningButton() {
+const SigningButton = () => {
   const { pathname } = useRouter()
 
   const { isAuthenticated } = useContext(AuthContext)
@@ -215,7 +202,7 @@ function SigningButton() {
   return <LoginButton />
 }
 
-function LoginButton() {
+const LoginButton = () => {
   const { asPath, push } = useRouter()
 
   const onClick = async () => {
@@ -231,26 +218,16 @@ function LoginButton() {
   )
 }
 
-function LogoutButton() {
-  const router = useRouter()
-  const { csrf } = useContext(AuthContext)
+const LogoutButton = () => {
+  const { push, reload } = useRouter()
+  const { logout } = useContext(AuthContext)
 
-  const onClick = async () => {
-    const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/logout`
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
-      body: `_csrf=${csrf}`,
-      credentials: 'include',
+  const onClick = () => {
+    logout().then(success => {
+      if (success) push('/login').then(reload)
     })
-
-    if (response.ok) {
-      await router.push('/login')
-      router.reload()
-    }
   }
+
   return (
     <Menu.Item>
       <Button id="logout" color="red" onClick={onClick}>
