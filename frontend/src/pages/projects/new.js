@@ -303,7 +303,11 @@ const Sync = ({ user, csrf }) => {
         </Form>
       </div>
       {!isEmpty(message) ? (
-        <Message style={{ maxWidth: '70%' }} color={message.color}>
+        <Message
+          data-cy="sync-result-message"
+          style={{ maxWidth: '70%' }}
+          color={message.color}
+        >
           {message.content}
         </Message>
       ) : null}
