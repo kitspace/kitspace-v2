@@ -96,7 +96,6 @@ describe('Sign up form submission', () => {
 
   beforeEach(() => {
     cy.visit('/login?sign_up')
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should automatically sign the user in after submitting a valid form', () => {
