@@ -43,10 +43,9 @@
 //     cy.clearCookies()
 //     cy.reload()
 
-//     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
 //     cy.visit('/login')
 //     cy.signIn(username, password)
-//     cy.wait('@sign_in')
+//     cy.get('[data-cy=logout-button]')
 
 //     cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
 //     cy.visit(updatePageRoute)
@@ -141,7 +140,6 @@
 //   before(() => {
 //     // Create a user
 //     cy.clearCookies()
-//     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
 //     cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
 //       'sync',
 //     )
@@ -150,8 +148,6 @@
 //     // sign in, and migrate `light-test-repo`
 //     cy.visit('/login')
 //     cy.signIn(username, password)
-
-//     cy.wait('@sign_in')
 
 //     // migrate `light-test-repo`
 //     const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'

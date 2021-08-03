@@ -230,7 +230,7 @@ const LogoutButton = () => {
 
   return (
     <Menu.Item>
-      <Button id="logout" color="red" onClick={onClick}>
+      <Button data-cy="logout-button" id="logout" color="red" onClick={onClick}>
         Log out
       </Button>
     </Menu.Item>

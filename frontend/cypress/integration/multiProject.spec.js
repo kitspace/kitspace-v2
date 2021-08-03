@@ -22,12 +22,10 @@ describe('Render project cards', () => {
 
     const repoName = syncedRepoUrlMultiProjects.split('/').slice(-1).toString()
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
@@ -58,12 +56,10 @@ describe('Render project cards', () => {
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
@@ -109,12 +105,10 @@ describe('Render project cards', () => {
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
@@ -163,12 +157,10 @@ describe('Multi project page', () => {
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
@@ -215,12 +207,10 @@ describe('Multi project page', () => {
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 

@@ -18,9 +18,8 @@ describe('Upload project', () => {
 
     cy.createUser(username, email, password)
     cy.visit('/login')
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
@@ -52,9 +51,8 @@ describe('User projects name collision', () => {
     // i.e., the same user is used for all tests in this spec.
     cy.createUser(username, email, password)
     cy.visit('/login')
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
