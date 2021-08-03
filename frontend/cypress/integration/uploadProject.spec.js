@@ -28,6 +28,7 @@ describe('Upload project', () => {
       cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
     })
 
+    cy.get('[data-cy=creating-project-loader]')
     cy.url().should(
       'eq',
       `${Cypress.config().baseUrl}/${username}/example?create=true`,
@@ -61,8 +62,11 @@ describe('User projects name collision', () => {
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
-      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
+      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'])
     })
+
+    cy.get('[data-cy=creating-project-loader]')
+    cy.url().should('include', `${username}/example`)
   })
 
   beforeEach(() => {
@@ -74,7 +78,7 @@ describe('User projects name collision', () => {
     cy.forceVisit('/projects/new')
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
-      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
+      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'])
     })
 
     // Collision modal should open
@@ -90,13 +94,12 @@ describe('User projects name collision', () => {
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
-    // Simulate dropping a single file('example.png') in the dropzone.
+    // Simulate dropping a two file ('example.png', 'example2.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(f1 => {
       cy.fixture('example2.png', 'base64').then(f2 => {
         cy.get('[data-cy=dropzone]').dropFiles(
           [f1, f2],
           ['example.png', 'example2.png'],
-          username,
         )
       })
     })

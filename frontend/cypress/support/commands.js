@@ -1,6 +1,5 @@
 const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
-const giteaApiUrl = 'http://gitea.kitspace.test:3000/api/v1'
 
 Cypress.Commands.add('createUser', (username, email, password) => {
   cy.request({
@@ -91,14 +90,7 @@ Cypress.Commands.add('hasProperFields', schema => {
 Cypress.Commands.add(
   'dropFiles',
   { prevSubject: 'element' },
-  (subject, files, fileNames, username, newProject = true) => {
-    // This will match any request made by `utils/giteaApi.createRepo`,
-    // The `**` for matching the csrf query param.
-    cy.intercept(`${giteaApiUrl}/user/repos**`).as('createRepo')
-
-    // This will match any request for `utils/giteaApi.getRepo`
-    cy.intercept(`${giteaApiUrl}/repos/${username}/**`).as('getRepo')
-
+  (subject, files, fileNames) => {
     cy.window().then(win => {
       const filesContent = files.map((f, idx) => {
         const blob = Cypress.Blob.base64StringToBlob(f)
@@ -109,9 +101,6 @@ Cypress.Commands.add(
         dataTransfer: { files: filesContent, types: ['Files'] },
       })
     })
-    const waitedRequests = newProject ? ['@createRepo', '@getRepo'] : '@getRepo'
-    // Wait until getting a response from the server
-    cy.wait(waitedRequests, { timeout: 20_000 })
   },
 )
 
