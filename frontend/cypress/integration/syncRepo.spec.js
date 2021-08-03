@@ -24,8 +24,6 @@ describe('Syncing a project behavior validation', () => {
     cy.signIn(username, password)
     cy.get('[data-cy=logout-button]')
 
-    cy.forceVisit('/projects/new')
-
     cy.get('input:first').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
     cy.get('[data-cy=sync-result-message]').should('have.class', 'green')
