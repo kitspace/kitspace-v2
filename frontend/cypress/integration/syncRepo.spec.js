@@ -1,10 +1,8 @@
 import faker from 'faker'
 
-describe('Syncing a project behavior validation', () => {
-  const username = faker.unique(faker.name.firstName)
-  const email = faker.unique(faker.internet.email)
-  const password = '123456'
+import { getFakeUsername } from '../support/getFakeUsername'
 
+describe('Syncing a project behavior validation', () => {
   const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
   const repoName = 'light-test-repo'
 
@@ -17,6 +15,10 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it('should sync a repo on gitea', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)

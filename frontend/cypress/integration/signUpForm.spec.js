@@ -1,5 +1,6 @@
 import faker from 'faker'
 
+import { getFakeUsername } from '../support/getFakeUsername'
 import SignUpFormModel from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
@@ -77,7 +78,7 @@ describe('Sign up form validation', () => {
 })
 
 describe('Sign up form submission', () => {
-  const username = faker.unique(faker.name.firstName)
+  const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
 
@@ -99,7 +100,7 @@ describe('Sign up form submission', () => {
   })
 
   it('should automatically sign the user in after submitting a valid form', () => {
-    const newUsername = faker.unique(faker.name.firstName)
+    const newUsername = getFakeUsername()
     const newEmail = faker.unique(faker.internet.email)
     const newPassword = '123456'
 

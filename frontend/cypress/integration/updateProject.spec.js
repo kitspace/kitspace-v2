@@ -2,7 +2,7 @@
 // import faker from 'faker'
 
 // describe('Updating a project behavior validation', () => {
-//   const username = faker.unique(faker.name.firstName)
+//   const username = getFakeUsername()
 //   const email = faker.unique(faker.internet.email)
 //   const password = '123456'
 
@@ -130,7 +130,7 @@
 // })
 
 // describe('Update project form validation', () => {
-//   const username = faker.unique(faker.name.firstName)
+//   const username = getFakeUsername()
 //   const email = faker.unique(faker.internet.email)
 //   const password = '123456'
 

@@ -1,4 +1,7 @@
 import faker from 'faker'
+
+import { getFakeUsername } from '../support/getFakeUsername'
+
 const syncedRepoUrlMultiProjects =
   'https://github.com/kitspace-forks/DIY_particle_detector'
 const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
@@ -16,7 +19,7 @@ describe('Render project cards', () => {
   })
 
   it('should render a card for each multiproject', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
@@ -52,7 +55,7 @@ describe('Render project cards', () => {
   })
 
   it('should display card thumbnail', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
@@ -101,7 +104,7 @@ describe('Render project cards', () => {
   })
 
   it('should redirect to the multi project page', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
@@ -153,7 +156,7 @@ describe('Multi project page', () => {
   beforeEach(() => cy.clearCookies())
 
   it('should render the page components', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
@@ -203,7 +206,7 @@ describe('Multi project page', () => {
   })
 
   it('should render the details from multi project in kitspace.yaml', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 

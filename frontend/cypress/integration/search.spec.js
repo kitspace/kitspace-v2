@@ -1,5 +1,7 @@
 import faker from 'faker'
 
+import { getFakeUsername } from '../support/getFakeUsername'
+
 describe('Homepage search bar', () => {
   it('should redirect to /search when search is submitted', () => {
     const queryTerm = 'awesome project'
@@ -17,7 +19,7 @@ describe('Homepage search bar', () => {
   })
 
   it('should display project card on submitting search form', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
@@ -63,7 +65,7 @@ describe('Search', () => {
   })
 
   it('should use `q` from query parameters', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 

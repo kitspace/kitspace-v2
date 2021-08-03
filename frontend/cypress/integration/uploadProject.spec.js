@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-const updateProjectUrl = 'http://kitspace.test:3000'
+import { getFakeUsername } from '../support/getFakeUsername'
 
 describe('Upload project', () => {
   before(() => {
@@ -12,7 +12,7 @@ describe('Upload project', () => {
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
@@ -28,7 +28,10 @@ describe('Upload project', () => {
       cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
     })
 
-    cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
+    cy.url().should(
+      'eq',
+      `${Cypress.config().baseUrl}/${username}/example?create=true`,
+    )
 
     // TODO FIXME, when writing test for project page
     // cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')
@@ -36,7 +39,7 @@ describe('Upload project', () => {
 })
 
 describe('User projects name collision', () => {
-  const username = faker.name.firstName()
+  const username = getFakeUsername()
   const email = faker.internet.email()
   const password = '123456'
 
@@ -102,7 +105,7 @@ describe('User projects name collision', () => {
     cy.get('[data-cy=collision-update]').click()
 
     // redirect to the upload page
-    cy.url().should('eq', `${updateProjectUrl}/${username}/example`)
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example`)
 
     // TODO FIXME, when writing test for project page
     // The new file is committed and on the update page
