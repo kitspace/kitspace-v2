@@ -80,7 +80,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         kitspaceYAMLExists,
         finishedProcessing,
         description: projectKitspaceYAML?.summary || repo?.description,
-        url: repo?.original_url,
+        originalUrl: repo?.original_url,
       },
     }
   }

@@ -3,14 +3,16 @@ import { string } from 'prop-types'
 
 import styles from './InfoBar.module.scss'
 
-const InfoBar = ({ name, url, site, description }) => {
+const InfoBar = ({ name, originalUrl, site, description }) => {
   // https://github.com/Jan--Henrik/CH330_Hardware -> github.com/Jan--Henrik
-  const ownerText = url?.split('/').slice(2, 4).join('/')
+  const ownerText = originalUrl?.split('/').slice(2, 4).join('/')
 
   const siteCom = site ? (
     <span>
       {'  |  '}
-      <a href={site}>homepage</a>
+      <a href={site} target="_blank" rel="noopener noreferrer">
+        homepage
+      </a>
     </span>
   ) : null
 
@@ -21,8 +23,10 @@ const InfoBar = ({ name, url, site, description }) => {
           <div data-cy="project-title" className={styles.titleText}>
             {name}
           </div>
-          <div className={styles.subtitleText}>
-            <a href={url}>{ownerText}</a>
+          <div data-cy="original-url" className={styles.subtitleText}>
+            <a href={originalUrl} target="_blank" rel="noopener noreferrer">
+              {ownerText}
+            </a>
             {siteCom}
           </div>
         </div>
@@ -38,7 +42,7 @@ const InfoBar = ({ name, url, site, description }) => {
 
 InfoBar.propTypes = {
   name: string.isRequired,
-  url: string.isRequired,
+  originalUrl: string.isRequired,
   site: string.isRequired,
   description: string.isRequired,
 }
