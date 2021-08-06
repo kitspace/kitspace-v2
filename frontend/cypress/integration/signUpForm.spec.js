@@ -39,13 +39,10 @@ describe('Sign up form validation', () => {
 
     invalidUsernames.forEach(username => {
       cy.get('input[name=username]').clear().type(username)
-      cy.get('.prompt.label').as('message')
-
-      // Success header shouldn't appear.
-      cy.get('@message').should('be.visible')
-      cy.get('@message').get('div.header').should('not.be.visible')
 
       // The error message should indicate that the username is invalid.
+      cy.get('.prompt.label').as('message')
+      cy.get('@message').should('be.visible')
       cy.get('@message').should('include.text', '"username"')
     })
   })
@@ -58,13 +55,10 @@ describe('Sign up form validation', () => {
 
     invalidEmails.forEach(email => {
       cy.get('input[name=email]').clear().type(email)
-      cy.get('.prompt.label').as('message')
-
-      // Success header shouldn't appear.
-      cy.get('@message').should('be.visible')
-      cy.get('@message').get('div.header').should('not.be.visible')
 
       // The error message should indicate that the email is invalid.
+      cy.get('.prompt.label').as('message')
+      cy.get('@message').should('be.visible')
       cy.get('@message').should('include.text', '"email"')
     })
   })
@@ -74,13 +68,10 @@ describe('Sign up form validation', () => {
     cy.get('input[name=username]').clear().type('someone')
     cy.get('input[name=email]').clear().type('someone@example.com')
     cy.get('input[name=password]').clear().type('12345')
-    cy.get('.prompt.label').as('message')
-
-    // Success header shouldn't appear.
-    cy.get('@message').should('be.visible')
-    cy.get('@message').get('div.header').should('not.be.visible')
 
     // The error message should indicate that the password is invalid.
+    cy.get('.prompt.label').as('message')
+    cy.get('@message').should('be.visible')
     cy.get('@message').should('include.text', '"password"')
   })
 })
@@ -103,28 +94,12 @@ describe('Sign up form submission', () => {
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
-  it('should display success message on submitting a valid form', () => {
-    cy.signUp(username, email, password)
-
-    cy.get('.positive').as('message')
-
-    // Success header should appear.
-    cy.get('@message').should('be.visible')
-    cy.get('@message').get('div.header').should('be.visible')
-
-    // User information should appear in Gitea admin dashboard.
-    cy.goToUsersAdminPanel()
-    cy.get('tbody').get('tr').contains(username).should('be.visible')
-  })
-
   it('should automatically sign the user in after submitting a valid form', () => {
     const newUsername = faker.unique(faker.name.firstName)
     const newEmail = faker.unique(faker.internet.email)
     const newPassword = '123456'
 
     cy.signUp(newUsername, newEmail, newPassword)
-    // Wait until the message appears, this means the sign up request has completed.
-    cy.get('.positive').as('message')
 
     cy.reload()
     // the user should be signed in, i.e., the `session.user` object won't be null
