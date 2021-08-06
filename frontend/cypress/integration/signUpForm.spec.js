@@ -82,14 +82,19 @@ describe('Sign up form submission', () => {
   const password = '123456'
 
   before(() => {
+    /*
+     * The purpose of this isn't actually visiting the homepage.
+     * Sometimes, the frontend has a slow startup time which results in a random failure.
+     */
+    cy.visit('/')
+
+    // Create user used for conflicts test then sing out again.
+    cy.visit('/login?sign_up')
+    cy.signUp(username, email, password)
     cy.clearCookies()
   })
 
   beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
-
     cy.visit('/login?sign_up')
     cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
@@ -101,7 +106,6 @@ describe('Sign up form submission', () => {
 
     cy.signUp(newUsername, newEmail, newPassword)
 
-    cy.reload()
     // the user should be signed in, i.e., the `session.user` object won't be null
     cy.get('#logout').should('be.visible')
     cy.window().then(win => {
@@ -110,50 +114,32 @@ describe('Sign up form submission', () => {
   })
 
   it('should display error message on submitting a from with used username', () => {
-    cy.stubSignUpReq(false, { error: 'Conflict', message: 'User already exists.' })
-
     cy.signUp(username, email, password)
 
-    cy.get('.negative').as('message')
-
-    // Success header shouldn't appear.
-    cy.get('@message').should('be.visible')
-    cy.get('@message').get('div.header').should('not.be.visible')
-
     // The error message should indicate that username is already taken.
+    cy.get('.negative').as('message')
+    cy.get('@message').should('be.visible')
     cy.get('@message').should('include.text', 'User already exists.')
   })
 
   it('should display error message on submitting a from with used email', () => {
-    cy.stubSignUpReq(false, { error: 'Conflict', message: 'Email already used.' })
-
-    cy.signUp(username, email, password)
-
-    cy.get('.negative').as('message')
-
-    // Success header shouldn't appear.
-    cy.get('@message').should('be.visible')
-    cy.get('@message').get('div.header').should('not.be.visible')
+    cy.signUp('newUser', email, password)
 
     // The error message should indicate that this email is already registered.
-    cy.get('@message').should('include.text', 'Email already used.')
+    cy.get('.negative').as('message')
+    cy.get('@message').should('be.visible')
+    cy.get('@message').should('include.text', 'Email is already used.')
   })
 
   it('should display error message on submitting a from with reserved username', () => {
-    cy.stubSignUpReq(false, { error: 'Conflict', message: 'Name is reserved.' })
-
     const reservedNames = ['admin', 'user'] // Not a full list of Gitea reserved names.
 
     reservedNames.forEach(name => {
       cy.signUp(name, email, password)
 
-      cy.get('.negative').as('message')
-
-      // Success header shouldn't appear.
-      cy.get('@message').should('be.visible')
-      cy.get('@message').get('div.header').should('not.be.visible')
-
       // The error message should indicate that the username is reserved.
+      cy.get('.negative').as('message')
+      cy.get('@message').should('be.visible')
       cy.get('@message').should('include.text', 'Name is reserved.')
     })
   })
