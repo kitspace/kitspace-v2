@@ -35,19 +35,6 @@ Cypress.Commands.add('signOut', () => {
   })
 })
 
-Cypress.Commands.add('stubSignUpReq', (ok, response) => {
-  cy.visit('/login?sign_up', {
-    onBeforeLoad(win) {
-      cy.stub(win, 'fetch')
-        .withArgs(signUpEndpoint)
-        .resolves({
-          ok,
-          json: () => response,
-        })
-    },
-  })
-})
-
 Cypress.Commands.add('stubSignInReq', (ok, response, path) => {
   cy.visit(path ? path : '/login', {
     onBeforeLoad(win) {
