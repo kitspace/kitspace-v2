@@ -162,6 +162,8 @@ const Upload = ({ user, csrf }) => {
     }
   }, [form.name, validateProjectName])
 
+  const didChangeName = originalProjectName !== form.name
+
   return (
     <>
       <DropZone onDrop={onDrop} style={{ maxWidth: '70%', margin: 'auto' }} />
@@ -181,7 +183,7 @@ const Upload = ({ user, csrf }) => {
             <Form.Field
               fluid
               control={Input}
-              label="Project name"
+              label={didChangeName ? 'New project name' : 'Project name'}
               name="name"
               value={form.name || ''}
               onChange={onChange}
@@ -190,21 +192,22 @@ const Upload = ({ user, csrf }) => {
           </Form>
         </Modal.Content>
         <Modal.Actions>
-          <Button
-            data-cy="collision-different-name"
-            content="Choose different name"
-            color="green"
-            disabled={!isValidProjectName}
-            onClick={onDifferentName}
-          />
-          <Button
-            data-cy="collision-update"
-            content="Update existing project"
-            color="yellow"
-            onClick={onUpdateExisting}
-            // When the modal pops if they change the project name, disable the `Update existing project` button
-            disabled={originalProjectName !== form.name}
-          />
+          {didChangeName ? (
+            <Button
+              data-cy="collision-different-name"
+              content="OK"
+              color="green"
+              disabled={!isValidProjectName}
+              onClick={onDifferentName}
+            />
+          ) : (
+            <Button
+              data-cy="collision-update"
+              content={`Add files to "${originalProjectName}"`}
+              color="green"
+              onClick={onUpdateExisting}
+            />
+          )}
         </Modal.Actions>
       </Modal>
     </>
