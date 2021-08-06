@@ -79,8 +79,8 @@ describe('User projects name collision', () => {
     // Collision modal should open
     cy.get('[data-cy=collision-modal]').should('be.visible')
 
-    // `Choose different name` should be disabled as the user haven't changed the name yet
-    cy.get('[data-cy=collision-different-name]').should('be.disabled')
+    // The update button should get rendered and the different name button shouldn't exist.
+    cy.get('[data-cy=collision-different-name]').should('not.exist')
     cy.get('[data-cy=collision-update]').should('be.enabled')
   })
 
