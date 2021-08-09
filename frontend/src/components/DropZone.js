@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { object, func, bool } from 'prop-types'
 import { isEmpty } from 'lodash'
@@ -15,7 +15,29 @@ const maxFileSize = process.env.MAX_FILE_SIZE
 // this make next dynamically import the `Toaster` component only from this module.
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
-const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => {
+// Outside of the component to prevent unnecessary rerendering.
+const baseStyle = {
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: '20px',
+  borderWidth: 2,
+  borderRadius: 2,
+  borderColor: '#eeeeee',
+  borderStyle: 'dashed',
+  backgroundColor: '#fafafa',
+  color: '#bdbdbd',
+  outline: 'none',
+  transition: 'border .24s ease-in-out',
+}
+
+// Outside of the component to prevent unnecessary rerendering.
+const activeStyle = {
+  borderColor: '#0c9bef',
+}
+
+const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
   const _onDrop = useCallback(onDrop, [onDrop])
 
   /*
@@ -54,12 +76,22 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
     getInputProps,
     open,
     fileRejections: FilePickerRejections,
+    isDragActive,
   } = useDropzone(DropZoneConfig)
   // This hook is responsible for folder selector
   const {
     getInputProps: FolderPickerInputProps,
     fileRejections: FolderPickerRejections,
   } = useDropzone(DropZoneConfig)
+
+  const style = useMemo(
+    () => ({
+      ...baseStyle,
+      ...overrideStyle,
+      ...(isDragActive ? activeStyle : {}),
+    }),
+    [overrideStyle, isDragActive],
+  )
 
   useEffect(() => {
     const fileRejections = [...FilePickerRejections, ...FolderPickerRejections]
@@ -99,10 +131,7 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
   }, [FilePickerRejections, FolderPickerRejections, DropZoneConfig.maxFiles])
 
   return (
-    <div
-      {...getRootProps({ className: 'dropzone' })}
-      style={style || { margin: '2rem 0' }}
-    >
+    <div data-cy="dropzone" {...getRootProps({ style })}>
       <Toaster />
       <input {...getInputProps()} />
       <p>
@@ -157,12 +186,13 @@ const DropZone = ({ onDrop, style, allowFolders = true, allowFiles = true }) => 
 
 DropZone.propTypes = {
   onDrop: func.isRequired,
-  style: object.isRequired,
+  overrideStyle: object,
   allowFolders: bool,
   allowFiles: bool,
 }
 
 DropZone.defaultProps = {
+  overrideStyle: {},
   allowFolders: true,
   allowFiles: true,
 }

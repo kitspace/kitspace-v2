@@ -164,7 +164,10 @@ const Upload = ({ user, csrf }) => {
 
   return (
     <>
-      <DropZone onDrop={onDrop} style={{ maxWidth: '70%', margin: 'auto' }} />
+      <DropZone
+        onDrop={onDrop}
+        overrideStyle={{ maxWidth: '70%', margin: 'auto' }}
+      />
       <Modal
         data-cy="collision-modal"
         closeIcon
