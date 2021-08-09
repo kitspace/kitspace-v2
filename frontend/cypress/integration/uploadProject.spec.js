@@ -22,12 +22,7 @@ describe('Upload project', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
@@ -61,12 +56,7 @@ describe('User projects name collision', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
@@ -80,7 +70,7 @@ describe('User projects name collision', () => {
   })
 
   it('should show modal on project names collision', () => {
-    cy.visit('/projects/new')
+    cy.forceVisit('/projects/new')
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
       cy.get('.dropzone').dropFiles([file], ['example.png'], username)
@@ -95,7 +85,7 @@ describe('User projects name collision', () => {
   })
 
   it('should commit files to the same project on `Update existing project`', () => {
-    cy.visit('/projects/new')
+    cy.forceVisit('/projects/new')
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
