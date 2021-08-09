@@ -99,4 +99,13 @@ declare namespace Cypress {
      */
       dropFiles(files, fileNames: string[], username: string, newProject=true): Chainable<any>
   }
+
+  interface Chainable<Subject> {
+    /**
+     * 
+     * @param path
+     * @param timeout number of milliseconds 
+     */
+    forceVisit(path: string, timeout: number): Chainable<any>
+  }
 }

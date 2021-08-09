@@ -29,13 +29,7 @@ describe('Render project cards', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
     cy.get('input:first').type(syncedRepoUrlMultiProjects)
@@ -71,13 +65,7 @@ describe('Render project cards', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
     cy.get('input:first').type(syncedRepoUrlMultiProjects)
@@ -96,13 +84,7 @@ describe('Render project cards', () => {
       multiProjectsNames.length,
     )
     /* Migrate the normal repo */
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     cy.get('input:first').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
@@ -134,13 +116,7 @@ describe('Render project cards', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     /* Migrate the multiproject repo */
     cy.get('input:first').type(syncedRepoUrlMultiProjects)
@@ -194,13 +170,7 @@ describe('Multi project page', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
     cy.get('input:first').type(syncedRepoUrlMultiProjects)
@@ -252,13 +222,7 @@ describe('Multi project page', () => {
     cy.signIn(username, password)
     cy.wait('@sign_in')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
     cy.get('input:first').type(syncedRepoUrlMultiProjects)

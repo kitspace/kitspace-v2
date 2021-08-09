@@ -158,13 +158,13 @@
 //     // Go to home instead of `wait`
 //     cy.visit('/')
 
-//     cy.visit('/projects/new')
+//     cy.forceVisit('/projects/new')
 //     cy.get('input:first').type(syncedRepoUrl)
 //     cy.get('button').contains('Sync').click()
 //     cy.wait('@sync')
 
 //     // Create a repo by uploading files
-//     cy.visit('/projects/new') // go back to `projects/new` page as the previous step `sync` will trigger redirect
+//     cy.forceVisit('/projects/new') // go back to `projects/new` page as the previous step `sync` will trigger redirect
 
 //     // Simulate dropping a single file('example.png') in the dropzone.
 //     cy.fixture('example.png', 'base64').then(file => {
