@@ -11,13 +11,13 @@ import {
   Segment,
   Tab,
 } from 'semantic-ui-react'
+import { isEmpty } from 'lodash'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
-import { isEmpty } from 'lodash'
 
 const Login = () => {
   const [openPane, setOpenPane] = useState(1)
@@ -210,18 +210,10 @@ const SignUpForm = () => {
         negative={hasApiError}
         positive={isSuccessfulReg}
         style={{
-          display:
-            (hasApiError || isSuccessfulReg) && isEmpty(errors) ? 'block' : 'none',
+          display: hasApiError && isEmpty(errors) ? 'block' : 'none',
         }}
       >
-        <Message.Header
-          style={{
-            display: isSuccessfulReg && !hasApiError ? 'block' : 'none',
-          }}
-        >
-          Success!
-        </Message.Header>
-        {errors.msg || apiResponse.message || 'Logging you in...'}
+        {errors.msg || apiResponse.message}
       </Message>
       <Form>
         <Segment>
