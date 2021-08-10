@@ -207,7 +207,7 @@ const Upload = ({ user, csrf }) => {
             <Button
               data-cy="collision-update"
               content={`Add files to "${originalProjectName}"`}
-              color="green"
+              color="orange"
               onClick={onUpdateExisting}
             />
           )}
