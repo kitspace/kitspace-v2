@@ -110,7 +110,8 @@ describe('Search', () => {
 
   it('should redirect to /search when search box is cleared', () => {
     cy.visit('search?q=query')
-    cy.get('[data-cy=search-field] > input').clear()
-    cy.url().should('equal', `${Cypress.config().baseUrl}/search`)
+    // Clear the search form and press enter
+    cy.get('[data-cy=search-field] > input').clear().type('{enter}')
+    cy.url().should('equal', `${Cypress.config().baseUrl}/search?q=`)
   })
 })

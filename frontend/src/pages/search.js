@@ -33,7 +33,7 @@ export const getServerSideProps = async ({ query }) => {
 }
 
 const Search = ({ initialProjects, q }) => {
-  const { query, push } = useRouter()
+  const { query } = useRouter()
   const { user } = useContext(AuthContext)
 
   const username = user?.login || 'unknown user'
@@ -56,8 +56,6 @@ const Search = ({ initialProjects, q }) => {
     }, 50)
   }, [mutate])
 
-  const onClearSearch = () => push('/search')
-
   useEffect(() => {
     setSwrQuery(query.q)
   }, [query.q])
@@ -75,11 +73,7 @@ const Search = ({ initialProjects, q }) => {
   return (
     <Page title="Kitspace | Home">
       <div>Hi there {username}</div>
-      <SearchForm
-        afterSubmit={afterSubmit}
-        onClear={onClearSearch}
-        initialQuery={q}
-      />
+      <SearchForm afterSubmit={afterSubmit} initialQuery={q} />
       <CardsGrid projects={projects} />
     </Page>
   )
@@ -95,16 +89,21 @@ const CardsGrid = ({ projects }) => {
   )
 }
 
-const SearchForm = ({ afterSubmit, onClear, initialQuery }) => {
+const SearchForm = ({ afterSubmit, initialQuery }) => {
   const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFormModel)
   const { push, asPath } = useRouter()
+
+  const onClear = () => {
+    push('/search', undefined, { shallow: true })
+    afterSubmit()
+  }
 
   const handleSearchFormSubmit = () => {
     // The homepage `/` redirects to this page - a soft redirect.
     const isHomepage = asPath === '/'
 
     if (isHomepage) {
-      // redirect to `/search` page when the form is submitted.
+      // redirect to `/search` page when the form is submitted from homepage.
       push(`/search?q=${form.query}`)
     } else {
       // If the form is submitted from `/search` page, shallow redirect and delegate updating page content to swr.
