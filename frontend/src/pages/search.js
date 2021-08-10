@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { array } from 'prop-types'
+import { arrayOf, func, object, string } from 'prop-types'
 
 import { Input, Form, Loader } from 'semantic-ui-react'
 
@@ -159,7 +159,17 @@ const SearchForm = ({ afterSubmit, onClear, initialQuery }) => {
 }
 
 Search.propTypes = {
-  projects: array.isRequired,
+  initialProjects: arrayOf(object).isRequired,
+  q: string,
+}
+
+CardsGrid.propTypes = {
+  projects: arrayOf(object).isRequired,
+}
+
+SearchForm.propTypes = {
+  afterSubmit: func.isRequired,
+  initialQuery: string,
 }
 
 export default Search
