@@ -46,6 +46,7 @@ const Search = ({ initialProjects, q }) => {
   } = useSearchRepos(swrQuery, {
     initialData: initialProjects,
     revalidateOnMount: false,
+    revalidateOnFocus: false,
   })
 
   const afterSubmit = useCallback(() => {
