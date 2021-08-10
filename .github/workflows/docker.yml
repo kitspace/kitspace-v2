@@ -237,7 +237,7 @@ jobs:
 
       - name: e2e
         uses: cypress-io/github-action@v2
-        timeout-minutes: 35
+        timeout-minutes: 40
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
