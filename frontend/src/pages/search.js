@@ -1,12 +1,13 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { arrayOf, func, object, string } from 'prop-types'
+import React, { useContext, useEffect } from 'react'
+import { arrayOf, object, string } from 'prop-types'
 
-import { Input, Form, Loader } from 'semantic-ui-react'
+import { Input, Form } from 'semantic-ui-react'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import { useSearchRepos } from '@hooks/Gitea'
 import { AuthContext } from '@contexts/AuthContext'
+import SearchProvider, { useSearchQuery } from '@contexts/SearchContext'
 import { getAllRepos, searchRepos } from '@utils/giteaApi'
 import SearchFormModel from '@models/SearchFrom'
 import ProjectCard from '@components/ProjectCard'
@@ -21,7 +22,7 @@ export const getServerSideProps = async ({ query }) => {
     return {
       props: {
         initialProjects: await getFlatProjects(await searchRepos(q)),
-        q,
+        initialQuery: q,
       },
     }
   }
@@ -32,54 +33,35 @@ export const getServerSideProps = async ({ query }) => {
   }
 }
 
-const Search = ({ initialProjects, q }) => {
-  const { query } = useRouter()
+const Search = ({ initialProjects, initialQuery }) => {
   const { user } = useContext(AuthContext)
 
-  const username = user?.login || 'unknown user'
-  const [swrQuery, setSwrQuery] = useState(q)
+  const username = user?.login ?? 'unknown user'
 
-  const {
-    repos: projects,
-    mutate,
-    isLoading,
-  } = useSearchRepos(swrQuery, {
+  return (
+    <Page title="Kitspace | Home">
+      <div>Hi there {username}</div>
+      <SearchProvider initialQuery={initialQuery}>
+        <SearchForm />
+        <CardsGrid initialProjects={initialProjects} />
+      </SearchProvider>
+    </Page>
+  )
+}
+
+const CardsGrid = ({ initialProjects }) => {
+  const { query } = useSearchQuery()
+
+  const { repos: projects, mutate } = useSearchRepos(query, {
     initialData: initialProjects,
     revalidateOnMount: false,
     revalidateOnFocus: false,
   })
 
-  const afterSubmit = useCallback(() => {
-    // mutate after ms to make sure the `path` has been updated
-    setTimeout(() => {
-      mutate()
-    }, 50)
-  }, [mutate])
-
   useEffect(() => {
-    setSwrQuery(query.q)
-  }, [query.q])
+    mutate()
+  }, [query, mutate])
 
-  if (isLoading) {
-    return (
-      <Page>
-        <Loader style={{ margin: 'auto' }} active>
-          Searching...
-        </Loader>
-      </Page>
-    )
-  }
-
-  return (
-    <Page title="Kitspace | Home">
-      <div>Hi there {username}</div>
-      <SearchForm afterSubmit={afterSubmit} initialQuery={q} />
-      <CardsGrid projects={projects} />
-    </Page>
-  )
-}
-
-const CardsGrid = ({ projects }) => {
   return (
     <div>
       {projects?.map(project => (
@@ -89,14 +71,15 @@ const CardsGrid = ({ projects }) => {
   )
 }
 
-const SearchForm = ({ afterSubmit, initialQuery }) => {
-  const { form, onChange, isValid, formatErrorPrompt } = useForm(SearchFormModel)
+const SearchForm = () => {
+  const { form, onChange, isValid, formatErrorPrompt, populate } =
+    useForm(SearchFormModel)
   const { push, asPath } = useRouter()
+  const { updateQuery, query } = useSearchQuery()
 
-  const onClear = () => {
-    push('/search', undefined, { shallow: true })
-    afterSubmit()
-  }
+  useEffect(() => {
+    populate({ query })
+  }, [populate, query])
 
   const handleSearchFormSubmit = () => {
     // The homepage `/` redirects to this page - a soft redirect.
@@ -108,20 +91,9 @@ const SearchForm = ({ afterSubmit, initialQuery }) => {
     } else {
       // If the form is submitted from `/search` page, shallow redirect and delegate updating page content to swr.
       push(`/search?q=${form.query}`, undefined, { shallow: true })
-      afterSubmit()
+      updateQuery(form.query)
     }
   }
-
-  useEffect(() => {
-    /* eslint-disable react-hooks/exhaustive-deps */
-    /*
-      ! The ignored dependency is `push` which isn't actually a dependency for this usecase; it won't change.
-      ! Adding `push` to the deps array will cause infinite fetching;
-      ! on first page mount the value of `push` changes which triggers the hook.
-      ! The hook will call `push` and and a new page(the json from next SSR) will load resulting in infinite fetching.
-    */
-    if (form.query === '') onClear()
-  }, [form.query])
 
   return (
     <div
@@ -141,7 +113,7 @@ const SearchForm = ({ afterSubmit, initialQuery }) => {
             control={Input}
             placeholder="Search for projects"
             name="query"
-            value={form.query || initialQuery}
+            value={form.query ?? ''}
             onChange={onChange}
             error={form.query !== '' && formatErrorPrompt('query')}
           />
@@ -159,16 +131,11 @@ const SearchForm = ({ afterSubmit, initialQuery }) => {
 
 Search.propTypes = {
   initialProjects: arrayOf(object).isRequired,
-  q: string,
+  initialQuery: string,
 }
 
 CardsGrid.propTypes = {
-  projects: arrayOf(object).isRequired,
-}
-
-SearchForm.propTypes = {
-  afterSubmit: func.isRequired,
-  initialQuery: string,
+  initialProjects: arrayOf(object).isRequired,
 }
 
 export default Search
