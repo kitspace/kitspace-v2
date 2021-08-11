@@ -62,6 +62,14 @@ const CardsGrid = ({ initialProjects }) => {
     mutate()
   }, [query, mutate])
 
+  if (projects?.length === 0) {
+    return (
+      <p className={styles.noMatching}>
+        There is no project matching your query, try something different
+      </p>
+    )
+  }
+
   return (
     <div>
       {projects?.map(project => (
@@ -96,16 +104,9 @@ const SearchForm = () => {
   }
 
   return (
-    <div
-      style={{
-        maxWidth: '600px',
-        margin: 'auto',
-        padding: '1rem',
-        paddingBottom: '3rem',
-      }}
-    >
+    <div className={styles.searchForm}>
       <Form onSubmit={handleSearchFormSubmit}>
-        <Form.Group widths="equal" className={styles.searchForm}>
+        <Form.Group widths="equal" className={styles.searchFormGroup}>
           <Form.Field
             data-cy="search-field"
             icon="search"
