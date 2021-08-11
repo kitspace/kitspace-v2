@@ -82,30 +82,26 @@ const CardsGrid = ({ initialProjects }) => {
 const SearchForm = () => {
   const { form, onChange, isValid, formatErrorPrompt, populate } =
     useForm(SearchFormModel)
-  const { push, asPath } = useRouter()
+  const { push } = useRouter()
   const { updateQuery, query } = useSearchQuery()
 
   useEffect(() => {
     populate({ query })
   }, [populate, query])
 
-  const handleSearchFormSubmit = () => {
-    // The homepage `/` redirects to this page - a soft redirect.
-    const isHomepage = asPath === '/'
-
-    if (isHomepage) {
-      // redirect to `/search` page when the form is submitted from homepage.
-      push(`/search?q=${form.query}`)
-    } else {
-      // If the form is submitted from `/search` page, shallow redirect and delegate updating page content to swr.
-      push(`/search?q=${form.query}`, undefined, { shallow: true })
-      updateQuery(form.query)
-    }
+  /**
+   * i.   Update the search query in the {@link SearchProvider}.
+   * ii.  Change the search query parameter `q`.
+   * ii.  Make a `shallow` redirect to the new url `/search?q=${submitted query term}`.
+   */
+  const onSubmit = () => {
+    updateQuery(form.query)
+    push(`/search?q=${form.query}`, undefined, { shallow: true })
   }
 
   return (
     <div className={styles.searchForm}>
-      <Form onSubmit={handleSearchFormSubmit}>
+      <Form onSubmit={onSubmit}>
         <Form.Group widths="equal" className={styles.searchFormGroup}>
           <Form.Field
             data-cy="search-field"
