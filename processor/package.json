@@ -18,7 +18,7 @@
     "express-fileupload": "^1.2.1",
     "globule": "^1.0.0",
     "js-yaml": "^3.3.1",
-    "jszip": "^3.1.1",
+    "jszip": "^3.7.0",
     "lodash.debounce": "^4.0.8",
     "loglevel": "^1.7.1",
     "pcb-stackup": "^4.2.5",
