@@ -10,7 +10,7 @@ import NavBar from './NavBar'
 import styles from './Page.module.scss'
 
 const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
-  const { push, pathname } = useRouter()
+  const { pathname, replace } = useRouter()
   const [loading, setLoading] = useState(true)
   const { isAuthenticated } = useContext(AuthContext)
 
@@ -18,13 +18,13 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
     const isAuthenticated = window?.session.user != null
 
     if (requireSignIn && !isAuthenticated) {
-      push(`/login?redirect=${pathname}`)
+      replace(`/login?redirect=${pathname}`)
     } else if (requireSignOut && isAuthenticated) {
-      push('/')
+      replace('/')
     } else {
       setLoading(false)
     }
-  }, [loading, requireSignIn, requireSignOut, pathname, isAuthenticated, push])
+  }, [loading, requireSignIn, requireSignOut, pathname, isAuthenticated, replace])
 
   const isPublicPath = !(requireSignIn || requireSignOut)
   if (isPublicPath) {
