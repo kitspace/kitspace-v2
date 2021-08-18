@@ -1,44 +1,65 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { string, bool, node } from 'prop-types'
-
-import { Loader } from 'semantic-ui-react'
 import { useRouter } from 'next/router'
+import { Loader } from 'semantic-ui-react'
+
+import { AuthContext } from '@contexts/AuthContext'
+
 import Head from './Head'
 import NavBar from './NavBar'
 import styles from './Page.module.scss'
 
 const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
-  const { push, pathname } = useRouter()
+  const { pathname, replace } = useRouter()
   const [loading, setLoading] = useState(true)
+  const [throttledLoader, setThrottledLoader] = useState(false)
+  const { isAuthenticated } = useContext(AuthContext)
 
   useEffect(() => {
-    const isAuthenticated = window.session?.user !== null
+    setTimeout(() => {
+      setThrottledLoader(true)
+    }, 200)
+  }, [])
+
+  useEffect(() => {
+    const isAuthenticated = window?.session.user != null
 
     if (requireSignIn && !isAuthenticated) {
-      push(`/login?redirect=${pathname}`).then()
+      replace(`/login?redirect=${pathname}`)
     } else if (requireSignOut && isAuthenticated) {
-      push('/').then()
+      replace('/')
     } else {
       setLoading(false)
     }
-  }, [loading, requireSignIn, requireSignOut, pathname, push])
+  }, [loading, requireSignIn, requireSignOut, pathname, isAuthenticated, replace])
 
-  if (loading) {
+  const isPublicPath = !(requireSignIn || requireSignOut)
+  if (isPublicPath) {
+    // render the page immediately without checking the authentication status.
+    return <Container contentFullSize={contentFullSize}>{children}</Container>
+  }
+
+  if (loading && throttledLoader) {
     return (
       <Loader style={{ margin: 'auto' }} active>
         Loading...
       </Loader>
     )
   }
-  return (
-    <div
-      className={contentFullSize ? styles.minimalContainer : styles.container}
-      data-cy="page-container"
-    >
-      {children}
-    </div>
-  )
+
+  return throttledLoader ? (
+    <Container contentFullSize={contentFullSize}>{children}</Container>
+  ) : null
 }
+
+const Container = ({ contentFullSize, children }) => (
+  <main
+    data-cy="page-container"
+    className={contentFullSize ? styles.minimalContainer : styles.container}
+  >
+    {children}
+  </main>
+)
 
 const Page = ({
   title,
