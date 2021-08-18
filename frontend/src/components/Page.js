@@ -12,7 +12,14 @@ import styles from './Page.module.scss'
 const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
   const { pathname, replace } = useRouter()
   const [loading, setLoading] = useState(true)
+  const [throttledLoader, setThrottledLoader] = useState(false)
   const { isAuthenticated } = useContext(AuthContext)
+
+  useEffect(() => {
+    setTimeout(() => {
+      setThrottledLoader(true)
+    }, 200)
+  }, [])
 
   useEffect(() => {
     const isAuthenticated = window?.session.user != null
@@ -32,7 +39,7 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
     return <Container contentFullSize={contentFullSize}>{children}</Container>
   }
 
-  if (loading) {
+  if (loading && throttledLoader) {
     return (
       <Loader style={{ margin: 'auto' }} active>
         Loading...
@@ -40,7 +47,9 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
     )
   }
 
-  return <Container contentFullSize={contentFullSize}>{children}</Container>
+  return throttledLoader ? (
+    <Container contentFullSize={contentFullSize}>{children}</Container>
+  ) : null
 }
 
 const Container = ({ contentFullSize, children }) => (
