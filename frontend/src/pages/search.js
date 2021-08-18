@@ -96,8 +96,7 @@ const CardsGrid = ({ initialProjects }) => {
 }
 
 const SearchForm = () => {
-  const { form, onChange, isValid, formatErrorPrompt, populate } =
-    useForm(SearchFormModel)
+  const { form, onChange, formatErrorPrompt, populate } = useForm(SearchFormModel)
   const { push } = useRouter()
   const { updateQuery, query } = useSearchQuery()
 
@@ -129,12 +128,6 @@ const SearchForm = () => {
             value={form.query ?? ''}
             onChange={onChange}
             error={form.query !== '' && formatErrorPrompt('query')}
-          />
-          <Form.Button
-            data-cy="search-button"
-            className={styles.searchButton}
-            content="search"
-            disabled={!isValid}
           />
         </Form.Group>
       </Form>
