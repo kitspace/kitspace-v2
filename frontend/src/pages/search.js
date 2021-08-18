@@ -81,7 +81,7 @@ const CardsGrid = ({ initialProjects }) => {
   if (projects?.length === 0) {
     return (
       <p className={styles.noMatching}>
-        There is no project matching your query, try something different
+        Sorry, no result. <Link href="/projects/new">Add your project!</Link>
       </p>
     )
   }
