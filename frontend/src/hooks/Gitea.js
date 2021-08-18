@@ -76,12 +76,12 @@ export const useSearchRepos = (
   const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${
     q ? `&q=${q}` : ''
   }`
-
   const { data, error, mutate } = useSWR(
     endpoint,
     url => fetcher(url).then(({ data }) => getFlatProjects(data ?? [])),
     swrOpts,
   )
+
   return {
     repos: data,
     isLoading: !(data || error),

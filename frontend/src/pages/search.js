@@ -1,7 +1,8 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
 
-import { Input, Form } from 'semantic-ui-react'
+import { Input, Form, Loader } from 'semantic-ui-react'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
@@ -51,16 +52,31 @@ const Search = ({ initialProjects, initialQuery }) => {
 
 const CardsGrid = ({ initialProjects }) => {
   const { query } = useSearchQuery()
+  const initialDataRef = useRef()
 
-  const { repos: projects, mutate } = useSearchRepos(query, {
-    initialData: initialProjects,
+  const {
+    repos: projects,
+    mutate,
+    isLoading,
+  } = useSearchRepos(query, {
+    initialData: initialDataRef.current ? initialDataRef.current : initialProjects,
     revalidateOnMount: false,
     revalidateOnFocus: false,
   })
 
+  // Prevent flickering initial data while revalidating.
+  // see https://github.com/vercel/swr/issues/192#issuecomment-821848756.
+  if (projects !== undefined && initialDataRef) {
+    initialDataRef.current = projects
+  }
+
   useEffect(() => {
     mutate()
   }, [query, mutate])
+
+  if (isLoading) {
+    return <Loader active>Searching...</Loader>
+  }
 
   if (projects?.length === 0) {
     return (
