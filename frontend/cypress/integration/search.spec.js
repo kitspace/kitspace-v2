@@ -7,11 +7,11 @@ describe('Homepage search bar', () => {
     // Visit homepage
     cy.visit('/')
     // Write query term in the search field
-    cy.get('[data-cy=search-field] > input').type(queryTerm)
+    cy.get('[data-cy=search-field] > input').as('search-form').type(queryTerm)
     // The URL shouldn't change before clicking on `Search`
     cy.url().should('equal', `${Cypress.config().baseUrl}/`)
-    // Click on the `Search` button
-    cy.get('[data-cy=search-button]').click({ force: true })
+    // Press enter
+    cy.get('@search-form').type('{enter}')
     // Should redirect to the search page
     cy.url().should('include', `/search?q=${encodeURI(queryTerm)}`)
   })
@@ -51,10 +51,10 @@ describe('Homepage search bar', () => {
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit('/')
-
-    cy.get('[data-cy=search-field] > input').type(repoName)
-    // Click on the `Search` button
-    cy.get('[data-cy=search-button]').click({ force: true })
+    // Write query term in the search field
+    cy.get('[data-cy=search-field] > input').as('search-form').type(repoName)
+    // Press enter
+    cy.get('@search-form').type('{enter}')
     // Should redirect to the search page
     cy.url().should('include', `/search?q=${encodeURI(repoName)}`)
     cy.get('[data-cy=project-card]').should('have.length.gte', 1)
