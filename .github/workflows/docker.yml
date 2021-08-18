@@ -36,7 +36,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
@@ -133,7 +133,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
         # we don't really need to log in to pull the images, just doing it in
         # case an image is accidentally set to private
         continue-on-error: true
@@ -284,12 +284,12 @@ jobs:
         run: |
           curl \
             https://ghcr.io/v2/kitspace/frontend/manifests/${{ steps.sha.outputs.sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
             https://ghcr.io/v2/kitspace/frontend/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
           rm manifest.json
@@ -298,12 +298,12 @@ jobs:
         run: |
           curl \
             https://ghcr.io/v2/kitspace/processor/manifests/${{ steps.sha.outputs.sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
             https://ghcr.io/v2/kitspace/processor/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
           rm manifest.json
@@ -312,12 +312,12 @@ jobs:
         run: |
           curl \
             https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
             https://ghcr.io/v2/kitspace/nginx/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
           rm manifest.json
@@ -326,12 +326,12 @@ jobs:
         run: |
           curl \
             https://ghcr.io/v2/kitspace/gitea/manifests/${{ steps.sha.outputs.gitea_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
             https://ghcr.io/v2/kitspace/gitea/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.CR_PAT }}' | base64)"  \
+            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
           rm manifest.json
