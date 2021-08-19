@@ -1,0 +1,21 @@
+.searchFormGroup {
+  display: grid !important;
+  grid-template-columns: 4fr 1fr;
+}
+
+.searchButton {
+  display: flex;
+  align-items: center;
+}
+
+.searchForm {
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
+  padding-bottom: 3rem;
+}
+
+.noMatching {
+  text-align: center;
+  padding-top: 20vh;
+}
