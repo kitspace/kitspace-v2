@@ -210,7 +210,7 @@ export const commitFiles = async ({
 }
 
 export const logout = async csrf => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/logout`
+  const endpoint = `${giteaURL}/user/logout`
   const res = await fetch(endpoint, {
     method: 'POST',
     headers: {

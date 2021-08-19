@@ -94,7 +94,7 @@ describe('User projects name collision', () => {
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
-    // Simulate dropping a two file ('example.png', 'example2.png') in the dropzone.
+    // Simulate dropping two files ('example.png', 'example2.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(f1 => {
       cy.fixture('example2.png', 'base64').then(f2 => {
         cy.get('[data-cy=dropzone]').dropFiles(
