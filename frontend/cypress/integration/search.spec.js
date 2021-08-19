@@ -1,7 +1,7 @@
 import faker from 'faker'
 
 describe('Homepage search bar', () => {
-  it('should redirect to /search on clicking `Search` button', () => {
+  it('should redirect to /search when search is submitted', () => {
     const queryTerm = 'awesome project'
 
     // Visit homepage
