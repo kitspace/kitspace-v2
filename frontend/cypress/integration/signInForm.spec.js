@@ -1,5 +1,6 @@
 import faker from 'faker'
 
+import { getFakeUsername } from '../support/getFakeUsername'
 import SignInFormModel from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
@@ -45,7 +46,7 @@ describe('Log in form validation', () => {
 })
 
 describe('Log in form submission', () => {
-  const username = faker.unique(faker.name.firstName)
+  const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
 
@@ -58,8 +59,6 @@ describe('Log in form submission', () => {
     // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
-
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should display username in homepage on submitting a valid form', () => {

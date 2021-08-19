@@ -7,6 +7,8 @@
 import { b64toBlob, readFileContent } from '@utils/index'
 import { dirname } from 'path'
 
+const giteaURL = `${process.env.KITSPACE_GITEA_URL}`
+
 /**
  * Upload a file to gitea server. Just upload, it doesn't commit the files.
  * @param repo{string}
@@ -23,7 +25,7 @@ const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
   formData.append('file', blobFromFile, filePath)
 
   return new Promise((resolve, reject) => {
-    const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload-file`
+    const endpoint = `${giteaURL}/${repo}/upload-file`
     const req = new XMLHttpRequest()
     req.withCredentials = true
     req.open('POST', endpoint)
@@ -82,7 +84,7 @@ export const commitFilesWithUUIDs = async ({
   newBranchName = 'patch-1',
   csrf,
 }) => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/${repo}/upload/master`
+  const endpoint = `${giteaURL}/${repo}/upload/master`
 
   // The body of the request must be url encoded
   const body = new URLSearchParams({
@@ -205,4 +207,18 @@ export const commitFiles = async ({
     newBranchName,
     csrf,
   })
+}
+
+export const logout = async csrf => {
+  const endpoint = `${giteaURL}/user/logout`
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    },
+    body: `_csrf=${csrf}`,
+    credentials: 'include',
+  })
+
+  return res.ok
 }

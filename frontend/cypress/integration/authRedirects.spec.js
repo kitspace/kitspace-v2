@@ -1,7 +1,9 @@
 import faker from 'faker'
 
+import { getFakeUsername } from '../support/getFakeUsername'
+
 describe('It validates authentication redirects', () => {
-  const username = faker.unique(faker.name.firstName)
+  const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
 
@@ -18,11 +20,10 @@ describe('It validates authentication redirects', () => {
     // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
 
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
   })
 
   it("should redirect unauthenticated users to '/login' when accessing requireSignIn page", () => {

@@ -1,7 +1,9 @@
 import faker from 'faker'
 
+import { getFakeUsername } from '../support/getFakeUsername'
+
 describe('It validates `Add Project` behavior', () => {
-  const username = faker.unique(faker.name.firstName)
+  const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
 
@@ -14,8 +16,6 @@ describe('It validates `Add Project` behavior', () => {
     // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
-
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should redirect unauthenticated user to /login?redirect=/projects/new', () => {
@@ -41,7 +41,7 @@ describe('It validates `Add Project` behavior', () => {
 })
 
 describe('It validates redirects after login', () => {
-  const username = faker.unique(faker.name.firstName)
+  const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
 
@@ -54,8 +54,6 @@ describe('It validates redirects after login', () => {
     // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
     cy.reload()
-
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**')
   })
 
   it('should redirect to homepage if there is no redirect query', () => {

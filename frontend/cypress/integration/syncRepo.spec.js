@@ -1,10 +1,8 @@
 import faker from 'faker'
 
-describe('Syncing a project behavior validation', () => {
-  const username = faker.unique(faker.name.firstName)
-  const email = faker.unique(faker.internet.email)
-  const password = '123456'
+import { getFakeUsername } from '../support/getFakeUsername'
 
+describe('Syncing a project behavior validation', () => {
   const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
   const repoName = 'light-test-repo'
 
@@ -17,23 +15,20 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it('should sync a repo on gitea', () => {
-    cy.clearCookies()
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
 
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
-
-    cy.intercept('http://gitea.kitspace.test:3000/api/v1/repos/migrate**').as(
-      'sync',
-    )
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
     cy.get('input:first').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
-    cy.wait('@sync')
+    cy.get('[data-cy=sync-result-message]').should('have.class', 'green')
 
     // Go to Gitea dashboard and assert the repo has been migrated
     cy.visit(`http://gitea.kitspace.test:3000/${username}`)
@@ -41,6 +36,6 @@ describe('Syncing a project behavior validation', () => {
 
     // assert the repo is on `{frontend}/projects/mine`
     cy.visit(`/${username}`)
-    cy.get('.ui.card').contains(repoName)
+    cy.get('[data-cy=project-card]').contains(repoName)
   })
 })

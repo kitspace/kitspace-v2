@@ -1,9 +1,12 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { node } from 'prop-types'
 
+import { logout } from '@utils/giteaInternalApi'
+
 export const AuthContext = createContext({
   isAuthenticated: false,
   user: null,
+  logout: async () => {},
   csrf: '',
 })
 
@@ -38,7 +41,7 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated: auth, user: authenticatedUser, csrf }}
+      value={{ isAuthenticated: auth, user: authenticatedUser, logout, csrf }}
     >
       {children}
     </AuthContext.Provider>

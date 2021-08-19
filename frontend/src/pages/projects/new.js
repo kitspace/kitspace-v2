@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react'
-import { number, shape, string } from 'prop-types'
+import { bool, func, number, shape, string } from 'prop-types'
 import {
   Grid,
   Divider,
@@ -8,6 +8,7 @@ import {
   Modal,
   Form,
   Message,
+  Loader,
 } from 'semantic-ui-react'
 
 import slugify from 'slugify'
@@ -75,10 +76,11 @@ const Upload = ({ user, csrf }) => {
   )
 
   const [modalOpen, setModalOpen] = useState(false)
-  const [files, setFiles] = useState([])
+  const [droppedFiles, setDroppedFiles] = useState([])
   const [projectName, setProjectName] = useState('')
   const [originalProjectName, setOriginalProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
+  const [failedToCreateProject, setFailedToCreateProject] = useState(false)
 
   const onDrop = async droppedFiles => {
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
@@ -86,20 +88,26 @@ const Upload = ({ user, csrf }) => {
 
     setProjectName(tempProjectName)
     setOriginalProjectName(tempProjectName)
-    setFiles(droppedFiles)
+    setDroppedFiles(droppedFiles)
 
     if (repo === '') {
       // In the case of failing to create the repo, i.e., it already exits.
       setModalOpen(true)
-      console.error('Project already exists!')
+      setFailedToCreateProject(true)
     } else {
+      console.error('Project already exists!')
       // Commit files to gitea server on drop
-      await commitInitialFiles({
+      const didUploadSuccessfully = await commitInitialFiles({
         files: droppedFiles,
         repo: `${user.username}/${tempProjectName}`,
         csrf,
       })
-      await push(`/${user.username}/${tempProjectName}?create=true`)
+
+      if (didUploadSuccessfully) {
+        await push(`/${user.username}/${tempProjectName}?create=true`)
+      } else {
+        setFailedToCreateProject(!didUploadSuccessfully)
+      }
     }
   }
 
@@ -110,7 +118,7 @@ const Upload = ({ user, csrf }) => {
     await createRepo(differentName, '', csrf)
 
     await commitInitialFiles({
-      files,
+      files: droppedFiles,
       repo: `${user.username}/${differentName}`,
       csrf,
     })
@@ -119,7 +127,7 @@ const Upload = ({ user, csrf }) => {
 
   const onUpdateExisting = async () => {
     await commitInitialFiles({
-      files,
+      files: droppedFiles,
       repo: `${user.username}/${projectName}`,
       csrf,
     })
@@ -166,9 +174,10 @@ const Upload = ({ user, csrf }) => {
 
   return (
     <>
-      <DropZone
+      <NewProjectDropZone
         onDrop={onDrop}
-        overrideStyle={{ maxWidth: '70%', margin: 'auto' }}
+        failedToCreateProject={failedToCreateProject}
+        didDropFiles={droppedFiles.length !== 0}
       />
       <Modal
         data-cy="collision-modal"
@@ -303,11 +312,27 @@ const Sync = ({ user, csrf }) => {
         </Form>
       </div>
       {!isEmpty(message) ? (
-        <Message style={{ maxWidth: '70%' }} color={message.color}>
+        <Message
+          data-cy="sync-result-message"
+          style={{ maxWidth: '70%' }}
+          color={message.color}
+        >
           {message.content}
         </Message>
       ) : null}
     </div>
+  )
+}
+
+const NewProjectDropZone = ({ onDrop, didDropFiles, failedToCreateProject }) => {
+  if (didDropFiles && !failedToCreateProject)
+    return (
+      <Loader data-cy="creating-project-loader" active>
+        Creating Project...
+      </Loader>
+    )
+  return (
+    <DropZone onDrop={onDrop} overrideStyle={{ maxWidth: '70%', margin: 'auto' }} />
   )
 }
 
@@ -327,6 +352,12 @@ Sync.propTypes = {
 
 Sync.defaultProps = {
   user: null,
+}
+
+NewProjectDropZone.propTypes = {
+  onDrop: func.isRequired,
+  didDropFiles: bool.isRequired,
+  failedToCreateProject: bool.isRequired,
 }
 
 export default New

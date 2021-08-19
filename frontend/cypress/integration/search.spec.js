@@ -1,5 +1,7 @@
 import faker from 'faker'
 
+import { getFakeUsername } from '../support/getFakeUsername'
+
 describe('Homepage search bar', () => {
   it('should redirect to /search when search is submitted', () => {
     const queryTerm = 'awesome project'
@@ -17,27 +19,19 @@ describe('Homepage search bar', () => {
   })
 
   it('should display project card on submitting search form', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     const repoName = 'CH330_Hardware'
     const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Migrate the repo
     cy.get('input:first').type(syncedRepoUrl)
@@ -71,27 +65,20 @@ describe('Search', () => {
   })
 
   it('should use `q` from query parameters', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
+
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     const repoName = 'HACK'
     const syncedRepoUrl = 'https://github.com/kitspace-forks/HACK'
 
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
-
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
-    cy.visit('/projects/new')
-
-    cy.url().then(url => {
-      if (!url.endsWith('/projects/new')) {
-        cy.visit('/projects/new')
-      }
-    })
+    cy.forceVisit('/projects/new')
 
     // Migrate the repo
     cy.get('input:first').type(syncedRepoUrl)

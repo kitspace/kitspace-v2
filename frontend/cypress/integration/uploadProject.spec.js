@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-const updateProjectUrl = 'http://kitspace.test:3000'
+import { getFakeUsername } from '../support/getFakeUsername'
 
 describe('Upload project', () => {
   before(() => {
@@ -12,15 +12,15 @@ describe('Upload project', () => {
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
-    const username = faker.unique(faker.name.firstName)
+    const username = getFakeUsername()
+
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 
     cy.createUser(username, email, password)
     cy.visit('/login')
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
@@ -29,7 +29,11 @@ describe('Upload project', () => {
       cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
     })
 
-    cy.url().should('eq', `${updateProjectUrl}/${username}/example?create=true`)
+    cy.get('[data-cy=creating-project-loader]')
+    cy.url().should(
+      'eq',
+      `${Cypress.config().baseUrl}/${username}/example?create=true`,
+    )
 
     // TODO FIXME, when writing test for project page
     // cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')
@@ -37,7 +41,7 @@ describe('Upload project', () => {
 })
 
 describe('User projects name collision', () => {
-  const username = faker.name.firstName()
+  const username = getFakeUsername()
   const email = faker.internet.email()
   const password = '123456'
 
@@ -52,16 +56,18 @@ describe('User projects name collision', () => {
     // i.e., the same user is used for all tests in this spec.
     cy.createUser(username, email, password)
     cy.visit('/login')
-    cy.intercept('http://gitea.kitspace.test:3000/user/kitspace/**').as('sign_in')
     cy.signIn(username, password)
-    cy.wait('@sign_in')
+    cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
 
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
-      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
+      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'])
     })
+
+    cy.get('[data-cy=creating-project-loader]')
+    cy.url().should('include', `${username}/example`)
   })
 
   beforeEach(() => {
@@ -73,7 +79,7 @@ describe('User projects name collision', () => {
     cy.forceVisit('/projects/new')
     // Simulate dropping a single file('example.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(file => {
-      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'], username)
+      cy.get('[data-cy=dropzone]').dropFiles([file], ['example.png'])
     })
 
     // Collision modal should open
@@ -89,13 +95,12 @@ describe('User projects name collision', () => {
     // Dropping a single file with the same name as an existing project(example)
     // will trigger a name collision
 
-    // Simulate dropping a single file('example.png') in the dropzone.
+    // Simulate dropping two files ('example.png', 'example2.png') in the dropzone.
     cy.fixture('example.png', 'base64').then(f1 => {
       cy.fixture('example2.png', 'base64').then(f2 => {
         cy.get('[data-cy=dropzone]').dropFiles(
           [f1, f2],
           ['example.png', 'example2.png'],
-          username,
         )
       })
     })
@@ -104,7 +109,7 @@ describe('User projects name collision', () => {
     cy.get('[data-cy=collision-update]').click()
 
     // redirect to the upload page
-    cy.url().should('eq', `${updateProjectUrl}/${username}/example`)
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example`)
 
     // TODO FIXME, when writing test for project page
     // The new file is committed and on the update page
