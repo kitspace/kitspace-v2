@@ -117,11 +117,11 @@ const PageElements = ({
     // Handle client side rendering for uploading permissions,
     // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
     if (!hasUploadPermission) {
-      canCommit(projectFullname, user?.username).then(res => {
+      canCommit(projectFullname, user?.username, csrf).then(res => {
         setCanUpload(res && !previewOnly)
       })
     }
-  }, [user, projectFullname, hasUploadPermission, previewOnly])
+  }, [user, projectFullname, hasUploadPermission, previewOnly, csrf])
 
   // A disjoint between the newly uploaded files (waiting for submission) and the files
   // on the Gitea repo for this project
