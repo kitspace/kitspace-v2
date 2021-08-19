@@ -178,6 +178,7 @@ const Upload = ({ user, csrf }) => {
         onDrop={onDrop}
         failedToCreateProject={failedToCreateProject}
         didDropFiles={droppedFiles.length !== 0}
+
       />
       <Modal
         data-cy="collision-modal"
