@@ -1,7 +1,7 @@
 {
   "name": "kitspace-frontend",
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect=0.0.0.0:9229' node server.js",
+    "dev": "node --inspect=0.0.0.0:9229 server.js",
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node server.js",

@@ -4,16 +4,16 @@
     {
       "name": "Debug frontend",
       "type": "node",
-      "request": "attach",
       "protocol": "inspector",
+      "request": "attach",
+      "localRoot": "${workspaceFolder}/frontend",
+      "remoteRoot": "/app",
+      "port": 9229,
       "smartStep": true,
       "skipFiles": [
         "<node_internals>/**",
         "${workspaceFolder}/frontend/node_modules/**"
       ],
-      "remoteRoot": "/app",
-      "localRoot": "${workspaceFolder}/frontend",
-      "port": 9229,
       "sourceMapPathOverrides": {
         "webpack:///*": "${workspaceFolder}/frontend/*"
       },
