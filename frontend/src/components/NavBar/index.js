@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
 import { AuthContext } from '@contexts/AuthContext'
-import styles from './NavBar.module.scss'
+import styles from './index.module.scss'
 
 const NavBar = () => {
   const { pathname } = useRouter()
