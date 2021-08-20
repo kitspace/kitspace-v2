@@ -143,7 +143,6 @@ const SiteMenuItems = ({ isProjectRoute }) => {
       <style jsx global>{`
         #nav div .menu :is(a, div).item {
           align-self: center;
-          // border-color: red;
         }
       `}</style>
     </>

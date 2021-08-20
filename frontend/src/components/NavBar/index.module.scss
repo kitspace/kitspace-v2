@@ -13,7 +13,7 @@
   position: relative;
   width: 100vw;
   justify-content: space-between;
-  @media (max-width: 1047px) {
+  @media (max-width: 1330px) {
     justify-content: space-around;
   }
 }
@@ -23,6 +23,11 @@
   align-self: center !important;
   padding: 0 0 0 1rem !important;
   width: 24rem;
+  @include breakpoint(mobile_menu) {
+    width: 90%;
+    margin: auto;
+    padding: 1rem 0 !important;
+  }
 }
 
 .bigSocialMenu {
