@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug frontend",
+      "type": "node",
+      "protocol": "inspector",
+      "request": "attach",
+      "localRoot": "${workspaceFolder}/frontend",
+      "remoteRoot": "/app",
+      "port": 9229,
+      "smartStep": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/frontend/node_modules/**"
+      ],
+      "sourceMapPathOverrides": {
+        "webpack:///*": "${workspaceFolder}/frontend/*"
+      },
+      "outFiles": ["${workspaceFolder}/frontend/.next/server/**/*.js"]
+    }
+  ]
+}

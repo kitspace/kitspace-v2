@@ -1,7 +1,7 @@
 {
   "name": "kitspace-frontend",
   "scripts": {
-    "dev": "nodemon server.js --watch server.js --watch next.config.js",
+    "dev": "node --inspect=0.0.0.0:9229 server.js",
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node server.js",
@@ -62,7 +62,6 @@
     "eslint-plugin-prettier": "3.4.0",
     "faker": "^5.1.0",
     "lint-staged": ">=10",
-    "nodemon": "^2.0.2",
     "prettier": "^2.0.5"
   }
 }

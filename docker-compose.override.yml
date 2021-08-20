@@ -10,6 +10,7 @@ services:
       - NODE_ENV=development
     ports:
       - '1234:3000'
+      - '9229:9229'
     volumes:
       - /etc/hosts:/etc/hosts
       - ./frontend:/app
