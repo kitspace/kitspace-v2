@@ -66,7 +66,6 @@ describe('Search', () => {
 
   it('should use `q` from query parameters', () => {
     const username = getFakeUsername()
-
     const email = faker.unique(faker.internet.email)
     const password = '123456'
 

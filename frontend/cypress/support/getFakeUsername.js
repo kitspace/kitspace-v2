@@ -7,6 +7,7 @@ import faker from 'faker'
 export const getFakeUsername = () => {
   let username
   try {
+    // It might fail to find unique username in the specified `maxTime`
     username = faker.unique(faker.name.firstName, undefined, { maxTime: 50 })
   } catch (e) {
     username = faker.name.firstName()

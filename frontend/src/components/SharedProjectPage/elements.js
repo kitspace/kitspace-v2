@@ -34,7 +34,7 @@ const PageElements = ({
   description,
   projectName,
   projectFullname,
-  url,
+  originalUrl,
   boardAssetsExist,
   readmeExists,
   kitspaceYAMLExists,
@@ -156,7 +156,7 @@ const PageElements = ({
     <>
       <InfoBar
         name={projectName}
-        url={url}
+        originalUrl={originalUrl}
         site={kitspaceYAML?.site}
         description={description}
       />
@@ -291,7 +291,7 @@ PageElements.propTypes = {
   description: string.isRequired,
   projectName: string.isRequired,
   projectFullname: string.isRequired,
-  url: string.isRequired,
+  originalUrl: string.isRequired,
   boardAssetsExist: bool.isRequired,
   readmeExists: bool.isRequired,
   kitspaceYAMLExists: bool.isRequired,
