@@ -18,6 +18,13 @@
   }
 }
 
+.SearchBarContainer {
+  display: block !important;
+  align-self: center !important;
+  padding: 0 0 0 1rem !important;
+  width: 24rem;
+}
+
 .bigSocialMenu {
   display: flex;
   @include breakpoint(mobile_menu) {

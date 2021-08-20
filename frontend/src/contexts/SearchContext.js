@@ -7,7 +7,7 @@ const SearchContext = createContext({
 })
 
 const SearchProvider = ({ children, initialQuery }) => {
-  const [query, setQuery] = useState(initialQuery ?? '')
+  const [query, setQuery] = useState(initialQuery)
 
   const {
     query: { q },

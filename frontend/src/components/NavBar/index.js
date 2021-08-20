@@ -4,8 +4,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
+import _JSXStyle from 'styled-jsx/style'
 
 import { AuthContext } from '@contexts/AuthContext'
+import SearchBar from './SearchBar'
 import styles from './index.module.scss'
 
 const NavBar = () => {
@@ -134,6 +136,16 @@ const SiteMenuItems = ({ isProjectRoute }) => {
       <Menu.Item as="a" href="/1-click-bom" active={pathname === '/1-click-bom/'}>
         1-click BOM
       </Menu.Item>
+      <Menu.Item className={styles.SearchBarContainer}>
+        <SearchBar />
+      </Menu.Item>
+      {/* Align items menu items with search bar vertically. */}
+      <style jsx global>{`
+        #nav div .menu :is(a, div).item {
+          align-self: center;
+          // border-color: red;
+        }
+      `}</style>
     </>
   )
 }
