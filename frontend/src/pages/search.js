@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
+import { isEqual } from 'lodash'
 
 import { Loader } from 'semantic-ui-react'
 
@@ -62,8 +63,12 @@ const CardsGrid = ({ initialProjects }) => {
   }
 
   useEffect(() => {
-    // When the query changes, revalidate projects, and set `isLoading=true`
-    setIsLoading(true)
+    const isSearchWithSwr = !isEqual(initialProjects, initialDataRef.current)
+    if (isSearchWithSwr) {
+      // Only show the loader if swr was used, i.e., don't show the loader for SSR mode.
+      setIsLoading(true)
+    }
+    // When the query changes, revalidate projects.
     mutate().then(
       /*
       ! useSearchRepos().isLoading can't be used for the loading state;
@@ -73,7 +78,7 @@ const CardsGrid = ({ initialProjects }) => {
       // When the revalidation is done set `isLoading=false`.
       () => setIsLoading(false),
     )
-  }, [query, mutate])
+  }, [query, mutate, initialProjects])
 
   if (isLoading) {
     return <Loader active>Searching...</Loader>
