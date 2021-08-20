@@ -25,7 +25,7 @@ describe('Syncing a project behavior validation', () => {
     cy.get('[data-cy=logout-button]')
 
     cy.forceVisit('/projects/new')
-    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
     cy.get('[data-cy=sync-result-message]').should('have.class', 'green')
 
@@ -54,7 +54,7 @@ describe('Syncing a project behavior validation', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the repo
-    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page

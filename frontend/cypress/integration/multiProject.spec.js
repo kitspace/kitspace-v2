@@ -33,7 +33,7 @@ describe('Render project cards', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
-    cy.get('input:first').type(syncedRepoUrlMultiProjects)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
@@ -67,7 +67,7 @@ describe('Render project cards', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
-    cy.get('input:first').type(syncedRepoUrlMultiProjects)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
@@ -85,7 +85,7 @@ describe('Render project cards', () => {
     /* Migrate the normal repo */
     cy.forceVisit('/projects/new')
 
-    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
@@ -116,7 +116,7 @@ describe('Render project cards', () => {
     cy.forceVisit('/projects/new')
 
     /* Migrate the multiproject repo */
-    cy.get('input:first').type(syncedRepoUrlMultiProjects)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
@@ -168,7 +168,7 @@ describe('Multi project page', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
-    cy.get('input:first').type(syncedRepoUrlMultiProjects)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     cy.url({ timeout: 60_000 }).should(
@@ -218,7 +218,7 @@ describe('Multi project page', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the multiproject repo
-    cy.get('input:first').type(syncedRepoUrlMultiProjects)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
     cy.url({ timeout: 60_000 }).should(
