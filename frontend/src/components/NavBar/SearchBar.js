@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { Form, Input } from 'semantic-ui-react'
+import { Form, Icon, Input } from 'semantic-ui-react'
 
 import { useSearchQuery } from '@contexts/SearchContext'
 import UseForm from '@hooks/useForm'
 import SearchFormModel from '@models/SearchFrom'
 
 const SearchBar = () => {
+  const [isLoading, setIsLoading] = useState(false)
   const { form, onChange, formatErrorPrompt, populate } = UseForm(SearchFormModel)
   const { push } = useRouter()
-
   const { updateQuery, query } = useSearchQuery()
 
   useEffect(() => {
@@ -26,15 +26,20 @@ const SearchBar = () => {
    ** see https://nextjs.org/docs/routing/shallow-routing#caveats.
    */
   const onSubmit = () => {
+    setIsLoading(true)
     updateQuery(form.query)
-    push(`/search?q=${form.query}`, undefined, { shallow: true })
+
+    push(`/search?q=${form.query}`, undefined, { shallow: true }).then(() =>
+      // When redirection finishes, replace the loading icon with the search one.
+      setIsLoading(false),
+    )
   }
 
   return (
     <Form onSubmit={onSubmit}>
       <Form.Field
         data-cy="search-field"
-        icon="search"
+        icon={isLoading ? <LoadingIcon /> : <SearchIcon />}
         fluid
         control={Input}
         placeholder="Search for projects"
@@ -46,5 +51,8 @@ const SearchBar = () => {
     </Form>
   )
 }
+
+const LoadingIcon = () => <Icon loading name="spinner" />
+const SearchIcon = () => <Icon name="search" />
 
 export default SearchBar

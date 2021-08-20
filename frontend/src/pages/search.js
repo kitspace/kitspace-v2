@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
 
@@ -39,14 +39,11 @@ const Search = ({ initialProjects, initialQuery }) => {
 }
 
 const CardsGrid = ({ initialProjects }) => {
+  const [isLoading, setIsLoading] = useState(false)
   const { query } = useSearchQuery()
   const initialDataRef = useRef()
 
-  const {
-    repos: projects,
-    mutate,
-    isLoading,
-  } = useSearchRepos(query, {
+  const { repos: projects, mutate } = useSearchRepos(query, {
     initialData: initialDataRef.current ? initialDataRef.current : initialProjects,
     revalidateOnMount: false,
     revalidateOnFocus: false,
@@ -59,7 +56,17 @@ const CardsGrid = ({ initialProjects }) => {
   }
 
   useEffect(() => {
-    mutate()
+    // When the query changes, revalidate projects, and set `isLoading=true`
+    setIsLoading(true)
+    mutate().then(
+      /*
+      ! useSearchRepos().isLoading can't be used for the loading state;
+      ! using initialData make data always truthy so ` useSearchRepos().isLoading` is never true.
+      ! it's the same problem `initialDataRef` workaround is used to solve another consequence of it.
+      */
+      // When the revalidation is done set `isLoading=false`.
+      () => setIsLoading(false),
+    )
   }, [query, mutate])
 
   if (isLoading) {
