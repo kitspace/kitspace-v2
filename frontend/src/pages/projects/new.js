@@ -290,6 +290,7 @@ const Sync = ({ user, csrf }) => {
           <Form.Group inline>
             <Form.Field
               fluid
+              data-cy="sync-field"
               control={Input}
               className={styles.urlInput}
               name="url"

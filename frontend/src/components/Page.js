@@ -8,6 +8,7 @@ import { AuthContext } from '@contexts/AuthContext'
 import Head from './Head'
 import NavBar from './NavBar'
 import styles from './Page.module.scss'
+import SearchProvider from '@contexts/SearchContext'
 
 const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
   const { pathname, replace } = useRouter()
@@ -63,12 +64,13 @@ const Container = ({ contentFullSize, children }) => (
 
 const Page = ({
   title,
+  initialQuery,
   requireSignIn,
   requireSignOut,
   contentFullSize,
   children,
 }) => (
-  <>
+  <SearchProvider initialQuery={initialQuery}>
     <Head title={title} />
     <NavBar />
     <Content
@@ -78,11 +80,12 @@ const Page = ({
     >
       {children}
     </Content>
-  </>
+  </SearchProvider>
 )
 
 Page.propTypes = {
   title: string.isRequired,
+  initialQuery: string,
   requireSignIn: bool,
   requireSignOut: bool,
   contentFullSize: bool,
@@ -90,6 +93,7 @@ Page.propTypes = {
 }
 
 Page.defaultProps = {
+  initialQuery: '',
   requireSignIn: false,
   requireSignOut: false,
   contentFullSize: false,

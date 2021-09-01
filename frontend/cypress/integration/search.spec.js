@@ -34,7 +34,7 @@ describe('Homepage search bar', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the repo
-    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
@@ -80,7 +80,7 @@ describe('Search', () => {
     cy.forceVisit('/projects/new')
 
     // Migrate the repo
-    cy.get('input:first').type(syncedRepoUrl)
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
