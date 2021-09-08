@@ -5,6 +5,8 @@ import useProjectAssets from '@hooks/useProjectAssets'
 import { string } from 'prop-types'
 import styles from './BoardShowcase.module.scss'
 
+const dimensions = { height: 250, width: 450 }
+
 const BoardShowcase = ({ assetsPath }) => {
   const { top, bottom, isLoading, isError } = useProjectAssets(assetsPath)
   const [selected, setSelected] = useState('top')
@@ -32,7 +34,11 @@ const BoardShowcase = ({ assetsPath }) => {
             </button>
           </div>
           <div className={styles.boardShowcase}>
-            <div className={styles.boardContainer}>
+            <div
+              className={styles.boardContainer}
+              // Using inline style to keep the container height same as images height.
+              style={{ height: dimensions.height }}
+            >
               <div
                 className={`${styles.boardDiagram} ${
                   selected === 'top' ? styles.selectedBoard : ''
@@ -40,11 +46,10 @@ const BoardShowcase = ({ assetsPath }) => {
               >
                 {isLoading || isError ? null : (
                   <Image
+                    {...dimensions}
                     data-cy="board-showcase-top"
                     src={top}
                     objectFit="contain"
-                    width={450}
-                    height={250}
                     alt="PCB top view"
                   />
                 )}
@@ -59,11 +64,10 @@ const BoardShowcase = ({ assetsPath }) => {
               >
                 {isLoading || isError ? null : (
                   <Image
+                    {...dimensions}
                     data-cy="board-showcase-bottom"
                     src={bottom}
                     objectFit="contain"
-                    width={450}
-                    height={250}
                     alt="PCB bottom view"
                   />
                 )}
