@@ -200,13 +200,9 @@ export const getIsProcessingDone = async assetsPath => {
  * @returns{Promise<boolean>}
  */
 export const hasInteractiveBom = async assetsPath => {
-  const statusPath = getStatusPath(assetsPath)
-  const res = await fetch(`${statusPath}/interactive_bom.json`)
+  const res = await fetch(`${assetsPath}/interactive_bom.json`)
 
-  if (!res.ok) return false
-
-  const { status } = await res.json()
-  return status === 'done'
+  return res.ok
 }
 
 /**
