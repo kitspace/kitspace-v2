@@ -47,7 +47,11 @@ function createProjectsAPI(app, repoDir) {
     return res.sendStatus(404)
   })
 
-  const staticFiles = express.static(DATA_DIR)
+  const staticFiles = express.static(DATA_DIR, {
+    maxAge: 2592000000, // milliseconds in a month.
+    immutable: true,
+    lastModified: true,
+  })
 
   app.get('/files/*', (req, res, next) => {
     let x = path.relative('/files/', req.path)
@@ -89,4 +93,4 @@ function getHeadPath(x) {
   return p.join('/')
 }
 
-module.exports = {createProjectsAPI}
+module.exports = { createProjectsAPI }

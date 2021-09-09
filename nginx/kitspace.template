@@ -65,6 +65,10 @@ server {
     }
 }
 
+
+proxy_cache_path /tmp/nginx levels=1:2 keys_zone=processor_cache:200m inactive=60m;
+proxy_cache_key "$request_method$request_uri";
+
 server {
     listen 80;
     listen [::]:80;
@@ -77,6 +81,9 @@ server {
     }
 
     location / {
+        proxy_cache      processor_cache;
+        add_header       X-Proxy-Cache $upstream_cache_status;
+        
         proxy_intercept_errors on;
         proxy_set_header    Host                          $http_host;
         proxy_set_header    X-Real-IP                     $remote_addr;
