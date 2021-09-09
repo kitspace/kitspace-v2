@@ -127,12 +127,12 @@ export const deleteRepo = async (repo, csrf) => {
 
 /**
  * Get list of files in a gitea repo.
- * @param repo {string}
+ * @param fullname {string}
  * @param branch {string=}
- * @returns {Promise<Array|null>}
+ * @returns {Promise<Array>}
  */
-export const getRepoFiles = async (repo, branch = 'master') => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=${branch}`
+export const getRepoFiles = async (fullname, branch) => {
+  const endpoint = `${giteaApiUrl}/repos/${fullname}/contents?ref=${branch ?? ''}`
   const res = await fetch(endpoint, {
     method: 'GET',
     mode,
@@ -172,15 +172,10 @@ export const getRepo = async fullname => {
 
 /**
  * get the files in repo's default branch
- * @param repo {string}
- * @returns {Promise<Array|null>}
+ * @param fullname {string}
+ * @returns {Promise<Array>}
  */
-export const getDefaultBranchFiles = async repo => {
-  const repoDetails = await getRepo(repo)
-  const { default_branch: defaultBranch } = repoDetails
-
-  return getRepoFiles(repo, defaultBranch)
-}
+export const getDefaultBranchFiles = async fullname => getRepoFiles(fullname)
 
 /**
  * Check if a repo exists
