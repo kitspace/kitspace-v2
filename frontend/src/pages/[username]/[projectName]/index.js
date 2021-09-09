@@ -1,12 +1,6 @@
 import React from 'react'
 
-import {
-  canCommit,
-  getDefaultBranchFiles,
-  getRepo,
-  repoExists,
-} from '@utils/giteaApi'
-import { findReadme, renderReadme } from '@utils/index'
+import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
@@ -14,6 +8,7 @@ import {
   hasInteractiveBom,
   getIsProcessingDone,
   getFlatProjects,
+  getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
 import { arrayOf, object, string } from 'prop-types'
@@ -30,7 +25,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
   if (await repoExists(repoFullname)) {
     const [
       repo,
-      repoFiles,
+      readme,
       [boardBomInfoExists, boardBomInfo],
       [gerberInfoExists, gerberInfo],
       [kitspaceYAMLExists, kitspaceYAML],
@@ -40,7 +35,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
       hasUploadPermission,
     ] = await Promise.all([
       getRepo(repoFullname),
-      getDefaultBranchFiles(repoFullname),
+      getReadme(assetsPath),
       getBoardBomInfo(assetsPath),
       getBoardGerberInfo(assetsPath),
       getKitspaceYAMLJson(assetsPath),
@@ -61,9 +56,6 @@ export const getServerSideProps = async ({ params, query, req }) => {
       }
     }
 
-    const readmeFile = kitspaceYAML?.readme || findReadme(repoFiles)
-    const renderedReadme = await renderReadme(repoFullname, readmeFile)
-
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
@@ -73,13 +65,12 @@ export const getServerSideProps = async ({ params, query, req }) => {
         repo,
         projectFullname: repoFullname,
         hasUploadPermission,
-        repoFiles,
         hasIBOM,
         kitspaceYAML,
         zipUrl,
         boardBomInfo,
         boardSpecs: { width, height, layers },
-        renderedReadme,
+        readme,
         isSynced: repo?.mirror,
         // Whether the project were empty or not at the time of requesting the this page from the server.
         isEmpty: repo?.empty,
@@ -87,7 +78,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
         projectName: params.projectName,
         isNew: query.create === 'true',
         boardAssetsExist: gerberInfoExists && boardBomInfoExists,
-        readmeExists: readmeFile !== '',
+        readmeExists: readme !== null,
         kitspaceYAMLExists,
         finishedProcessing,
         description: kitspaceYAML?.summary || repo?.description,

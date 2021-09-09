@@ -1,11 +1,5 @@
 import slugify from 'slugify'
 import path from 'path'
-import { matcher } from 'micromatch'
-import cheerio from 'cheerio'
-
-import { getFileRawContent, renderMarkdown } from './giteaApi'
-
-const giteaUrl = process.env.KITSPACE_GITEA_URL
 
 /**
  * Look in project files and choose a file name for the project from it.
@@ -25,62 +19,6 @@ export const slugifiedNameFromFiles = files => {
   const kicadProject = FilesNames.find(f => f.endsWith('.pro'))
   const projectWithExt = kicadProject || FilesNames[0]
   return slugify(projectWithExt.split('.')[0])
-}
-
-/**
- * find readme file in a repo under a path(default root `/`)
- * @param {Array<object>} repoFiles list of file names to search
- * @param {string=} path a path(gitea path) to search into, if not passed searches repo path.
- * @returns {string} the readme file name if found and an empty string if no readme file were found.
- */
-export const findReadme = repoFiles => {
-  // TODO: implement path search.
-  /**
-   * @type {string[]}
-   */
-  const filesNames = repoFiles.map(f => f.name)
-  const isMatch = matcher('readme?(.markdown|.mdown|.mkdn|.md|.rst)', {
-    nocase: true,
-  })
-  // Find the first matching file index
-  const fileIndex = filesNames.map(f => isMatch(f)).indexOf(true)
-
-  return fileIndex !== -1 ? filesNames[fileIndex] : ''
-}
-
-/**
- * convert readme to html and convert urls to absolute urls.
- * @param {string} repo
- * @param {string} readmeFile
- * @returns {Promise<string>} the content of readme file as html
- */
-export const renderReadme = async (repo, readmeFile) => {
-  // TODO handle `rst` case.
-  const readmeContent = await getFileRawContent(repo, readmeFile)
-  const readmeAsHtml = await renderMarkdown(readmeContent)
-
-  // Replace relative urls with absolute ones for `img` and `a` tags.
-  const $ = cheerio.load(readmeAsHtml)
-  $('img').each((_, elem) => {
-    const img = $(elem)
-    const src = img.attr('src')
-
-    if (src.startsWith('/')) {
-      const rawUrl = `${giteaUrl}/${repo}/raw${src}`
-      img.attr('src', rawUrl)
-    }
-  })
-
-  $('a').each((_, elem) => {
-    const a = $(elem)
-    const href = a.attr('href')
-    if (href.startsWith('/')) {
-      const rawUrl = `${giteaUrl}/${repo}/src${href}`
-      a.attr('href', rawUrl)
-    }
-  })
-
-  return $.html()
 }
 
 /**

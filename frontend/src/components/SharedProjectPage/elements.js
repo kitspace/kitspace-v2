@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { arrayOf, bool, objectOf, string, object, number, shape } from 'prop-types'
+import { bool, objectOf, string, object, number, shape } from 'prop-types'
 import { useRouter } from 'next/router'
 import { uniqBy } from 'lodash'
 import { Button, Form, Input, Loader, Segment, TextArea } from 'semantic-ui-react'
@@ -20,13 +20,12 @@ import UploadModal from '@components/UploadModal'
 
 const PageElements = ({
   assetsPath,
-  repoFiles,
   hasUploadPermission,
   hasIBOM,
   kitspaceYAML,
   boardBomInfo,
   zipUrl,
-  renderedReadme,
+  readme,
   boardSpecs,
   isNew,
   previewOnly,
@@ -44,7 +43,7 @@ const PageElements = ({
     files: remoteFiles,
     isLoading,
     mutate,
-  } = useDefaultBranchFiles(projectFullname, { initialData: repoFiles })
+  } = useDefaultBranchFiles(projectFullname)
   // Details (name, path, last_modified, etc...) for files dropped in the update page
   const [newlyUploadedDetails, setNewlyUploadedDetails] = useState([])
   const [allFiles, setAllFiles] = useState([])
@@ -199,7 +198,7 @@ const PageElements = ({
       </div>
       <div>
         {readmeExists ? (
-          <Readme renderedReadme={renderedReadme} />
+          <Readme renderedReadme={readme} />
         ) : (
           <AssetPlaceholder asset="readme" />
         )}
@@ -269,7 +268,6 @@ AssetPlaceholder.propTypes = {
 
 PageElements.propTypes = {
   assetsPath: string.isRequired,
-  repoFiles: arrayOf(object).isRequired,
   hasUploadPermission: bool.isRequired,
   hasIBOM: bool.isRequired,
   kitspaceYAML: shape({
