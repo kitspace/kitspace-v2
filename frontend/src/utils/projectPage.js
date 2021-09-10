@@ -95,13 +95,9 @@ export const getBoardBomInfo = async assetsPath => {
  * @returns {Promise<string|null>}
  */
 export const getReadme = async assetsPath => {
-  const res = await fetch(`${assetsPath}/readme.json`)
+  const res = await fetch(`${assetsPath}/readme.html`)
 
-  if (res.ok) {
-    const { body } = await res.json()
-    return body
-  }
-  return null
+  return res.ok ? res.text() : null
 }
 
 /**
@@ -147,7 +143,7 @@ export const getIsProcessingDone = async assetsPath => {
     '1-click-BOM.tsv',
     'bom-info.json',
     'interactive_bom.json',
-    'readme.json',
+    'readme.html',
   ]
 
   const kitspaceYAML = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)

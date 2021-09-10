@@ -35,7 +35,7 @@ async function _processReadme(
   outputDir,
   projectFullname,
 ) {
-  const readmePath = path.join(outputDir, 'readme.json')
+  const readmePath = path.join(outputDir, 'readme.html')
 
   events.emit('in_progress', readmePath)
 
@@ -62,7 +62,7 @@ async function _processReadme(
 
   const renderedReadme = postProcessMarkdown(readmeAsHTML, projectFullname)
 
-  await writeFile(readmePath, JSON.stringify({ body: renderedReadme }))
+  await writeFile(readmePath, renderedReadme)
     .then(() => events.emit('done', readmePath))
     .catch(e => events.emit('failed', readmePath, e))
 }
