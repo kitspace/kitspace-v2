@@ -83,7 +83,7 @@ function findReadmeFile(inputDir) {
 }
 
 async function renderMarkdown(rawMarkdown) {
-  const giteaMarkdownEndpoint = `${GITEA_URL}/api/v1/markdown/raw`
+  const giteaMarkdownEndpoint = 'http://gitea:3000/api/v1/markdown/raw'
 
   const res = await superagent
     .post(giteaMarkdownEndpoint)
