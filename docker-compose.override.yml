@@ -42,7 +42,7 @@ services:
       - '5000:5000'
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
     volumes:
-      - /etc/hosts:/etc/hosts
+      - /etc/hosts:/etc/hosts:ro
       - ./processor:/app
       - processor-node_modules:/app/node_modules
 
