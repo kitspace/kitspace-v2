@@ -13,21 +13,25 @@ const statusCodes = {
 /**
  * `Error` component used for handling errors. Derived from Next.js internal error page. Copyright (c) 2019 ZEIT, Inc. Released under MIT.
  */
-const Error = ({ statusCode, title }) => (
-  <div className={styles.error}>
-    <Head>
-      <title>
-        {statusCode}: {title || statusCodes[statusCode]}
-      </title>
-    </Head>
-    <div>
-      {statusCode ? <h1 className={styles.heading}>{statusCode}</h1> : null}
-      <div className={styles.desc}>
-        <h2 className={styles.title}>{title}.</h2>
+const Error = ({ statusCode, title }) => {
+  const statusMessage = statusCodes[statusCode] || title
+
+  return (
+    <div className={styles.error}>
+      <Head>
+        <title>
+          {statusCode}: {statusMessage}
+        </title>
+      </Head>
+      <div>
+        {statusCode ? <h1 className={styles.heading}>{statusCode}</h1> : null}
+        <div className={styles.desc}>
+          <h2 className={styles.title}>{statusMessage}.</h2>
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 Error.propTypes = {
   statusCode: number.isRequired,
