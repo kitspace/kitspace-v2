@@ -19,8 +19,6 @@ export default function UseForm(schema, validateOnBlur) {
   useEffect(() => setFormValidationErrors(validate(form, schema)), [form, schema])
 
   const onChange = (event, data) => {
-    event.persist()
-
     const isCheckBox = data?.type === 'checkbox'
 
     if (isCheckBox) {
