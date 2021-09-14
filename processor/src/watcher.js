@@ -10,6 +10,7 @@ const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
 const processKicadPCB = require('./tasks/processKicadPCB')
+const processReadme = require('./tasks/processReadme')
 
 const running = {}
 function watch(events, repoDir = '/repositories') {
@@ -115,6 +116,7 @@ async function processRepo(events, repoDir, gitDir) {
     processPCB(),
     processBOM(events, checkoutDir, kitspaceYaml, filesDir),
     processIBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
+    processReadme(events, checkoutDir, kitspaceYaml, filesDir, name),
   ])
 }
 
