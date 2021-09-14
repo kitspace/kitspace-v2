@@ -63,7 +63,10 @@ const SignInForm = () => {
 
   const router = useRouter()
 
-  const { form, onChange, isValid, formatErrorPrompt } = useForm(SignInFormModel)
+  const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
+    SignInFormModel,
+    true,
+  )
   const [apiResponse, setApiResponse] = useState({})
 
   const hasApiError = apiResponse.error != null
@@ -115,6 +118,7 @@ const SignInForm = () => {
             name="username"
             value={form.username || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('username')}
           />
           <Form.Field
@@ -126,6 +130,7 @@ const SignInForm = () => {
             name="password"
             value={form.password || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('password')}
           />
           <Form.Field
@@ -155,8 +160,10 @@ const SignInForm = () => {
 const SignUpForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
-  const { form, onChange, isValid, errors, formatErrorPrompt } =
-    useForm(SignUpFormModel)
+  const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
+    SignUpFormModel,
+    true,
+  )
   const [apiResponse, setApiResponse] = useState({})
   const { reload } = useRouter()
 
@@ -225,6 +232,7 @@ const SignUpForm = () => {
             name="username"
             value={form.username || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('username')}
           />
           <Form.Field
@@ -234,8 +242,9 @@ const SignUpForm = () => {
             placeholder="Email"
             name="email"
             value={form.email || ''}
-            error={formatErrorPrompt('email')}
             onChange={onChange}
+            onBlur={onBlur}
+            error={formatErrorPrompt('email')}
           />
           <Form.Field
             fluid
@@ -246,6 +255,7 @@ const SignUpForm = () => {
             name="password"
             value={form.password || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('password')}
           />
           <Form.Field

@@ -1,9 +1,22 @@
-import { useState, useContext, useCallback } from 'react'
+import { useState, useContext, useCallback, useEffect } from 'react'
 import { AuthContext } from '@contexts/AuthContext'
 
-export default function UseForm(schema) {
-  const [form, setForm] = useState({})
+/**
+ *
+ * @param {object} schema
+ * @param {boolean=} validateOnBlur
+ */
+export default function UseForm(schema, validateOnBlur) {
   const { csrf } = useContext(AuthContext)
+  const [form, setForm] = useState({})
+  const [formValidationErrors, setFormValidationErrors] = useState([])
+  /*
+  For forms supporting lazy validation (onBlur),
+  a dirty field is a field the user has interacted with on blurred it (moved focus to other element).
+  */
+  const [dirtyFields, setDirtyFields] = useState([])
+
+  useEffect(() => setFormValidationErrors(validate(form, schema)), [form, schema])
 
   const onChange = (event, data) => {
     event.persist()
@@ -25,6 +38,16 @@ export default function UseForm(schema) {
     }
   }
 
+  /**
+   * Mark a field `dirty`.
+   * @param {Event} event
+   */
+  const onBlur = event => {
+    if (validateOnBlur) {
+      setDirtyFields(prevFields => [...prevFields, event.target.name])
+    }
+  }
+
   const populate = useCallback(
     /**
      * populate form data externally.
@@ -39,18 +62,52 @@ export default function UseForm(schema) {
     [csrf],
   )
 
-  const { error } = schema.validate({ ...form })
-  const isValid = error == null
+  const isValid = Object.keys(formValidationErrors).length === 0
 
-  const errorDetails = error?.details[0]
-  const errors = !isValid
-    ? { field: errorDetails.context.key, msg: errorDetails.message }
-    : {}
+  const isErrorField = field => {
+    const fieldHasInvalidValue =
+      formValidationErrors?.[field] && form[field] != null
 
-  const isErrorField = field => errors.field === field && form[field] != null
+    if (validateOnBlur) {
+      return fieldHasInvalidValue && dirtyFields.includes(field)
+    }
 
-  const formatErrorPrompt = field =>
-    isErrorField(field) ? { content: errors.msg, pointing: 'below' } : null
+    return fieldHasInvalidValue
+  }
 
-  return { form, onChange, populate, isValid, errors, formatErrorPrompt }
+  const formatErrorPrompt = field => {
+    if (isErrorField(field)) {
+      // The structure for react-semantic-ui error object,
+      // see https://react.semantic-ui.com/collections/form/#shorthand-field-control-id
+      return { content: formValidationErrors[field], pointing: 'below' }
+    }
+  }
+
+  return {
+    form,
+    onChange,
+    populate,
+    isValid,
+    errors: formValidationErrors,
+    formatErrorPrompt,
+    onBlur,
+  }
+}
+
+/**
+ *
+ * @param {*} form
+ * @param {*} schema
+ * @returns all the errors in a form eagerly.
+ */
+const validate = (form, schema) => {
+  const { error } = schema.validate({ ...form }, { abortEarly: false })
+  const details = error?.details ?? []
+
+  const allErrors = {}
+  for (const errorField of details) {
+    allErrors[errorField.context.key] = errorField.message
+  }
+
+  return allErrors
 }
