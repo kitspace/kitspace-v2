@@ -112,6 +112,7 @@ const SignInForm = () => {
         <Segment>
           <Form.Field
             fluid
+            required
             control={Input}
             label="Username or Email"
             placeholder="Username or Email"
@@ -123,6 +124,7 @@ const SignInForm = () => {
           />
           <Form.Field
             fluid
+            required
             control={Input}
             label="Password"
             placeholder="Password"
@@ -226,6 +228,7 @@ const SignUpForm = () => {
         <Segment>
           <Form.Field
             fluid
+            required
             control={Input}
             label="Username"
             placeholder="Username"
@@ -237,6 +240,7 @@ const SignUpForm = () => {
           />
           <Form.Field
             fluid
+            required
             control={Input}
             label="Email"
             placeholder="Email"
@@ -248,6 +252,7 @@ const SignUpForm = () => {
           />
           <Form.Field
             fluid
+            required
             control={Input}
             label="Password"
             placeholder="Password"
