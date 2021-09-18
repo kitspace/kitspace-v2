@@ -10,16 +10,22 @@ import {
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
+import ErrorPage from '@pages/_error'
 
-export const getServerSideProps = async ({ params, query, req }) => {
+const MultiProjectPage = props =>
+  props.notFound ? <ErrorPage statusCode={404} /> : <SharedProjectPage {...props} />
+
+MultiProjectPage.getInitialProps = async ({ asPath, query, req }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
-  const { multiProjectName, username, projectName } = params
+  const [ignored, username, projectName, multiProjectName] = asPath.split('/')
+
   const repoFullname = `${username}/${projectName}`
 
   const kitspaceYAMLPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
+  const session = req?.session ?? window?.session
 
   if (await repoExists(repoFullname)) {
     const [
@@ -40,7 +46,7 @@ export const getServerSideProps = async ({ params, query, req }) => {
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
       // The repo owner and collaborators can upload files.
-      canCommit(repoFullname, req?.session?.user?.username),
+      canCommit(repoFullname, session?.user?.username),
     ])
 
     const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
@@ -48,35 +54,38 @@ export const getServerSideProps = async ({ params, query, req }) => {
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
+    if (!projectKitspaceYAML) {
+      // If there is not multiproject as specified in the url `{username}/{projectName}/{multiProjectName}`
+      return { notFound: true }
+    }
+
     return {
-      props: {
-        assetsPath,
-        repo,
-        projectFullname: repoFullname,
-        hasUploadPermission,
-        hasIBOM,
-        kitspaceYAML: projectKitspaceYAML,
-        zipUrl,
-        boardBomInfo,
-        boardSpecs: { width, height, layers },
-        readme,
-        isSynced: repo?.mirror,
-        // Whether the project were empty or not at the time of requesting the this page from the server.
-        isEmpty: repo?.empty,
-        user: params.username,
-        projectName: multiProjectName,
-        isNew: query.create === 'true',
-        boardAssetsExist: gerberInfoExists && boardBomInfoExists,
-        readmeExists: readme !== null,
-        kitspaceYAMLExists,
-        finishedProcessing,
-        description: projectKitspaceYAML?.summary || repo?.description,
-        originalUrl: repo?.original_url,
-      },
+      assetsPath,
+      repo,
+      projectFullname: repoFullname,
+      hasUploadPermission,
+      hasIBOM,
+      kitspaceYAML: projectKitspaceYAML,
+      zipUrl,
+      boardBomInfo,
+      boardSpecs: { width, height, layers },
+      readme,
+      isSynced: repo?.mirror,
+      // Whether the project were empty or not at the time of requesting the this page from the server.
+      isEmpty: repo?.empty,
+      user: username,
+      projectName: multiProjectName,
+      isNew: query.create === 'true',
+      boardAssetsExist: gerberInfoExists && boardBomInfoExists,
+      readmeExists: readme !== null,
+      kitspaceYAMLExists,
+      finishedProcessing,
+      description: projectKitspaceYAML?.summary || repo?.description,
+      originalUrl: repo?.original_url,
     }
   }
+
   return { notFound: true }
 }
 
-const MultiProjectPage = props => <SharedProjectPage {...props} />
 export default MultiProjectPage
