@@ -33,7 +33,7 @@ describe('Log in form validation', () => {
     const invalidUsernames = ['abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
 
     invalidUsernames.forEach(username => {
-      cy.get('input[name=username]').clear().type(username)
+      cy.get('input[name=username]').clear().type(username).blur()
       cy.get('.prompt.label').as('message')
 
       // Success header shouldn't appear.

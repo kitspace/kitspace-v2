@@ -63,7 +63,10 @@ const SignInForm = () => {
 
   const router = useRouter()
 
-  const { form, onChange, isValid, formatErrorPrompt } = useForm(SignInFormModel)
+  const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
+    SignInFormModel,
+    true,
+  )
   const [apiResponse, setApiResponse] = useState({})
 
   const hasApiError = apiResponse.error != null
@@ -109,16 +112,19 @@ const SignInForm = () => {
         <Segment>
           <Form.Field
             fluid
+            required
             control={Input}
             label="Username or Email"
             placeholder="Username or Email"
             name="username"
             value={form.username || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('username')}
           />
           <Form.Field
             fluid
+            required
             control={Input}
             label="Password"
             placeholder="Password"
@@ -126,6 +132,7 @@ const SignInForm = () => {
             name="password"
             value={form.password || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('password')}
           />
           <Form.Field
@@ -155,8 +162,10 @@ const SignInForm = () => {
 const SignUpForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
-  const { form, onChange, isValid, errors, formatErrorPrompt } =
-    useForm(SignUpFormModel)
+  const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
+    SignUpFormModel,
+    true,
+  )
   const [apiResponse, setApiResponse] = useState({})
   const { reload } = useRouter()
 
@@ -219,26 +228,31 @@ const SignUpForm = () => {
         <Segment>
           <Form.Field
             fluid
+            required
             control={Input}
             label="Username"
             placeholder="Username"
             name="username"
             value={form.username || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('username')}
           />
           <Form.Field
             fluid
+            required
             control={Input}
             label="Email"
             placeholder="Email"
             name="email"
             value={form.email || ''}
-            error={formatErrorPrompt('email')}
             onChange={onChange}
+            onBlur={onBlur}
+            error={formatErrorPrompt('email')}
           />
           <Form.Field
             fluid
+            required
             control={Input}
             label="Password"
             placeholder="Password"
@@ -246,6 +260,7 @@ const SignUpForm = () => {
             name="password"
             value={form.password || ''}
             onChange={onChange}
+            onBlur={onBlur}
             error={formatErrorPrompt('password')}
           />
           <Form.Field

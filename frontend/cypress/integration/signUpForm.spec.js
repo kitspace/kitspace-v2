@@ -39,7 +39,7 @@ describe('Sign up form validation', () => {
     ]
 
     invalidUsernames.forEach(username => {
-      cy.get('input[name=username]').clear().type(username)
+      cy.get('input[name=username]').clear().type(username).blur()
 
       // The error message should indicate that the username is invalid.
       cy.get('.prompt.label').as('message')
@@ -55,7 +55,7 @@ describe('Sign up form validation', () => {
     cy.get('input[name=username]').clear().type('someone')
 
     invalidEmails.forEach(email => {
-      cy.get('input[name=email]').clear().type(email)
+      cy.get('input[name=email]').clear().type(email).blur()
 
       // The error message should indicate that the email is invalid.
       cy.get('.prompt.label').as('message')
@@ -68,7 +68,7 @@ describe('Sign up form validation', () => {
     // Try different invalid password.
     cy.get('input[name=username]').clear().type('someone')
     cy.get('input[name=email]').clear().type('someone@example.com')
-    cy.get('input[name=password]').clear().type('12345')
+    cy.get('input[name=password]').clear().type('12345').blur()
 
     // The error message should indicate that the password is invalid.
     cy.get('.prompt.label').as('message')
