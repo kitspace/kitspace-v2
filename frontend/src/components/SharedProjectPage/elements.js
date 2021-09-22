@@ -271,7 +271,7 @@ PageElements.propTypes = {
   }).isRequired,
   boardBomInfo: object.isRequired,
   zipUrl: string.isRequired,
-  renderedReadme: string.isRequired,
+  readme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,
   isNew: bool.isRequired,
   previewOnly: bool.isRequired,
