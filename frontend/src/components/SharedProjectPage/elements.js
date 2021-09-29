@@ -8,7 +8,7 @@ import useForm from '@hooks/useForm'
 import ProjectUpdateFormModel from '@models/ProjectUpdateForm'
 import { useDefaultBranchFiles } from '@hooks/Gitea'
 import { commitFiles } from '@utils/giteaInternalApi'
-import { canCommit, repoExists, updateRepo } from '@utils/giteaApi'
+import { repoExists, updateRepo } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
 import BoardShowcase from '@components/Board/BoardShowcase'
 import BoardExtraMenus from '@components/Board/BoardExtrasMenu'
@@ -50,11 +50,11 @@ const PageElements = ({
   const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
-  const { csrf, user } = useContext(AuthContext)
+  const { csrf } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUpdateFormModel,
   )
-  const [canUpload, setCanUpload] = useState(hasUploadPermission && !previewOnly)
+  const canUpload = hasUploadPermission && !previewOnly
 
   const submit = async e => {
     e.preventDefault()
@@ -111,16 +111,6 @@ const PageElements = ({
   useEffect(() => {
     populate({ name: projectName, description })
   }, [projectName, description, populate])
-
-  useEffect(() => {
-    // Handle client side rendering for uploading permissions,
-    // `canUpload` previously relied on `hasUploadPermission` which is only provided in SSR mode.
-    if (!hasUploadPermission) {
-      canCommit(projectFullname, user?.username, csrf).then(res => {
-        setCanUpload(res && !previewOnly)
-      })
-    }
-  }, [user, projectFullname, hasUploadPermission, previewOnly, csrf])
 
   // A disjoint between the newly uploaded files (waiting for submission) and the files
   // on the Gitea repo for this project
@@ -281,7 +271,7 @@ PageElements.propTypes = {
   }).isRequired,
   boardBomInfo: object.isRequired,
   zipUrl: string.isRequired,
-  renderedReadme: string.isRequired,
+  readme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,
   isNew: bool.isRequired,
   previewOnly: bool.isRequired,
