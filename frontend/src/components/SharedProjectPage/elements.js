@@ -143,6 +143,14 @@ const PageElements = ({
 
   if (isLoading) return <Loader active />
 
+  const AssetPlaceholderWithUploadPermissions = ({ asset }) => (
+    <AssetPlaceholder
+      asset={asset}
+      hasUploadPermission={hasUploadPermission}
+      previewOnly={previewOnly}
+    />
+  )
+
   return (
     <>
       <InfoBar
@@ -167,7 +175,7 @@ const PageElements = ({
             <BoardExtraMenus hasInteractiveBom={hasIBOM} zipUrl={zipUrl} />
           </>
         ) : (
-          <AssetPlaceholder asset="board" />
+          <AssetPlaceholderWithUploadPermissions asset="board" />
         )}
       </div>
       <div>
@@ -178,7 +186,7 @@ const PageElements = ({
             boardSpecs={boardSpecs}
           />
         ) : (
-          <AssetPlaceholder asset="gerber files" />
+          <AssetPlaceholderWithUploadPermissions asset="gerber files" />
         )}
         {bomInfoExists ? (
           <BuyParts
@@ -187,14 +195,14 @@ const PageElements = ({
             parts={bomInfo?.bom?.parts}
           />
         ) : (
-          <AssetPlaceholder asset="bill of materials" />
+          <AssetPlaceholderWithUploadPermissions asset="bill of materials" />
         )}
       </div>
       <div>
         {readmeExists ? (
           <Readme renderedReadme={readme} />
         ) : (
-          <AssetPlaceholder asset="readme" />
+          <AssetPlaceholderWithUploadPermissions asset="README" />
         )}
       </div>
       {canUpload && (
@@ -241,23 +249,37 @@ const PageElements = ({
   )
 }
 
-const AssetPlaceholder = ({ asset }) => (
-  <div
-    style={{
-      width: '70%',
-      margin: 'auto',
-      textAlign: 'center',
-      padding: '5em',
-      borderStyle: 'dashed',
-      borderRadius: '0.8em',
-    }}
-  >
-    No {asset} files were found, upload some.
-  </div>
-)
+const AssetPlaceholder = ({ asset, hasUploadPermission, previewOnly }) => {
+  let message = `No ${asset} files were found`
+
+  if (hasUploadPermission && previewOnly) {
+    message += ', commit files to the original repo and it will be synced'
+  } else if (hasUploadPermission && !previewOnly) {
+    message += ', upload some'
+  }
+
+  return (
+    <div
+      style={{
+        width: '70%',
+        margin: 'auto',
+        marginBottom: '2rem',
+        marginTop: '2rem',
+        textAlign: 'center',
+        padding: '4em',
+        borderStyle: 'dashed',
+        borderRadius: '0.8em',
+      }}
+    >
+      {message}.
+    </div>
+  )
+}
 
 AssetPlaceholder.propTypes = {
   asset: string.isRequired,
+  hasUploadPermission: bool.isRequired,
+  previewOnly: bool.isRequired,
 }
 
 PageElements.propTypes = {
