@@ -23,7 +23,7 @@ const PageElements = ({
   hasUploadPermission,
   hasIBOM,
   kitspaceYAML,
-  boardBomInfo,
+  bomInfo,
   zipUrl,
   readme,
   boardSpecs,
@@ -34,7 +34,8 @@ const PageElements = ({
   projectName,
   projectFullname,
   originalUrl,
-  boardAssetsExist,
+  gerberInfoExists,
+  bomInfoExists,
   readmeExists,
   kitspaceYAMLExists,
   boardShowcaseAssetsExist,
@@ -170,19 +171,21 @@ const PageElements = ({
         )}
       </div>
       <div>
-        {boardAssetsExist ? (
-          <>
-            <OrderPCBs
-              projectFullname={projectFullname}
-              zipUrl={zipUrl}
-              boardSpecs={boardSpecs}
-            />
-            <BuyParts
-              projectFullName={projectFullname}
-              lines={boardBomInfo?.bom?.lines}
-              parts={boardBomInfo?.bom?.parts}
-            />
-          </>
+        {gerberInfoExists ? (
+          <OrderPCBs
+            projectFullname={projectFullname}
+            zipUrl={zipUrl}
+            boardSpecs={boardSpecs}
+          />
+        ) : (
+          <AssetPlaceholder asset="gerber files" />
+        )}
+        {bomInfoExists ? (
+          <BuyParts
+            projectFullName={projectFullname}
+            lines={bomInfo?.bom?.lines}
+            parts={bomInfo?.bom?.parts}
+          />
         ) : (
           <AssetPlaceholder asset="bill of materials" />
         )}
