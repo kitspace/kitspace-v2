@@ -110,6 +110,7 @@ ProjectPage.getInitialProps = async ({ asPath, query, req }) => {
       boardAssetsExist: gerberInfoExists && boardBomInfoExists,
       readmeExists: readme !== null,
       kitspaceYAMLExists,
+      boardShowcaseAssetsExist: gerberInfoExists,
       finishedProcessing,
       description: kitspaceYAML?.summary || repo?.description,
       originalUrl: repo?.original_url,

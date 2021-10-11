@@ -37,6 +37,7 @@ const PageElements = ({
   boardAssetsExist,
   readmeExists,
   kitspaceYAMLExists,
+  boardShowcaseAssetsExist,
 }) => {
   // The files in the Gitea repo associated with this project and the newly loaded files
   const {
@@ -159,7 +160,7 @@ const PageElements = ({
             onDrop={onDrop}
           />
         )}
-        {boardAssetsExist ? (
+        {boardShowcaseAssetsExist ? (
           <>
             <BoardShowcase assetsPath={assetsPath} />
             <BoardExtraMenus hasInteractiveBom={hasIBOM} zipUrl={zipUrl} />
