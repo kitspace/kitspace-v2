@@ -6,7 +6,7 @@ import { logout } from '@utils/giteaInternalApi'
 export const AuthContext = createContext({
   isAuthenticated: false,
   user: null,
-  logout: async () => {},
+  logout: async () => true,
   csrf: '',
 })
 

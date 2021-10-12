@@ -230,25 +230,6 @@ const LoginButton = () => {
   )
 }
 
-const LogoutButton = () => {
-  const { push, reload } = useRouter()
-  const { logout } = useContext(AuthContext)
-
-  const onClick = () => {
-    logout().then(success => {
-      if (success) push('/login').then(reload)
-    })
-  }
-
-  return (
-    <Menu.Item>
-      <Button data-cy="logout-button" id="logout" color="red" onClick={onClick}>
-        Log out
-      </Button>
-    </Menu.Item>
-  )
-}
-
 const UserMenuButton = () => {
   const { user } = useContext(AuthContext)
   return (
@@ -256,13 +237,7 @@ const UserMenuButton = () => {
       trigger={
         <a className={styles.userButtonMenuItem}>
           <div className={styles.userDropContainer}>
-            <Image
-              alt="avatar"
-              style={{ background: 'white' }}
-              size="mini"
-              rounded
-              src={user.avatar_url}
-            />
+            <Image alt="avatar" width={24} height={24} src={user.avatar_url} />
             <Icon inverted name="triangle down" />
           </div>
         </a>
