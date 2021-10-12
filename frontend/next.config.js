@@ -24,7 +24,9 @@ module.exports = {
   },
   images: {
     domains: [
-      process.env.KITSPACE_PROCESSOR_HOST,
+      // TODO: use a wildcard when https://github.com/vercel/next.js/pull/27345 get merged
+      `gitea.${process.env.KITSPACE_DOMAIN}`,
+      `processor.${process.env.KITSPACE_DOMAIN}`,
       'github.com',
       'raw.githubusercontent.com',
     ],
