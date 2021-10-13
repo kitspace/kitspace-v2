@@ -227,7 +227,7 @@ const LogInButton = () => {
   return (
     <Menu.Item>
       <Button id="login" color="green" onClick={onClick}>
-        Log in
+        Login
       </Button>
     </Menu.Item>
   )
