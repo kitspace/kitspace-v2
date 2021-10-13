@@ -8,7 +8,7 @@ import _JSXStyle from 'styled-jsx/style'
 
 import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
-import { UserMenu } from './UserMenu'
+import { UserMenuButton } from './UserMenu'
 import styles from './index.module.scss'
 
 const NavBar = () => {
@@ -64,7 +64,7 @@ const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
       <Menu inverted pointing secondary>
         {isSubmitRoute ? null : <AddProjectButton />}
         <ContactMenu />
-        <SigningButton />
+        <UserControllerButton />
       </Menu>
     </div>
   </>
@@ -91,7 +91,7 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
         {isSubmitRoute ? null : <AddProjectButton />}
         <SiteMenuItems isProjectRoute={isProjectRoute} />
         <SocialMenuItems />
-        <SigningButton />
+        <UserControllerButton />
       </Menu>
     </Popup>
   </div>
@@ -197,24 +197,27 @@ const ContactMenu = () => (
   </Popup>
 )
 
-const SigningButton = () => {
+/**
+ * Log in button if the user is unauthenticated, user menu if otherwise.
+ */
+const UserControllerButton = () => {
   const { pathname } = useRouter()
 
   const { isAuthenticated } = useContext(AuthContext)
-  const isLoginRoute = pathname === '/login'
+  const isLogInRoute = pathname === '/login'
 
   if (isAuthenticated) {
     return <UserMenuButton />
   }
 
-  if (isLoginRoute) {
+  if (isLogInRoute) {
     return null
   }
 
-  return <LoginButton />
+  return <LogInButton />
 }
 
-const LoginButton = () => {
+const LogInButton = () => {
   const { asPath, push } = useRouter()
 
   const onClick = async () => {
@@ -227,26 +230,6 @@ const LoginButton = () => {
         Log in
       </Button>
     </Menu.Item>
-  )
-}
-
-const UserMenuButton = () => {
-  const { user } = useContext(AuthContext)
-  return (
-    <Popup
-      trigger={
-        <a className={styles.userButtonMenuItem}>
-          <div className={styles.userDropContainer}>
-            <Image alt="avatar" width={24} height={24} src={user.avatar_url} />
-            <Icon inverted name="triangle down" />
-          </div>
-        </a>
-      }
-      position="bottom right"
-      on="click"
-    >
-      <UserMenu userName={user.username} />
-    </Popup>
   )
 }
 
