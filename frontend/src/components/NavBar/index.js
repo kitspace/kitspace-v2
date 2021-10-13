@@ -8,7 +8,7 @@ import _JSXStyle from 'styled-jsx/style'
 
 import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
-import { UserMenuButton } from './UserMenu'
+import { UserMenuItems, UserDropDownMenu } from './UserMenu'
 import styles from './index.module.scss'
 
 const NavBar = () => {
@@ -62,7 +62,7 @@ const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
     </div>
     <div className={styles.bigSocialMenu}>
       <Menu inverted pointing secondary>
-        {isSubmitRoute ? null : <AddProjectButton />}
+        {!isSubmitRoute ? <AddProjectButton /> : null}
         <ContactMenu />
         <UserControllerButton />
       </Menu>
@@ -88,10 +88,10 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
       basic
     >
       <Menu inverted vertical>
-        {isSubmitRoute ? null : <AddProjectButton />}
+        {!isSubmitRoute ? <AddProjectButton /> : null}
         <SiteMenuItems isProjectRoute={isProjectRoute} />
         <SocialMenuItems />
-        <UserControllerButton />
+        <UserControllerButton smallNavBar />
       </Menu>
     </Popup>
   </div>
@@ -200,14 +200,18 @@ const ContactMenu = () => (
 /**
  * Log in button if the user is unauthenticated, user menu if otherwise.
  */
-const UserControllerButton = () => {
+const UserControllerButton = ({ smallNavBar }) => {
   const { pathname } = useRouter()
 
   const { isAuthenticated } = useContext(AuthContext)
   const isLogInRoute = pathname === '/login'
 
   if (isAuthenticated) {
-    return <UserMenuButton />
+    if (smallNavBar) {
+      return <UserMenuItems />
+    }
+
+    return <UserDropDownMenu />
   }
 
   if (isLogInRoute) {

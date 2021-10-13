@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import styles from './UserMenu.module.scss'
 import { AuthContext } from '@contexts/AuthContext'
 
-export const UserMenuButton = () => {
+export const UserDropDownMenu = () => {
   const { user } = useContext(AuthContext)
   const [open, setOpen] = useState(false)
 
@@ -38,15 +38,23 @@ const UserMenu = ({ userName }) => {
     <div>
       <div className={styles.userName}>{userName}</div>
       <Menu className={styles.menu} vertical attached>
-        <Link href="/settings" passHref>
-          <Menu.Item>
-            <Icon name="settings" />
-            Settings
-          </Menu.Item>
-        </Link>
-        <LogoutButton />
+        <UserMenuItems />
       </Menu>
     </div>
+  )
+}
+
+export const UserMenuItems = () => {
+  return (
+    <>
+      <Link href="/settings" passHref>
+        <Menu.Item>
+          <Icon name="settings" />
+          Settings
+        </Menu.Item>
+      </Link>
+      <LogoutButton />
+    </>
   )
 }
 
