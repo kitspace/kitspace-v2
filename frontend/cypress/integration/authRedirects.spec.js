@@ -23,7 +23,7 @@ describe('It validates authentication redirects', () => {
 
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
   })
 
   it("should redirect unauthenticated users to '/login' when accessing requireSignIn page", () => {

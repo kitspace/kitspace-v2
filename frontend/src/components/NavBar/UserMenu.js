@@ -12,7 +12,7 @@ export const UserMenuButton = () => {
   const [open, setOpen] = useState(false)
 
   return (
-    <Menu.Item>
+    <Menu.Item data-cy="user-menu">
       <Popup
         trigger={
           <a>

@@ -28,7 +28,7 @@ describe('Render project cards', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 
@@ -62,7 +62,7 @@ describe('Render project cards', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 
@@ -111,7 +111,7 @@ describe('Render project cards', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 
@@ -163,7 +163,7 @@ describe('Multi project page', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 
@@ -213,7 +213,7 @@ describe('Multi project page', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 

@@ -45,7 +45,7 @@
 
 //     cy.visit('/login')
 //     cy.signIn(username, password)
-//     cy.get('[data-cy=logout-button]')
+//     cy.get('[data-cy=user-menu]')
 
 //     cy.intercept(`http://gitea.kitspace.test:3000/api/v1/repos/**`).as('getRepo')
 //     cy.visit(updatePageRoute)
