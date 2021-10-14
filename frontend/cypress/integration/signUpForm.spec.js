@@ -88,15 +88,16 @@ describe('Sign up form submission', () => {
      * Sometimes, the frontend has a slow startup time which results in a random failure.
      */
     cy.visit('/')
+    cy.clearCookies()
 
     // Create user used for conflicts test then sing out again.
-    cy.visit('/login?sign_up')
+    cy.visit('/login')
     cy.signUp(username, email, password)
     cy.clearCookies()
   })
 
   beforeEach(() => {
-    cy.visit('/login?sign_up')
+    cy.visit('/login')
   })
 
   it('should automatically sign the user in after submitting a valid form', () => {
@@ -142,5 +143,13 @@ describe('Sign up form submission', () => {
       cy.get('@message').should('be.visible')
       cy.get('@message').should('include.text', 'Name is reserved.')
     })
+  })
+})
+
+describe('Already have an account? Log in here.', () => {
+  it('should open login pane on clicking "Already have an account? Log in here."', () => {
+    cy.visit('/login')
+    cy.get('[data-cy=log-in-here]').click({ force: true })
+    cy.get('h2').contains('Login')
   })
 })

@@ -281,6 +281,7 @@ const SignUpForm = ({ openLoginPane }) => {
             disabled={!isValid}
           />
           <Form.Field
+            data-cy="log-in-here"
             className={styles.loginInstead}
             label="Already have an account? Log in here."
             as="a"
