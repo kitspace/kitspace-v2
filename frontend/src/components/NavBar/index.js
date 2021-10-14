@@ -87,12 +87,22 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
       inverted
       basic
     >
-      <Menu inverted vertical>
+      <Menu inverted vertical id="small-menu">
+        <UserControllerButton smallNavBar />
         {!isSubmitRoute ? <AddProjectButton /> : null}
         <SiteMenuItems isProjectRoute={isProjectRoute} />
         <SocialMenuItems />
-        <UserControllerButton smallNavBar />
       </Menu>
+      {
+        /* Add a separation line after user specific actions.*/
+        <style jsx global>{`
+          #small-menu #projects:before {
+            background-color: white;
+            height: 1px;
+            margin-bottom: 30px;
+          }
+        `}</style>
+      }
     </Popup>
   </div>
 )
@@ -107,7 +117,7 @@ const AddProjectButton = () => {
 
   return pathname !== '/login' ? (
     <>
-      <Menu.Item>
+      <Menu.Item id="add-project">
         <Button
           id="add_project"
           icon
@@ -128,13 +138,13 @@ const SiteMenuItems = ({ isProjectRoute }) => {
 
   return (
     <>
-      <Menu.Item as="a" href="/" active={isProjectRoute}>
+      <Menu.Item as="a" href="/" active={isProjectRoute} id="projects">
         Projects
       </Menu.Item>
-      <Menu.Item as="a" href="/bom-builder" active={pathname === '/bom-builder/'}>
+      <Menu.Item as="a" href="/bom-builder" active={pathname === '/bom-builder'}>
         BOM Builder
       </Menu.Item>
-      <Menu.Item as="a" href="/1-click-bom" active={pathname === '/1-click-bom/'}>
+      <Menu.Item as="a" href="/1-click-bom" active={pathname === '/1-click-bom'}>
         1-click BOM
       </Menu.Item>
       <Menu.Item className={styles.SearchBarContainer}>

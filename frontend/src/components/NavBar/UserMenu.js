@@ -48,7 +48,7 @@ export const UserMenuItems = () => {
   return (
     <>
       <Link href="/settings" passHref>
-        <Menu.Item>
+        <Menu.Item id="settings">
           <Icon name="settings" />
           Settings
         </Menu.Item>
@@ -72,7 +72,7 @@ const LogoutButton = () => {
   }
 
   return (
-    <Menu.Item onClick={onClick}>
+    <Menu.Item onClick={onClick} id="logout">
       <Icon name="sign out" />
       Log out
     </Menu.Item>
