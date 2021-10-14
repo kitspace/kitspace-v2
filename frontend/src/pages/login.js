@@ -64,7 +64,7 @@ const Login = () => {
 const SignInForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
-  const router = useRouter()
+  const { push, reload, query } = useRouter()
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -86,8 +86,8 @@ const SignInForm = () => {
     const data = await response.json()
 
     if (response.ok) {
-      await router.push(`${router.query.redirect ? router.query.redirect : '/'}`)
-      await router.reload()
+      await push(query.redirect ?? '/')
+      reload()
     } else {
       const { error, message } = data
       setApiResponse({
@@ -170,7 +170,7 @@ const SignUpForm = () => {
     true,
   )
   const [apiResponse, setApiResponse] = useState({})
-  const { reload } = useRouter()
+  const { reload, query, push } = useRouter()
 
   const autoSignIn = async (username, password) => {
     const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
@@ -182,7 +182,8 @@ const SignUpForm = () => {
     })
 
     if (response.ok) {
-      await reload()
+      await push(query.redirect ?? '/')
+      reload()
     } else {
       console.error('Failed to auto sign in the user.')
     }
