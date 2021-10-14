@@ -20,19 +20,22 @@ import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
 
 const Login = () => {
-  const [openPane, setOpenPane] = useState(1)
-  const { query } = useRouter()
+  const [openPane, setOpenPane] = useState(0)
+  const { query, push } = useRouter()
 
   useEffect(() => {
-    if (query.hasOwnProperty('sign_up')) {
-      setOpenPane(0)
-    } else {
+    const openLoginPane = query.hasOwnProperty('1')
+    if (openLoginPane) {
       setOpenPane(1)
+      // Remove the query parameter (`1`) from the url w/o reloading.
+      push('/login', null, { shallow: true })
+    } else {
+      setOpenPane(0)
     }
-  }, [query])
+  }, [query, push])
 
   return (
-    <Page title="login" requireSignOut>
+    <Page title="Login" requireSignOut>
       <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab
@@ -44,7 +47,7 @@ const Login = () => {
                 },
               },
               {
-                menuItem: 'Log in',
+                menuItem: 'Login',
                 render: function SignInTab() {
                   return <SignInForm />
                 },
@@ -97,7 +100,7 @@ const SignInForm = () => {
   return (
     <>
       <Header as="h2" textAlign="center">
-        Log in
+        Login
       </Header>
       <Message
         negative={hasApiError}

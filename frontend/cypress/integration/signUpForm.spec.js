@@ -9,7 +9,7 @@ describe('Sign up form validation', () => {
     cy.clearCookies()
     cy.reload()
 
-    cy.visit('/login?sign_up')
+    cy.visit('/login')
   })
 
   afterEach(() => {

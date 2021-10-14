@@ -13,14 +13,15 @@ describe('Log in form validation', () => {
     cy.clearCookies()
     cy.reload()
 
-    cy.visit('/login')
+    cy.visit('/login?1')
   })
 
   afterEach(() => cy.get('button').contains('Login').should('be.disabled'))
 
   it('should route to sign in form based on params', () => {
+    cy.visit('/login?1')
     // The form is rendered on screen.
-    cy.contains('Log in')
+    cy.contains('Login')
   })
 
   it('should have the proper fields', () => {
@@ -58,7 +59,7 @@ describe('Log in form submission', () => {
   beforeEach(() => {
     // deauthenticate the user and reload the page to update the CSRF token
     cy.clearCookies()
-    cy.reload()
+    cy.visit('/login?1')
   })
 
   it('should display username in homepage on submitting a valid form', () => {

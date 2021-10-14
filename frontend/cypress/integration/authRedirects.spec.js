@@ -16,29 +16,20 @@ describe('It validates authentication redirects', () => {
     cy.createUser(username, email, password)
   })
 
-  beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
-
-    cy.visit('/login')
-    cy.signIn(username, password)
-    cy.get('[data-cy=user-menu]')
-  })
-
   it("should redirect unauthenticated users to '/login' when accessing requireSignIn page", () => {
     // Clear the cookies to make sure the user isn't authenticated
     cy.clearCookies()
-    // sign in, and migrate `light-test-repo`
-    cy.visit('/login')
     // `/project/new` is marked as `reqSignIn`.
     cy.forceVisit('/projects/new')
     cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
   })
 
   it('should redirects authenticated users to homepage when accessing reqSignOut page', () => {
-    // `/login` is marked as `reqSignOut`.
+    // Sign in
     cy.visit('/login')
+    cy.signIn(username, password)
+    cy.get('[data-cy=user-menu]')
+    // `/login` is marked as `reqSignOut`.
     cy.url().should('eq', `${Cypress.config().baseUrl}/${Cypress.env('home_url')}`)
   })
 })
