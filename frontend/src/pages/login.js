@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import {
   Button,
-  Checkbox,
   Form,
   Grid,
   Header,
@@ -78,7 +77,10 @@ const SignInForm = () => {
   const submit = async () => {
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        remember: true, // remember the user by default
+      }),
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     })
@@ -137,12 +139,6 @@ const SignInForm = () => {
             onChange={onChange}
             onBlur={onBlur}
             error={formatErrorPrompt('password')}
-          />
-          <Form.Field
-            control={Checkbox}
-            label="Remember me"
-            name="remember"
-            onChange={onChange}
           />
           <Form.Field
             fluid
