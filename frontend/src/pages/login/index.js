@@ -17,19 +17,19 @@ import useForm from '@hooks/useForm'
 import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
+import styles from './index.module.scss'
 
 const Login = () => {
   const [openPane, setOpenPane] = useState(0)
   const { query, push } = useRouter()
+  const handlePaneChange = e => setOpenPane(e.target.value)
 
   useEffect(() => {
     const openLoginPane = query.hasOwnProperty('1')
     if (openLoginPane) {
-      setOpenPane(1)
       // Remove the query parameter (`1`) from the url w/o reloading.
       push('/login', null, { shallow: true })
-    } else {
-      setOpenPane(0)
+      setOpenPane(1)
     }
   }, [query, push])
 
@@ -42,7 +42,13 @@ const Login = () => {
               {
                 menuItem: 'Sign up',
                 render: function SignUpTab() {
-                  return <SignUpForm />
+                  return (
+                    <SignUpForm
+                      openLoginPane={() =>
+                        push('/login?1', null, { shallow: true })
+                      }
+                    />
+                  )
                 },
               },
               {
@@ -52,7 +58,9 @@ const Login = () => {
                 },
               },
             ]}
-            defaultActiveIndex={openPane}
+            onTabChange={handlePaneChange}
+            activeIndex={openPane}
+            defaultActiveIndex={0}
           />
         </Grid.Column>
       </Grid>
@@ -158,7 +166,7 @@ const SignInForm = () => {
   )
 }
 
-const SignUpForm = () => {
+const SignUpForm = ({ openLoginPane }) => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
@@ -271,6 +279,13 @@ const SignUpForm = () => {
             size="large"
             onClick={submit}
             disabled={!isValid}
+          />
+          <Form.Field
+            className={styles.loginInstead}
+            label="Already have an account? Log in here."
+            as="a"
+            basic
+            onClick={openLoginPane}
           />
         </Segment>
         <Segment>

@@ -13,7 +13,7 @@ import { getAllRepos, searchRepos } from '@utils/giteaApi'
 import ProjectCard from '@components/ProjectCard'
 import { getFlatProjects } from '@utils/projectPage'
 
-import styles from './search.module.scss'
+import styles from './index.module.scss'
 
 export const getServerSideProps = async ({ query }) => {
   const { q } = query
