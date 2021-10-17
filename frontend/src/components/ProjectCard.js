@@ -19,8 +19,8 @@ const ProjectCard = ({
     isMultiProject ? name : null,
   )
   return (
-    <Link href={`/${fullname}/${isMultiProject ? name : ''}`} passHref>
-      <Card data-cy="project-card" className={styles.card}>
+    <Link href={`${fullname}/${isMultiProject ? name : ''}`} passHref>
+      <Card as="a" data-cy="project-card" className={styles.card}>
         <div className={styles.thumbnail}>
           <div>
             {isLoading || isError ? null : (

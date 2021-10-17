@@ -87,7 +87,10 @@ const CardsGrid = ({ initialProjects }) => {
   if (projects?.length === 0) {
     return (
       <p className={styles.noMatching}>
-        Sorry, no result. <Link href="/projects/new">Add your project!</Link>
+        Sorry, no result.{' '}
+        <Link href="/projects/new">
+          <a>Add your project!</a>
+        </Link>
       </p>
     )
   }
