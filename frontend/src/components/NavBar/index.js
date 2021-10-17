@@ -208,7 +208,7 @@ const ContactMenu = () => (
 )
 
 /**
- * Log in button if the user is unauthenticated, user menu if otherwise.
+ * Log in button if the user is unauthenticated, user menu otherwise.
  */
 const UserControllerButton = ({ smallNavBar }) => {
   const { pathname } = useRouter()

@@ -11,12 +11,13 @@ export const UserDropDownMenu = () => {
   const { user } = useContext(AuthContext)
   const [open, setOpen] = useState(false)
 
+  const href = `/${user.username}`
   return (
     <Menu.Item data-cy="user-menu">
       <Popup
         trigger={
           <a>
-            <div className={styles.userDropContainer}>
+            <div className={styles.userDropDownMenuContainer}>
               <Image alt="avatar" width={20} height={20} src={user.avatar_url} />
               <Icon name={`triangle ${open ? 'up' : 'down'}`} />
             </div>
@@ -27,20 +28,16 @@ export const UserDropDownMenu = () => {
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
       >
-        <UserMenu userName={user.username} />
+        <Link href={href} passHref>
+          <div className={styles.userName}>
+            <a href={href}>{user.username}</a>
+          </div>
+        </Link>
+        <Menu className={styles.menu} vertical attached>
+          <UserMenuItems />
+        </Menu>
       </Popup>
     </Menu.Item>
-  )
-}
-
-const UserMenu = ({ userName }) => {
-  return (
-    <div>
-      <div className={styles.userName}>{userName}</div>
-      <Menu className={styles.menu} vertical attached>
-        <UserMenuItems />
-      </Menu>
-    </div>
   )
 }
 

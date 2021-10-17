@@ -1,13 +1,19 @@
 .userName {
   margin-bottom: 10px;
   text-align: center;
-  cursor: default;
+}
+
+.userName a:hover {
+  text-decoration: none;
+  border-radius: 20%;
+  background-color: #efeaea;
+  padding: 5px;
 }
 .menu {
   border: none !important;
 }
 
-.userDropContainer {
+.userDropDownMenuContainer {
   display: flex;
   align-items: center;
 }
