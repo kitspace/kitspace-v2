@@ -38,6 +38,16 @@
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
     "react/destructuring-assignment": "off",
+    "react/prop-types": "error",
+    "react/jsx-sort-props": [
+      1,
+      {
+        "callbacksLast": true,
+        "shorthandFirst": true,
+        "ignoreCase": true,
+        "reservedFirst": true
+      }
+    ],
     "react/jsx-filename-extension": [1, { "extensions": [".js"] }],
     "react-hooks/exhaustive-deps": "error"
   }
