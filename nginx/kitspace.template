@@ -9,13 +9,6 @@ server {
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
-    error_page 404 500 501 502 503 504 506 507 508 510 511 /error/$status/index.html;
-
-    location /error/ {
-        internal;
-        root /srv/frontend/static_fallback/;
-    }
-
     location /static/ {
         root /srv/frontend/public/;
         autoindex on;
