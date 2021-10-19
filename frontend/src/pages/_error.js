@@ -5,13 +5,6 @@ import Head from '@components/Head'
 import NavBar from '@components/NavBar'
 import Error from '@components/Error'
 
-export const getServerSideProps = ({ res, err, query }) => {
-  const statusCode =
-    query?.staticStatusCode ?? res?.staticStatusCode ?? err?.statusCode ?? 404
-
-  return { props: { statusCode } }
-}
-
 const ErrorPage = ({ statusCode }) => (
   <div style={{ maxHeight: '100vh', overflow: 'hidden' }}>
     <Head />
@@ -19,6 +12,13 @@ const ErrorPage = ({ statusCode }) => (
     <Error statusCode={statusCode} />
   </div>
 )
+
+ErrorPage.getInitialProps = ({ res, err, query }) => {
+  const statusCode =
+    query?.staticStatusCode ?? res?.staticStatusCode ?? err?.statusCode ?? 404
+
+  return { statusCode }
+}
 
 ErrorPage.propTypes = {
   statusCode: number.isRequired,

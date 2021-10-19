@@ -10,12 +10,12 @@ import {
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
-import ErrorPage from '@pages/_error'
+import Custom404 from '@pages/404'
 
 const MultiProjectPage = props =>
-  props.notFound ? <ErrorPage statusCode={404} /> : <SharedProjectPage {...props} />
+  props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
-MultiProjectPage.getInitialProps = async ({ asPath, query, req }) => {
+MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
@@ -85,6 +85,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req }) => {
     }
   }
 
+  res.statusCode = 404
   return { notFound: true }
 }
 
