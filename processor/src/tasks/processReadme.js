@@ -100,16 +100,19 @@ async function renderMarkdown(rawMarkdown) {
  * @returns {string}
  */
 function postProcessMarkdown(readmeAsHtml, projectFullname) {
-  // Replace relative urls with absolute ones for `img` and `a` tags.
   const $ = cheerio.load(readmeAsHtml)
   $('img').each((_, elem) => {
     const img = $(elem)
     const src = img.attr('src')
 
-    if (src.startsWith('/')) {
-      const rawUrl = `${GITEA_URL}/${projectFullname}/raw${src}`
+    const isRelativeUri = !src.match(/https?:\/\//)
+    if (isRelativeUri) {
+      const rawUrl = `${GITEA_URL}/${projectFullname}/raw/${src}`
       img.attr('src', rawUrl)
     }
+    
+    // load readme images lazily
+    img.attr('loading', 'lazy')
   })
 
   $('a').each((_, elem) => {

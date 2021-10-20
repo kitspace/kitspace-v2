@@ -148,7 +148,7 @@ export const getIsProcessingDone = async assetsPath => {
 
   const kitspaceYAML = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
 
-  if (!kitspaceYAML.ok) return false
+  if (!kitspaceYAML?.ok) return false
 
   const kitspaceYAMLBody = await kitspaceYAML.json()
   const isMultiProject = kitspaceYAMLBody.hasOwnProperty('multi')
