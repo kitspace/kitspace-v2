@@ -10,7 +10,9 @@ const BomBuilder = () => (
       The BOM Builder allows you to automatically find in-stock components and
       alternatives across distributors and lets you add entire bill of materials
       directly to shopping carts by connecting up to{' '}
-      <Link href="/1-click-bom">1-click BOM</Link>
+      <Link href="/1-click-bom">
+        <a>1-click BOM</a>
+      </Link>
     </p>
     <p>
       In our experience this can cut the purchasing time down from a few hours to a

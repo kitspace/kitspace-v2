@@ -84,9 +84,12 @@ const PleaseInstall = ({ install1ClickBOMCallback }) => (
 const NotCompatible = () => (
   <Message attached warning>
     <Icon name="attention" />
-    Sorry, the <Link href="/1-click-bom">1-click BOM extension</Link> is not yet
-    available for your browser. Only the Digikey add-to-cart links work fully,
-    Farnell and Newark should work but the references will not be added as
+    Sorry, the{' '}
+    <Link href="/1-click-bom">
+      <a>1-click BOM extension</a>
+    </Link>{' '}
+    is not yet available for your browser. Only the Digikey add-to-cart links work
+    fully, Farnell and Newark should work but the references will not be added as
     line-notes.
   </Message>
 )

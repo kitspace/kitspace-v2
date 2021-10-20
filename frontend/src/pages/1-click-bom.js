@@ -31,7 +31,10 @@ const OneClickBom = () => (
       sites like Digikey and Mouser. It lets you simply click on the &quot;buy
       parts&quot; links on Kitspace to get the right parts. You can also use it
       directly with your own spreadsheets or with our{' '}
-      <Link href="/bom-builder">BOM Builder</Link> tool.
+      <Link href="/bom-builder">
+        <a>BOM Builder</a>
+      </Link>{' '}
+      tool.
     </p>
     <p>
       <a href="https://github.com/kitspace/1clickBOM#readme">
