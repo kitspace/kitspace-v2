@@ -96,13 +96,15 @@ const Product = ({
         </div>
         <Total val={state.price} />
         <Button
+          disabled={true}
           fluid
           primary
           role="link"
-          onClick={handleClick}
-          disabled={state.loading}
-          content={state.loading || !state.price ? 'Loading' : 'Order'}
+          content="Out of stock"
         />
+        <div style={{marginTop:10}} >
+        <a href="https://kitspace.org/newsletter/">Sign up to the newsletter</a> to be notified of new stock.
+        </div>
       </div>
     </div>
   )
