@@ -9,24 +9,30 @@ import { AuthContext } from '@contexts/AuthContext'
 
 export const UserDropDownMenu = () => {
   const { user } = useContext(AuthContext)
-  const [open, setOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   const href = `/${user.username}`
   return (
-    <Menu.Item data-cy="user-menu">
+    <Menu.Item data-cy="user-menu" className={styles.userMenuIcon}>
       <Popup
+        className={styles.userDropDownMenuPopup}
         trigger={
-          <a>
-            <div className={styles.userDropDownMenuContainer}>
-              <Image alt="avatar" width={20} height={20} src={user.avatar_url} />
-              <Icon name={`triangle ${open ? 'up' : 'down'}`} />
-            </div>
+          <a className={styles.userDropDownMenuContainer}>
+            <Image
+              className={styles.userImage}
+              alt="avatar"
+              width={35}
+              height={35}
+              src={user.avatar_url}
+              objectFit="scale-down"
+            />
+            <Icon name={`triangle ${isOpen ? 'up' : 'down'}`} />
           </a>
         }
         position="bottom right"
         on="click"
-        onOpen={() => setOpen(true)}
-        onClose={() => setOpen(false)}
+        onOpen={() => setIsOpen(true)}
+        onClose={() => setIsOpen(false)}
       >
         <Link href={href} passHref>
           <div className={styles.userName}>
