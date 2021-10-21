@@ -6,6 +6,7 @@ import Page from '@components/Page'
 import { useMigrationStatus, useRepo } from '@hooks/Gitea'
 import PageElements from './elements'
 import useProcessingStatus from '@hooks/useProcessingStatus'
+import { bool, object, string } from 'prop-types'
 
 const SharedProjectPage = props => {
   const { reload } = useRouter()
@@ -84,11 +85,24 @@ const SharedProjectPage = props => {
       <PageElements
         {...props}
         description={project.description || props.description}
-        owner={props.user}
+        owner={props.username}
         previewOnly={props.isSynced}
       />
     </Page>
   )
+}
+
+SharedProjectPage.propTypes = {
+  assetsPath: string.isRequired,
+  description: string.isRequired,
+  projectName: string.isRequired,
+  projectFullname: string.isRequired,
+  repo: object.isRequired,
+  username: string.isRequired,
+  isEmpty: bool.isRequired,
+  finishedProcessing: bool.isRequired,
+  isSynced: bool.isRequired,
+  hasUploadPermission: bool.isRequired,
 }
 
 export default SharedProjectPage

@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router'
+import { node, string } from 'prop-types'
 import { createContext, useContext, useEffect, useState } from 'react'
 
 const SearchContext = createContext({
@@ -22,6 +23,11 @@ const SearchProvider = ({ children, initialQuery }) => {
       {children}
     </SearchContext.Provider>
   )
+}
+
+SearchProvider.propTypes = {
+  children: node.isRequired,
+  initialQuery: string.isRequired,
 }
 
 export const useSearchQuery = () => useContext(SearchContext)

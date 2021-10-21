@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { func } from 'prop-types'
 import { useRouter } from 'next/router'
 import {
   Button,
@@ -34,7 +35,7 @@ const Login = () => {
   }, [query, push])
 
   return (
-    <Page requireSignOut title="login">
+    <Page requireSignOut title="Kitspace | Login">
       <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab
@@ -295,6 +296,10 @@ const SignUpForm = ({ openLoginPane }) => {
       </Form>
     </>
   )
+}
+
+SignUpForm.propTypes = {
+  openLoginPane: func,
 }
 
 export default Login

@@ -7,7 +7,7 @@ import styles from './OrderPCBs.module.scss'
 
 const retailerLogosDimensions = { height: 30, width: 100 }
 
-const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
+const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
   const pcbwayUrl = `https://www.pcbway.com/QuickOrderOnline.aspx?fileurl=${zipUrl}&from=kitspace`
   const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
@@ -16,7 +16,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
 
   const trackClick = vendor => () => {
     window.plausible('Order PCBs', {
-      props: { project: projectFullName, vendor },
+      props: { project: projectFullname, vendor },
     })
   }
 

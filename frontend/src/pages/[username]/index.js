@@ -45,7 +45,7 @@ const User = ({ userProjects, username }) => {
 }
 
 User.propTypes = {
-  userRepos: arrayOf(object).isRequired,
+  userProjects: arrayOf(object).isRequired,
   username: string.isRequired,
 }
 

@@ -99,6 +99,11 @@ Page.defaultProps = {
   contentFullSize: false,
 }
 
+Container.propTypes = {
+  contentFullSize: bool.isRequired,
+  children: node.isRequired,
+}
+
 Content.propTypes = {
   requireSignIn: bool.isRequired,
   requireSignOut: bool.isRequired,

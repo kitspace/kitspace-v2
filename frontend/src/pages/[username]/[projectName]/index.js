@@ -11,7 +11,7 @@ import {
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
-import { arrayOf, object, string } from 'prop-types'
+import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import ErrorPage from '@pages/_error'
@@ -104,7 +104,7 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       isSynced: repo?.mirror,
       // Whether the project were empty or not at the time of requesting the this page from the server.
       isEmpty: repo?.empty,
-      user: username,
+      username,
       projectName: projectName,
       isNew: query.create === 'true',
       gerberInfoExists,
@@ -122,9 +122,20 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
   return { notFound: true }
 }
 
-SubProjectsGrid.defaultProps = {
-  projects: arrayOf(object).isRequired,
+ProjectPage.propTypes = {
+  notFound: bool,
+  subProjects: arrayOf(object),
   parentProject: string,
+}
+
+ProjectPage.defaultProps = {
+  notFound: false,
+  parentProject: '',
+}
+
+SubProjectsGrid.propTypes = {
+  projects: arrayOf(object).isRequired,
+  parentProject: string.isRequired,
 }
 
 export default ProjectPage

@@ -43,7 +43,7 @@ const InfoBar = ({ name, originalUrl, site, description }) => {
 InfoBar.propTypes = {
   name: string.isRequired,
   originalUrl: string.isRequired,
-  site: string.isRequired,
+  site: string,
   description: string.isRequired,
 }
 

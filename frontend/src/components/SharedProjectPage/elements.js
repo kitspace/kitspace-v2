@@ -151,6 +151,10 @@ const PageElements = ({
     />
   )
 
+  AssetPlaceholderWithUploadPermissions.propTypes = {
+    asset: string.isRequired,
+  }
+
   return (
     <>
       <InfoBar
@@ -295,7 +299,7 @@ PageElements.propTypes = {
     eda: shape({ type: string, pcb: string }),
     readme: string,
   }).isRequired,
-  boardBomInfo: object.isRequired,
+  bomInfo: object.isRequired,
   zipUrl: string.isRequired,
   readme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,
@@ -306,7 +310,9 @@ PageElements.propTypes = {
   projectName: string.isRequired,
   projectFullname: string.isRequired,
   originalUrl: string.isRequired,
-  boardAssetsExist: bool.isRequired,
+  gerberInfoExists: bool.isRequired,
+  bomInfoExists: bool.isRequired,
+  boardShowcaseAssetsExist: bool.isRequired,
   readmeExists: bool.isRequired,
   kitspaceYAMLExists: bool.isRequired,
 }
