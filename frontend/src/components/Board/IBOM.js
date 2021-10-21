@@ -53,10 +53,10 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
   }, [])
 
   return (
-    <Page title={title} contentFullSize>
+    <Page contentFullSize title={title}>
       <Script
-        src="/static/IBOM/index.js"
         id="IBOM_script"
+        src="/static/IBOM/index.js"
         onLoad={() => {
           setReady(true)
           return
@@ -69,7 +69,7 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
          * which will load on visiting any page.
          */}
         {/* eslint-disable-next-line @next/next/no-css-tags */}
-        <link rel="stylesheet" href="/static/IBOM/index.css" />
+        <link href="/static/IBOM/index.css" rel="stylesheet" />
       </NextHead>
       {ready ? (
         <div

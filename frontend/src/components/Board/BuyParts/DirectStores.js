@@ -64,9 +64,9 @@ const DirectStores = ({ items, multiplier }) => {
     index += 1
     return (
       <span key={`digikeyRenderer${index}`}>
-        <input type="hidden" name={`part${index}`} value={part.sku} />
-        <input type="hidden" name={`qty${index}`} value={part.quantity} />
-        <input type="hidden" name={`cref${index}`} value={part.reference} />
+        <input name={`part${index}`} type="hidden" value={part.sku} />
+        <input name={`qty${index}`} type="hidden" value={part.quantity} />
+        <input name={`cref${index}`} type="hidden" value={part.reference} />
       </span>
     )
   }
@@ -75,11 +75,11 @@ const DirectStores = ({ items, multiplier }) => {
     const site = DigikeyData.sites[DigikeyData.lookup[code]]
     return (
       <form
-        target="_blank"
         key="DigikeyForm"
+        action={`https${site}/classic/ordering/fastadd.aspx?WT.z_cid=ref_kitnic`}
         id="DigikeyForm"
         method="POST"
-        action={`https${site}/classic/ordering/fastadd.aspx?WT.z_cid=ref_kitnic`}
+        target="_blank"
       >
         {parts?.map(digikeyPartRenderer)}
       </form>
@@ -91,15 +91,15 @@ const DirectStores = ({ items, multiplier }) => {
     const queryString = parts.map(tildeDelimiter).join('~')
     return (
       <form
-        target="_blank"
         key="FarnellForm"
+        action={`https${site}/jsp/extlink.jsp`}
         id="FarnellForm"
         method="GET"
-        action={`https${site}/jsp/extlink.jsp`}
+        target="_blank"
       >
-        <input type="hidden" name="CMP" value="ref_kitnic" />
-        <input type="hidden" name="action" value="buy" />
-        <input type="hidden" name="product" value={queryString} />
+        <input name="CMP" type="hidden" value="ref_kitnic" />
+        <input name="action" type="hidden" value="buy" />
+        <input name="product" type="hidden" value={queryString} />
       </form>
     )
   }
@@ -108,15 +108,15 @@ const DirectStores = ({ items, multiplier }) => {
     const queryString = parts.map(tildeDelimiter).join('~')
     return (
       <form
-        target="_blank"
         key="NewarkForm"
+        action="https://www.newark.com/jsp/extlink.jsp"
         id="NewarkForm"
         method="GET"
-        action="https://www.newark.com/jsp/extlink.jsp"
+        target="_blank"
       >
-        <input type="hidden" name="CMP" value="ref_kitnic" />
-        <input type="hidden" name="action" value="buy" />
-        <input type="hidden" name="product" value={queryString} />
+        <input name="CMP" type="hidden" value="ref_kitnic" />
+        <input name="action" type="hidden" value="buy" />
+        <input name="product" type="hidden" value={queryString} />
       </form>
     )
   }

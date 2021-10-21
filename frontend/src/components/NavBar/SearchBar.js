@@ -38,15 +38,15 @@ const SearchBar = () => {
   return (
     <Form onSubmit={onSubmit}>
       <Form.Field
-        data-cy="search-field"
-        icon={isLoading ? <LoadingIcon /> : <SearchIcon />}
         fluid
         control={Input}
-        placeholder="Search for projects"
+        data-cy="search-field"
+        error={form.query !== '' && formatErrorPrompt('query')}
+        icon={isLoading ? <LoadingIcon /> : <SearchIcon />}
         name="query"
+        placeholder="Search for projects"
         value={form.query ?? ''}
         onChange={onChange}
-        error={form.query !== '' && formatErrorPrompt('query')}
       />
     </Form>
   )

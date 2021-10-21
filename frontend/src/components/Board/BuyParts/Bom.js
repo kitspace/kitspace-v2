@@ -23,10 +23,10 @@ const Bom = ({ length, parts, tsv }) => {
   return (
     <div className={styles.Bom}>
       <DoubleScrollBar>
-        <TsvTable parts={parts} tsv={tsv} collapsed={collapsed} />
+        <TsvTable collapsed={collapsed} parts={parts} tsv={tsv} />
       </DoubleScrollBar>
       {diff !== 0 ? (
-        <ExpandBom diff={diff} collapsed={collapsed} setCollapsed={setCollapsed} />
+        <ExpandBom collapsed={collapsed} diff={diff} setCollapsed={setCollapsed} />
       ) : null}
     </div>
   )
@@ -46,11 +46,11 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
   return (
     <div style={{ paddingLeft: 1, paddingRight: 1 }}>
       <Table
-        className={styles.expandBomTable}
-        attached="bottom"
         celled
         singleLine
         unstackable
+        attached="bottom"
+        className={styles.expandBomTable}
         style={{
           borderTop: 0,
           cursor: 'pointer',

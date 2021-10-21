@@ -8,7 +8,7 @@ const Readme = ({ renderedReadme }) => (
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: renderedReadme }}
     />
-    <style jsx global>{`
+    <style global jsx>{`
       #readme {
         margin: 2rem 0;
         padding: 0.8rem;

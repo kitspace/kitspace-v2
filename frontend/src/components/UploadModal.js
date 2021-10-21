@@ -153,16 +153,16 @@ const UploadModal = ({
     >
       <Modal
         closeIcon
-        onClose={() => setOpen(false)}
-        onOpen={onOpen}
         open={open}
         trigger={
           <Button
             content="Edit files"
-            loading={modalTriggerLoading}
             disabled={modalTriggerLoading}
+            loading={modalTriggerLoading}
           />
         }
+        onClose={() => setOpen(false)}
+        onOpen={onOpen}
       >
         <Modal.Header>Select files</Modal.Header>
         <Modal.Content image scrolling>
@@ -189,7 +189,7 @@ const Tabs = ({
       menuItem: TabsNames.PCBFiles,
       render: function PCBFilesTab() {
         // PCB Files should be a folder
-        return <UploadTab {...commonTabProps} allowFiles={false} allowFolders />
+        return <UploadTab {...commonTabProps} allowFolders allowFiles={false} />
       },
     },
     {
@@ -208,7 +208,7 @@ const Tabs = ({
     },
   ]
 
-  return <Tab onTabChange={onTabChange} panes={panes} />
+  return <Tab panes={panes} onTabChange={onTabChange} />
 }
 
 const UploadTab = ({
@@ -239,10 +239,10 @@ const UploadTab = ({
       <FilesPreview
         allowFiles={allowFiles}
         allowFolders={allowFolders}
-        select={select}
-        selected={selected}
         externallyMarked={externallyMarked}
         files={files}
+        select={select}
+        selected={selected}
         style={{ paddingLeft: '1rem', overflow: 'auto' }}
       />
     </div>

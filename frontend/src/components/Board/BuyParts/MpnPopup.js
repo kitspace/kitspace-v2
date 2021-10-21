@@ -75,9 +75,9 @@ const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
         <div className={styles.componentFigure}>
           <div>
             <div className={styles.imageContainer}>
-              <Image src={image?.url} alt="part image" />
+              <Image alt="part image" src={image?.url} />
             </div>
-            <a style={{ fontSize: 9 }} href={image?.credit_url}>
+            <a href={image?.credit_url} style={{ fontSize: 9 }}>
               {image?.credit_string}
             </a>
           </div>
@@ -102,18 +102,18 @@ const MpnPopup = ({ onOpen, onClose, trigger, part }) => {
             </a>
           </div>
           <Table
-            basic="very"
             compact
-            tableData={tableData}
+            basic="very"
             renderBodyRow={renderBodyRow}
+            tableData={tableData}
           />
           {part.specs?.length > 4 ? (
             <div className={styles.expansionButton}>
               <Button
-                onClick={() => setExpanded(!expanded)}
-                size="tiny"
                 basic
                 content={expanded ? '⇡' : '...'}
+                size="tiny"
+                onClick={() => setExpanded(!expanded)}
               />
             </div>
           ) : null}

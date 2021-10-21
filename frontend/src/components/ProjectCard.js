@@ -19,18 +19,18 @@ const ProjectCard = ({
     isMultiProject ? name : null,
   )
   return (
-    <Link href={`${fullname}/${isMultiProject ? name : ''}`} passHref>
-      <Card as="a" data-cy="project-card" className={styles.card}>
+    <Link passHref href={`${fullname}/${isMultiProject ? name : ''}`}>
+      <Card as="a" className={styles.card} data-cy="project-card">
         <div className={styles.thumbnail}>
           <div>
             {isLoading || isError ? null : (
               <Image
+                alt={`${name} by ${owner.username}`}
                 data-cy="project-card-thumbnail"
                 height={180}
-                width={240}
                 objectFit="contain"
                 src={src}
-                alt={`${name} by ${owner.username}`}
+                width={240}
               />
             )}
           </div>

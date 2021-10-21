@@ -24,8 +24,8 @@ const ProjectPage = props => {
   if (props?.subProjects)
     return (
       <SubProjectsGrid
-        projects={props.subProjects}
         parentProject={props.parentProject}
+        projects={props.subProjects}
       />
     )
 

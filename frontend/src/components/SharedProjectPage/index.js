@@ -47,7 +47,7 @@ const SharedProjectPage = props => {
   if (!props.finishedProcessing) {
     return (
       <Page title={title}>
-        <Loader data-cy="processing-loader" active>
+        <Loader active data-cy="processing-loader">
           Processing repository...
         </Loader>
       </Page>
@@ -72,7 +72,7 @@ const SharedProjectPage = props => {
   return (
     <Page title={title}>
       {props.isSynced && props.hasUploadPermission ? (
-        <Message data-cy="sync-msg" color="yellow">
+        <Message color="yellow" data-cy="sync-msg">
           <Message.Header>A synced repository!</Message.Header>
           <Message.Content>
             <p>Files uploading isn&apos;t supported for synced repositories.</p>
@@ -84,8 +84,8 @@ const SharedProjectPage = props => {
       <PageElements
         {...props}
         description={project.description || props.description}
-        previewOnly={props.isSynced}
         owner={props.user}
+        previewOnly={props.isSynced}
       />
     </Page>
   )

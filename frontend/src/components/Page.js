@@ -42,7 +42,7 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
 
   if (loading && throttledLoader) {
     return (
-      <Loader style={{ margin: 'auto' }} active>
+      <Loader active style={{ margin: 'auto' }}>
         Loading...
       </Loader>
     )
@@ -55,8 +55,8 @@ const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) =
 
 const Container = ({ contentFullSize, children }) => (
   <main
-    data-cy="page-container"
     className={contentFullSize ? styles.minimalContainer : styles.container}
+    data-cy="page-container"
   >
     {children}
   </main>
@@ -74,9 +74,9 @@ const Page = ({
     <Head title={title} />
     <NavBar />
     <Content
+      contentFullSize={contentFullSize}
       requireSignIn={requireSignIn}
       requireSignOut={requireSignOut}
-      contentFullSize={contentFullSize}
     >
       {children}
     </Content>

@@ -13,33 +13,33 @@ export const UserDropDownMenu = () => {
 
   const href = `/${user.username}`
   return (
-    <Menu.Item data-cy="user-menu" className={styles.userMenuIcon}>
+    <Menu.Item className={styles.userMenuIcon} data-cy="user-menu">
       <Popup
         className={styles.userDropDownMenuPopup}
+        on="click"
+        position="bottom right"
         trigger={
           <a className={styles.userDropDownMenuContainer}>
             <Image
-              className={styles.userImage}
               alt="avatar"
-              width={35}
+              className={styles.userImage}
               height={35}
-              src={user.avatar_url}
               objectFit="scale-down"
+              src={user.avatar_url}
+              width={35}
             />
             <Icon name={`triangle ${isOpen ? 'up' : 'down'}`} />
           </a>
         }
-        position="bottom right"
-        on="click"
-        onOpen={() => setIsOpen(true)}
         onClose={() => setIsOpen(false)}
+        onOpen={() => setIsOpen(true)}
       >
-        <Link href={href} passHref>
+        <Link passHref href={href}>
           <div className={styles.userName}>
             <a href={href}>{user.username}</a>
           </div>
         </Link>
-        <Menu className={styles.menu} vertical attached>
+        <Menu attached vertical className={styles.menu}>
           <UserMenuItems />
         </Menu>
       </Popup>
@@ -50,7 +50,7 @@ export const UserDropDownMenu = () => {
 export const UserMenuItems = () => {
   return (
     <>
-      <Link href="/settings" passHref>
+      <Link passHref href="/settings">
         <Menu.Item id="settings">
           <Icon name="settings" />
           Settings
@@ -75,7 +75,7 @@ const LogoutButton = () => {
   }
 
   return (
-    <Menu.Item onClick={onClick} id="logout">
+    <Menu.Item id="logout" onClick={onClick}>
       <Icon name="sign out" />
       Log out
     </Menu.Item>
