@@ -9,6 +9,7 @@ import {
   getIsProcessingDone,
   getFlatProjects,
   getReadme,
+  getZipURLNoRedirect,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
 import { arrayOf, object, string } from 'prop-types'
@@ -88,7 +89,7 @@ ProjectPage.getInitialProps = async ({ asPath, query, req }) => {
     }
 
     const { zipPath, width, height, layers } = gerberInfo
-    const zipUrl = `${assetsPath}/${zipPath}`
+    const zipUrl = await getZipURLNoRedirect(assetsPath, zipPath)
 
     return {
       assetsPath,
