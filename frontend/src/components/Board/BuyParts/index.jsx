@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { array, bool, func, number, string } from 'prop-types'
 import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
@@ -9,17 +9,71 @@ import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
 const BuyParts = ({ projectFullName, lines, parts }) => {
-  const [extensionPresence, setExtensionPresence] = useState('unknown')
-  // it's needed to fix the extension integration.
-  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-  const [buyParts, setBuyParts] = useState(null)
+  const extensionPresence = useRef('unknown')
+  const [buyParts, setBuyParts] = useState(() => install1ClickBOM)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
   const [adding, setAdding] = useState({})
 
-  const retailerList = OneClickBom.getRetailers()
-  const retailerButtons = retailerList
+  useEffect(() => {
+    const multi = buyMultiplier
+    if (Number.isNaN(multi) || multi < 1) {
+      setMult(1)
+    }
+    const percent = buyAddPercent
+    if (Number.isNaN(percent) || percent < 1) {
+      setMult(0)
+    }
+    setMult(multi + multi * (percent / 100))
+  }, [buyMultiplier, buyAddPercent])
+
+  useEffect(() => {
+    const handleExtensionMessages = event => {
+      if (event.source !== window) {
+        return
+      }
+
+      if (event.data.from === 'extension') {
+        extensionPresence.current = 'present'
+        switch (event.data.message) {
+          case 'register':
+            setBuyParts(() => retailer => {
+              window.plausible('Buy Parts', {
+                props: {
+                  project: projectFullName,
+                  vendor: retailer,
+                  multiplier: mult,
+                },
+              })
+              window.postMessage(
+                {
+                  from: 'page',
+                  message: 'quickAddToCart',
+                  value: {
+                    retailer,
+                    multiplier: mult,
+                  },
+                },
+                '*',
+              )
+            })
+            break
+          case 'updateAddingState':
+            setAdding(event.data.value)
+            break
+          default:
+            break
+        }
+      }
+    }
+
+    window.addEventListener('message', handleExtensionMessages)
+
+    return () => window.removeEventListener('message', handleExtensionMessages)
+  }, [mult, projectFullName])
+
+  const retailerButtons = OneClickBom.getRetailers()
     .map(name => {
       const [numberOfLines, numberOfParts] = lines.reduce(
         ([numOfLines, numOfParts], line) => {
@@ -35,8 +89,10 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
           <RetailerButton
             key={name}
             adding={adding[name]}
-            buyParts={() => install1ClickBOM()}
-            extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
+            buyParts={() => buyParts(name)}
+            extensionPresence={
+              name === 'Digikey' ? 'absent' : extensionPresence.current
+            }
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -47,63 +103,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       return null
     })
     .filter(l => l != null)
-
-  useEffect(() => {
-    // extension communication
-    window.addEventListener(
-      'message',
-      event => {
-        if (event.source !== window) {
-          return
-        }
-        if (event.data.from === 'extension') {
-          setExtensionPresence('present')
-          switch (event.data.message) {
-            case 'register':
-              setBuyParts(retailer => {
-                window.plausible('Buy Parts', {
-                  props: {
-                    project: projectFullName,
-                    vendor: retailer,
-                    multiplier: mult,
-                  },
-                })
-                window.postMessage(
-                  {
-                    from: 'page',
-                    message: 'quickAddToCart',
-                    value: {
-                      retailer,
-                      multiplier: mult,
-                    },
-                  },
-                  '*',
-                )
-              })
-              break
-            case 'updateAddingState':
-              setAdding(event.data.value)
-              break
-            default:
-              break
-          }
-        }
-      },
-      false,
-    )
-  }, [mult, projectFullName])
-
-  useEffect(() => {
-    const multi = buyMultiplier
-    if (Number.isNaN(multi) || multi < 1) {
-      setMult(1)
-    }
-    const percent = buyAddPercent
-    if (Number.isNaN(percent) || percent < 1) {
-      setMult(0)
-    }
-    setMult(multi + multi * (percent / 100))
-  }, [buyMultiplier, buyAddPercent])
 
   const linesToTsv = () => {
     const linesMult = lines.map(line => ({
@@ -121,7 +120,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       </Header>
       {hasPurchasableParts ? (
         <>
-          <InstallPrompt extensionPresence={extensionPresence} />
+          <InstallPrompt extensionPresence={extensionPresence.current} />
           <AdjustQuantity
             buyAddPercent={buyAddPercent}
             buyMultiplier={buyMultiplier}
