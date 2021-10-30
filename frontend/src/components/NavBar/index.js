@@ -8,6 +8,7 @@ import _JSXStyle from 'styled-jsx/style'
 
 import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
+import { UserMenuItems, UserDropDownMenu } from './UserMenu'
 import styles from './index.module.scss'
 
 const NavBar = () => {
@@ -61,9 +62,9 @@ const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
     </div>
     <div className={styles.bigSocialMenu}>
       <Menu inverted pointing secondary>
-        {isSubmitRoute ? null : <AddProjectButton />}
+        {!isSubmitRoute ? <AddProjectButton /> : null}
         <ContactMenu />
-        <SigningButton />
+        <UserControllerButton />
       </Menu>
     </div>
   </>
@@ -86,12 +87,22 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
       inverted
       basic
     >
-      <Menu inverted vertical>
-        {isSubmitRoute ? null : <AddProjectButton />}
+      <Menu inverted vertical id="small-menu">
+        <UserControllerButton smallNavBar />
+        {!isSubmitRoute ? <AddProjectButton /> : null}
         <SiteMenuItems isProjectRoute={isProjectRoute} />
         <SocialMenuItems />
-        <SigningButton />
       </Menu>
+      {
+        /* Add a separation line after user specific actions.*/
+        <style jsx global>{`
+          #small-menu #projects:before {
+            background-color: white;
+            height: 1px;
+            margin-bottom: 30px;
+          }
+        `}</style>
+      }
     </Popup>
   </div>
 )
@@ -106,7 +117,7 @@ const AddProjectButton = () => {
 
   return pathname !== '/login' ? (
     <>
-      <Menu.Item>
+      <Menu.Item id="add-project">
         <Button
           id="add_project"
           icon
@@ -127,13 +138,13 @@ const SiteMenuItems = ({ isProjectRoute }) => {
 
   return (
     <>
-      <Menu.Item as="a" href="/" active={isProjectRoute}>
+      <Menu.Item as="a" href="/" active={isProjectRoute} id="projects">
         Projects
       </Menu.Item>
-      <Menu.Item as="a" href="/bom-builder" active={pathname === '/bom-builder/'}>
+      <Menu.Item as="a" href="/bom-builder" active={pathname === '/bom-builder'}>
         BOM Builder
       </Menu.Item>
-      <Menu.Item as="a" href="/1-click-bom" active={pathname === '/1-click-bom/'}>
+      <Menu.Item as="a" href="/1-click-bom" active={pathname === '/1-click-bom'}>
         1-click BOM
       </Menu.Item>
       <Menu.Item className={styles.SearchBarContainer}>
@@ -196,24 +207,31 @@ const ContactMenu = () => (
   </Popup>
 )
 
-const SigningButton = () => {
+/**
+ * Log in button if the user is unauthenticated, user menu otherwise.
+ */
+const UserControllerButton = ({ smallNavBar }) => {
   const { pathname } = useRouter()
 
   const { isAuthenticated } = useContext(AuthContext)
-  const isLoginRoute = pathname === '/login'
+  const isLogInRoute = pathname === '/login'
 
   if (isAuthenticated) {
-    return <LogoutButton />
+    if (smallNavBar) {
+      return <UserMenuItems />
+    }
+
+    return <UserDropDownMenu />
   }
 
-  if (isLoginRoute) {
+  if (isLogInRoute) {
     return null
   }
 
-  return <LoginButton />
+  return <LogInButton />
 }
 
-const LoginButton = () => {
+const LogInButton = () => {
   const { asPath, push } = useRouter()
 
   const onClick = async () => {
@@ -223,26 +241,7 @@ const LoginButton = () => {
   return (
     <Menu.Item>
       <Button id="login" color="green" onClick={onClick}>
-        Log in
-      </Button>
-    </Menu.Item>
-  )
-}
-
-const LogoutButton = () => {
-  const { push, reload } = useRouter()
-  const { logout } = useContext(AuthContext)
-
-  const onClick = () => {
-    logout().then(success => {
-      if (success) push('/login').then(reload)
-    })
-  }
-
-  return (
-    <Menu.Item>
-      <Button data-cy="logout-button" id="logout" color="red" onClick={onClick}>
-        Log out
+        Login
       </Button>
     </Menu.Item>
   )

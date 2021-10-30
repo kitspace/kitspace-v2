@@ -107,7 +107,7 @@ describe('Sign up form submission', () => {
     cy.signUp(newUsername, newEmail, newPassword)
 
     // the user should be signed in, i.e., the `session.user` object won't be null
-    cy.get('#logout').should('be.visible')
+    cy.get('[data-cy=user-menu]').should('be.visible')
     cy.window().then(win => {
       assert(win.session.user, 'Auto sign in.')
     })

@@ -87,21 +87,6 @@
   margin-right: 8px;
 }
 
-.userButtonContainer {
-  min-width: 87px;
-  display: flex;
-  justify-content: center;
-}
-
-.userDropContainer {
-  display: flex;
-  align-items: center;
-}
-
-.userDropContainer > i {
-  padding-left: 5px;
-  margin-top: -3px;
-}
 .smallMenu {
   display: none;
   @include breakpoint(mobile_menu) {

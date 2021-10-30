@@ -19,7 +19,7 @@ describe('Upload project', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 
@@ -56,7 +56,7 @@ describe('User projects name collision', () => {
     cy.createUser(username, email, password)
     cy.visit('/login')
     cy.signIn(username, password)
-    cy.get('[data-cy=logout-button]')
+    cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
 

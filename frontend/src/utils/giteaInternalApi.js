@@ -215,8 +215,8 @@ export const logout = async csrf => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'X-Csrf-Token': csrf,
     },
-    body: `_csrf=${csrf}`,
     credentials: 'include',
   })
 
