@@ -7,7 +7,7 @@ import styles from './OrderPCBs.module.scss'
 
 const retailerLogosDimensions = { height: 30, width: 100 }
 
-const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
+const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
   const pcbwayUrl = `https://www.pcbway.com/QuickOrderOnline.aspx?fileurl=${zipUrl}&from=kitspace`
   const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
@@ -16,14 +16,14 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
 
   const trackClick = vendor => () => {
     window.plausible('Order PCBs', {
-      props: { project: projectFullName, vendor },
+      props: { project: projectFullname, vendor },
     })
   }
 
   return (
-    <div data-cy="order-pcb" className={styles.PCBMenu}>
+    <div className={styles.PCBMenu} data-cy="order-pcb">
       <div className={`${styles.PCBMenu__group} ${styles.PCBMenu__download}`}>
-        <a href={zipUrl} className={styles.PCBMenu__link}>
+        <a className={styles.PCBMenu__link} href={zipUrl}>
           <Icon name="download" />
           Download Gerbers
         </a>
@@ -39,61 +39,61 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
 
         <div className={styles.PCBMenu__linksContainer}>
           <a
-            rel="nofollow noreferrer"
+            className={styles.PCBMenu__link}
             href={aislerUrl}
+            rel="nofollow noreferrer"
             target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('Aisler')}
             onAuxClick={trackClick('Aisler')}
+            onClick={trackClick('Aisler')}
           >
             <Image
-              src="/static/images/aisler.png"
               alt="Aisler logo"
+              src="/static/images/aisler.png"
               {...retailerLogosDimensions}
             />
           </a>
 
           <a
-            rel="nofollow noreferrer"
+            className={styles.PCBMenu__link}
             href={pcbwayUrl}
+            rel="nofollow noreferrer"
             target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('PCBWay')}
             onAuxClick={trackClick('PCBWay')}
+            onClick={trackClick('PCBWay')}
           >
             <Image
-              src="/static/images/pcbway.png"
               alt="PCBWay logo"
+              src="/static/images/pcbway.png"
               {...retailerLogosDimensions}
             />
           </a>
 
           <a
-            rel="nofollow noreferrer"
+            className={styles.PCBMenu__link}
             href={jlcpcbUrl}
+            rel="nofollow noreferrer"
             target="_blank"
-            className={styles.PCBMenu__link}
-            onClick={trackClick('JLCPCB')}
             onAuxClick={trackClick('JLCPCB')}
+            onClick={trackClick('JLCPCB')}
           >
             <Image
-              src="/static/images/jlcpcb.png"
               alt="JLCPCB logo"
+              src="/static/images/jlcpcb.png"
               {...retailerLogosDimensions}
             />
           </a>
 
           <a
-            rel="nofollow noreferrer"
-            href={oshparkUrl}
-            target="_blank"
             className={styles.PCBMenu__link}
-            onClick={trackClick('OSHPark')}
+            href={oshparkUrl}
+            rel="nofollow noreferrer"
+            target="_blank"
             onAuxClick={trackClick('OSHPark')}
+            onClick={trackClick('OSHPark')}
           >
             <Image
-              src="/static/images/oshpark.png"
               alt="OSHPARK logo"
+              src="/static/images/oshpark.png"
               {...retailerLogosDimensions}
             />
           </a>
@@ -106,16 +106,16 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullName }) => {
         </div>
         <div className={styles.PCBMenu__linksContainer}>
           <a
-            rel="nofollow noreferrer"
-            href={pcbShopperUrl}
-            target="_blank"
             className={styles.PCBMenu__link}
-            onClick={trackClick('PCBShopper')}
+            href={pcbShopperUrl}
+            rel="nofollow noreferrer"
+            target="_blank"
             onAuxClick={trackClick('PCBShopper')}
+            onClick={trackClick('PCBShopper')}
           >
             <Image
-              src="/static/images/pcbshopper.png"
               alt="PCBSHOPPER logo"
+              src="/static/images/pcbshopper.png"
               {...retailerLogosDimensions}
             />
           </a>

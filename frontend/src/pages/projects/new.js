@@ -33,16 +33,16 @@ const New = () => {
   const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 
   return (
-    <Page title="new" requireSignIn>
+    <Page requireSignIn title="new">
       {isBigScreen ? (
         <div
           className={`${styles.projectsNew} ui two column stackable center aligned grid`}
         >
           <Grid.Row>
             <Grid.Column className={styles.optionColumn}>
-              <Sync csrf={csrf} user={user} inline />
+              <Sync inline csrf={csrf} user={user} />
             </Grid.Column>
-            <Divider className={styles.divider} vertical>
+            <Divider vertical className={styles.divider}>
               Or
             </Divider>
             <Grid.Column className={styles.optionColumn}>
@@ -56,7 +56,7 @@ const New = () => {
             <Grid.Row style={rowStyle}>
               <Sync csrf={csrf} user={user} />
             </Grid.Row>
-            <Divider className={styles.divider} horizontal>
+            <Divider horizontal className={styles.divider}>
               Or
             </Divider>
             <Grid.Row style={rowStyle}>
@@ -175,13 +175,13 @@ const Upload = ({ user, csrf }) => {
   return (
     <>
       <NewProjectDropZone
-        onDrop={onDrop}
-        failedToCreateProject={failedToCreateProject}
         didDropFiles={droppedFiles.length !== 0}
+        failedToCreateProject={failedToCreateProject}
+        onDrop={onDrop}
       />
       <Modal
-        data-cy="collision-modal"
         closeIcon
+        data-cy="collision-modal"
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       >
@@ -195,28 +195,28 @@ const Upload = ({ user, csrf }) => {
             <Form.Field
               fluid
               control={Input}
+              error={formatProjectNameError()}
               label={didChangeName ? 'New project name' : 'Project name'}
               name="name"
               value={form.name || ''}
               onChange={onChange}
-              error={formatProjectNameError()}
             />
           </Form>
         </Modal.Content>
         <Modal.Actions>
           {didChangeName ? (
             <Button
-              data-cy="collision-different-name"
-              content="OK"
               color="green"
+              content="OK"
+              data-cy="collision-different-name"
               disabled={!isValidProjectName}
               onClick={onDifferentName}
             />
           ) : (
             <Button
-              data-cy="collision-update"
-              content={`Add files to "${originalProjectName}"`}
               color="orange"
+              content={`Add files to "${originalProjectName}"`}
+              data-cy="collision-update"
               onClick={onUpdateExisting}
             />
           )}
@@ -290,23 +290,23 @@ const Sync = ({ user, csrf }) => {
           <Form.Group inline>
             <Form.Field
               fluid
-              data-cy="sync-field"
-              control={Input}
               className={styles.urlInput}
+              control={Input}
+              data-cy="sync-field"
               name="url"
               placeholder={`e.g., ${remoteRepoPlaceHolder}`}
-              onChange={onChange}
               value={form.url || ''}
+              onChange={onChange}
             />
             <div className={styles.syncButton}>
               <Form.Field
-                control={Button}
-                content="Sync"
                 color="green"
-                loading={loading}
+                content="Sync"
+                control={Button}
                 disabled={loading || form.url == null}
-                onClick={handleClick}
                 icon="sync"
+                loading={loading}
+                onClick={handleClick}
               />
             </div>
           </Form.Group>
@@ -314,9 +314,9 @@ const Sync = ({ user, csrf }) => {
       </div>
       {!isEmpty(message) ? (
         <Message
+          color={message.color}
           data-cy="sync-result-message"
           style={{ maxWidth: '70%' }}
-          color={message.color}
         >
           {message.content}
         </Message>
@@ -328,12 +328,12 @@ const Sync = ({ user, csrf }) => {
 const NewProjectDropZone = ({ onDrop, didDropFiles, failedToCreateProject }) => {
   if (didDropFiles && !failedToCreateProject)
     return (
-      <Loader data-cy="creating-project-loader" active>
+      <Loader active data-cy="creating-project-loader">
         Creating Project...
       </Loader>
     )
   return (
-    <DropZone onDrop={onDrop} overrideStyle={{ maxWidth: '70%', margin: 'auto' }} />
+    <DropZone overrideStyle={{ maxWidth: '70%', margin: 'auto' }} onDrop={onDrop} />
   )
 }
 

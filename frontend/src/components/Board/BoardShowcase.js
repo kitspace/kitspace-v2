@@ -12,23 +12,23 @@ const BoardShowcase = ({ assetsPath }) => {
   const [selected, setSelected] = useState('top')
 
   return (
-    <div data-cy="board-showcase" className={styles.showcaseContainer}>
+    <div className={styles.showcaseContainer} data-cy="board-showcase">
       <div className={styles.boardShowcaseWithMenu}>
         <div className={styles.boardShowcaseContainer}>
           <div className={`${styles.toggleBoardView} ${styles.responsiveTabs}`}>
             <button
+              className={`${styles.circuitToggleBtn}`}
+              disabled={selected === 'top'}
               type="button"
               onClick={() => setSelected('top')}
-              disabled={selected === 'top'}
-              className={`${styles.circuitToggleBtn}`}
             >
               Top
             </button>
             <button
+              className={`${styles.circuitToggleBtn}`}
+              disabled={selected === 'bottom'}
               type="button"
               onClick={() => setSelected('bottom')}
-              disabled={selected === 'bottom'}
-              className={`${styles.circuitToggleBtn}`}
             >
               Bottom
             </button>
@@ -47,10 +47,10 @@ const BoardShowcase = ({ assetsPath }) => {
                 {isLoading || isError ? null : (
                   <Image
                     {...dimensions}
-                    data-cy="board-showcase-top"
-                    src={top}
-                    objectFit="contain"
                     alt="PCB top view"
+                    data-cy="board-showcase-top"
+                    objectFit="contain"
+                    src={top}
                   />
                 )}
               </div>
@@ -65,10 +65,10 @@ const BoardShowcase = ({ assetsPath }) => {
                 {isLoading || isError ? null : (
                   <Image
                     {...dimensions}
-                    data-cy="board-showcase-bottom"
-                    src={bottom}
-                    objectFit="contain"
                     alt="PCB bottom view"
+                    data-cy="board-showcase-bottom"
+                    objectFit="contain"
+                    src={bottom}
                   />
                 )}
               </div>

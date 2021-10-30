@@ -10,9 +10,6 @@ const DeleteModal = ({ projectName, invalidateCache }) => {
 
   return (
     <Modal
-      trigger={<Button content="Delete" color="red" />}
-      header="Heads up!"
-      content={`Are you sure you want to delete the ${projectName} project?`}
       actions={[
         'Cancel',
         {
@@ -26,6 +23,9 @@ const DeleteModal = ({ projectName, invalidateCache }) => {
           },
         },
       ]}
+      content={`Are you sure you want to delete the ${projectName} project?`}
+      header="Heads up!"
+      trigger={<Button color="red" content="Delete" />}
     />
   )
 }

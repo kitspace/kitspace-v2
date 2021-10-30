@@ -26,7 +26,7 @@ const Error = ({ statusCode, title }) => {
       <div>
         {statusCode ? <h1 className={styles.heading}>{statusCode}</h1> : null}
         <div className={styles.desc}>
-          <h2 data-cy="status-message" className={styles.title}>
+          <h2 className={styles.title} data-cy="status-message">
             {statusMessage}.
           </h2>
         </div>

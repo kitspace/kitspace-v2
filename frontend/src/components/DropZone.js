@@ -151,8 +151,8 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
             basic
             as="button"
             content={filesButtonContent}
-            onClick={open}
             icon="file"
+            onClick={open}
           />
         )}
         {allowFolders && (
@@ -160,22 +160,22 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
             <Button
               basic
               as="label"
-              htmlFor="folder-picker"
-              type="button"
               content="Select a folder"
+              htmlFor="folder-picker"
               icon="folder"
+              type="button"
             />
             <input
               {...FolderPickerInputProps()}
-              type="file"
-              id="folder-picker"
-              style={{ display: 'none' }}
+              multiple
               directory=""
-              webkitdirectory=""
+              id="folder-picker"
               mozdirectory=""
               msdirectory=""
               odirectory=""
-              multiple
+              style={{ display: 'none' }}
+              type="file"
+              webkitdirectory=""
             />
           </>
         )}

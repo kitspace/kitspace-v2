@@ -11,7 +11,7 @@ const OAuthButtons = () => (
     <Header as="h3" textAlign="center">
       Or with
     </Header>
-    <Grid columns={3} divided>
+    <Grid divided columns={3}>
       <Grid.Row>
         <Grid.Column>
           <TwitterLoginButton>Twitter</TwitterLoginButton>

@@ -33,14 +33,14 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       if (numberOfLines > 0) {
         return (
           <RetailerButton
-            name={name}
-            adding={adding[name]}
-            extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
-            buyParts={() => install1ClickBOM()}
-            numberOfParts={numberOfParts}
-            numberOfLines={numberOfLines}
-            totalLines={lines.length}
             key={name}
+            adding={adding[name]}
+            buyParts={() => install1ClickBOM()}
+            extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
+            name={name}
+            numberOfLines={numberOfLines}
+            numberOfParts={numberOfParts}
+            totalLines={lines.length}
           />
         )
       }
@@ -114,23 +114,23 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
   }
 
   return (
-    <div data-cy="buy-parts" className={styles.BuyParts}>
-      <Header textAlign="center" as="h3" attached="top">
+    <div className={styles.BuyParts} data-cy="buy-parts">
+      <Header as="h3" attached="top" textAlign="center">
         <Icon className={styles.BuyPartsIcon} name="shopping basket" />
         Buy Parts
       </Header>
       <InstallPrompt extensionPresence={extensionPresence} />
       <AdjustQuantity
-        buyMultiplier={buyMultiplier}
         buyAddPercent={buyAddPercent}
-        setBuyMultiplier={v => setBuyMultiplier(v)}
+        buyMultiplier={buyMultiplier}
         setBuyAddPercent={v => setBuyAddPercent(v)}
+        setBuyMultiplier={v => setBuyMultiplier(v)}
       />
-      <Segment className={styles.buttonSegment} attached>
+      <Segment attached className={styles.buttonSegment}>
         {retailerButtons}
       </Segment>
-      <Bom attached parts={parts} tsv={linesToTsv()} length={lines.length} />
-      <DirectStores multiplier={mult} items={lines} />
+      <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
+      <DirectStores items={lines} multiplier={mult} />
     </div>
   )
 }
@@ -141,16 +141,16 @@ const AdjustQuantity = ({
   buyAddPercent,
   setBuyAddPercent,
 }) => (
-  <Segment textAlign="center" attached className={styles.AdjustQuantity}>
+  <Segment attached className={styles.AdjustQuantity} textAlign="center">
     Adjust quantity:
     <Icon className={styles.AdjustQuantityIcon} name="delete" />
     <Input
-      type="number"
-      size="mini"
-      min={1}
-      value={buyMultiplier}
-      style={{ width: 80 }}
       error={Number.isNaN(buyMultiplier) || buyMultiplier < 1}
+      min={1}
+      size="mini"
+      style={{ width: 80 }}
+      type="number"
+      value={buyMultiplier}
       onBlur={() => {
         const v = buyMultiplier
         if (Number.isNaN(v) || v < 1) {
@@ -164,13 +164,13 @@ const AdjustQuantity = ({
     />
     <Icon className={styles.AdjustQuantityIcon} name="plus" />
     <Input
-      type="number"
-      min={0}
-      step={10}
-      value={buyAddPercent}
-      size="mini"
-      style={{ width: 80 }}
       error={Number.isNaN(buyAddPercent) || buyAddPercent < 0}
+      min={0}
+      size="mini"
+      step={10}
+      style={{ width: 80 }}
+      type="number"
+      value={buyAddPercent}
       onBlur={() => {
         const v = buyAddPercent
         if (Number.isNaN(v) || v < 0) {
@@ -212,8 +212,7 @@ const RetailerButton = ({
   const color = numberOfLines === totalLines ? 'green' : 'pink'
   return (
     <Button
-      onClick={onClick}
-      loading={adding}
+      className={`${styles.retailerButton} ${styles[color]}`}
       color={color}
       content={
         <div className={styles.buttonText}>
@@ -243,7 +242,8 @@ const RetailerButton = ({
         ),
       }}
       labelPosition="right"
-      className={`${styles.retailerButton} ${styles[color]}`}
+      loading={adding}
+      onClick={onClick}
     />
   )
 }
@@ -258,10 +258,10 @@ const StoreIcon = ({ retailer, disabled }) => {
      */
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      className={styles.storeIcons}
       key={retailer}
-      src={imgHref}
       alt={retailer}
+      className={styles.storeIcons}
+      src={imgHref}
     />
   )
 }

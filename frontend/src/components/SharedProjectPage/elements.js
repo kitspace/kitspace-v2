@@ -151,20 +151,24 @@ const PageElements = ({
     />
   )
 
+  AssetPlaceholderWithUploadPermissions.propTypes = {
+    asset: string.isRequired,
+  }
+
   return (
     <>
       <InfoBar
+        description={description}
         name={projectName}
         originalUrl={originalUrl}
         site={kitspaceYAML?.site}
-        description={description}
       />
       <div>
         {canUpload && (
           <UploadModal
-            kitspaceYAMLExists={kitspaceYAMLExists}
             files={allFiles}
             kitspaceYAML={kitspaceYAML}
+            kitspaceYAMLExists={kitspaceYAMLExists}
             projectFullname={projectFullname}
             onDrop={onDrop}
           />
@@ -181,18 +185,18 @@ const PageElements = ({
       <div>
         {gerberInfoExists ? (
           <OrderPCBs
+            boardSpecs={boardSpecs}
             projectFullname={projectFullname}
             zipUrl={zipUrl}
-            boardSpecs={boardSpecs}
           />
         ) : (
           <AssetPlaceholderWithUploadPermissions asset="gerber files" />
         )}
         {bomInfoExists ? (
           <BuyParts
-            projectFullName={projectFullname}
             lines={bomInfo?.bom?.lines}
             parts={bomInfo?.bom?.parts}
+            projectFullName={projectFullname}
           />
         ) : (
           <AssetPlaceholderWithUploadPermissions asset="bill of materials" />
@@ -209,38 +213,38 @@ const PageElements = ({
         <Form>
           <Segment>
             <Form.Field
-              data-cy="update-form-name"
               fluid
               required
-              readOnly={previewOnly}
               control={Input}
+              data-cy="update-form-name"
+              error={formatProjectNameError('name')}
               label="Project name"
-              placeholder="Project name"
               name="name"
+              placeholder="Project name"
+              readOnly={previewOnly}
               value={form.name || ''}
               onChange={onChange}
-              error={formatProjectNameError('name')}
             />
             <Form.Field
-              data-cy="update-form-description"
-              readOnly={previewOnly}
               control={TextArea}
+              data-cy="update-form-description"
+              error={formatErrorPrompt('description')}
               label="Project description"
-              placeholder="Project description"
               name="description"
+              placeholder="Project description"
+              readOnly={previewOnly}
               value={form.description || ''}
               onChange={onChange}
-              error={formatErrorPrompt('description')}
             />
             <Form.Field
-              data-cy="update-form-submit"
               fluid
-              control={Button}
-              content={isNew ? 'Create' : 'Update'}
-              disabled={previewOnly || !isValidProjectName || loading}
-              onClick={submit}
               positive
+              content={isNew ? 'Create' : 'Update'}
+              control={Button}
+              data-cy="update-form-submit"
+              disabled={previewOnly || !isValidProjectName || loading}
               loading={loading}
+              onClick={submit}
             />
           </Segment>
         </Form>
@@ -295,7 +299,7 @@ PageElements.propTypes = {
     eda: shape({ type: string, pcb: string }),
     readme: string,
   }).isRequired,
-  boardBomInfo: object.isRequired,
+  bomInfo: object.isRequired,
   zipUrl: string.isRequired,
   readme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,
@@ -306,7 +310,9 @@ PageElements.propTypes = {
   projectName: string.isRequired,
   projectFullname: string.isRequired,
   originalUrl: string.isRequired,
-  boardAssetsExist: bool.isRequired,
+  gerberInfoExists: bool.isRequired,
+  bomInfoExists: bool.isRequired,
+  boardShowcaseAssetsExist: bool.isRequired,
   readmeExists: bool.isRequired,
   kitspaceYAMLExists: bool.isRequired,
 }

@@ -24,28 +24,28 @@ const BomBuilder = () => (
       A quick demo of the alpha version
     </h2>
     <iframe
-      title="A quick demo of the alpha version"
-      style={{ maxWidth: '90%' }}
-      width="560"
+      allowFullScreen
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      frameBorder="0"
       height="315"
       src="https://www.youtube.com/embed/m96G7B1doRQ"
-      frameBorder="0"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
+      style={{ maxWidth: '90%' }}
+      title="A quick demo of the alpha version"
+      width="560"
     />
 
     <h2 id="a-demo-of-all-the-features-of-the-beta-version">
       A demo of all the features of the beta version
     </h2>
     <iframe
-      title="A demo of all the features of the beta version"
-      style={{ maxWidth: '90%' }}
-      width="560"
+      allowFullScreen
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      frameBorder="0"
       height="315"
       src="https://www.youtube.com/embed/U7GB7RV1VzE"
-      frameBorder="0"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
+      style={{ maxWidth: '90%' }}
+      title="A demo of all the features of the beta version"
+      width="560"
     />
   </Page>
 )

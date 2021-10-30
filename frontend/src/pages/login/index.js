@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { func } from 'prop-types'
 import { useRouter } from 'next/router'
 import {
   Button,
@@ -34,10 +35,12 @@ const Login = () => {
   }, [query, push])
 
   return (
-    <Page title="Login" requireSignOut>
+    <Page requireSignOut title="Kitspace | Login">
       <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab
+            activeIndex={openPane}
+            defaultActiveIndex={0}
             panes={[
               {
                 menuItem: 'Sign up',
@@ -59,8 +62,6 @@ const Login = () => {
               },
             ]}
             onTabChange={handlePaneChange}
-            activeIndex={openPane}
-            defaultActiveIndex={0}
           />
         </Grid.Column>
       </Grid>
@@ -127,35 +128,35 @@ const SignInForm = () => {
             fluid
             required
             control={Input}
-            label="Username or Email"
-            placeholder="Username or Email"
-            name="username"
-            value={form.username || ''}
-            onChange={onChange}
-            onBlur={onBlur}
             error={formatErrorPrompt('username')}
+            label="Username or Email"
+            name="username"
+            placeholder="Username or Email"
+            value={form.username || ''}
+            onBlur={onBlur}
+            onChange={onChange}
           />
           <Form.Field
             fluid
             required
             control={Input}
+            error={formatErrorPrompt('password')}
             label="Password"
+            name="password"
             placeholder="Password"
             type="password"
-            name="password"
             value={form.password || ''}
-            onChange={onChange}
             onBlur={onBlur}
-            error={formatErrorPrompt('password')}
+            onChange={onChange}
           />
           <Form.Field
             fluid
-            control={Button}
-            content="Login"
             color="green"
+            content="Login"
+            control={Button}
+            disabled={!isValid}
             size="large"
             onClick={submit}
-            disabled={!isValid}
           />
         </Segment>
         <Segment>
@@ -238,54 +239,54 @@ const SignUpForm = ({ openLoginPane }) => {
             fluid
             required
             control={Input}
-            label="Username"
-            placeholder="Username"
-            name="username"
-            value={form.username || ''}
-            onChange={onChange}
-            onBlur={onBlur}
             error={formatErrorPrompt('username')}
-          />
-          <Form.Field
-            fluid
-            required
-            control={Input}
-            label="Email"
-            placeholder="Email"
-            name="email"
-            value={form.email || ''}
-            onChange={onChange}
+            label="Username"
+            name="username"
+            placeholder="Username"
+            value={form.username || ''}
             onBlur={onBlur}
-            error={formatErrorPrompt('email')}
+            onChange={onChange}
           />
           <Form.Field
             fluid
             required
             control={Input}
+            error={formatErrorPrompt('email')}
+            label="Email"
+            name="email"
+            placeholder="Email"
+            value={form.email || ''}
+            onBlur={onBlur}
+            onChange={onChange}
+          />
+          <Form.Field
+            fluid
+            required
+            control={Input}
+            error={formatErrorPrompt('password')}
             label="Password"
+            name="password"
             placeholder="Password"
             type="password"
-            name="password"
             value={form.password || ''}
-            onChange={onChange}
             onBlur={onBlur}
-            error={formatErrorPrompt('password')}
+            onChange={onChange}
           />
           <Form.Field
             fluid
-            control={Button}
-            content="Sign up"
             color="green"
+            content="Sign up"
+            control={Button}
+            disabled={!isValid}
             size="large"
             onClick={submit}
-            disabled={!isValid}
           />
           <Form.Field
-            data-cy="log-in-here"
-            className={styles.loginInstead}
-            label="Already have an account? Log in here."
-            as="a"
             basic
+            as="a"
+            className={styles.loginInstead}
+            data-cy="log-in-here"
+            label="Already have an account? Log in here."
             onClick={openLoginPane}
           />
         </Segment>
@@ -295,6 +296,10 @@ const SignUpForm = ({ openLoginPane }) => {
       </Form>
     </>
   )
+}
+
+SignUpForm.propTypes = {
+  openLoginPane: func,
 }
 
 export default Login

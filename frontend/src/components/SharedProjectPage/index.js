@@ -6,6 +6,7 @@ import Page from '@components/Page'
 import { useMigrationStatus, useRepo } from '@hooks/Gitea'
 import PageElements from './elements'
 import useProcessingStatus from '@hooks/useProcessingStatus'
+import { bool, object, string } from 'prop-types'
 
 const SharedProjectPage = props => {
   const { reload } = useRouter()
@@ -47,7 +48,7 @@ const SharedProjectPage = props => {
   if (!props.finishedProcessing) {
     return (
       <Page title={title}>
-        <Loader data-cy="processing-loader" active>
+        <Loader active data-cy="processing-loader">
           Processing repository...
         </Loader>
       </Page>
@@ -72,7 +73,7 @@ const SharedProjectPage = props => {
   return (
     <Page title={title}>
       {props.isSynced && props.hasUploadPermission ? (
-        <Message data-cy="sync-msg" color="yellow">
+        <Message color="yellow" data-cy="sync-msg">
           <Message.Header>A synced repository!</Message.Header>
           <Message.Content>
             <p>Files uploading isn&apos;t supported for synced repositories.</p>
@@ -84,11 +85,24 @@ const SharedProjectPage = props => {
       <PageElements
         {...props}
         description={project.description || props.description}
+        owner={props.username}
         previewOnly={props.isSynced}
-        owner={props.user}
       />
     </Page>
   )
+}
+
+SharedProjectPage.propTypes = {
+  assetsPath: string.isRequired,
+  description: string.isRequired,
+  projectName: string.isRequired,
+  projectFullname: string.isRequired,
+  repo: object.isRequired,
+  username: string.isRequired,
+  isEmpty: bool.isRequired,
+  finishedProcessing: bool.isRequired,
+  isSynced: bool.isRequired,
+  hasUploadPermission: bool.isRequired,
 }
 
 export default SharedProjectPage

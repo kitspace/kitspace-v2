@@ -18,13 +18,13 @@ const Tree = ({
   const nodes = files?.map(node => (
     <List.Item key={node.path}>
       <TreeNode
+        allowFiles={allowFiles}
+        allowFolders={allowFolders}
+        externallyMarked={externallyMarked}
+        marked={selected === node || node.path === externallyMarked}
         node={node}
         select={select}
         selected={selected}
-        externallyMarked={externallyMarked}
-        marked={selected === node || node.path === externallyMarked}
-        allowFiles={allowFiles}
-        allowFolders={allowFolders}
       />
     </List.Item>
   ))
@@ -73,18 +73,18 @@ const TreeNode = ({
   if (node.type === 'file') {
     return (
       <div
+        aria-checked={checked}
         className={styles.file}
+        role="menuitemcheckbox"
+        tabIndex={-1}
         onClick={() => setChecked(!checked)}
         onKeyPress={() => setChecked(!checked)}
-        role="menuitemcheckbox"
-        aria-checked={checked}
-        tabIndex={-1}
       >
         <input
-          className={styles.checkbox}
-          type="checkbox"
           checked={checked}
+          className={styles.checkbox}
           disabled={!allowFiles}
+          type="checkbox"
           onChange={() => setChecked(!checked)}
         />
         <Icon name="file" />
@@ -100,10 +100,10 @@ const TreeNode = ({
     return (
       <div className={styles.dir}>
         <input
-          className={styles.checkbox}
-          type="checkbox"
           checked={checked}
+          className={styles.checkbox}
           disabled={!allowFolders}
+          type="checkbox"
           onChange={() => setChecked(!checked)}
         />
         <details
@@ -116,12 +116,12 @@ const TreeNode = ({
           </summary>
           <div style={{ paddingLeft: '1.3rem' }}>
             <Tree
+              allowFiles={allowFiles}
+              allowFolders={allowFolders}
+              externallyMarked={externallyMarked}
               files={nodeData}
               select={select}
               selected={selected}
-              externallyMarked={externallyMarked}
-              allowFiles={allowFiles}
-              allowFolders={allowFolders}
             />
             {failed ? 'Failed to load files!' : null}
           </div>

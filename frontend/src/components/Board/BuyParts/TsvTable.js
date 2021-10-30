@@ -53,10 +53,10 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       return cells.map((cell, i) => (
         <MpnPopup
           key={`MpnPopup_${rowIndex}_${columnIndex}_${i}`}
-          onOpen={() => setActivePopup([rowIndex, columnIndex])}
-          onClose={() => setActivePopup(null)}
-          trigger={cell}
           part={part}
+          trigger={cell}
+          onClose={() => setActivePopup(null)}
+          onOpen={() => setActivePopup([rowIndex, columnIndex])}
         />
       ))
     }
@@ -124,8 +124,8 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       const cell = (
         <Table.Cell
           key={`error_${rowIndex}_${columnIndex}`}
-          error={error}
           className={className}
+          error={error}
         >
           {contents}
         </Table.Cell>
@@ -143,11 +143,11 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
 
   return (
     <Table
+      celled
+      singleLine
+      unstackable
       className={`${styles.TsvTable} ${styles.collapsed}`}
       selectable={!activePopup}
-      celled
-      unstackable
-      singleLine
       size="small"
     >
       {headingJSX}

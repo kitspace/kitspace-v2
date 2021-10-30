@@ -10,28 +10,28 @@ const InfoBar = ({ name, originalUrl, site, description }) => {
   const siteCom = site ? (
     <span>
       {'  |  '}
-      <a href={site} target="_blank" rel="noopener noreferrer">
+      <a href={site} rel="noopener noreferrer" target="_blank">
         homepage
       </a>
     </span>
   ) : null
 
   return (
-    <div data-cy="info-bar" className={styles.infoBar}>
+    <div className={styles.infoBar} data-cy="info-bar">
       <div className={styles.infoBarInner}>
         <div className={styles.infoBarTitle}>
-          <div data-cy="project-title" className={styles.titleText}>
+          <div className={styles.titleText} data-cy="project-title">
             {name}
           </div>
-          <div data-cy="original-url" className={styles.subtitleText}>
-            <a href={originalUrl} target="_blank" rel="noopener noreferrer">
+          <div className={styles.subtitleText} data-cy="original-url">
+            <a href={originalUrl} rel="noopener noreferrer" target="_blank">
               {ownerText}
             </a>
             {siteCom}
           </div>
         </div>
         <div className={styles.infoBarTitle}>
-          <div data-cy="project-description" className={styles.infoBarSummary}>
+          <div className={styles.infoBarSummary} data-cy="project-description">
             {description}
           </div>
         </div>
@@ -43,7 +43,7 @@ const InfoBar = ({ name, originalUrl, site, description }) => {
 InfoBar.propTypes = {
   name: string.isRequired,
   originalUrl: string.isRequired,
-  site: string.isRequired,
+  site: string,
   description: string.isRequired,
 }
 
