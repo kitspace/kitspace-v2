@@ -45,7 +45,7 @@ const SubProjectsGrid = ({ projects, parentProject }) => {
   )
 }
 
-ProjectPage.getInitialProps = async ({ asPath, query, req }) => {
+ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
   const [ignored, username, projectName] = asPath.split('/')
 
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
@@ -117,6 +117,8 @@ ProjectPage.getInitialProps = async ({ asPath, query, req }) => {
       originalUrl: repo?.original_url,
     }
   }
+
+  res.statusCode = 404
   return { notFound: true }
 }
 
