@@ -9,7 +9,6 @@ const SignInFormModel = Joi.object({
       'string.pattern.base': 'Invalid username or email',
     }),
   password: Joi.string().required(),
-  remember: Joi.boolean(),
 })
 
 export default SignInFormModel

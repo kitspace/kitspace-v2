@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import {
   Button,
-  Checkbox,
   Form,
   Grid,
   Header,
@@ -18,21 +17,24 @@ import useForm from '@hooks/useForm'
 import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
+import styles from './index.module.scss'
 
 const Login = () => {
-  const [openPane, setOpenPane] = useState(1)
-  const { query } = useRouter()
+  const [openPane, setOpenPane] = useState(0)
+  const { query, push } = useRouter()
+  const handlePaneChange = e => setOpenPane(e.target.value)
 
   useEffect(() => {
-    if (query.hasOwnProperty('sign_up')) {
-      setOpenPane(0)
-    } else {
+    const openLoginPane = query.hasOwnProperty('1')
+    if (openLoginPane) {
+      // Remove the query parameter (`1`) from the url w/o reloading.
+      push('/login', null, { shallow: true })
       setOpenPane(1)
     }
-  }, [query])
+  }, [query, push])
 
   return (
-    <Page title="login" requireSignOut>
+    <Page title="Login" requireSignOut>
       <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab
@@ -40,17 +42,25 @@ const Login = () => {
               {
                 menuItem: 'Sign up',
                 render: function SignUpTab() {
-                  return <SignUpForm />
+                  return (
+                    <SignUpForm
+                      openLoginPane={() =>
+                        push('/login?1', null, { shallow: true })
+                      }
+                    />
+                  )
                 },
               },
               {
-                menuItem: 'Log in',
+                menuItem: 'Login',
                 render: function SignInTab() {
                   return <SignInForm />
                 },
               },
             ]}
-            defaultActiveIndex={openPane}
+            onTabChange={handlePaneChange}
+            activeIndex={openPane}
+            defaultActiveIndex={0}
           />
         </Grid.Column>
       </Grid>
@@ -61,7 +71,7 @@ const Login = () => {
 const SignInForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
-  const router = useRouter()
+  const { push, reload, query } = useRouter()
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -75,7 +85,10 @@ const SignInForm = () => {
   const submit = async () => {
     const response = await fetch(endpoint, {
       method: 'POST',
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        remember: true, // remember the user by default
+      }),
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     })
@@ -83,8 +96,8 @@ const SignInForm = () => {
     const data = await response.json()
 
     if (response.ok) {
-      await router.push(`${router.query.redirect ? router.query.redirect : '/'}`)
-      await router.reload()
+      await push(query.redirect ?? '/')
+      reload()
     } else {
       const { error, message } = data
       setApiResponse({
@@ -97,7 +110,7 @@ const SignInForm = () => {
   return (
     <>
       <Header as="h2" textAlign="center">
-        Log in
+        Login
       </Header>
       <Message
         negative={hasApiError}
@@ -136,12 +149,6 @@ const SignInForm = () => {
             error={formatErrorPrompt('password')}
           />
           <Form.Field
-            control={Checkbox}
-            label="Remember me"
-            name="remember"
-            onChange={onChange}
-          />
-          <Form.Field
             fluid
             control={Button}
             content="Login"
@@ -159,7 +166,7 @@ const SignInForm = () => {
   )
 }
 
-const SignUpForm = () => {
+const SignUpForm = ({ openLoginPane }) => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
@@ -167,7 +174,7 @@ const SignUpForm = () => {
     true,
   )
   const [apiResponse, setApiResponse] = useState({})
-  const { reload } = useRouter()
+  const { reload, query, push } = useRouter()
 
   const autoSignIn = async (username, password) => {
     const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
@@ -179,7 +186,8 @@ const SignUpForm = () => {
     })
 
     if (response.ok) {
-      await reload()
+      await push(query.redirect ?? '/')
+      reload()
     } else {
       console.error('Failed to auto sign in the user.')
     }
@@ -271,6 +279,14 @@ const SignUpForm = () => {
             size="large"
             onClick={submit}
             disabled={!isValid}
+          />
+          <Form.Field
+            data-cy="log-in-here"
+            className={styles.loginInstead}
+            label="Already have an account? Log in here."
+            as="a"
+            basic
+            onClick={openLoginPane}
           />
         </Segment>
         <Segment>

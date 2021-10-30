@@ -4,43 +4,37 @@ import { getFakeUsername } from '../support/getFakeUsername'
 import SignInFormModel from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
-  before(() => {
-    cy.clearCookies()
-  })
-
-  beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
-
-    cy.visit('/login')
-  })
-
-  afterEach(() => cy.get('button').contains('Login').should('be.disabled'))
+  before(() => cy.visit('/login?1'))
 
   it('should route to sign in form based on params', () => {
+    cy.visit('/login?1')
     // The form is rendered on screen.
-    cy.contains('Log in')
+    cy.contains('Login')
   })
 
   it('should have the proper fields', () => {
-    // The form contains all the fields from the `SingUpForm` model.
+    // The form contains all the fields from the `SingInForm` model.
     cy.hasProperFields(SignInFormModel)
   })
 
   it('should validate username field', () => {
-    // Try different invalid usernames.
     const invalidUsernames = ['abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
+
+    // Type the password to make sure we're validating the username only
+    cy.get('input[name=password]').type('123456')
 
     invalidUsernames.forEach(username => {
       cy.get('input[name=username]').clear().type(username).blur()
       cy.get('.prompt.label').as('message')
 
-      // Success header shouldn't appear.
+      // Validation error message should appear.
       cy.get('@message').should('be.visible')
 
       // The error message should indicate that the username is invalid.
       cy.get('@message').should('include.text', 'Invalid username or email')
+
+      // Login button should stay disabled
+      cy.get('button').contains('Login').should('be.disabled')
     })
   })
 })
@@ -53,12 +47,7 @@ describe('Log in form submission', () => {
   before(() => {
     // create user and log him in.
     cy.createUser(username, email, password)
-  })
-
-  beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
+    cy.visit('login?1')
   })
 
   it('should display username in homepage on submitting a valid form', () => {
@@ -83,7 +72,7 @@ describe('Log in form submission', () => {
     cy.get('.negative').should('include.text', 'Wrong username or password')
   })
 
-  it('should display error message on submitting form with wrong username', () => {
+  it('should display error message on submitting form with wrong password', () => {
     cy.stubSignInReq(false, {
       error: 'Not Found',
       message: 'Wrong username or password.',

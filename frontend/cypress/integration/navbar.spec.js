@@ -73,7 +73,38 @@ describe('It validates redirects after login', () => {
 
     // sign the user in.
     cy.signIn(username, password)
+    // redirect to the page in the redirect query parameter
+    cy.url().should('eq', `http://kitspace.test:3000/${pageClickFrom}`)
+  })
+})
 
+describe('It validates redirects after sing up', () => {
+  it('should redirect to homepage if there is no redirect query', () => {
+    // sign the user up
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    cy.visit('/login')
+    cy.signUp(username, email, password)
+
+    // After a successful login the user is redirect to the homepage.
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${Cypress.env('home_url')}`)
+  })
+
+  it('should redirect to correct page if there is a redirect query', () => {
+    const pageClickFrom = 'bom-builder'
+    cy.visit(pageClickFrom)
+    cy.get('#login').click()
+
+    // sign the user up
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    cy.signUp(username, email, password)
+
+    // redirect to the page in the redirect query parameter
     cy.url().should('eq', `http://kitspace.test:3000/${pageClickFrom}`)
   })
 })
