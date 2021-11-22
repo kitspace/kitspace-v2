@@ -109,26 +109,17 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
 )
 
 const AddProjectButton = () => {
-  const { push, pathname } = useRouter()
-
-  const onClick = async e => {
-    e.preventDefault()
-    await push('/projects/new')
-  }
+  const { pathname } = useRouter()
 
   return pathname !== '/login' ? (
     <>
       <Menu.Item id="add-project">
-        <Button
-          icon
-          color="green"
-          id="add_project"
-          labelPosition="left"
-          onClick={onClick}
-        >
-          <Icon name="plus" />
-          Add a project
-        </Button>
+        <Link passHref href="/projects/new">
+          <Button icon as="a" color="green" id="add_project" labelPosition="left">
+            <Icon name="plus" />
+            Add a project
+          </Button>
+        </Link>
       </Menu.Item>
     </>
   ) : null

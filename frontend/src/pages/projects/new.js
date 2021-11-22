@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react'
+import { composeInitialProps } from 'next-composition'
 import { bool, func, number, shape, string } from 'prop-types'
 import {
   Grid,
@@ -19,6 +20,7 @@ import { useMediaPredicate } from 'react-media-hook'
 import Page from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
+import { withRequireSignIn } from '@utils/authHandlers'
 import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
@@ -33,7 +35,7 @@ const New = () => {
   const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 
   return (
-    <Page requireSignIn title="new">
+    <Page title="Kitspace | New Project">
       {isBigScreen ? (
         <div
           className={`${styles.projectsNew} ui two column stackable center aligned grid`}
@@ -68,6 +70,10 @@ const New = () => {
     </Page>
   )
 }
+
+New.getInitialProps = composeInitialProps({
+  use: [withRequireSignIn('/projects/new')],
+})
 
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
