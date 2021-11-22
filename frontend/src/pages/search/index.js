@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
 import { isEqual } from 'lodash'
@@ -8,7 +8,6 @@ import { Loader } from 'semantic-ui-react'
 import Page from '@components/Page'
 import { useSearchRepos } from '@hooks/Gitea'
 import { useSearchQuery } from '@contexts/SearchContext'
-import { AuthContext } from '@contexts/AuthContext'
 import { getAllRepos, searchRepos } from '@utils/giteaApi'
 import ProjectCard from '@components/ProjectCard'
 import { getFlatProjects } from '@utils/projectPage'
@@ -53,13 +52,8 @@ const retry = (e, attempt) => {
 }
 
 const Search = ({ initialProjects, initialQuery }) => {
-  const { user } = useContext(AuthContext)
-
-  const username = user?.login ?? 'unknown user'
-
   return (
     <Page initialQuery={initialQuery} title="Kitspace | Home">
-      <div style={{ paddingBottom: '2rem' }}>Hi there {username}</div>
       <CardsGrid initialProjects={initialProjects} />
     </Page>
   )
@@ -106,7 +100,7 @@ const CardsGrid = ({ initialProjects }) => {
 
   if (projects?.length === 0) {
     return (
-      <p className={styles.noMatching}>
+      <p className={styles.noMatching} data-cy="cards-grid">
         Sorry, no result.{' '}
         <Link href="/projects/new">
           <a>Add your project!</a>
@@ -116,7 +110,7 @@ const CardsGrid = ({ initialProjects }) => {
   }
 
   return (
-    <div>
+    <div data-cy="cards-grid">
       {projects?.map(project => (
         <ProjectCard {...project} key={project.id} />
       ))}

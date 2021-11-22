@@ -24,8 +24,13 @@ const Page = ({ title, initialQuery, contentFullSize, children }) => {
   const { asPath, pathname, replace } = useRouter()
 
   useEffect(() => {
-    const doesTheBrowserURLMismatchPathname = asPath.split('?')[0] !== pathname
-    if (doesTheBrowserURLMismatchPathname && pathname !== '/login') {
+    const browserPath = asPath.split('?')[0]
+    const doesTheBrowserURLMismatchPathname = browserPath !== pathname
+    if (
+      doesTheBrowserURLMismatchPathname &&
+      pathname !== '/login' &&
+      browserPath !== '/'
+    ) {
       replace(pathname, null, { shallow: true })
     }
   }, [asPath, pathname, replace])
