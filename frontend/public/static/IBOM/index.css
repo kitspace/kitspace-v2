@@ -770,12 +770,8 @@
 }
 
 /* Start: Fix rendering only on fullscreen mode */
-*:not(#nav) > div { height: 100%; }
-#nav {
-  height: auto !important;
-}
-.menu-content  {
-  height: auto !important;
+#topmostdiv div:not(.button-container, .menu-content, .menu-content div, #top) {
+  height: 90vh;
 }
 /* END: Fix rendering only on fullscreen mode */
 
