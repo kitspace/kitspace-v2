@@ -153,8 +153,6 @@ describe('Multi project page', () => {
     cy.visit('/')
   })
 
-  beforeEach(() => cy.clearCookies())
-
   it('should render the page components', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
@@ -186,7 +184,7 @@ describe('Multi project page', () => {
     const subProjectName = multiProjectsNames[0]
     cy.get('@projectCards').contains(subProjectName).click()
     cy.url({ timeout: 20_000 }).should(
-      'include',
+      'contain',
       `${username}/${multiProjectsRepoName}/${subProjectName}`,
     )
 

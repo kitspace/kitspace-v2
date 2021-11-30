@@ -10,18 +10,23 @@ export const getServerSideProps = async ({ params }) => {
   )
 
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
-  const repoFullname = `${params.username}/${params.projectName}`
+  const projectFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
-    `${processorUrl}/status/${repoFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
+    `${processorUrl}/status/${projectFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
   ).then(r => r.json().then(body => body.status))
 
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
-      `${processorUrl}/files/${repoFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
+      `${processorUrl}/files/${projectFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
 
     return {
-      props: { repoFullname, html: IBOMHtml, pcbData },
+      props: {
+        projectFullname,
+        html: IBOMHtml,
+        pcbData,
+        projectHref: `${projectFullname}/${params.multiProjectName}`,
+      },
     }
   }
   return {
