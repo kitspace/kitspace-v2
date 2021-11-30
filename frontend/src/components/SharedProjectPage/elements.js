@@ -299,7 +299,6 @@ PageElements.propTypes = {
     eda: shape({ type: string, pcb: string }),
     readme: string,
   }).isRequired,
-  bomInfo: object.isRequired,
   zipUrl: string.isRequired,
   readme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,
