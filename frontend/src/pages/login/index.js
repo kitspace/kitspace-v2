@@ -40,7 +40,6 @@ const Login = () => {
         <Grid.Column>
           <Tab
             activeIndex={openPane}
-            defaultActiveIndex={0}
             panes={[
               {
                 menuItem: 'Sign up',
@@ -62,7 +61,6 @@ const Login = () => {
               },
             ]}
             onTabChange={handlePaneChange}
-            activeIndex={openPane}
           />
         </Grid.Column>
       </Grid>

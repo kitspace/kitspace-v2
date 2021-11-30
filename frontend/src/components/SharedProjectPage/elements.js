@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { bool, objectOf, string, number, shape } from 'prop-types'
+import { bool, objectOf, string, number, shape, object } from 'prop-types'
 import { useRouter } from 'next/router'
 import { uniqBy } from 'lodash'
 import { Button, Form, Input, Loader, Segment, TextArea } from 'semantic-ui-react'
@@ -299,6 +299,7 @@ PageElements.propTypes = {
     eda: shape({ type: string, pcb: string }),
     readme: string,
   }).isRequired,
+  bomInfo: object.isRequired,
   zipUrl: string.isRequired,
   readme: string.isRequired,
   boardSpecs: objectOf(number).isRequired,
