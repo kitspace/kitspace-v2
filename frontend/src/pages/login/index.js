@@ -62,6 +62,7 @@ const Login = () => {
               },
             ]}
             onTabChange={handlePaneChange}
+            activeIndex={openPane}
           />
         </Grid.Column>
       </Grid>
@@ -282,7 +283,6 @@ const SignUpForm = ({ openLoginPane }) => {
             onClick={submit}
           />
           <Form.Field
-            basic
             as="a"
             className={styles.loginInstead}
             data-cy="log-in-here"
