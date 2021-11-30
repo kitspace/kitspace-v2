@@ -178,14 +178,17 @@ describe('Multi project page', () => {
     // Wait for the repo to finish migration, by checking the visibility of processing-loader.
     cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
-      'have.length',
-      multiProjectsNames.length,
-    )
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).as('projectCards')
 
-    // Go to the home page and click on a multiproject project card
-    const multiProjectName = multiProjectsNames[0]
-    cy.visit(`${username}/${multiProjectsRepoName}/${multiProjectName}`)
+    cy.get('@projectCards').should('have.length', multiProjectsNames.length)
+
+    // Click on a subproject project card
+    const subProjectName = multiProjectsNames[0]
+    cy.get('@projectCards').contains(subProjectName).click()
+    cy.url({ timeout: 20_000 }).should(
+      'include',
+      `${username}/${multiProjectsRepoName}/${subProjectName}`,
+    )
 
     // Different page elements should be visible.
     const pageComponents = [
