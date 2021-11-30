@@ -51,6 +51,7 @@
     "@welldone-software/why-did-you-render": "^6.2.0",
     "cypress": "8.0.0",
     "cypress-fail-fast": "^2.0.0",
+    "cypress-image-snapshot": "^4.0.1",
     "cypress-terminal-report": "^3.2.1",
     "eslint": ">=7.0.0",
     "eslint-config-next": "^11.0.0",
