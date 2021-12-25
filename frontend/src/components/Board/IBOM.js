@@ -62,7 +62,7 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
           return
         }}
       />
-      <Script>{initScript}</Script>
+      <Script id="init_script">{initScript}</Script>
       <NextHead>
         {/* Styles for IBOM targets uses non pure selectors, e.g., `:root`, importing its style as
          * a  module doesn't work. The other option was to add the style to `_app.scss`
