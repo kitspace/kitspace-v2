@@ -205,6 +205,11 @@ jobs:
         browser: [chrome, edge, electron]
 
     steps:
+      - name: Setup Node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
