@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
 import { isEqual } from 'lodash'
-
+import { backOff } from 'exponential-backoff'
 import { Loader } from 'semantic-ui-react'
 
 import Page from '@components/Page'
@@ -20,16 +20,36 @@ export const getServerSideProps = async ({ query }) => {
   if (q) {
     return {
       props: {
-        initialProjects: await getFlatProjects(await searchRepos(q)),
+        initialProjects: await backOff(
+          async () => getFlatProjects(await searchRepos(q)),
+          { retry },
+        ),
         initialQuery: q,
       },
     }
   }
+
   return {
     props: {
-      initialProjects: await getFlatProjects(await getAllRepos()),
+      initialProjects: await backOff(
+        async () => getFlatProjects(await getAllRepos()),
+        { retry },
+      ),
     },
   }
+}
+/**
+ *
+ * @param {*} e
+ * @param {number} attempt the number of the current attempt
+ * @returns {boolean} return `false` to stop retrying before exceeding the max retry limit
+ */
+const retry = (e, attempt) => {
+  console.error(
+    new Error(`Failed to fetch homepage data: ${e} for the ${attempt} time`),
+  )
+  // Continue retrying if the max number of attempts (the default is 10) haven't been exceeded.
+  return true
 }
 
 const Search = ({ initialProjects, initialQuery }) => {
