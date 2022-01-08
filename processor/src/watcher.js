@@ -18,7 +18,7 @@ const client = new Client(GITEA_DB_CONFIG)
 
 client.connect(e => {
   if (e) {
-    log.error(e)
+    log.error('Failed to connect to gitea DB')
     throw e
   } else {
     log.info('Connected to gitea DB')

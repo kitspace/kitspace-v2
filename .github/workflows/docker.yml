@@ -173,6 +173,7 @@ jobs:
         uses: kitspace/docker-remote-deployment-action@master
         env:
           POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
+          POSTGRES_READONLY_USER_PASSWORD: ${{ secrets.STAGING_POSTGRES_READONLY_PASSWORD }}
           GITEA_SECRET_KEY: ${{ secrets.STAGING_GITEA_SECRET }}
           KITSPACE_PROCESSOR_REMOTE_API_TOKENS: ${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}
           KITSPACE_DOMAIN: ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev

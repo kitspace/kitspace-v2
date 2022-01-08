@@ -4,6 +4,7 @@ const GITEA_DB_CONFIG = {
   host: process.env.GITEA_DB_HOST,
   port: process.env.GITEA_DB_PORT,
   user: process.env.GITEA_DB_USER,
+  database: process.env.POSTGRES_DB,
   password: process.env.GITEA_DB_PASSWORD,
 }
 
