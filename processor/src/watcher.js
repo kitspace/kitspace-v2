@@ -1,4 +1,6 @@
+const backOff = require('backoff').exponential
 const chokidar = require('chokidar')
+const { Client } = require('pg')
 const debounce = require('lodash.debounce')
 const jsYaml = require('js-yaml')
 const log = require('loglevel')
@@ -12,6 +14,22 @@ const processIBOM = require('./tasks/processIBOM')
 const processKicadPCB = require('./tasks/processKicadPCB')
 const processReadme = require('./tasks/processReadme')
 
+const client = new Client({
+  host: 'postgres',
+  port: 5432,
+  user: 'gitea',
+  password: 'change_me',
+})
+
+client.connect(e => {
+  if (e) {
+    log.error(e)
+    throw e
+  } else {
+    log.info('Connected to gitea DB')
+  }
+})
+
 const running = {}
 function watch(events, repoDir = '/repositories') {
   let dirWatchers = {}
@@ -24,7 +42,7 @@ function watch(events, repoDir = '/repositories') {
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
-      if (!running[gitDir]) {
+      if ((await isProcessable(gitDir)) && !running[gitDir]) {
         running[gitDir] = true
         await processRepo(events, repoDir, gitDir).catch(e => {
           log.error(`Error processing '${gitDir}':`, e)
@@ -131,6 +149,185 @@ async function getKitspaceYaml(checkoutDir) {
     ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
   )
   return jsYaml.safeLoad(yamlFile) || {}
+}
+
+/**
+ *
+ * @param {string} gitDir
+ */
+async function isProcessable(gitDir) {
+  const { repoName, ownerName } = parseRepoGitDir(gitDir)
+  const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, repoName)
+
+  if (isEmpty) {
+    log.debug(
+      `Repo: ${ownerName}/${repoName} has no branches, it won't be processed!`,
+    )
+    return false
+  }
+
+  if (isMirror) {
+    // See gitea/models/task.go
+    // https://github.com/kitspace/gitea/blob/d1342b36f1b5e4ac0271d0f01c5270cd087f3575/models/task.go#L22
+    const MigrationStatusIsDone = 4
+    const status = await queryGiteaRepoMigrationStatus(id)
+
+    if (status === MigrationStatusIsDone) {
+      log.debug(
+        `Repo: ${ownerName}/${repoName} migration is done, the repo is processable.`,
+      )
+      return true
+    } else {
+      log.debug(
+        `Repo: ${ownerName}/${repoName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
+      )
+      return false
+    }
+  }
+
+  log.debug(`Repo: ${ownerName}/${repoName} is processable.`)
+  return true
+}
+
+/**
+ *
+ * @param {string} gitDir the file-system path for the git repo
+ * @returns {{ownerName: string, repoName: string}} repo details
+ */
+function parseRepoGitDir(gitDir) {
+  const matcher =
+    /^\/gitea-data\/git\/repositories\/(?<ownerName>\w+)\/(?<repoName>\w+)/
+  const { ownerName, repoName } = gitDir.match(matcher)?.groups
+
+  if (ownerName == null || repoName == null) {
+    throw new Error(`Failed to parse gitDir: ${gitDir}`)
+  }
+
+  return { ownerName, repoName }
+}
+
+/**
+ *
+ * @param {string} ownerName
+ * @param {string} repoName
+ * @returns {Promise<{id: string, isEmpty: boolean, isMirror: boolean}>}
+ */
+async function queryGiteaRepoDetails(ownerName, repoName) {
+  const repoQuery = {
+    name: 'fetch-repository',
+    text:
+      'select id, is_mirror, is_empty from repository' +
+      ' where lower(owner_name)=$1 and lower_name=$2',
+    values: [ownerName, repoName],
+  }
+
+  /**
+   * Query the migration task status for a gitea repo, with exponential backoff.
+   * @returns
+   */
+  const queryGiteaRepoWithBackoff = async repoQuery => {
+    const queryBackoff = backOff()
+    const MaximumRetries = 10
+    const [ownerName, repoName] = repoQuery.values
+
+    queryBackoff.failAfter(MaximumRetries)
+
+    return new Promise((resolve, reject) => {
+      queryBackoff
+        .on('backoff', async (num, delay) => {
+          log.debug(
+            `Backoff started, querying repo ${ownerName}/${repoName}: ${num} ${delay}ms`,
+          )
+          const repoQueryResult = await client.query(repoQuery)
+          // log.debug(repoQueryResult)
+
+          if (repoQueryResult.rows.length === 1) {
+            const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
+            log.debug(`Repo: ${ownerName}/${repoName} was found`)
+            queryBackoff.reset()
+            return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
+          }
+        })
+        .on('ready', () => {
+          queryBackoff.backoff()
+        })
+        .on('fail', () =>
+          reject(
+            new Error(
+              `Repo: ${ownerName}/${repoName} not found after ${MaximumRetries} trials.`,
+            ),
+          ),
+        )
+        .backoff()
+    })
+  }
+
+  const { id, isEmpty, isMirror } = await queryGiteaRepoWithBackoff(repoQuery)
+
+  return { id, isMirror, isEmpty }
+}
+
+/**
+ *
+ * @param {string} repoId
+ * @returns {Promise<number>}
+ */
+async function queryGiteaRepoMigrationStatus(repoId) {
+  // See gitea/models/task.go
+  // https://github.com/kitspace/gitea/blob/d1342b36f1b5e4ac0271d0f01c5270cd087f3575/models/task.go#L22
+  const MigrationTaskType = 0
+  const migrationStatusQuery = {
+    name: 'fetch-migration-status',
+    text: 'select status from task where repo_id=$1 and type=$2',
+    values: [repoId, MigrationTaskType],
+  }
+
+  /**
+   * Query the migration task status for a gitea repo, with exponential backoff.
+   * @returns
+   */
+  const queryMigrationStatusWithBackoff = async migrationStatusQuery => {
+    const queryBackoff = backOff()
+    const MaximumRetries = 10
+
+    queryBackoff.failAfter(MaximumRetries)
+
+    return new Promise((resolve, reject) => {
+      queryBackoff
+        .on('backoff', async (num, delay) => {
+          log.debug(
+            'Backoff started, querying migration status for repo' +
+              `Id(${migrationStatusQuery.values[0]}): ${num} ${delay}ms`,
+          )
+
+          const migrationStatusQueryResult = await client.query(
+            migrationStatusQuery,
+          )
+          if (migrationStatusQueryResult.rows.length === 1) {
+            const { status } = migrationStatusQueryResult.rows[0]
+            log.debug(`Repo: Id(${repoId})'s migration status: ${status}.`)
+            queryBackoff.reset()
+            return resolve(status)
+          }
+        })
+        .on('ready', () => {
+          queryBackoff.backoff()
+        })
+        .on('fail', () =>
+          reject(
+            new Error(
+              `Repo: ${repoId} migration task not found after ${MaximumRetries} trials.`,
+            ),
+          ),
+        )
+        .backoff()
+    })
+  }
+  const repoMigrationStatus = await queryMigrationStatusWithBackoff(
+    migrationStatusQuery,
+  )
+
+  return repoMigrationStatus
 }
 
 async function getGitHash(checkoutDir) {

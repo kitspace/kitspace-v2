@@ -63,6 +63,8 @@ services:
       - LOG_LEVEL=${KITSPACE_PROCESSOR_LOG_LEVEL}
       - REMOTE_API_TOKENS=${KITSPACE_PROCESSOR_REMOTE_API_TOKENS}
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+    depends_on:
+      - postgres
     volumes:
       - gitea-data:/gitea-data
       - processor-data:/data
