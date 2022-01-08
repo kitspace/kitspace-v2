@@ -6,7 +6,7 @@ const jsYaml = require('js-yaml')
 const log = require('loglevel')
 const path = require('path')
 
-const { DATA_DIR } = require('./env')
+const { DATA_DIR, GITEA_DB_CONFIG } = require('./env')
 const { exists, exec, writeFile, readFile } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
@@ -14,12 +14,7 @@ const processIBOM = require('./tasks/processIBOM')
 const processKicadPCB = require('./tasks/processKicadPCB')
 const processReadme = require('./tasks/processReadme')
 
-const client = new Client({
-  host: 'postgres',
-  port: 5432,
-  user: 'gitea',
-  password: 'change_me',
-})
+const client = new Client(GITEA_DB_CONFIG)
 
 client.connect(e => {
   if (e) {
