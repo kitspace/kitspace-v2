@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#78df7bb0ebfbdb7beee99d13514b3737f010508f",
+    "backoff": "^2.5.0",
     "cheerio": "^1.0.0-rc.10",
     "chokidar": "^3.4.3",
     "express": "^4.17.1",
@@ -23,6 +24,7 @@
     "lodash.debounce": "^4.0.8",
     "loglevel": "^1.7.1",
     "pcb-stackup": "^4.2.5",
+    "pg": "^8.7.1",
     "ramda": "^0.27.1",
     "superagent": "^6.1.0",
     "whats-that-gerber": "^4.2.2",
