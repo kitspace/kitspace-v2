@@ -2,7 +2,12 @@ const backOff = require('backoff').exponential
 const log = require('loglevel')
 const { Client } = require('pg')
 
-const { GITEA_DB_CONFIG } = require('./env')
+const { GITEA_DB_CONFIG, MAXIMUM_REPO_MIGRATION_TIME } = require('./env')
+
+const BACKOFF_INITIAL_DELAY = 100
+const MAXIMUM_NUM_OF_RETRIES = Math.ceil(
+  Math.log2(MAXIMUM_REPO_MIGRATION_TIME / BACKOFF_INITIAL_DELAY),
+)
 
 const client = new Client(GITEA_DB_CONFIG)
 
@@ -108,7 +113,7 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
         ),
       )
 
-    return asyncBackoff(onBackoff, onFail, 10)
+    return asyncBackoff(onBackoff, onFail, MAXIMUM_NUM_OF_RETRIES)
   }
 
   const { id, isEmpty, isMirror } = await queryGiteaRepoWithBackoff(repoQuery)
@@ -157,7 +162,7 @@ async function queryGiteaRepoMigrationStatus(repoId) {
         ),
       )
 
-    return asyncBackoff(onBackoff, onFail, 10)
+    return asyncBackoff(onBackoff, onFail, MAXIMUM_NUM_OF_RETRIES)
   }
 
   const repoMigrationStatus = await queryMigrationStatusWithBackoff(
@@ -181,22 +186,25 @@ async function queryGiteaRepoMigrationStatus(repoId) {
  * @param {ExponentialOptions=} config
  * @returns
  */
-async function asyncBackoff(onBackoff, onFail, maximumRetries, config) {
-  const queryBackoff = backOff(config)
-  queryBackoff.failAfter(maximumRetries)
+async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) {
+  const backoffInstance = backOff({
+    ...config,
+    initialDelay: BACKOFF_INITIAL_DELAY,
+  })
+  backoffInstance.failAfter(maximumRetries)
 
   return new Promise((resolve, reject) => {
     const resetBackoffAndResolve = value => {
-      queryBackoff.reset()
+      backoffInstance.reset()
       resolve(value)
     }
 
-    queryBackoff
+    backoffInstance
       .on(
         'backoff',
         async (num, delay) => await onBackoff(num, delay, resetBackoffAndResolve),
       )
-      .on('ready', () => queryBackoff.backoff())
+      .on('ready', () => backoffInstance.backoff())
       .on('fail', async () => await onFail(reject))
       .backoff()
   })

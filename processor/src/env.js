@@ -7,6 +7,9 @@ const GITEA_DB_CONFIG = {
   database: process.env.POSTGRES_DB,
   password: process.env.GITEA_DB_PASSWORD,
 }
+const MAXIMUM_REPO_MIGRATION_TIME = parseInt(
+  process.env.MAXIMUM_REPO_MIGRATION_TIME,
+)
 
 let REMOTE_API_TOKENS = process.env.REMOTE_API_TOKENS || ''
 REMOTE_API_TOKENS = REMOTE_API_TOKENS.split(',')
@@ -14,4 +17,10 @@ REMOTE_API_TOKENS = REMOTE_API_TOKENS.split(',')
   .filter(x => x)
   .map(x => `Bearer ${x}`)
 
-module.exports = { GITEA_URL, DATA_DIR, REMOTE_API_TOKENS, GITEA_DB_CONFIG }
+module.exports = {
+  GITEA_URL,
+  DATA_DIR,
+  REMOTE_API_TOKENS,
+  GITEA_DB_CONFIG,
+  MAXIMUM_REPO_MIGRATION_TIME,
+}

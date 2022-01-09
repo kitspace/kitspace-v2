@@ -62,6 +62,7 @@ services:
 
   processor:
     environment:
+      - MAXIMUM_REPO_MIGRATION_TIME=${MAXIMUM_REPO_MIGRATION_TIME}
       - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - GITEA_DB_HOST=postgres
       - GITEA_DB_PORT=5432
