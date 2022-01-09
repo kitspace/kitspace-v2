@@ -146,6 +146,24 @@ describe('It validates redirects after sing up', () => {
   })
 })
 
+describe('It validates redirect after logout', () => {
+  it('should redirect to login page', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+    cy.createUser(username, email, password)
+    cy.visit('/login')
+    cy.signIn(username, password)
+
+    // Press the logout button
+    cy.get('img[alt=avatar]').trigger('mousemove').click()
+    cy.get('#logout').trigger('mousemove').click()
+
+    // should redirect to `/login`
+    cy.url().should('eq', 'http://kitspace.test:3000/login')
+  })
+})
+
 describe('It validates `Add Project` behavior', () => {
   const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
