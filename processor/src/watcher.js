@@ -1,4 +1,4 @@
-const backOff = require('backoff').exponential
+const { exponential: backOff, ExponentialOptions } = require('backoff')
 const chokidar = require('chokidar')
 const { Client } = require('pg')
 const debounce = require('lodash.debounce')
@@ -13,6 +13,7 @@ const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
 const processKicadPCB = require('./tasks/processKicadPCB')
 const processReadme = require('./tasks/processReadme')
+const { delay, reject } = require('lodash')
 
 const client = new Client(GITEA_DB_CONFIG)
 
@@ -221,40 +222,29 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
    * @returns
    */
   const queryGiteaRepoWithBackoff = async repoQuery => {
-    const queryBackoff = backOff()
-    const MaximumRetries = 10
     const [ownerName, repoName] = repoQuery.values
 
-    queryBackoff.failAfter(MaximumRetries)
+    const onBackoff = async (num, delay, resolve) => {
+      log.debug(
+        `Backoff started, querying repo ${ownerName}/${repoName}: ${num} ${delay}ms`,
+      )
+      const repoQueryResult = await client.query(repoQuery)
 
-    return new Promise((resolve, reject) => {
-      queryBackoff
-        .on('backoff', async (num, delay) => {
-          log.debug(
-            `Backoff started, querying repo ${ownerName}/${repoName}: ${num} ${delay}ms`,
-          )
-          const repoQueryResult = await client.query(repoQuery)
-          // log.debug(repoQueryResult)
+      if (repoQueryResult.rows.length === 1) {
+        const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
+        log.debug(`Repo: ${ownerName}/${repoName} was found`)
+        return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
+      }
+    }
 
-          if (repoQueryResult.rows.length === 1) {
-            const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
-            log.debug(`Repo: ${ownerName}/${repoName} was found`)
-            queryBackoff.reset()
-            return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
-          }
-        })
-        .on('ready', () => {
-          queryBackoff.backoff()
-        })
-        .on('fail', () =>
-          reject(
-            new Error(
-              `Repo: ${ownerName}/${repoName} not found after ${MaximumRetries} trials.`,
-            ),
-          ),
-        )
-        .backoff()
-    })
+    const onFail = reject =>
+      reject(
+        new Error(
+          `Repo: ${ownerName}/${repoName} not found after ${MaximumRetries} trials.`,
+        ),
+      )
+
+    return asyncBackoff(onBackoff, onFail, 10)
   }
 
   const { id, isEmpty, isMirror } = await queryGiteaRepoWithBackoff(repoQuery)
@@ -282,47 +272,70 @@ async function queryGiteaRepoMigrationStatus(repoId) {
    * @returns
    */
   const queryMigrationStatusWithBackoff = async migrationStatusQuery => {
-    const queryBackoff = backOff()
-    const MaximumRetries = 10
+    const onBackoff = async (num, delay, resolve) => {
+      log.debug(
+        'Backoff started, querying migration status for repo' +
+          `Id(${migrationStatusQuery.values[0]}): ${num} ${delay}ms`,
+      )
 
-    queryBackoff.failAfter(MaximumRetries)
+      const migrationStatusQueryResult = await client.query(migrationStatusQuery)
+      if (migrationStatusQueryResult.rows.length === 1) {
+        const { status } = migrationStatusQueryResult.rows[0]
+        log.debug(`Repo: Id(${repoId})'s migration status: ${status}.`)
+        return resolve(status)
+      }
+    }
 
-    return new Promise((resolve, reject) => {
-      queryBackoff
-        .on('backoff', async (num, delay) => {
-          log.debug(
-            'Backoff started, querying migration status for repo' +
-              `Id(${migrationStatusQuery.values[0]}): ${num} ${delay}ms`,
-          )
+    const onFail = reject =>
+      reject(
+        new Error(
+          `Repo: ${repoId} migration task not found after ${MaximumRetries} trials.`,
+        ),
+      )
 
-          const migrationStatusQueryResult = await client.query(
-            migrationStatusQuery,
-          )
-          if (migrationStatusQueryResult.rows.length === 1) {
-            const { status } = migrationStatusQueryResult.rows[0]
-            log.debug(`Repo: Id(${repoId})'s migration status: ${status}.`)
-            queryBackoff.reset()
-            return resolve(status)
-          }
-        })
-        .on('ready', () => {
-          queryBackoff.backoff()
-        })
-        .on('fail', () =>
-          reject(
-            new Error(
-              `Repo: ${repoId} migration task not found after ${MaximumRetries} trials.`,
-            ),
-          ),
-        )
-        .backoff()
-    })
+    return asyncBackoff(onBackoff, onFail, 10)
   }
+
   const repoMigrationStatus = await queryMigrationStatusWithBackoff(
     migrationStatusQuery,
   )
 
   return repoMigrationStatus
+}
+
+/**
+ *
+ * @typedef {Object} ExponentialOptions
+ * @property {number=} randomisationFactor
+ * @property {number=} initialDelay
+ * @property {number=} maxDelay
+ * @property {number=} factor
+ *
+ * @param {function(number,  number, function): Promise<void>} onBackoff
+ * @param {function(): Promise<void>} onFail
+ * @param {number} maximumRetries
+ * @param {ExponentialOptions=} config
+ * @returns
+ */
+async function asyncBackoff(onBackoff, onFail, maximumRetries, config) {
+  const queryBackoff = backOff(config)
+  queryBackoff.failAfter(maximumRetries)
+
+  return new Promise((resolve, reject) => {
+    const resetBackoffAndResolve = value => {
+      queryBackoff.reset()
+      resolve(value)
+    }
+
+    queryBackoff
+      .on(
+        'backoff',
+        async (num, delay) => await onBackoff(num, delay, resetBackoffAndResolve),
+      )
+      .on('ready', () => queryBackoff.backoff())
+      .on('fail', async () => await onFail(reject))
+      .backoff()
+  })
 }
 
 async function getGitHash(checkoutDir) {
