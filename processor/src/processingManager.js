@@ -20,6 +20,21 @@ client.connect(e => {
   }
 })
 
+/**
+ *  - When migrating a repo [1]: Gitea creates an empty repo then the migration
+ *    starts.
+ *  - When uploading user files [2]: we create an empty repo,
+ *    upload the files, finally commit the files to the repo.
+ *  - When the processor gets notified by a file-system change when the
+ *    repository is created in both [1], and [2] the repo is still empty and
+ *    the `git checkout` command fails.
+ *  - The processing manager only marks a repo as ready for processing if:
+ *      - it isn't empty,
+ *      - the migration task is done.
+ *
+ * @param {string} gitDir
+ * @returns
+ */
 async function isRepoReadyForProcessing(gitDir) {
   const { repoName, ownerName } = parseRepoGitDir(gitDir)
   const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, repoName)
