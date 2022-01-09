@@ -15,7 +15,6 @@ import {
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
-import { useMediaPredicate } from 'react-media-hook'
 
 import Page from '@components/Page'
 import DropZone from '@components/DropZone'
@@ -31,8 +30,18 @@ import styles from './new.module.scss'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
-  const isBigScreen = useMediaPredicate('(min-width: 1200px)')
+  const [isBigScreen, setIsBigScreen] = useState(true)
   const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
+
+  const handleResize = () =>
+    setIsBigScreen(window.matchMedia('(min-width: 1200px)').matches)
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   return (
     <Page title="Kitspace | New Project">
