@@ -8,7 +8,7 @@ const watcher = require('./watcher')
 const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
 
-function createProjectsAPI(app, repoDir) {
+function createProjectsAPI(app, repoDir, processingManager) {
   const fileStatus = {}
   const redirects = {}
 
@@ -31,7 +31,7 @@ function createProjectsAPI(app, repoDir) {
     fileStatus[x] = { status: 'failed', error }
     log.debug('failed', x, error)
   })
-  const unwatch = watcher.watch(events, repoDir)
+  const unwatch = watcher.watch(events, repoDir, processingManager)
 
   app.stop = unwatch
 
@@ -89,4 +89,4 @@ function getHeadPath(x) {
   return p.join('/')
 }
 
-module.exports = {createProjectsAPI}
+module.exports = { createProjectsAPI }

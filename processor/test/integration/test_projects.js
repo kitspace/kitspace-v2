@@ -11,6 +11,7 @@ const { createApp } = require('../../src/app')
 const tmpDir = '/data/test/temp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
+const processingManagerStub = { isRepoReadyForProcessing: async () => true }
 
 const standardProjectFiles = [
   'images/bottom.svg',
@@ -30,7 +31,7 @@ describe('projects API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)
-    this.app = createApp(repoDir)
+    this.app = createApp(repoDir, processingManagerStub)
     this.supertest = supertest(this.app)
   })
 
@@ -201,8 +202,8 @@ describe('projects API', () => {
         assert(r.status === 200)
         assert(
           r.body.status === 'done',
-          `expecting body.status to be 'done' but got '${r.body.status}' for ${f}`
-          + `\n ${JSON.stringify(r.body, null, 2)}`
+          `expecting body.status to be 'done' but got '${r.body.status}' for ${f}` +
+            `\n ${JSON.stringify(r.body, null, 2)}`,
         )
 
         // getting the file from HEAD should re-direct to the exact hash
