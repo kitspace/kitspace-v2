@@ -770,12 +770,8 @@
 }
 
 /* Start: Fix rendering only on fullscreen mode */
-*:not(#nav) > div { height: 100%; }
-#nav {
-  height: auto !important;
-}
-.menu-content  {
-  height: auto !important;
+#topmostdiv div:not(.button-container, .menu-content, .menu-content div, #top) {
+  height: 90vh;
 }
 /* END: Fix rendering only on fullscreen mode */
 
@@ -785,7 +781,18 @@
   width: 70%;
 }
 
-div.ibom .menu input[type="checkbox"] { margin: 3px 3px 3px 4px; }
-div.ibom .menu input[type="radio"] { margin: 3px 3px 3px 4px; }
-div.ibom .menu-content { box-sizing: content-box; }
-div.ibom .shameless-plug span { margin-right: 2px; }
+div.ibom .menu input[type='checkbox'] {
+  margin: 3px 3px 3px 4px;
+}
+
+div.ibom .menu input[type='radio'] {
+  margin: 3px 3px 3px 4px;
+}
+
+div.ibom .menu-content {
+  box-sizing: content-box;
+}
+
+div.ibom .shameless-plug span {
+  margin-right: 2px;
+}
