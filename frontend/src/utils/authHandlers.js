@@ -34,8 +34,12 @@ export const withRequireSignOut = ({ req, res }) => {
   if (isAuthenticated(session)) {
     if (res) {
       const { redirect = '/' } = req.query
-      res.writeHead(307, { Location: redirect })
-      res.end()
+
+      // Only redirect if it belongs to our website.
+      if (redirect.startsWith('/')) {
+        res.writeHead(307, { Location: redirect })
+        res.end()
+      }
     } else {
       Router.replace('/')
     }
