@@ -24,6 +24,19 @@ const Page = ({ title, initialQuery, contentFullSize, children }) => {
   const { asPath, pathname, replace } = useRouter()
 
   useEffect(() => {
+    /*
+     * On clicking on the login button from any page for e.g., '/1-click-bom',
+     * it redirects to '/login?redirect=/1-click-bom'
+     * After successful login the page must be reloaded, because cookies are injected on server-side
+     * This means a request: GET /login?redirect=1-click-bom will hit the server.
+     * The server will find the user is already logged in so it will redirect it to the `redirect` param in the url
+     * though by rewriting the response the server can't change the url displayed in the browser accordingly. This hook fixes it.
+     *
+     * Why can't we redirect first then reload the page to update the cookies?
+     * If the page to which we should redirect is protected behind authentication (uses `withRequireSignIn`) e.g., /settings
+     * The auth-handler will find that the user isn't authenticated and will redirect to login page once again.
+     */
+
     const browserPath = asPath.split('?')[0]
     const doesTheBrowserURLMismatchPathname = browserPath !== pathname
     if (

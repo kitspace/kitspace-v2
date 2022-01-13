@@ -107,6 +107,8 @@ const SignInForm = () => {
     const data = await response.json()
 
     if (response.ok) {
+      // After successful login the page must be reloaded,
+      // because cookies are injected on server-side
       reload()
     } else {
       const { error, message } = data
