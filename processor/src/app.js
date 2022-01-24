@@ -2,12 +2,8 @@ const express = require('express')
 
 const { createProjectsAPI } = require('./projectAPI')
 const { createRemoteAPI } = require('./remoteAPI')
-const { ProcessingManager } = require('./processingManager')
 
-function createApp(
-  repoDir = '/gitea-data/git/repositories',
-  processingManager = ProcessingManager,
-) {
+function createApp(repoDir, processingManager) {
   const app = express()
 
   createProjectsAPI(app, repoDir, processingManager)

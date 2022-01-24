@@ -33,10 +33,10 @@ function watch(events, repoDir = '/repositories', processingManager) {
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
-      if (
-        (await processingManager.isRepoReadyForProcessing(gitDir)) &&
-        !running[gitDir]
-      ) {
+      const isReady =
+        processingManager == null ||
+        (await processingManager.isRepoReadyForProcessing(gitDir))
+      if (!running[gitDir] && isReady) {
         running[gitDir] = true
         await processRepo(events, repoDir, gitDir).catch(e => {
           log.error(`Error processing '${gitDir}':`, e)

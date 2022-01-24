@@ -10,7 +10,6 @@ const { createApp } = require('../../src/app')
 
 const tmpDir = '/data/test/kitspace-processor-test-from-remote'
 const emptyRepoDir = '/data/test/kitspace-processor-test-empty-repo-dir'
-const processingManagerStub = { isRepoReadyForProcessing: async () => true }
 
 const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS.split(',')
   .map(x => x.trim())
@@ -20,7 +19,7 @@ describe('remote API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${emptyRepoDir}`)
-    this.app = createApp(emptyRepoDir, processingManagerStub)
+    this.app = createApp(emptyRepoDir, null)
     this.supertest = supertest(this.app)
   })
 

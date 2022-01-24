@@ -11,7 +11,6 @@ const { createApp } = require('../../src/app')
 const tmpDir = '/data/test/temp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
 const sourceRepo = path.join(tmpDir, 'source-repo')
-const processingManagerStub = { isRepoReadyForProcessing: async () => true }
 
 const standardProjectFiles = [
   'images/bottom.svg',
@@ -31,7 +30,7 @@ describe('projects API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)
-    this.app = createApp(repoDir, processingManagerStub)
+    this.app = createApp(repoDir, null)
     this.supertest = supertest(this.app)
   })
 
