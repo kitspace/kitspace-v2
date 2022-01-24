@@ -72,13 +72,19 @@ services:
       - LOG_LEVEL=${KITSPACE_PROCESSOR_LOG_LEVEL}
       - REMOTE_API_TOKENS=${KITSPACE_PROCESSOR_REMOTE_API_TOKENS}
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     depends_on:
       - postgres
+      - redis
     volumes:
       - gitea-data:/gitea-data
       - processor-data:/data
       # share docker daemon when running docker inside docker
       - /var/run/docker.sock:/var/run/docker.sock
+
+  redis:
+    image: redis:6.2-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD}
 
 volumes:
   frontend-next: null

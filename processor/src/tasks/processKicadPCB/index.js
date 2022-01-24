@@ -6,17 +6,17 @@ const globule = require('globule')
 const { existsAll, findKicadPcbFile } = require('../../utils')
 const exec = util.promisify(cp.exec)
 
-function processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
+function processKicadPCB(events, { checkoutDir, kitspaceYaml, filesDir }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(async projectName => {
-        const projectOutputDir = path.join(outputDir, projectName)
+        const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return {
           [projectName]: await _processKicadPCB(
             events,
-            inputDir,
+            checkoutDir,
             projectKitspaceYaml,
             projectOutputDir,
           ),
@@ -32,7 +32,7 @@ function processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
       ),
     )
   }
-  return _processKicadPCB(events, inputDir, kitspaceYaml, outputDir)
+  return _processKicadPCB(events, checkoutDir, kitspaceYaml, filesDir)
 }
 
 async function _processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {

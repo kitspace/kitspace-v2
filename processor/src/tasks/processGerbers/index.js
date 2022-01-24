@@ -9,24 +9,19 @@ const findGerberFiles = require('./findGerberFiles')
 const boardBuilder = require('./board_builder')
 
 function processGerbers(
-  events,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  zipVersion,
-  name,
-  plottedGerbers,
+  eventBus,
+  { checkoutDir, kitspaceYaml, filesDir, zipVersion, name, plottedGerbers },
 ) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(outputDir, projectName)
+        const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         const projectPlottedGerbers = plottedGerbers[projectName]
         return _processGerbers(
-          events,
-          inputDir,
+          eventBus,
+          checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
           zipVersion,
@@ -37,10 +32,10 @@ function processGerbers(
     )
   }
   return _processGerbers(
-    events,
-    inputDir,
+    eventBus,
+    checkoutDir,
     kitspaceYaml,
-    outputDir,
+    filesDir,
     zipVersion,
     name,
     plottedGerbers,
@@ -48,7 +43,7 @@ function processGerbers(
 }
 
 async function _processGerbers(
-  events,
+  eventBus,
   inputDir,
   kitspaceYaml,
   outputDir,
@@ -80,12 +75,12 @@ async function _processGerbers(
   ]
 
   for (const f of filePaths) {
-    events.emit('in_progress', f)
+    eventBus.emit('in_progress', f)
   }
 
   if (await existsAll(filePaths)) {
     for (const f of filePaths) {
-      events.emit('done', f)
+      eventBus.emit('done', f)
     }
     return
   }
@@ -124,54 +119,54 @@ async function _processGerbers(
     const promises = []
     promises.push(
       generateZip(zipPath, gerberData)
-        .then(() => events.emit('done', zipPath))
-        .catch(e => events.emit('failed', zipPath, e)),
+        .then(() => eventBus.emit('done', zipPath))
+        .catch(e => eventBus.emit('failed', zipPath, e)),
     )
 
     const stackup = await boardBuilder(gerberData, color)
 
     promises.push(
       writeFile(bottomSvgPath, stackup.bottom.svg)
-        .then(() => events.emit('done', bottomSvgPath))
-        .catch(e => events.emit('failed', bottomSvgPath, e)),
+        .then(() => eventBus.emit('done', bottomSvgPath))
+        .catch(e => eventBus.emit('failed', bottomSvgPath, e)),
     )
 
     promises.push(
       generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath)
-        .then(() => events.emit('done', gerberInfoPath))
-        .catch(e => events.emit('failed', gerberInfoPath, e)),
+        .then(() => eventBus.emit('done', gerberInfoPath))
+        .catch(e => eventBus.emit('failed', gerberInfoPath, e)),
     )
 
     await writeFile(topSvgPath, stackup.top.svg)
-      .then(() => events.emit('done', topSvgPath))
-      .catch(e => events.emit('failed', topSvgPath, e))
+      .then(() => eventBus.emit('done', topSvgPath))
+      .catch(e => eventBus.emit('failed', topSvgPath, e))
 
     promises.push(
       generateTopPng(topSvgPath, stackup, topPngPath)
-        .then(() => events.emit('done', topPngPath))
-        .catch(e => events.emit('failed', topPngPath, e)),
+        .then(() => eventBus.emit('done', topPngPath))
+        .catch(e => eventBus.emit('failed', topPngPath, e)),
     )
 
     promises.push(
       generateTopLargePng(topSvgPath, stackup, topLargePngPath)
-        .then(() => events.emit('done', topLargePngPath))
-        .catch(e => events.emit('failed', topLargePngPath, e)),
+        .then(() => eventBus.emit('done', topLargePngPath))
+        .catch(e => eventBus.emit('failed', topLargePngPath, e)),
     )
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
-      .then(() => events.emit('done', topMetaPngPath))
-      .catch(e => events.emit('failed', topMetaPngPath, e))
+      .then(() => eventBus.emit('done', topMetaPngPath))
+      .catch(e => eventBus.emit('failed', topMetaPngPath, e))
 
     promises.push(
       generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
-        .then(() => events.emit('done', topWithBgndPath))
-        .catch(e => events.emit('failed', topWithBgndPath, e)),
+        .then(() => eventBus.emit('done', topWithBgndPath))
+        .catch(e => eventBus.emit('failed', topWithBgndPath, e)),
     )
 
     await Promise.all(promises)
   } catch (e) {
     for (const f of filePaths) {
-      events.emit('failed', f, e)
+      eventBus.emit('failed', f, e)
     }
   }
 }

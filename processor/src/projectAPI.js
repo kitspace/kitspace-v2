@@ -4,6 +4,7 @@ const log = require('loglevel')
 const path = require('path')
 
 const watcher = require('./watcher')
+const {createWorkers} = require('./workers')
 
 const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
@@ -31,7 +32,11 @@ function createProjectsAPI(app, repoDir, checkIsRepoReady) {
     fileStatus[x] = { status: 'failed', error }
     log.debug('failed', x, error)
   })
-  const unwatch = watcher.watch(events, repoDir, checkIsRepoReady)
+
+
+  createWorkers(events)
+
+  const unwatch = watcher.watch(repoDir, checkIsRepoReady)
 
   app.stop = unwatch
 
