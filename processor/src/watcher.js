@@ -5,7 +5,6 @@ const log = require('loglevel')
 const path = require('path')
 
 const { DATA_DIR } = require('./env')
-const { ProcessingManager } = require('./processingManager')
 const { exists, exec, writeFile, readFile } = require('./utils')
 const processGerbers = require('./tasks/processGerbers')
 const processBOM = require('./tasks/processBOM')
@@ -19,10 +18,10 @@ const running = {}
  *
  * @param {*} events
  * @param {string=} repoDir
- * @param {ProcessingManager} processingManager
+ * @param {function=} checkIsRepoReady
  * @returns
  */
-function watch(events, repoDir = '/repositories', processingManager) {
+function watch(events, repoDir = '/repositories', checkIsRepoReady) {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
@@ -33,9 +32,7 @@ function watch(events, repoDir = '/repositories', processingManager) {
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
-      const isReady =
-        processingManager == null ||
-        (await processingManager.isRepoReadyForProcessing(gitDir))
+      const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
       if (!running[gitDir] && isReady) {
         running[gitDir] = true
         await processRepo(events, repoDir, gitDir).catch(e => {

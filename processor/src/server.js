@@ -1,11 +1,11 @@
 const log = require('loglevel')
-const { ProcessingManager } = require('./processingManager')
+const { checkIsRepoReady } = require('./isRepoReady')
 
 log.setDefaultLevel(process.env.LOG_LEVEL || 'info')
 
 const app = require('./app').createApp(
   '/gitea-data/git/repositories',
-  ProcessingManager,
+  checkIsRepoReady,
 )
 
 const port = 5000

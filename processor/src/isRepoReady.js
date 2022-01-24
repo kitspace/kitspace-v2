@@ -35,7 +35,7 @@ client.connect(e => {
  * @param {string} gitDir
  * @returns
  */
-async function isRepoReadyForProcessing(gitDir) {
+async function checkIsRepoReady(gitDir) {
   const { repoName, ownerName } = parseRepoGitDir(gitDir)
   const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, repoName)
 
@@ -226,9 +226,4 @@ async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) {
   })
 }
 
-const ProcessingManager = {
-  client,
-  isRepoReadyForProcessing,
-}
-
-module.exports = { ProcessingManager }
+module.exports = { checkIsRepoReady }
