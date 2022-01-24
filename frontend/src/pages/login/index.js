@@ -40,7 +40,6 @@ const Login = () => {
         <Grid.Column>
           <Tab
             activeIndex={openPane}
-            defaultActiveIndex={0}
             panes={[
               {
                 menuItem: 'Sign up',
@@ -282,7 +281,6 @@ const SignUpForm = ({ openLoginPane }) => {
             onClick={submit}
           />
           <Form.Field
-            basic
             as="a"
             className={styles.loginInstead}
             data-cy="log-in-here"
