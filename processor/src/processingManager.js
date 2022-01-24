@@ -124,7 +124,7 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
     const onFail = reject =>
       reject(
         new Error(
-          `Repo: ${ownerName}/${repoName} not found after ${MaximumRetries} trials.`,
+          `Repo: ${ownerName}/${repoName} not found after ${MAXIMUM_NUM_OF_RETRIES} trials.`,
         ),
       )
 
