@@ -101,39 +101,39 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
     values: [ownerName, repoName],
   }
 
-  /**
-   * Query the migration task status for a gitea repo, with exponential backoff.
-   * @returns
-   */
-  const queryGiteaRepoWithBackoff = async repoQuery => {
-    const [ownerName, repoName] = repoQuery.values
-
-    const onBackoff = async (num, delay, resolve) => {
-      log.debug(
-        `Backoff started, querying repo ${ownerName}/${repoName}: ${num} ${delay}ms`,
-      )
-      const repoQueryResult = await client.query(repoQuery)
-
-      if (repoQueryResult.rows.length === 1) {
-        const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
-        log.debug(`Repo: ${ownerName}/${repoName} was found`)
-        return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
-      }
-    }
-
-    const onFail = reject =>
-      reject(
-        new Error(
-          `Repo: ${ownerName}/${repoName} not found after ${MAXIMUM_NUM_OF_RETRIES} trials.`,
-        ),
-      )
-
-    return asyncBackoff(onBackoff, onFail, MAXIMUM_NUM_OF_RETRIES)
-  }
-
   const { id, isEmpty, isMirror } = await queryGiteaRepoWithBackoff(repoQuery)
 
   return { id, isMirror, isEmpty }
+}
+
+/**
+ * Query the migration task status for a gitea repo, with exponential backoff.
+ * @returns
+ */
+const queryGiteaRepoWithBackoff = async repoQuery => {
+  const [ownerName, repoName] = repoQuery.values
+
+  const onBackoff = async (num, delay, resolve) => {
+    log.debug(
+      `Backoff started, querying repo ${ownerName}/${repoName}: ${num} ${delay}ms`,
+    )
+    const repoQueryResult = await client.query(repoQuery)
+
+    if (repoQueryResult.rows.length === 1) {
+      const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
+      log.debug(`Repo: ${ownerName}/${repoName} was found`)
+      return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
+    }
+  }
+
+  const onFail = reject =>
+    reject(
+      new Error(
+        `Repo: ${ownerName}/${repoName} not found after ${MAXIMUM_NUM_OF_RETRIES} trials.`,
+      ),
+    )
+
+  return asyncBackoff(onBackoff, onFail, MAXIMUM_NUM_OF_RETRIES)
 }
 
 /**
@@ -151,40 +151,41 @@ async function queryGiteaRepoMigrationStatus(repoId) {
     values: [repoId, MigrationTaskType],
   }
 
-  /**
-   * Query the migration task status for a gitea repo, with exponential backoff.
-   * @returns
-   */
-  const queryMigrationStatusWithBackoff = async migrationStatusQuery => {
-    const onBackoff = async (num, delay, resolve) => {
-      log.debug(
-        'Backoff started, querying migration status for repo' +
-          `Id(${migrationStatusQuery.values[0]}): ${num} ${delay}ms`,
-      )
-
-      const migrationStatusQueryResult = await client.query(migrationStatusQuery)
-      if (migrationStatusQueryResult.rows.length === 1) {
-        const { status } = migrationStatusQueryResult.rows[0]
-        log.debug(`Repo: Id(${repoId})'s migration status: ${status}.`)
-        return resolve(status)
-      }
-    }
-
-    const onFail = reject =>
-      reject(
-        new Error(
-          `Repo: ${repoId} migration task not found after ${MaximumRetries} trials.`,
-        ),
-      )
-
-    return asyncBackoff(onBackoff, onFail, MAXIMUM_NUM_OF_RETRIES)
-  }
-
   const repoMigrationStatus = await queryMigrationStatusWithBackoff(
     migrationStatusQuery,
+    repoId,
   )
 
   return repoMigrationStatus
+}
+
+/**
+ * Query the migration task status for a gitea repo, with exponential backoff.
+ * @returns
+ */
+const queryMigrationStatusWithBackoff = async (migrationStatusQuery, repoId) => {
+  const onBackoff = async (num, delay, resolve) => {
+    log.debug(
+      'Backoff started, querying migration status for repo' +
+        `Id(${migrationStatusQuery.values[0]}): ${num} ${delay}ms`,
+    )
+
+    const migrationStatusQueryResult = await client.query(migrationStatusQuery)
+    if (migrationStatusQueryResult.rows.length === 1) {
+      const { status } = migrationStatusQueryResult.rows[0]
+      log.debug(`Repo: Id(${repoId})'s migration status: ${status}.`)
+      return resolve(status)
+    }
+  }
+
+  const onFail = reject =>
+    reject(
+      new Error(
+        `Repo: ${repoId} migration task not found after ${MAXIMUM_NUM_OF_RETRIES} trials.`,
+      ),
+    )
+
+  return asyncBackoff(onBackoff, onFail, MAXIMUM_NUM_OF_RETRIES)
 }
 
 /**
