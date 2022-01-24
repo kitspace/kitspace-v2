@@ -74,15 +74,15 @@ async function isRepoReadyForProcessing(gitDir) {
  * @param {string} gitDir the file-system path for the git repo
  * @returns {{ownerName: string, repoName: string}} repo details
  */
-function parseRepoGitDir(gitDir) {
-  const matcher =
-    /^\/gitea-data\/git\/repositories\/(?<ownerName>\w+)\/(?<repoName>\w+)/
-  const { ownerName, repoName } = gitDir.match(matcher)?.groups
 
+function parseRepoGitDir(gitDir) {
+  // path on filesystem is something like: /gitea-data/git/repositories/kaspar/ulx3s.git
+  const p = gitDir.split('/')
+  const ownerName = p[4]
+  const repoName = p[5].slice(0, -4)
   if (ownerName == null || repoName == null) {
     throw new Error(`Failed to parse gitDir: ${gitDir}`)
   }
-
   return { ownerName, repoName }
 }
 
