@@ -1,5 +1,5 @@
 const log = require('loglevel')
-const { checkIsRepoReady } = require('./isRepoReady')
+const { checkIsRepoReady } = require('./checkIsRepoReady')
 
 log.setDefaultLevel(process.env.LOG_LEVEL || 'info')
 
