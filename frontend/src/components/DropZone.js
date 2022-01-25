@@ -51,6 +51,8 @@ const fileCustomValidator = file => {
 
   if (isFileUnderGitDir) {
     return {
+      // The validator must return an error to mark a file as rejected,
+      // even if the error won't be shown to the user.
       code: ErrorCode.FileInvalidType,
       message: "Uploading git folder isn't supported",
     }
@@ -138,9 +140,6 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
       rej => rej.errors[0].code === ErrorCode.TooManyFiles,
     )
 
-    const invalidFiles = fileRejections.filter(
-      rej => rej.errors[0].code === ErrorCode.FileInvalidType,
-    )
     // The notification won't be needed unless of case of trying to upload files
     // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
     import('react-hot-toast').then(toast => {
@@ -156,13 +155,6 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
 
       if (tooManyFiles.length !== 0) {
         toast.default.error(`Only ${DropZoneConfig.maxFiles} file allowed!`)
-      }
-
-      if (invalidFiles.length > 0) {
-        console.error('Invalid files', invalidFiles)
-        toast.default.error(
-          'Uploading the ".git" folder isn\'t supported! Escaped all the files in it.',
-        )
       }
     })
   }, [FilePickerRejections, FolderPickerRejections, DropZoneConfig.maxFiles])
