@@ -36,21 +36,15 @@ const workerFunctions = {
 }
 
 function createWorkers(eventBus) {
-  Object.keys(workerFunctions).forEach(name => {
+  for (const name in workerFunctions) {
     addWorker(eventBus, name)
-  })
+  }
 }
 
 function addWorker(eventBus, name) {
-  new Worker(
-    'tasks',
-    async job => {
-      if (job.name === name) {
-        return workerFunction[name](eventBus, job.data)
-      }
-    },
-    { connection },
-  )
+  new Worker(name, job => workerFunctions[name](eventBus, job.data), {
+    connection,
+  })
 }
 
 module.exports = { createWorkers }

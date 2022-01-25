@@ -9,9 +9,11 @@ const { exists, exec, writeFile, readFile } = require('./utils')
 const { DATA_DIR } = require('./env')
 const { connection } = require('./redisConnection')
 
-const queue = new Queue('tasks', {
-  connection,
-})
+const writeKitspaceYamlQueue = new Queue('writeKitspaceYaml', { connection })
+const processPCBQueue = new Queue('processPCB', { connection })
+const processBOMQueue = new Queue('processBOM', { connection })
+const processIBOMQueue = new Queue('processIBOM', { connection })
+const processReadmeQueue = new Queue('processReadme', { connection })
 
 /**
  *
@@ -91,11 +93,17 @@ async function processRepo(repoDir, gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  queue.add('writeKitspaceYaml', { kitspaceYaml, filesDir })
-  queue.add('processPCB', { checkoutDir, kitspaceYaml, filesDir, hash, name })
-  queue.add('processBOM', { checkoutDir, kitspaceYaml, filesDir })
-  queue.add('processIBOM', { checkoutDir, kitspaceYaml, filesDir, hash, name })
-  queue.add('processReadme', { checkoutDir, kitspaceYaml, filesDir, name })
+  writeKitspaceYamlQueue.add('start', { kitspaceYaml, filesDir })
+  processPCBQueue.add('start', {
+    checkoutDir,
+    kitspaceYaml,
+    filesDir,
+    hash,
+    name,
+  })
+  processBOMQueue.add('start', { checkoutDir, kitspaceYaml, filesDir })
+  processIBOMQueue.add('start', { checkoutDir, kitspaceYaml, filesDir, hash, name })
+  processReadmeQueue.add('start', { checkoutDir, kitspaceYaml, filesDir, name })
 }
 
 async function getKitspaceYaml(checkoutDir) {
