@@ -1,8 +1,9 @@
-const { Worker, Job } = require('bullmq')
+const { Worker } = require('bullmq')
 const { connection } = require('./redisConnection')
 const writeKitspaceYaml = require('./tasks/writeKitspaceYaml')
 const processGerbers = require('./tasks/processGerbers')
 const processKicadPCB = require('./tasks/processKicadPCB')
+const processSchematics = require('./tasks/processSchematics')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
 const processReadme = require('./tasks/processReadme')
@@ -30,6 +31,8 @@ async function processPCB(
 
 const workerFunctions = {
   writeKitspaceYaml,
+  processKicadPCB,
+  processSchematics,
   processPCB,
   processBOM,
   processIBOM,
