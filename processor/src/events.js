@@ -1,3 +1,8 @@
 const EventEmitter = require('events')
 
-module.exports = new EventEmitter()
+const events = new EventEmitter()
+
+// increase the default to avoid warnings for our tests
+events.setMaxListeners(40)
+
+module.exports = events
