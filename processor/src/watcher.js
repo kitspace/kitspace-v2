@@ -13,7 +13,15 @@ const processKicadPCB = require('./tasks/processKicadPCB')
 const processReadme = require('./tasks/processReadme')
 
 const running = {}
-function watch(events, repoDir = '/repositories') {
+
+/**
+ *
+ * @param {*} events
+ * @param {string=} repoDir
+ * @param {function=} checkIsRepoReady
+ * @returns
+ */
+function watch(events, repoDir = '/repositories', checkIsRepoReady) {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
@@ -24,7 +32,8 @@ function watch(events, repoDir = '/repositories') {
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
-      if (!running[gitDir]) {
+      const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
+      if (!running[gitDir] && isReady) {
         running[gitDir] = true
         await processRepo(events, repoDir, gitDir).catch(e => {
           log.error(`Error processing '${gitDir}':`, e)
@@ -59,7 +68,7 @@ function watch(events, repoDir = '/repositories') {
     }
     dirWatchers = {}
     watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
-  }, 60000)
+  }, 60_000)
 
   const unwatch = () => {
     clearInterval(timer)

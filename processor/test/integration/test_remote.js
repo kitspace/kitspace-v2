@@ -19,7 +19,7 @@ describe('remote API', () => {
   beforeEach(async () => {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${emptyRepoDir}`)
-    this.app = createApp(emptyRepoDir)
+    this.app = createApp(emptyRepoDir, null)
     this.supertest = supertest(this.app)
   })
 

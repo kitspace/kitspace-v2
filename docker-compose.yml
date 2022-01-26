@@ -32,11 +32,14 @@ services:
       - postgres
 
   postgres:
-    image: postgres:12.2
+    build:
+      context: postgres
     environment:
       - POSTGRES_USER=gitea
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=gitea
+      - READONLY_USER=readonly_user
+      - READONLY_PASS=${POSTGRES_READONLY_USER_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -59,10 +62,18 @@ services:
 
   processor:
     environment:
+      - MAXIMUM_REPO_MIGRATION_TIME=${MAXIMUM_REPO_MIGRATION_TIME}
       - KITSPACE_GITEA_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
+      - GITEA_DB_HOST=postgres
+      - GITEA_DB_PORT=5432
+      - POSTGRES_DB=gitea
+      - GITEA_DB_USER=readonly_user
+      - GITEA_DB_PASSWORD=${POSTGRES_READONLY_USER_PASSWORD}
       - LOG_LEVEL=${KITSPACE_PROCESSOR_LOG_LEVEL}
       - REMOTE_API_TOKENS=${KITSPACE_PROCESSOR_REMOTE_API_TOKENS}
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+    depends_on:
+      - postgres
     volumes:
       - gitea-data:/gitea-data
       - processor-data:/data
@@ -70,8 +81,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-  frontend-next:
-  frontend-public:
-  gitea-data:
-  postgres-data:
-  processor-data:
+  frontend-next: null
+  frontend-public: null
+  gitea-data: null
+  postgres-data: null
+  processor-data: null
