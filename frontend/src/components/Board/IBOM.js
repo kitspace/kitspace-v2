@@ -46,7 +46,7 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
       checkboxes: 'Sourced,Placed',
       bom_view: 'left-right',
       layer_view: 'FB',
-      extra_fields: [],
+      fields: ['Value', 'Footprint'],
     }
 
     window.config = config
