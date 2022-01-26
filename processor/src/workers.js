@@ -36,13 +36,18 @@ const workerFunctions = {
 }
 
 function createWorkers(eventBus) {
+  const workers = []
   for (const name in workerFunctions) {
-    addWorker(eventBus, name)
+    workers.push(addWorker(eventBus, name))
   }
+  const stop = () => {
+    return Promise.all(workers.map(worker => worker.close()))
+  }
+  return stop
 }
 
 function addWorker(eventBus, name) {
-  new Worker(name, job => workerFunctions[name](eventBus, job.data), {
+  return new Worker(name, job => workerFunctions[name](eventBus, job.data), {
     connection,
   })
 }
