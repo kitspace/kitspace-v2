@@ -6,19 +6,16 @@ import { Loader } from 'semantic-ui-react'
 
 import Page from '@components/Page'
 
-const IBOM = ({ repoFullname, html, pcbData }) => {
+const IBOM = ({ projectFullname, html, pcbData, projectHref }) => {
   const [ready, setReady] = useState(false)
-  const title = `${repoFullname} Kitspace Interactive Assembly Guide`
+  const title = `${projectFullname} Kitspace Interactive Assembly Guide`
 
   /*
     i.   set the `pcbdata` var needed by IBOM
     ii.  initialize IBOM
     iii. make the title anchor tag linking to the project page.
     iv.  prefetch project page.
-     */
-  /* eslint-disable no-template-curly-in-string */
-  const titleTemplate = '`<a href=/${pcbTitle}>${pcbTitle}</a>`'
-  const hrefTemplate = '`/${pcbTitle}`'
+  */
   const initScript = `
     var pcbdata = ${pcbData};
     document.getElementById('IBOM_script').addEventListener('load', () => {
@@ -26,11 +23,11 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
       initBOM();
       const pcbTitle = pcbdata.metadata.title;
   
-      document.querySelector('#title').innerHTML = ${titleTemplate};
+      document.querySelector('#title').innerHTML = "<a href=/${projectHref}>${projectFullname}</a>";
       const head = document.head;
       const link = document.createElement("link");
       link.rel = "prefetch";
-      link.href = ${hrefTemplate};
+      link.href = "${projectHref}";
     });
     `
 
@@ -85,9 +82,10 @@ const IBOM = ({ repoFullname, html, pcbData }) => {
 }
 
 IBOM.propTypes = {
-  repoFullname: string.isRequired,
+  projectFullname: string.isRequired,
   html: string.isRequired,
   pcbData: string.isRequired,
+  projectHref: string.isRequired,
 }
 
 export default IBOM
