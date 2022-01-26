@@ -62,15 +62,14 @@ export const UserMenuItems = () => {
 }
 
 const LogoutButton = () => {
-  const { push, reload } = useRouter()
+  const { push } = useRouter()
   const { logout } = useContext(AuthContext)
 
   const onClick = async () => {
     const loggedOut = await logout()
 
     if (loggedOut) {
-      await push('/login')
-      reload()
+      push('/login')
     }
   }
 

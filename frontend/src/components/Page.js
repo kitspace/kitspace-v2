@@ -1,56 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { string, bool, node } from 'prop-types'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { Loader } from 'semantic-ui-react'
-
-import { AuthContext } from '@contexts/AuthContext'
+import { string, bool, node } from 'prop-types'
 
 import Head from './Head'
 import NavBar from './NavBar'
 import styles from './Page.module.scss'
 import SearchProvider from '@contexts/SearchContext'
 
-const Content = ({ requireSignIn, requireSignOut, contentFullSize, children }) => {
-  const { pathname, replace } = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [throttledLoader, setThrottledLoader] = useState(false)
-  const { isAuthenticated } = useContext(AuthContext)
-
-  useEffect(() => {
-    setTimeout(() => {
-      setThrottledLoader(true)
-    }, 200)
-  }, [])
-
-  useEffect(() => {
-    const isAuthenticated = window?.session.user != null
-
-    if (requireSignIn && !isAuthenticated) {
-      replace(`/login?redirect=${pathname}`)
-    } else if (requireSignOut && isAuthenticated) {
-      replace('/')
-    } else {
-      setLoading(false)
-    }
-  }, [loading, requireSignIn, requireSignOut, pathname, isAuthenticated, replace])
-
-  const isPublicPath = !(requireSignIn || requireSignOut)
-  if (isPublicPath) {
-    // render the page immediately without checking the authentication status.
-    return <Container contentFullSize={contentFullSize}>{children}</Container>
-  }
-
-  if (loading && throttledLoader) {
-    return (
-      <Loader active style={{ margin: 'auto' }}>
-        Loading...
-      </Loader>
-    )
-  }
-
-  return throttledLoader ? (
-    <Container contentFullSize={contentFullSize}>{children}</Container>
-  ) : null
+const Content = ({ contentFullSize, children }) => {
+  return <Container contentFullSize={contentFullSize}>{children}</Container>
 }
 
 const Container = ({ contentFullSize, children }) => (
@@ -62,40 +20,52 @@ const Container = ({ contentFullSize, children }) => (
   </main>
 )
 
-const Page = ({
-  title,
-  initialQuery,
-  requireSignIn,
-  requireSignOut,
-  contentFullSize,
-  children,
-}) => (
-  <SearchProvider initialQuery={initialQuery}>
-    <Head title={title} />
-    <NavBar />
-    <Content
-      contentFullSize={contentFullSize}
-      requireSignIn={requireSignIn}
-      requireSignOut={requireSignOut}
-    >
-      {children}
-    </Content>
-  </SearchProvider>
-)
+const Page = ({ title, initialQuery, contentFullSize, children }) => {
+  const { asPath, pathname, replace } = useRouter()
+
+  useEffect(() => {
+    /*
+     * On clicking on the login button from any page for e.g., '/1-click-bom',
+     * it redirects to '/login?redirect=/1-click-bom'
+     * After successful login the page must be reloaded, because cookies are injected on server-side
+     * This means a request: GET /login?redirect=1-click-bom will hit the server.
+     * The server will find the user is already logged in so it will redirect it to the `redirect` param in the url
+     * though by rewriting the response the server can't change the url displayed in the browser accordingly. This hook fixes it.
+     *
+     * Why can't we redirect first then reload the page to update the cookies?
+     * If the page to which we should redirect is protected behind authentication (uses `withRequireSignIn`) e.g., /settings
+     * The auth-handler will find that the user isn't authenticated and will redirect to login page once again.
+     */
+
+    const browserPath = asPath.split('?')[0]
+    const doesTheBrowserURLMismatchPathname = browserPath !== pathname
+    if (
+      doesTheBrowserURLMismatchPathname &&
+      pathname !== '/login' &&
+      browserPath !== '/'
+    ) {
+      replace(pathname, null, { shallow: true })
+    }
+  }, [asPath, pathname, replace])
+
+  return (
+    <SearchProvider initialQuery={initialQuery}>
+      <Head title={title} />
+      <NavBar />
+      <Content contentFullSize={contentFullSize}>{children}</Content>
+    </SearchProvider>
+  )
+}
 
 Page.propTypes = {
   title: string.isRequired,
   initialQuery: string,
-  requireSignIn: bool,
-  requireSignOut: bool,
   contentFullSize: bool,
   children: node.isRequired,
 }
 
 Page.defaultProps = {
   initialQuery: '',
-  requireSignIn: false,
-  requireSignOut: false,
   contentFullSize: false,
 }
 
@@ -105,8 +75,6 @@ Container.propTypes = {
 }
 
 Content.propTypes = {
-  requireSignIn: bool.isRequired,
-  requireSignOut: bool.isRequired,
   contentFullSize: bool.isRequired,
   children: node.isRequired,
 }

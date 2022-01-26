@@ -50,19 +50,6 @@ describe('Log in form submission', () => {
     cy.visit('login?1')
   })
 
-  it('should display username in homepage on submitting a valid form', () => {
-    cy.signIn(username, password)
-
-    // After a successful login the user is redirect to the homepage.
-    cy.url().should('eq', `${Cypress.config().baseUrl}/${Cypress.env('home_url')}`)
-    // Currently the username is in the homepage body,
-    // probably will change in the future
-    cy.get('[data-cy=page-container]').should('include.text', username)
-
-    // Checking the session object is more robust.
-    cy.window().its('session.user.username').should('eq', username)
-  })
-
   it('should display error message on submitting form with wrong username', () => {
     cy.stubSignInReq(false, {
       error: 'Not Found',

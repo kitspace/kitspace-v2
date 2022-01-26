@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react'
+import { composeInitialProps } from 'next-composition'
 import { bool, func, number, shape, string } from 'prop-types'
 import {
   Grid,
@@ -14,11 +15,11 @@ import {
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
-import { useMediaPredicate } from 'react-media-hook'
 
 import Page from '@components/Page'
 import DropZone from '@components/DropZone'
 import { AuthContext } from '@contexts/AuthContext'
+import { withRequireSignIn } from '@utils/authHandlers'
 import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists, mirrorRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles, urlToName } from '@utils/index'
@@ -29,11 +30,21 @@ import styles from './new.module.scss'
 
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
-  const isBigScreen = useMediaPredicate('(min-width: 1200px)')
+  const [isBigScreen, setIsBigScreen] = useState(true)
   const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 
+  const handleResize = () =>
+    setIsBigScreen(window.matchMedia('(min-width: 1200px)').matches)
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    handleResize()
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
-    <Page requireSignIn title="new">
+    <Page title="Kitspace | New Project">
       {isBigScreen ? (
         <div
           className={`${styles.projectsNew} ui two column stackable center aligned grid`}
@@ -68,6 +79,10 @@ const New = () => {
     </Page>
   )
 }
+
+New.getInitialProps = composeInitialProps({
+  use: [withRequireSignIn('/projects/new')],
+})
 
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()

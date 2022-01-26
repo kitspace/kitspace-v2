@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { composeInitialProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
 import {
@@ -15,6 +16,7 @@ import { isEmpty } from 'lodash'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
+import { withRequireSignOut } from '@utils/authHandlers'
 import SignInFormModel from '@models/SignInForm'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
@@ -35,8 +37,12 @@ const Login = () => {
   }, [query, push])
 
   return (
-    <Page requireSignOut title="Kitspace | Login">
-      <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
+    <Page title="Kitspace | Login">
+      <Grid
+        id="login-grid"
+        style={{ maxWidth: '500px', margin: 'auto' }}
+        verticalAlign="middle"
+      >
         <Grid.Column>
           <Tab
             activeIndex={openPane}
@@ -68,10 +74,14 @@ const Login = () => {
   )
 }
 
+Login.getInitialProps = composeInitialProps({
+  use: [withRequireSignOut],
+})
+
 const SignInForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
-  const { push, reload, query } = useRouter()
+  const { reload } = useRouter()
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -96,7 +106,8 @@ const SignInForm = () => {
     const data = await response.json()
 
     if (response.ok) {
-      await push(query.redirect ?? '/')
+      // After successful login the page must be reloaded,
+      // because cookies are injected on server-side
       reload()
     } else {
       const { error, message } = data
@@ -174,7 +185,7 @@ const SignUpForm = ({ openLoginPane }) => {
     true,
   )
   const [apiResponse, setApiResponse] = useState({})
-  const { reload, query, push } = useRouter()
+  const { reload } = useRouter()
 
   const autoSignIn = async (username, password) => {
     const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
@@ -186,7 +197,6 @@ const SignUpForm = ({ openLoginPane }) => {
     })
 
     if (response.ok) {
-      await push(query.redirect ?? '/')
       reload()
     } else {
       console.error('Failed to auto sign in the user.')
