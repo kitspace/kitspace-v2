@@ -6,6 +6,7 @@ const processKicadPCB = require('./tasks/processKicadPCB')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
 const processReadme = require('./tasks/processReadme')
+const events = require('./events')
 
 async function processPCB(
   eventBus,
@@ -35,10 +36,10 @@ const workerFunctions = {
   processReadme,
 }
 
-function createWorkers(eventBus) {
+function createWorkers() {
   const workers = []
   for (const name in workerFunctions) {
-    workers.push(addWorker(eventBus, name))
+    workers.push(addWorker(name))
   }
   const stop = () => {
     return Promise.all(workers.map(worker => worker.close()))
@@ -46,13 +47,13 @@ function createWorkers(eventBus) {
   return stop
 }
 
-function addWorker(eventBus, name) {
+function addWorker(name) {
   const worker = new Worker(name, job => workerFunctions[name](job, job.data), {
     connection,
   })
 
   worker.on('progress', (job, progress) => {
-    eventBus.emit(progress.status, progress.file, progress.error)
+    events.emit(progress.status, progress.file, progress.error)
   })
 
   return worker
