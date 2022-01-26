@@ -6,7 +6,7 @@ const globule = require('globule')
 const { existsAll, findKicadPcbFile } = require('../../utils')
 const exec = util.promisify(cp.exec)
 
-function processKicadPCB(events, { checkoutDir, kitspaceYaml, filesDir }) {
+function processKicadPCB(job, { checkoutDir, kitspaceYaml, filesDir }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
@@ -15,7 +15,7 @@ function processKicadPCB(events, { checkoutDir, kitspaceYaml, filesDir }) {
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return {
           [projectName]: await _processKicadPCB(
-            events,
+            job,
             checkoutDir,
             projectKitspaceYaml,
             projectOutputDir,
@@ -32,21 +32,21 @@ function processKicadPCB(events, { checkoutDir, kitspaceYaml, filesDir }) {
       ),
     )
   }
-  return _processKicadPCB(events, checkoutDir, kitspaceYaml, filesDir)
+  return _processKicadPCB(job, checkoutDir, kitspaceYaml, filesDir)
 }
 
-async function _processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
+async function _processKicadPCB(job, inputDir, kitspaceYaml, outputDir) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
   const filePaths = [layoutSvgPath]
 
-  for (const f of filePaths) {
-    events.emit('in_progress', f)
+  for (const file of filePaths) {
+    job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
-    for (const f of filePaths) {
-      events.emit('done', f)
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'done', file })
     }
     // XXX should really return gerbers here, but they are temp files
     return { inputFiles: {}, gerbers: [] }
@@ -56,15 +56,21 @@ async function _processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
     const files = globule.find(path.join(inputDir, '**'))
     const kicadPcbFile = findKicadPcbFile(inputDir, files, kitspaceYaml)
     if (kicadPcbFile == null) {
-      events.emit('failed', layoutSvgPath, Error('No .kicad_pcb file found'))
+      job.updateProgress({
+        status: 'failed',
+        file: layoutSvgPath,
+        error: Error('No .kicad_pcb file found'),
+      })
       return { inputFiles: {}, gerbers: [] }
     }
 
     const gerbersPromise = plotKicadGerbers(outputDir, kicadPcbFile)
 
     const layoutPromise = plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
-      .then(() => events.emit('done', layoutSvgPath))
-      .catch(e => events.emit('failed', layoutSvgPath, e))
+      .then(() => job.updateProgress({ status: 'done', file: layoutSvgPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: layoutSvgPath, error }),
+      )
 
     const gerbers = await gerbersPromise
     await layoutPromise
@@ -73,8 +79,8 @@ async function _processKicadPCB(events, inputDir, kitspaceYaml, outputDir) {
     const inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
     return { inputFiles, gerbers }
   } catch (e) {
-    for (const f of filePaths) {
-      events.emit('failed', f, e)
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'failed', file, error })
     }
     return { inputFiles: {}, gerbers: [] }
   }

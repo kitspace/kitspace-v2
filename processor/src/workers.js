@@ -47,9 +47,15 @@ function createWorkers(eventBus) {
 }
 
 function addWorker(eventBus, name) {
-  return new Worker(name, job => workerFunctions[name](eventBus, job.data), {
+  const worker = new Worker(name, job => workerFunctions[name](job, job.data), {
     connection,
   })
+
+  worker.on('progress', (job, progress) => {
+    eventBus.emit(progress.status, progress.file, progress.error)
+  })
+
+  return worker
 }
 
 module.exports = { createWorkers }

@@ -6,7 +6,10 @@ const cheerio = require('cheerio')
 const { exists, readFile, writeFile } = require('../utils')
 const { GITEA_URL } = require('../env')
 
-function processReadme(eventBus, {checkoutDir, kitspaceYaml, filesDir, projectFullname}) {
+function processReadme(
+  job,
+  { checkoutDir, kitspaceYaml, filesDir, projectFullname },
+) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
@@ -15,7 +18,7 @@ function processReadme(eventBus, {checkoutDir, kitspaceYaml, filesDir, projectFu
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
 
         return _processReadme(
-          eventBus,
+          job,
           checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
@@ -25,11 +28,11 @@ function processReadme(eventBus, {checkoutDir, kitspaceYaml, filesDir, projectFu
     )
   }
 
-  return _processReadme(eventBus, checkoutDir, kitspaceYaml, filesDir, projectFullname)
+  return _processReadme(job, checkoutDir, kitspaceYaml, filesDir, projectFullname)
 }
 
 async function _processReadme(
-  eventBus,
+  job,
   inputDir,
   kitspaceYaml,
   outputDir,
@@ -37,10 +40,10 @@ async function _processReadme(
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
-  eventBus.emit('in_progress', readmePath)
+  job.updateProgress({ status: 'in_progress', file: readmePath })
 
   if (await exists(readmePath)) {
-    eventBus.emit('done', readmePath)
+    job.updateProgress({ status: 'done', file: readmePath })
     return
   }
 
@@ -51,7 +54,11 @@ async function _processReadme(
   } else {
     const readmeFile = findReadmeFile(inputDir)
     if (readmeFile === null) {
-      eventBus.emit('failed', readmePath, "couldn't find readme file")
+      job.updateProgress({
+        status: 'failed',
+        file: readmePath,
+        error: Error("couldn't find readme file"),
+      })
       return
     }
     readmeInputPath = readmeFile
@@ -63,8 +70,10 @@ async function _processReadme(
   const renderedReadme = postProcessMarkdown(readmeAsHTML, projectFullname)
 
   await writeFile(readmePath, renderedReadme)
-    .then(() => eventBus.emit('done', readmePath))
-    .catch(e => eventBus.emit('failed', readmePath, e))
+    .then(() => job.updateProgress({ status: 'done', file: readmePath }))
+    .catch(error =>
+      job.updateProgress({ status: 'failed', file: readmePath, error }),
+    )
 }
 
 function findReadmeFile(inputDir) {

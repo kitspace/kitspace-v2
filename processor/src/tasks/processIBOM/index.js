@@ -9,7 +9,7 @@ const { exists } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
-function processIBOM(eventBus, { checkoutDir, kitspaceYaml, filesDir, hash, name }) {
+function processIBOM(job, { checkoutDir, kitspaceYaml, filesDir, hash, name }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
@@ -17,7 +17,7 @@ function processIBOM(eventBus, { checkoutDir, kitspaceYaml, filesDir, hash, name
         const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return _processIBOM(
-          eventBus,
+          job,
           checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
@@ -27,15 +27,15 @@ function processIBOM(eventBus, { checkoutDir, kitspaceYaml, filesDir, hash, name
       }),
     )
   }
-  return _processIBOM(eventBus, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  return _processIBOM(job, checkoutDir, kitspaceYaml, filesDir, hash, name)
 }
 
-async function _processIBOM(eventBus, inputDir, kitspaceYaml, outputDir, hash, name) {
+async function _processIBOM(job, inputDir, kitspaceYaml, outputDir, hash, name) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
-  eventBus.emit('in_progress', ibomOutputPath)
+  job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
   if (await exists(ibomOutputPath)) {
-    eventBus.emit('done', ibomOutputPath)
+    job.updateProgress({ status: 'done', file: ibomOutputPath })
     return
   }
 
@@ -56,7 +56,11 @@ async function _processIBOM(eventBus, inputDir, kitspaceYaml, outputDir, hash, n
   }
 
   if (pcbFile == null) {
-    eventBus.emit('failed', ibomOutputPath, { message: 'No PCB file found' })
+    job.updateProgress({
+      status: 'failed',
+      file: ibomOutputPath,
+      error: Error('No PCB file found'),
+    })
     return
   }
 
@@ -65,8 +69,10 @@ async function _processIBOM(eventBus, inputDir, kitspaceYaml, outputDir, hash, n
 
   const run_ibom = path.join(__dirname, 'run_ibom')
   await exec(`${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`)
-    .then(() => eventBus.emit('done', ibomOutputPath))
-    .catch(e => eventBus.emit('failed', ibomOutputPath, e))
+    .then(() => job.updateProgress({ status: 'done', file: ibomOutputPath }))
+    .catch(error =>
+      job.updateProgress({ status: 'failed', file: ibomOutputPath, error }),
+    )
 }
 
 async function findBoardFile(path, ext, check) {

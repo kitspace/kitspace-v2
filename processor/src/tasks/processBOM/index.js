@@ -4,38 +4,33 @@ const getPartinfo = require('./get_partinfo')
 
 const { exists, existsAll, writeFile, readFile } = require('../../utils')
 
-function processBOM(eventBus, { checkoutDir, kitspaceYaml, filesDir }) {
+function processBOM(job, { checkoutDir, kitspaceYaml, filesDir }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
         const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        return _processBOM(
-          eventBus,
-          checkoutDir,
-          projectKitspaceYaml,
-          projectOutputDir,
-        )
+        return _processBOM(job, checkoutDir, projectKitspaceYaml, projectOutputDir)
       }),
     )
   }
-  return _processBOM(eventBus, checkoutDir, kitspaceYaml, filesDir)
+  return _processBOM(job, checkoutDir, kitspaceYaml, filesDir)
 }
 
-async function _processBOM(eventBus, inputDir, kitspaceYaml, outputDir) {
+async function _processBOM(job, inputDir, kitspaceYaml, outputDir) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
 
   const filePaths = [bomOutputPath, infoJsonPath]
 
-  for (const f of filePaths) {
-    eventBus.emit('in_progress', f)
+  for (const file of filePaths) {
+    job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
-    for (const f of filePaths) {
-      eventBus.emit('done', f)
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'done', file })
     }
     return
   }
@@ -66,8 +61,12 @@ async function _processBOM(eventBus, inputDir, kitspaceYaml, outputDir) {
       })
     }
     if (!bom.lines || bom.lines.length === 0) {
-      for (const f of filePaths) {
-        eventBus.emit('failed', f, { message: 'No lines in BOM found' })
+      for (const file of filePaths) {
+        job.updateProgress({
+          status: 'failed',
+          file,
+          error: Error('No lines in BOM found'),
+        })
       }
       return
     }
@@ -78,15 +77,19 @@ async function _processBOM(eventBus, inputDir, kitspaceYaml, outputDir) {
     const info = { bom, inputFile: path.relative(inputDir, bomInputPath) }
     await Promise.all([
       writeFile(infoJsonPath, JSON.stringify(info))
-        .then(() => eventBus.emit('done', infoJsonPath))
-        .catch(e => eventBus.emit('failed', infoJsonPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: infoJsonPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: infoJsonPath, error }),
+        ),
       writeFile(bomOutputPath, bom.tsv)
-        .then(() => eventBus.emit('done', bomOutputPath))
-        .catch(e => eventBus.emit('failed', bomOutputPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: bomOutputPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: bomOutputPath, error }),
+        ),
     ])
-  } catch (e) {
-    for (const f of filePaths) {
-      eventBus.emit('failed', f, e)
+  } catch (error) {
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'failed', file, error })
     }
   }
 }
