@@ -1,9 +1,10 @@
 import React, { useEffect, useCallback, useMemo } from 'react'
-import dynamic from 'next/dynamic'
 import { object, func, bool } from 'prop-types'
-import { isEmpty } from 'lodash'
+import dynamic from 'next/dynamic'
 
-import { useDropzone } from 'react-dropzone'
+// `FileWithPath is used in the `fileCustomValidator` function typing.
+// eslint-disable-next-line no-unused-vars
+import { useDropzone, ErrorCode, FileWithPath } from 'react-dropzone'
 import { fromEvent } from 'file-selector'
 import { Button } from 'semantic-ui-react'
 
@@ -11,8 +12,10 @@ import { MBytesToBytes } from '@utils/index'
 
 const maxFileSize = process.env.MAX_FILE_SIZE
 
-// The notification won't be needed util a file is rejected, so defer importing it until needed,
-// this make next dynamically import the `Toaster` component only from this module.
+/*
+ * The notification won't be needed util a file is rejected, so defer importing it until needed,
+ * this make next dynamically import the `Toaster` component only from this module.
+ */
 const Toaster = dynamic(() => import('react-hot-toast').then(mod => mod.Toaster))
 
 // Outside of the component to prevent unnecessary rerendering.
@@ -35,6 +38,26 @@ const baseStyle = {
 // Outside of the component to prevent unnecessary rerendering.
 const activeStyle = {
   borderColor: '#0c9bef',
+}
+
+/**
+ * Custom validator to reject the `.git` folder.
+ * @param {FileWithPath} file
+ * @returns {FileError|null}
+ */
+const fileCustomValidator = file => {
+  const isFileUnderGitDir =
+    file?.path.includes('/.git/') || file?.webkitRelativePath.includes('/.git/')
+
+  if (isFileUnderGitDir) {
+    return {
+      // The validator must return an error to mark a file as rejected,
+      // even if the error won't be shown to the user.
+      code: ErrorCode.FileInvalidType,
+      message: "Uploading git folder isn't supported",
+    }
+  }
+  return null
 }
 
 const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
@@ -67,6 +90,7 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
     maxSize: MBytesToBytes(maxFileSize),
     minSize: 1,
     maxFiles,
+    validator: fileCustomValidator,
   }
 
   // This is the only way to support Drag'nDrop, file selector and Folder selector at the same time
@@ -94,40 +118,45 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
   )
 
   useEffect(() => {
-    const fileRejections = [...FilePickerRejections, ...FolderPickerRejections]
-    // Display notification for rejecting large and empty files.
-    if (!isEmpty(fileRejections)) {
-      const largeFiles = fileRejections.filter(
-        // `file-too-large` is the error code returned by DropZone if file size > `MAX_FILE_SIZE`
-        rej => rej.errors[0].code === 'file-too-large',
-      )
-
-      // `file-too-small` is the error code returned by DropZone if file size < 1, i.e., empty
-      const emptyFiles = fileRejections.filter(
-        rej => rej.errors[0].code === 'file-too-small',
-      )
-
-      const tooManyFiles = fileRejections.filter(
-        rej => rej.errors[0].code === 'too-many-files',
-      )
-      // The notification won't be needed unless of case of trying to upload files
-      // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
-      import('react-hot-toast').then(toast => {
-        emptyFiles.forEach(rej => {
-          toast.default.error(`"${rej.file.name}" is empty!`)
-        })
-
-        largeFiles.forEach(rej => {
-          toast.default.error(
-            `"${rej.file.name}" is too large! The maximum file size is ${maxFileSize}`,
-          )
-        })
-
-        if (tooManyFiles.length !== 0) {
-          toast.default.error(`Only ${DropZoneConfig.maxFiles} file allowed!`)
-        }
-      })
+    if (FilePickerRejections.length === 0 && FolderPickerRejections.length === 0) {
+      // If there's no rejections do nothing 🤷‍♂️
+      return
     }
+    // Otherwise displays toasts with errors.
+
+    const fileRejections = [...FilePickerRejections, ...FolderPickerRejections]
+
+    const largeFiles = fileRejections.filter(
+      // if file size > `MAX_FILE_SIZE`
+      rej => rej.errors[0].code === ErrorCode.FileTooLarge,
+    )
+
+    const emptyFiles = fileRejections.filter(
+      // if file size < 1, i.e., empty
+      rej => rej.errors[0].code === ErrorCode.FileTooSmall,
+    )
+
+    const tooManyFiles = fileRejections.filter(
+      rej => rej.errors[0].code === ErrorCode.TooManyFiles,
+    )
+
+    // The notification won't be needed unless of case of trying to upload files
+    // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
+    import('react-hot-toast').then(toast => {
+      emptyFiles.forEach(rej => {
+        toast.default.error(`"${rej.file.name}" is empty!`)
+      })
+
+      largeFiles.forEach(rej => {
+        toast.default.error(
+          `"${rej.file.name}" is too large! The maximum file size is ${maxFileSize}`,
+        )
+      })
+
+      if (tooManyFiles.length !== 0) {
+        toast.default.error(`Only ${DropZoneConfig.maxFiles} file allowed!`)
+      }
+    })
   }, [FilePickerRejections, FolderPickerRejections, DropZoneConfig.maxFiles])
 
   return (

@@ -20,7 +20,9 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
-  const [ignored, username, projectName, multiProjectName] = asPath.split('/')
+  const asPathWithoutQuery = asPath.split('?')[0]
+  const [ignored, username, projectName, multiProjectName] =
+    asPathWithoutQuery.split('/')
 
   const repoFullname = `${username}/${projectName}`
 

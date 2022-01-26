@@ -46,11 +46,12 @@ const SubProjectsGrid = ({ projects, parentProject }) => {
 }
 
 ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
-  const [ignored, username, projectName] = asPath.split('/')
-
   const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
+  const asPathWithoutQuery = asPath.split('?')[0]
+  const [ignored, username, projectName] = asPathWithoutQuery.split('/')
+
   const repoFullname = `${username}/${projectName}`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const session = req?.session ?? window?.session
