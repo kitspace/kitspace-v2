@@ -795,6 +795,14 @@
 }
 /* END: Fix rendering only on fullscreen mode */
 
+/* Start: center vismenu properly */
+.ibom #vismenu {
+  display: flex;
+  justify-content: center;
+  margin: 0 !important;
+}
+/* End: center vismenu properly */
+
 #title {
   display: inline;
   vertical-align: middle;
