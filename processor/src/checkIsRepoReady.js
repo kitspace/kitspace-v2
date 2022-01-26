@@ -110,7 +110,7 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
  * Query the migration task status for a gitea repo, with exponential backoff.
  * @returns
  */
-const queryGiteaRepoWithBackoff = async repoQuery => {
+async function queryGiteaRepoWithBackoff(repoQuery) {
   const [ownerName, repoName] = repoQuery.values
 
   const onBackoff = async (num, delay, resolve) => {
@@ -163,7 +163,7 @@ async function queryGiteaRepoMigrationStatus(repoId) {
  * Query the migration task status for a gitea repo, with exponential backoff.
  * @returns
  */
-const queryMigrationStatusWithBackoff = async (migrationStatusQuery, repoId) => {
+async function queryMigrationStatusWithBackoff(migrationStatusQuery, repoId) {
   const onBackoff = async (num, delay, resolve) => {
     log.debug(
       'Backoff started, querying migration status for repo' +
