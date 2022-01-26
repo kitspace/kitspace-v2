@@ -466,9 +466,11 @@ function initUtils() {
       '(\\b.*)?$',
     '',
   )
-  for (var bom_type of ['both', 'F', 'B']) {
-    for (var row of pcbdata.bom[bom_type]) {
-      row.push(parseValue(row[1], row[3][0][0]))
+  if (config.fields.includes('Value')) {
+    var index = config.fields.indexOf('Value')
+    pcbdata.bom['parsedValues'] = {}
+    for (var id in pcbdata.bom.fields) {
+      pcbdata.bom.parsedValues[id] = parseValue(pcbdata.bom.fields[id][index])
     }
   }
 }
@@ -616,7 +618,9 @@ function saveSettings() {
     pcbmetadata: pcbdata.metadata,
     settings: settings,
   }
-  var blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json' })
+  var blob = new Blob([JSON.stringify(data, null, 4)], {
+    type: 'application/json',
+  })
   saveFile(`${pcbdata.metadata.title}.settings.json`, blob)
 }
 
@@ -683,7 +687,7 @@ function overwriteSettings(newSettings) {
   for (var checkbox of settings.checkboxes) {
     writeStorage('checkbox_' + checkbox, settings.checkboxStoredRefs[checkbox])
   }
-  writeStorage('darkenWhenChecked', settings.darkenWhenChecked)
+  writeStorage('markWhenChecked', settings.markWhenChecked)
   padsVisible(settings.renderPads)
   document.getElementById('padsCheckbox').checked = settings.renderPads
   fabricationVisible(settings.renderFabrication)
@@ -707,6 +711,7 @@ function overwriteSettings(newSettings) {
   document.getElementById('darkmodeCheckbox').checked = settings.darkMode
   setHighlightPin1(settings.highlightpin1)
   document.getElementById('highlightpin1Checkbox').checked = settings.highlightpin1
+  showFootprints(settings.show_footprints)
   writeStorage('boardRotation', settings.boardRotation)
   document.getElementById('boardRotation').value = settings.boardRotation / 5
   document.getElementById('rotationDegree').textContent = settings.boardRotation
@@ -732,7 +737,9 @@ function dataURLtoBlob(dataurl) {
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n)
   }
-  return new Blob([u8arr], { type: mime })
+  return new Blob([u8arr], {
+    type: mime,
+  })
 }
 
 var settings = {
@@ -753,6 +760,8 @@ var settings = {
   renderDnpOutline: false,
   renderTracks: true,
   renderZones: true,
+  columnOrder: [],
+  hiddenColumns: [],
 }
 
 function initDefaults() {
@@ -781,8 +790,8 @@ function initDefaults() {
   settings.checkboxes = bomCheckboxes.split(',').filter(e => e)
   document.getElementById('bomCheckboxes').value = bomCheckboxes
 
-  settings.darkenWhenChecked = readStorage('darkenWhenChecked') || ''
-  populateDarkenWhenCheckedOptions()
+  settings.markWhenChecked = readStorage('markWhenChecked') || ''
+  populateMarkWhenCheckedOptions()
 
   function initBooleanSetting(storageString, def, elementId, func) {
     var b = readStorage(storageString)
@@ -837,6 +846,25 @@ function initDefaults() {
     'highlightpin1Checkbox',
     setHighlightPin1,
   )
+
+  var fields = ['checkboxes', 'References']
+    .concat(config.fields)
+    .concat(['Quantity'])
+  var hcols = JSON.parse(readStorage('hiddenColumns'))
+  if (hcols === null) {
+    hcols = []
+  }
+  settings.hiddenColumns = hcols.filter(e => fields.includes(e))
+
+  var cord = JSON.parse(readStorage('columnOrder'))
+  if (cord === null) {
+    cord = fields
+  } else {
+    cord = cord.filter(e => fields.includes(e))
+    if (cord.length != fields.length) cord = fields
+  }
+  settings.columnOrder = cord
+
   settings.boardRotation = readStorage('boardRotation')
   if (settings.boardRotation === null) {
     settings.boardRotation = config.board_rotation * 5
@@ -987,8 +1015,10 @@ function drawText(ctx, text, color) {
 
 function drawedge(ctx, scalefactor, edge, color) {
   ctx.strokeStyle = color
+  ctx.fillStyle = color
   ctx.lineWidth = Math.max(1 / scalefactor, edge.width)
   ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
   if ('svgpath' in edge) {
     ctx.stroke(new Path2D(edge.svgpath))
   } else {
@@ -1020,7 +1050,8 @@ function drawedge(ctx, scalefactor, edge, color) {
       ctx.moveTo(...edge.start)
       ctx.bezierCurveTo(...edge.cpa, ...edge.cpb, ...edge.end)
     }
-    ctx.stroke()
+    if ('filled' in edge && edge.filled) ctx.fill()
+    else ctx.stroke()
   }
 }
 
@@ -1089,22 +1120,30 @@ function getPolygonsPath(shape) {
   return shape.path2d
 }
 
-function drawPolygonShape(ctx, shape, color) {
+function drawPolygonShape(ctx, scalefactor, shape, color) {
   ctx.save()
-  ctx.fillStyle = color
   if (!('svgpath' in shape)) {
     ctx.translate(...shape.pos)
     ctx.rotate(deg2rad(-shape.angle))
   }
-  ctx.fill(getPolygonsPath(shape))
+  if ('filled' in shape && !shape.filled) {
+    ctx.strokeStyle = color
+    ctx.lineWidth = Math.max(1 / scalefactor, shape.width)
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.stroke(getPolygonsPath(shape))
+  } else {
+    ctx.fillStyle = color
+    ctx.fill(getPolygonsPath(shape))
+  }
   ctx.restore()
 }
 
 function drawDrawing(ctx, scalefactor, drawing, color) {
-  if (['segment', 'arc', 'circle', 'curve'].includes(drawing.type)) {
+  if (['segment', 'arc', 'circle', 'curve', 'rect'].includes(drawing.type)) {
     drawedge(ctx, scalefactor, drawing, color)
   } else if (drawing.type == 'polygon') {
-    drawPolygonShape(ctx, drawing, color)
+    drawPolygonShape(ctx, scalefactor, drawing, color)
   } else {
     drawText(ctx, drawing, color)
   }
@@ -1143,7 +1182,7 @@ function getCachedPadPath(pad) {
   return pad.path2d
 }
 
-function drawPad(ctx, pad, color, outline, hole) {
+function drawPad(ctx, pad, color, outline) {
   ctx.save()
   ctx.translate(...pad.pos)
   ctx.rotate(deg2rad(pad.angle))
@@ -1158,16 +1197,19 @@ function drawPad(ctx, pad, color, outline, hole) {
   } else {
     ctx.fill(path)
   }
-  if (pad.type == 'th' && hole) {
-    if (pad.offset) {
-      ctx.translate(-pad.offset[0], -pad.offset[1])
-    }
-    ctx.fillStyle = '#CCCCCC'
-    if (pad.drillshape == 'oblong') {
-      ctx.fill(getOblongPath(pad.drillsize))
-    } else {
-      ctx.fill(getCirclePath(pad.drillsize[0] / 2))
-    }
+  ctx.restore()
+}
+
+function drawPadHole(ctx, pad, padHoleColor) {
+  if (pad.type != 'th') return
+  ctx.save()
+  ctx.translate(...pad.pos)
+  ctx.rotate(deg2rad(pad.angle))
+  ctx.fillStyle = padHoleColor
+  if (pad.drillshape == 'oblong') {
+    ctx.fill(getOblongPath(pad.drillsize))
+  } else {
+    ctx.fill(getCirclePath(pad.drillsize[0] / 2))
   }
   ctx.restore()
 }
@@ -1177,8 +1219,7 @@ function drawFootprint(
   layer,
   scalefactor,
   footprint,
-  padcolor,
-  outlinecolor,
+  colors,
   highlight,
   outline,
 ) {
@@ -1190,10 +1231,10 @@ function drawFootprint(
       ctx.translate(...footprint.bbox.pos)
       ctx.rotate(deg2rad(-footprint.bbox.angle))
       ctx.translate(...footprint.bbox.relpos)
-      ctx.fillStyle = padcolor
+      ctx.fillStyle = colors.pad
       ctx.fillRect(0, 0, ...footprint.bbox.size)
       ctx.globalAlpha = 1
-      ctx.strokeStyle = padcolor
+      ctx.strokeStyle = colors.pad
       ctx.strokeRect(0, 0, ...footprint.bbox.size)
       ctx.restore()
     }
@@ -1201,18 +1242,21 @@ function drawFootprint(
   // draw drawings
   for (var drawing of footprint.drawings) {
     if (drawing.layer == layer) {
-      drawDrawing(ctx, scalefactor, drawing.drawing, padcolor)
+      drawDrawing(ctx, scalefactor, drawing.drawing, colors.pad)
     }
   }
   // draw pads
   if (settings.renderPads) {
     for (var pad of footprint.pads) {
       if (pad.layers.includes(layer)) {
-        drawPad(ctx, pad, padcolor, outline, true)
+        drawPad(ctx, pad, colors.pad, outline)
         if (pad.pin1 && settings.highlightpin1) {
-          drawPad(ctx, pad, outlinecolor, true, false)
+          drawPad(ctx, pad, colors.outline, true)
         }
       }
+    }
+    for (var pad of footprint.pads) {
+      drawPadHole(ctx, pad, colors.padHole)
     }
   }
 }
@@ -1221,7 +1265,7 @@ function drawEdgeCuts(canvas, scalefactor) {
   var ctx = canvas.getContext('2d')
   var edgecolor = getComputedStyle(topmostdiv).getPropertyValue('--pcb-edge-color')
   for (var edge of pcbdata.edges) {
-    drawedge(ctx, scalefactor, edge, edgecolor)
+    drawDrawing(ctx, scalefactor, edge, edgecolor)
   }
 }
 
@@ -1229,26 +1273,36 @@ function drawFootprints(canvas, layer, scalefactor, highlight) {
   var ctx = canvas.getContext('2d')
   ctx.lineWidth = 3 / scalefactor
   var style = getComputedStyle(topmostdiv)
-  var padcolor = style.getPropertyValue('--pad-color')
-  var outlinecolor = style.getPropertyValue('--pin1-outline-color')
-  if (highlight) {
-    padcolor = style.getPropertyValue('--pad-color-highlight')
-    outlinecolor = style.getPropertyValue('--pin1-outline-color-highlight')
+
+  var colors = {
+    pad: style.getPropertyValue('--pad-color'),
+    padHole: style.getPropertyValue('--pad-hole-color'),
+    outline: style.getPropertyValue('--pin1-outline-color'),
   }
+
   for (var i = 0; i < pcbdata.footprints.length; i++) {
     var mod = pcbdata.footprints[i]
     var outline = settings.renderDnpOutline && pcbdata.bom.skipped.includes(i)
-    if (!highlight || highlightedFootprints.includes(i)) {
-      drawFootprint(
-        ctx,
-        layer,
-        scalefactor,
-        mod,
-        padcolor,
-        outlinecolor,
-        highlight,
-        outline,
-      )
+    var h = highlightedFootprints.includes(i)
+    var d = markedFootprints.has(i)
+    if (highlight) {
+      if (h && d) {
+        colors.pad = style.getPropertyValue('--pad-color-highlight-both')
+        colors.outline = style.getPropertyValue(
+          '--pin1-outline-color-highlight-both',
+        )
+      } else if (h) {
+        colors.pad = style.getPropertyValue('--pad-color-highlight')
+        colors.outline = style.getPropertyValue('--pin1-outline-color-highlight')
+      } else if (d) {
+        colors.pad = style.getPropertyValue('--pad-color-highlight-marked')
+        colors.outline = style.getPropertyValue(
+          '--pin1-outline-color-highlight-marked',
+        )
+      }
+    }
+    if (h || d || !highlight) {
+      drawFootprint(ctx, layer, scalefactor, mod, colors, highlight, outline)
     }
   }
 }
@@ -1263,11 +1317,11 @@ function drawBgLayer(
   textColor,
 ) {
   var ctx = canvas.getContext('2d')
-  for (var d of pcbdata[layername][layer]) {
+  for (var d of pcbdata.drawings[layername][layer]) {
     if (['segment', 'arc', 'circle', 'curve', 'rect'].includes(d.type)) {
       drawedge(ctx, scalefactor, d, edgeColor)
     } else if (d.type == 'polygon') {
-      drawPolygonShape(ctx, d, polygonColor)
+      drawPolygonShape(ctx, scalefactor, d, polygonColor)
     } else {
       drawText(ctx, d, textColor)
     }
@@ -1282,8 +1336,17 @@ function drawTracks(canvas, layer, color, highlight) {
     if (highlight && highlightedNet != track.net) continue
     ctx.lineWidth = track.width
     ctx.beginPath()
-    ctx.moveTo(...track.start)
-    ctx.lineTo(...track.end)
+    if ('radius' in track) {
+      ctx.arc(
+        ...track.center,
+        track.radius,
+        deg2rad(track.startangle),
+        deg2rad(track.endangle),
+      )
+    } else {
+      ctx.moveTo(...track.start)
+      ctx.lineTo(...track.end)
+    }
     ctx.stroke()
   }
 }
@@ -1314,7 +1377,8 @@ function clearCanvas(canvas, color = null) {
     ctx.fillStyle = color
     ctx.fillRect(0, 0, canvas.width, canvas.height)
   } else {
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    if (!window.matchMedia('print').matches)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
   }
   ctx.restore()
 }
@@ -1335,13 +1399,22 @@ function drawNets(canvas, layer, highlight) {
   }
   if (highlight && settings.renderPads) {
     var padColor = style.getPropertyValue('--pad-color-highlight')
+    var padHoleColor = style.getPropertyValue('--pad-hole-color')
     var ctx = canvas.getContext('2d')
     for (var footprint of pcbdata.footprints) {
       // draw pads
+      var padDrawn = false
       for (var pad of footprint.pads) {
         if (highlightedNet != pad.net) continue
         if (pad.layers.includes(layer)) {
-          drawPad(ctx, pad, padColor, false, true)
+          drawPad(ctx, pad, padColor, false)
+          padDrawn = true
+        }
+      }
+      if (padDrawn) {
+        // redraw all pad holes because some pads may overlap
+        for (var pad of footprint.pads) {
+          drawPadHole(ctx, pad, padHoleColor)
         }
       }
     }
@@ -1352,7 +1425,7 @@ function drawHighlightsOnLayer(canvasdict, clear = true) {
   if (clear) {
     clearCanvas(canvasdict.highlight)
   }
-  if (highlightedFootprints.length > 0) {
+  if (markedFootprints.size > 0 || highlightedFootprints.length > 0) {
     drawFootprints(
       canvasdict.highlight,
       canvasdict.layer,
@@ -1385,7 +1458,7 @@ function drawBackground(canvasdict, clear = true) {
     false,
   )
 
-  drawEdgeCuts(canvasdict.bg, canvasdict.transform.s)
+  drawEdgeCuts(canvasdict.bg, canvasdict.transform.s * canvasdict.transform.zoom)
 
   var style = getComputedStyle(topmostdiv)
   var edgeColor = style.getPropertyValue('--silkscreen-edge-color')
@@ -1542,6 +1615,34 @@ function pointWithinDistanceToSegment(x, y, x1, y1, x2, y2, d) {
   return dx * dx + dy * dy <= d * d
 }
 
+function modulo(n, mod) {
+  return ((n % mod) + mod) % mod
+}
+
+function pointWithinDistanceToArc(x, y, xc, yc, radius, startangle, endangle, d) {
+  var dx = x - xc
+  var dy = y - yc
+  var r_sq = dx * dx + dy * dy
+  var rmin = Math.max(0, radius - d)
+  var rmax = radius + d
+
+  if (r_sq < rmin * rmin || r_sq > rmax * rmax) return false
+
+  var angle1 = modulo(deg2rad(startangle), 2 * Math.PI)
+  var dx1 = xc + radius * Math.cos(angle1) - x
+  var dy1 = yc + radius * Math.sin(angle1) - y
+  if (dx1 * dx1 + dy1 * dy1 <= d * d) return true
+
+  var angle2 = modulo(deg2rad(endangle), 2 * Math.PI)
+  var dx2 = xc + radius * Math.cos(angle2) - x
+  var dy2 = yc + radius * Math.sin(angle2) - y
+  if (dx2 * dx2 + dy2 * dy2 <= d * d) return true
+
+  var angle = modulo(Math.atan2(dy, dx), 2 * Math.PI)
+  if (angle1 > angle2) return angle >= angle2 || angle <= angle1
+  else return angle >= angle1 && angle <= angle2
+}
+
 function pointWithinPad(x, y, pad) {
   var v = [x - pad.pos[0], y - pad.pos[1]]
   v = rotateVector(v, -pad.angle)
@@ -1556,16 +1657,32 @@ function netHitScan(layer, x, y) {
   // Check track segments
   if (settings.renderTracks && pcbdata.tracks) {
     for (var track of pcbdata.tracks[layer]) {
-      if (
-        pointWithinDistanceToSegment(
-          x,
-          y,
-          ...track.start,
-          ...track.end,
-          track.width / 2,
-        )
-      ) {
-        return track.net
+      if ('radius' in track) {
+        if (
+          pointWithinDistanceToArc(
+            x,
+            y,
+            ...track.center,
+            track.radius,
+            track.startangle,
+            track.endangle,
+            track.width / 2,
+          )
+        ) {
+          return track.net
+        }
+      } else {
+        if (
+          pointWithinDistanceToSegment(
+            x,
+            y,
+            ...track.start,
+            ...track.end,
+            track.width / 2,
+          )
+        ) {
+          return track.net
+        }
       }
     }
   }
@@ -2990,7 +3107,373 @@ var LZString = (function () {
     null != angular &&
     angular.module('LZString', []).factory('LZString', function () {
       return LZString
-    }) /* DOM manipulation and misc code */
+    })
+/*
+ * Table reordering via Drag'n'Drop
+ * Inspired by: https://htmldom.dev/drag-and-drop-table-column
+ */
+
+function setBomHandlers() {
+  const bom = document.getElementById('bomtable')
+
+  let dragName
+  let placeHolderElements
+  let draggingElement
+  let forcePopulation
+  let xOffset
+  let yOffset
+  let wasDragged
+
+  const mouseUpHandler = function (e) {
+    // Delete dragging element
+    draggingElement.remove()
+
+    // Make BOM selectable again
+    bom.style.removeProperty('userSelect')
+
+    // Remove listeners
+    document.removeEventListener('mousemove', mouseMoveHandler)
+    document.removeEventListener('mouseup', mouseUpHandler)
+
+    if (wasDragged) {
+      // Redraw whole BOM
+      populateBomTable()
+    }
+  }
+
+  const mouseMoveHandler = function (e) {
+    // Notice the dragging
+    wasDragged = true
+
+    // Make the dragged element visible
+    draggingElement.style.removeProperty('display')
+
+    // Set elements position to mouse position
+    draggingElement.style.left = `${e.screenX - xOffset}px`
+    draggingElement.style.top = `${e.screenY - yOffset}px`
+
+    // Forced redrawing of BOM table
+    if (forcePopulation) {
+      forcePopulation = false
+      // Copy array
+      phe = Array.from(placeHolderElements)
+      // populate BOM table again
+      populateBomHeader(dragName, phe)
+      populateBomBody(dragName, phe)
+    }
+
+    // Set up array of hidden columns
+    var hiddenColumns = Array.from(settings.hiddenColumns)
+    // In the ungrouped mode, quantity don't exist
+    if (settings.bommode === 'ungrouped') hiddenColumns.push('Quantity')
+    // If no checkbox fields can be found, we consider them hidden
+    if (settings.checkboxes.length == 0) hiddenColumns.push('checkboxes')
+
+    // Get table headers and group them into checkboxes, extrafields and normal headers
+    const bh = document.getElementById('bomhead')
+    headers = Array.from(bh.querySelectorAll('th'))
+    headers.shift() // numCol is not part of the columnOrder
+    headerGroups = []
+    lastCompoundClass = null
+    for (i = 0; i < settings.columnOrder.length; i++) {
+      cElem = settings.columnOrder[i]
+      if (hiddenColumns.includes(cElem)) {
+        // Hidden columns appear as a dummy element
+        headerGroups.push([])
+        continue
+      }
+      elem = headers.filter(e => getColumnOrderName(e) === cElem)[0]
+      if (elem.classList.contains('bom-checkbox')) {
+        if (lastCompoundClass === 'bom-checkbox') {
+          cbGroup = headerGroups.pop()
+          cbGroup.push(elem)
+          headerGroups.push(cbGroup)
+        } else {
+          lastCompoundClass = 'bom-checkbox'
+          headerGroups.push([elem])
+        }
+      } else {
+        headerGroups.push([elem])
+      }
+    }
+
+    // Copy settings.columnOrder
+    var columns = Array.from(settings.columnOrder)
+
+    // Set up array with indices of hidden columns
+    var hiddenIndices = hiddenColumns.map(e => settings.columnOrder.indexOf(e))
+    var dragIndex = columns.indexOf(dragName)
+    var swapIndex = dragIndex
+    var swapDone = false
+
+    // Check if the current dragged element is swapable with the left or right element
+    if (dragIndex > 0) {
+      // Get left headers boundingbox
+      swapIndex = dragIndex - 1
+      while (hiddenIndices.includes(swapIndex) && swapIndex > 0) swapIndex--
+      if (!hiddenIndices.includes(swapIndex)) {
+        box = getBoundingClientRectFromMultiple(headerGroups[swapIndex])
+        if (e.clientX < box.left + window.scrollX + box.width / 2) {
+          swapElement = columns[dragIndex]
+          columns.splice(dragIndex, 1)
+          columns.splice(swapIndex, 0, swapElement)
+          forcePopulation = true
+          swapDone = true
+        }
+      }
+    }
+    if (!swapDone && dragIndex < headerGroups.length - 1) {
+      // Get right headers boundingbox
+      swapIndex = dragIndex + 1
+      while (hiddenIndices.includes(swapIndex)) swapIndex++
+      if (swapIndex < headerGroups.length) {
+        box = getBoundingClientRectFromMultiple(headerGroups[swapIndex])
+        if (e.clientX > box.left + window.scrollX + box.width / 2) {
+          swapElement = columns[dragIndex]
+          columns.splice(dragIndex, 1)
+          columns.splice(swapIndex, 0, swapElement)
+          forcePopulation = true
+          swapDone = true
+        }
+      }
+    }
+
+    // Write back change to storage
+    if (swapDone) {
+      settings.columnOrder = columns
+      writeStorage('columnOrder', JSON.stringify(columns))
+    }
+  }
+
+  const mouseDownHandler = function (e) {
+    var target = e.target
+    if (target.tagName.toLowerCase() != 'td') target = target.parentElement
+
+    // Used to check if a dragging has ever happened
+    wasDragged = false
+
+    // Create new element which will be displayed as the dragged column
+    draggingElement = document.createElement('div')
+    draggingElement.classList.add('dragging')
+    draggingElement.style.display = 'none'
+    draggingElement.style.position = 'absolute'
+    draggingElement.style.overflow = 'hidden'
+
+    // Get bomhead and bombody elements
+    const bh = document.getElementById('bomhead')
+    const bb = document.getElementById('bombody')
+
+    // Get all compound headers for the current column
+    var compoundHeaders
+    if (target.classList.contains('bom-checkbox')) {
+      compoundHeaders = Array.from(bh.querySelectorAll('th.bom-checkbox'))
+    } else {
+      compoundHeaders = [target]
+    }
+
+    // Create new table which will display the column
+    var newTable = document.createElement('table')
+    newTable.classList.add('bom')
+    newTable.style.background = 'white'
+    draggingElement.append(newTable)
+
+    // Create new header element
+    var newHeader = document.createElement('thead')
+    newTable.append(newHeader)
+
+    // Set up array for storing all placeholder elements
+    placeHolderElements = []
+
+    // Add all compound headers to the new thead element and placeholders
+    compoundHeaders.forEach(function (h) {
+      clone = cloneElementWithDimensions(h)
+      newHeader.append(clone)
+      placeHolderElements.push(clone)
+    })
+
+    // Create new body element
+    var newBody = document.createElement('tbody')
+    newTable.append(newBody)
+
+    // Get indices for compound headers
+    var idxs = compoundHeaders.map(e => getBomTableHeaderIndex(e))
+
+    // For each row in the BOM body...
+    var rows = bb.querySelectorAll('tr')
+    rows.forEach(function (row) {
+      // ..get the cells for the compound column
+      const tds = row.querySelectorAll('td')
+      var copytds = idxs.map(i => tds[i])
+      // Add them to the new element and the placeholders
+      var newRow = document.createElement('tr')
+      copytds.forEach(function (td) {
+        clone = cloneElementWithDimensions(td)
+        newRow.append(clone)
+        placeHolderElements.push(clone)
+      })
+      newBody.append(newRow)
+    })
+
+    // Compute width for compound header
+    var width = compoundHeaders.reduce((acc, x) => acc + x.clientWidth, 0)
+    draggingElement.style.width = `${width}px`
+
+    // Insert the new dragging element and disable selection on BOM
+    bom.insertBefore(draggingElement, null)
+    bom.style.userSelect = 'none'
+
+    // Determine the mouse position offset
+    xOffset =
+      e.screenX -
+      compoundHeaders.reduce(
+        (acc, x) => Math.min(acc, x.offsetLeft),
+        compoundHeaders[0].offsetLeft,
+      )
+    yOffset = e.screenY - compoundHeaders[0].offsetTop
+
+    // Get name for the column in settings.columnOrder
+    dragName = getColumnOrderName(target)
+
+    // Change text and class for placeholder elements
+    placeHolderElements = placeHolderElements.map(function (e) {
+      newElem = cloneElementWithDimensions(e)
+      newElem.textContent = ''
+      newElem.classList.add('placeholder')
+      return newElem
+    })
+
+    // On next mouse move, the whole BOM needs to be redrawn to show the placeholders
+    forcePopulation = true
+
+    // Add listeners for move and up on mouse
+    document.addEventListener('mousemove', mouseMoveHandler)
+    document.addEventListener('mouseup', mouseUpHandler)
+  }
+
+  // In netlist mode, there is nothing to reorder
+  if (settings.bommode === 'netlist') return
+
+  // Add mouseDownHandler to every column except the numCol
+  bom.querySelectorAll('th').forEach(function (head) {
+    if (!head.classList.contains('numCol')) {
+      head.onmousedown = mouseDownHandler
+    }
+  })
+}
+
+function getBoundingClientRectFromMultiple(elements) {
+  var elems = Array.from(elements)
+
+  if (elems.length == 0) return null
+
+  var box = elems.shift().getBoundingClientRect()
+
+  elems.forEach(function (elem) {
+    var elembox = elem.getBoundingClientRect()
+    box.left = Math.min(elembox.left, box.left)
+    box.top = Math.min(elembox.top, box.top)
+    box.width += elembox.width
+    box.height = Math.max(elembox.height, box.height)
+  })
+
+  return box
+}
+
+function cloneElementWithDimensions(elem) {
+  var newElem = elem.cloneNode(true)
+  newElem.style.height = window.getComputedStyle(elem).height
+  newElem.style.width = window.getComputedStyle(elem).width
+  return newElem
+}
+
+function getBomTableHeaderIndex(elem) {
+  const bh = document.getElementById('bomhead')
+  const ths = Array.from(bh.querySelectorAll('th'))
+  return ths.indexOf(elem)
+}
+
+function getColumnOrderName(elem) {
+  var cname = elem.getAttribute('col_name')
+  if (cname === 'bom-checkbox') return 'checkboxes'
+  else return cname
+}
+
+function resizableGrid(tablehead) {
+  var cols = tablehead.firstElementChild.children
+  var rowWidth = tablehead.offsetWidth
+
+  for (var i = 1; i < cols.length; i++) {
+    if (cols[i].classList.contains('bom-checkbox')) continue
+    cols[i].style.width =
+      ((cols[i].clientWidth - paddingDiff(cols[i])) * 100) / rowWidth + '%'
+  }
+
+  for (var i = 1; i < cols.length - 1; i++) {
+    var div = document.createElement('div')
+    div.className = 'column-width-handle'
+    cols[i].appendChild(div)
+    setListeners(div)
+  }
+
+  function setListeners(div) {
+    var startX, curCol, nxtCol, curColWidth, nxtColWidth, rowWidth
+
+    div.addEventListener('mousedown', function (e) {
+      e.preventDefault()
+      e.stopPropagation()
+
+      curCol = e.target.parentElement
+      nxtCol = curCol.nextElementSibling
+      startX = e.pageX
+
+      var padding = paddingDiff(curCol)
+
+      rowWidth = curCol.parentElement.offsetWidth
+      curColWidth = curCol.clientWidth - padding
+      nxtColWidth = nxtCol.clientWidth - padding
+    })
+
+    document.addEventListener('mousemove', function (e) {
+      if (startX) {
+        var diffX = e.pageX - startX
+        diffX = -Math.min(-diffX, curColWidth - 20)
+        diffX = Math.min(diffX, nxtColWidth - 20)
+
+        curCol.style.width = ((curColWidth + diffX) * 100) / rowWidth + '%'
+        nxtCol.style.width = ((nxtColWidth - diffX) * 100) / rowWidth + '%'
+        console.log(
+          `${curColWidth + nxtColWidth} ${
+            ((curColWidth + diffX) * 100) / rowWidth +
+            ((nxtColWidth - diffX) * 100) / rowWidth
+          }`,
+        )
+      }
+    })
+
+    document.addEventListener('mouseup', function (e) {
+      curCol = undefined
+      nxtCol = undefined
+      startX = undefined
+      nxtColWidth = undefined
+      curColWidth = undefined
+    })
+  }
+
+  function paddingDiff(col) {
+    if (getStyleVal(col, 'box-sizing') == 'border-box') {
+      return 0
+    }
+
+    var padLeft = getStyleVal(col, 'padding-left')
+    var padRight = getStyleVal(col, 'padding-right')
+    return parseInt(padLeft) + parseInt(padRight)
+  }
+
+  function getStyleVal(elm, css) {
+    return window.getComputedStyle(elm, null).getPropertyValue(css)
+  }
+}
+/* DOM manipulation and misc code */
 
 var bomsplit
 var canvassplit
@@ -3002,6 +3485,7 @@ var currentHighlightedRowId
 var highlightHandlers = []
 var footprintIndexToHandler = {}
 var netsToHandler = {}
+var markedFootprints = new Set()
 var highlightedFootprints = []
 var highlightedNet = null
 var lastClicked
@@ -3061,6 +3545,36 @@ function setDarkMode(value) {
   }
   writeStorage('darkmode', value)
   settings.darkMode = value
+  redrawIfInitDone()
+}
+
+function setShowBOMColumn(field, value) {
+  if (field === 'references') {
+    var rl = document.getElementById('reflookup')
+    rl.disabled = !value
+    if (!value) {
+      rl.value = ''
+      updateRefLookup('')
+    }
+  }
+
+  var n = settings.hiddenColumns.indexOf(field)
+  if (value) {
+    if (n != -1) {
+      settings.hiddenColumns.splice(n, 1)
+    }
+  } else {
+    if (n == -1) {
+      settings.hiddenColumns.push(field)
+    }
+  }
+
+  writeStorage('hiddenColumns', JSON.stringify(settings.hiddenColumns))
+
+  if (initDone) {
+    populateBomTable()
+  }
+
   redrawIfInitDone()
 }
 
@@ -3149,7 +3663,7 @@ function setBomCheckboxState(checkbox, element, references) {
 function createCheckboxChangeHandler(checkbox, references, row) {
   return function () {
     refsSet = getStoredCheckboxRefs(checkbox)
-    var darkenWhenChecked = settings.darkenWhenChecked == checkbox
+    var markWhenChecked = settings.markWhenChecked == checkbox
     eventArgs = {
       checkbox: checkbox,
       refs: references,
@@ -3159,8 +3673,12 @@ function createCheckboxChangeHandler(checkbox, references, row) {
       for (var ref of references) {
         refsSet.add(ref[1])
       }
-      if (darkenWhenChecked) {
+      if (markWhenChecked) {
         row.classList.add('checked')
+        for (var ref of references) {
+          markedFootprints.add(ref[1])
+        }
+        drawHighlights()
       }
       eventArgs.state = 'checked'
     } else {
@@ -3168,8 +3686,12 @@ function createCheckboxChangeHandler(checkbox, references, row) {
       for (var ref of references) {
         refsSet.delete(ref[1])
       }
-      if (darkenWhenChecked) {
+      if (markWhenChecked) {
         row.classList.remove('checked')
+        for (var ref of references) {
+          markedFootprints.delete(ref[1])
+        }
+        drawHighlights()
       }
       eventArgs.state = 'unchecked'
     }
@@ -3218,30 +3740,29 @@ function entryMatches(entry) {
     return entry.toLowerCase().indexOf(filter) >= 0
   }
   // check refs
-  for (var ref of entry[3]) {
-    if (ref[0].toLowerCase().indexOf(filter) >= 0) {
-      return true
+  if (!settings.hiddenColumns.includes('references')) {
+    for (var ref of entry) {
+      if (ref[0].toLowerCase().indexOf(filter) >= 0) {
+        return true
+      }
     }
   }
-  // check extra fields
-  for (var i in config.extra_fields) {
-    if (entry[4][i].toLowerCase().indexOf(filter) >= 0) {
-      return true
+  // check fields
+  for (var i in config.fields) {
+    var f = config.fields[i]
+    if (!settings.hiddenColumns.includes(f)) {
+      for (var ref of entry) {
+        if (pcbdata.bom.fields[ref[1]][i].toLowerCase().indexOf(filter) >= 0) {
+          return true
+        }
+      }
     }
-  }
-  // check value
-  if (entry[1].toLowerCase().indexOf(filter) >= 0) {
-    return true
-  }
-  // check footprint
-  if (entry[2].toLowerCase().indexOf(filter) >= 0) {
-    return true
   }
   return false
 }
 
 function findRefInEntry(entry) {
-  return entry[3].filter(r => r[0].toLowerCase() == reflookup)
+  return entry.filter(r => r[0].toLowerCase() == reflookup)
 }
 
 function highlightFilter(s) {
@@ -3299,24 +3820,28 @@ function checkboxSetUnsetAllHandler(checkboxname) {
   }
 }
 
-function createColumnHeader(name, cls, comparator) {
+function createColumnHeader(name, cls, comparator, is_checkbox = false) {
   var th = document.createElement('TH')
   th.innerHTML = name
   th.classList.add(cls)
-  th.style.cursor = 'pointer'
+  if (is_checkbox) th.setAttribute('col_name', 'bom-checkbox')
+  else th.setAttribute('col_name', name)
   var span = document.createElement('SPAN')
   span.classList.add('sortmark')
   span.classList.add('none')
   th.appendChild(span)
-  th.onclick = function () {
-    if (currentSortColumn && this !== currentSortColumn) {
+  var spacer = document.createElement('div')
+  spacer.className = 'column-spacer'
+  th.appendChild(spacer)
+  spacer.onclick = function () {
+    if (currentSortColumn && th !== currentSortColumn) {
       // Currently sorted by another column
       currentSortColumn.childNodes[1].classList.remove(currentSortOrder)
       currentSortColumn.childNodes[1].classList.add('none')
       currentSortColumn = null
       currentSortOrder = null
     }
-    if (currentSortColumn && this === currentSortColumn) {
+    if (currentSortColumn && th === currentSortColumn) {
       // Already sorted by this column
       if (currentSortOrder == 'asc') {
         // Sort by this column, descending order
@@ -3337,30 +3862,107 @@ function createColumnHeader(name, cls, comparator) {
     } else {
       // Sort by this column, ascending order
       bomSortFunction = comparator
-      currentSortColumn = this
+      currentSortColumn = th
       currentSortColumn.childNodes[1].classList.remove('none')
       currentSortColumn.childNodes[1].classList.add('asc')
       currentSortOrder = 'asc'
     }
     populateBomBody()
   }
+  if (is_checkbox) {
+    spacer.onclick = fancyDblClickHandler(
+      spacer,
+      spacer.onclick,
+      checkboxSetUnsetAllHandler(name),
+    )
+  }
   return th
 }
 
-function populateBomHeader() {
+function populateBomHeader(placeHolderColumn = null, placeHolderElements = null) {
   while (bomhead.firstChild) {
     bomhead.removeChild(bomhead.firstChild)
   }
   var tr = document.createElement('TR')
   var th = document.createElement('TH')
   th.classList.add('numCol')
+
+  var vismenu = document.createElement('div')
+  vismenu.id = 'vismenu'
+  vismenu.classList.add('menu')
+
+  var visbutton = document.createElement('div')
+  visbutton.classList.add('visbtn')
+  visbutton.classList.add('hideonprint')
+
+  var viscontent = document.createElement('div')
+  viscontent.classList.add('menu-content')
+  viscontent.id = 'vismenu-content'
+
+  settings.columnOrder.forEach(column => {
+    if (typeof column !== 'string') return
+
+    // Skip empty columns
+    if (column === 'checkboxes' && settings.checkboxes.length == 0) return
+    else if (column === 'Quantity' && settings.bommode == 'ungrouped') return
+
+    var label = document.createElement('label')
+    label.classList.add('menu-label')
+
+    var input = document.createElement('input')
+    input.classList.add('visibility_checkbox')
+    input.type = 'checkbox'
+    input.onchange = function (e) {
+      setShowBOMColumn(column, e.target.checked)
+    }
+    input.checked = !settings.hiddenColumns.includes(column)
+
+    label.appendChild(input)
+    if (column.length > 0) label.append(column[0].toUpperCase() + column.slice(1))
+
+    viscontent.appendChild(label)
+  })
+
+  viscontent.childNodes[0].classList.add('menu-label-top')
+
+  vismenu.appendChild(visbutton)
+  if (settings.bommode != 'netlist') {
+    vismenu.appendChild(viscontent)
+    th.appendChild(vismenu)
+  }
   tr.appendChild(th)
+
   var checkboxCompareClosure = function (checkbox) {
     return (a, b) => {
-      var stateA = getCheckboxState(checkbox, a[3])
-      var stateB = getCheckboxState(checkbox, b[3])
+      var stateA = getCheckboxState(checkbox, a)
+      var stateB = getCheckboxState(checkbox, b)
       if (stateA > stateB) return -1
       if (stateA < stateB) return 1
+      return 0
+    }
+  }
+  var stringFieldCompareClosure = function (fieldIndex) {
+    return (a, b) => {
+      var fa = pcbdata.bom.fields[a[0][1]][fieldIndex]
+      var fb = pcbdata.bom.fields[b[0][1]][fieldIndex]
+      if (fa != fb) return fa > fb ? 1 : -1
+      else return 0
+    }
+  }
+  var referenceRegex = /(?<prefix>[^0-9]+)(?<number>[0-9]+)/
+  var compareRefs = (a, b) => {
+    var ra = referenceRegex.exec(a)
+    var rb = referenceRegex.exec(b)
+    if (ra === null || rb === null) {
+      if (a != b) return a > b ? 1 : -1
+      return 0
+    } else {
+      if (ra.groups.prefix != rb.groups.prefix) {
+        return ra.groups.prefix > rb.groups.prefix ? 1 : -1
+      }
+      if (ra.groups.number != rb.groups.number) {
+        return parseInt(ra.groups.number) > parseInt(rb.groups.number) ? 1 : -1
+      }
       return 0
     }
   }
@@ -3372,72 +3974,84 @@ function populateBomHeader() {
     })
     tr.appendChild(th)
   } else {
-    for (var checkbox of settings.checkboxes) {
-      th = createColumnHeader(
-        checkbox,
-        'bom-checkbox',
-        checkboxCompareClosure(checkbox),
-      )
-      th.onclick = fancyDblClickHandler(
-        th,
-        th.onclick.bind(th),
-        checkboxSetUnsetAllHandler(checkbox),
-      )
-      tr.appendChild(th)
-    }
-    tr.appendChild(
-      createColumnHeader('References', 'References', (a, b) => {
-        var i = 0
-        while (i < a[3].length && i < b[3].length) {
-          if (a[3][i] != b[3][i]) return a[3][i] > b[3][i] ? 1 : -1
-          i++
-        }
-        return a[3].length - b[3].length
-      }),
+    // Filter hidden columns
+    var columns = settings.columnOrder.filter(
+      e => !settings.hiddenColumns.includes(e),
     )
-    // Extra fields
-    if (config.extra_fields.length > 0) {
-      var extraFieldCompareClosure = function (fieldIndex) {
-        return (a, b) => {
-          var fa = a[4][fieldIndex]
-          var fb = b[4][fieldIndex]
-          if (fa != fb) return fa > fb ? 1 : -1
-          else return 0
+    var valueIndex = config.fields.indexOf('Value')
+    var footprintIndex = config.fields.indexOf('Footprint')
+    columns.forEach(column => {
+      if (column === placeHolderColumn) {
+        var n = 1
+        if (column === 'checkboxes') n = settings.checkboxes.length
+        for (i = 0; i < n; i++) {
+          td = placeHolderElements.shift()
+          tr.appendChild(td)
         }
-      }
-      for (var i in config.extra_fields) {
+        return
+      } else if (column === 'checkboxes') {
+        for (var checkbox of settings.checkboxes) {
+          th = createColumnHeader(
+            checkbox,
+            'bom-checkbox',
+            checkboxCompareClosure(checkbox),
+            true,
+          )
+          tr.appendChild(th)
+        }
+      } else if (column === 'References') {
+        tr.appendChild(
+          createColumnHeader('References', 'references', (a, b) => {
+            var i = 0
+            while (i < a.length && i < b.length) {
+              if (a[i] != b[i]) return compareRefs(a[i][0], b[i][0])
+              i++
+            }
+            return a.length - b.length
+          }),
+        )
+      } else if (column === 'Value') {
+        tr.appendChild(
+          createColumnHeader('Value', 'value', (a, b) => {
+            var ra = a[0][1],
+              rb = b[0][1]
+            return valueCompare(
+              pcbdata.bom.parsedValues[ra],
+              pcbdata.bom.parsedValues[rb],
+              pcbdata.bom.fields[ra][valueIndex],
+              pcbdata.bom.fields[rb][valueIndex],
+            )
+          }),
+        )
+        return
+      } else if (column === 'Footprint') {
         tr.appendChild(
           createColumnHeader(
-            config.extra_fields[i],
-            'extra',
-            extraFieldCompareClosure(i),
+            'Footprint',
+            'footprint',
+            stringFieldCompareClosure(footprintIndex),
           ),
         )
+      } else if (column === 'Quantity' && settings.bommode == 'grouped') {
+        tr.appendChild(
+          createColumnHeader('Quantity', 'quantity', (a, b) => {
+            return a.length - b.length
+          }),
+        )
+      } else {
+        // Other fields
+        var i = config.fields.indexOf(column)
+        if (i < 0) return
+        tr.appendChild(
+          createColumnHeader(column, `field${i + 1}`, stringFieldCompareClosure(i)),
+        )
       }
-    }
-    tr.appendChild(
-      createColumnHeader('Value', 'Value', (a, b) => {
-        return valueCompare(a[5], b[5], a[1], b[1])
-      }),
-    )
-    tr.appendChild(
-      createColumnHeader('Footprint', 'Footprint', (a, b) => {
-        if (a[2] != b[2]) return a[2] > b[2] ? 1 : -1
-        else return 0
-      }),
-    )
-    if (settings.bommode == 'grouped') {
-      tr.appendChild(
-        createColumnHeader('Quantity', 'Quantity', (a, b) => {
-          return a[3].length - b[3].length
-        }),
-      )
-    }
+    })
   }
   bomhead.appendChild(tr)
 }
 
-function populateBomBody() {
+function populateBomBody(placeholderColumn = null, placeHolderElements = null) {
   while (bom.firstChild) {
     bom.removeChild(bom.firstChild)
   }
@@ -3464,15 +4078,8 @@ function populateBomBody() {
       // expand bom table
       expandedTable = []
       for (var bomentry of bomtable) {
-        for (var ref of bomentry[3]) {
-          expandedTable.push([
-            1,
-            bomentry[1],
-            bomentry[2],
-            [ref],
-            bomentry[4],
-            bomentry[5],
-          ])
+        for (var ref of bomentry) {
+          expandedTable.push([ref])
         }
       }
       bomtable = expandedTable
@@ -3506,47 +4113,58 @@ function populateBomBody() {
           continue
         }
       } else {
-        references = bomentry[3]
+        references = bomentry
       }
-      // Checkboxes
-      for (var checkbox of settings.checkboxes) {
-        if (checkbox) {
-          td = document.createElement('TD')
-          var input = document.createElement('input')
-          input.type = 'checkbox'
-          input.onchange = createCheckboxChangeHandler(checkbox, references, tr)
-          setBomCheckboxState(checkbox, input, references)
-          if (input.checked && settings.darkenWhenChecked == checkbox) {
-            tr.classList.add('checked')
+      // Filter hidden columns
+      var columns = settings.columnOrder.filter(
+        e => !settings.hiddenColumns.includes(e),
+      )
+      columns.forEach(column => {
+        if (column === placeholderColumn) {
+          var n = 1
+          if (column === 'checkboxes') n = settings.checkboxes.length
+          for (i = 0; i < n; i++) {
+            td = placeHolderElements.shift()
+            tr.appendChild(td)
           }
-          td.appendChild(input)
+          return
+        } else if (column === 'checkboxes') {
+          for (var checkbox of settings.checkboxes) {
+            if (checkbox) {
+              td = document.createElement('TD')
+              var input = document.createElement('input')
+              input.type = 'checkbox'
+              input.onchange = createCheckboxChangeHandler(checkbox, references, tr)
+              setBomCheckboxState(checkbox, input, references)
+              if (input.checked && settings.markWhenChecked == checkbox) {
+                tr.classList.add('checked')
+              }
+              td.appendChild(input)
+              tr.appendChild(td)
+            }
+          }
+        } else if (column === 'References') {
+          td = document.createElement('TD')
+          td.innerHTML = highlightFilter(references.map(r => r[0]).join(', '))
+          tr.appendChild(td)
+        } else if (column === 'Quantity' && settings.bommode == 'grouped') {
+          // Quantity
+          td = document.createElement('TD')
+          td.textContent = references.length
+          tr.appendChild(td)
+        } else {
+          // All the other fields
+          var field_index = config.fields.indexOf(column)
+          if (field_index < 0) return
+          var valueSet = new Set()
+          references
+            .map(r => r[1])
+            .forEach(id => valueSet.add(pcbdata.bom.fields[id][field_index]))
+          td = document.createElement('TD')
+          td.innerHTML = highlightFilter(Array.from(valueSet).join(', '))
           tr.appendChild(td)
         }
-      }
-      // References
-      td = document.createElement('TD')
-      td.innerHTML = highlightFilter(references.map(r => r[0]).join(', '))
-      tr.appendChild(td)
-      // Extra fields
-      for (var i in config.extra_fields) {
-        td = document.createElement('TD')
-        td.innerHTML = highlightFilter(bomentry[4][i])
-        tr.appendChild(td)
-      }
-      // Value
-      td = document.createElement('TD')
-      td.innerHTML = highlightFilter(bomentry[1])
-      tr.appendChild(td)
-      // Footprint
-      td = document.createElement('TD')
-      td.innerHTML = highlightFilter(bomentry[2])
-      tr.appendChild(td)
-      if (settings.bommode == 'grouped') {
-        // Quantity
-        td = document.createElement('TD')
-        td.textContent = bomentry[3].length
-        tr.appendChild(td)
-      }
+      })
     }
     bom.appendChild(tr)
     var handler = createRowHighlightHandler(tr.id, references, netname)
@@ -3621,6 +4239,8 @@ function highlightNextRow() {
 function populateBomTable() {
   populateBomHeader()
   populateBomBody()
+  setBomHandlers()
+  resizableGrid(bomhead)
 }
 
 function footprintsClicked(footprintIndexes) {
@@ -3818,16 +4438,28 @@ function changeBomMode(mode) {
   document.getElementById('bom-grouped-btn').classList.remove('depressed')
   document.getElementById('bom-ungrouped-btn').classList.remove('depressed')
   document.getElementById('bom-netlist-btn').classList.remove('depressed')
+  var chkbxs = document.getElementsByClassName('visibility_checkbox')
+
   switch (mode) {
     case 'grouped':
       document.getElementById('bom-grouped-btn').classList.add('depressed')
+      for (var i = 0; i < chkbxs.length; i++) {
+        chkbxs[i].disabled = false
+      }
       break
     case 'ungrouped':
       document.getElementById('bom-ungrouped-btn').classList.add('depressed')
+      for (var i = 0; i < chkbxs.length; i++) {
+        chkbxs[i].disabled = false
+      }
       break
     case 'netlist':
       document.getElementById('bom-netlist-btn').classList.add('depressed')
+      for (var i = 0; i < chkbxs.length; i++) {
+        chkbxs[i].disabled = true
+      }
   }
+
   writeStorage('bommode', mode)
   if (mode != settings.bommode) {
     settings.bommode = mode
@@ -3878,16 +4510,24 @@ function checkBomCheckbox(bomrowid, checkboxname) {
 
 function setBomCheckboxes(value) {
   writeStorage('bomCheckboxes', value)
-  settings.checkboxes = value.split(',').filter(e => e)
+  settings.checkboxes = value
+    .split(',')
+    .map(e => e.trim())
+    .filter(e => e)
   prepCheckboxes()
-  populateBomTable()
-  populateDarkenWhenCheckedOptions()
+  populateMarkWhenCheckedOptions()
+  setMarkWhenChecked(settings.markWhenChecked)
 }
 
-function setDarkenWhenChecked(value) {
-  writeStorage('darkenWhenChecked', value)
-  settings.darkenWhenChecked = value
+function setMarkWhenChecked(value) {
+  writeStorage('markWhenChecked', value)
+  settings.markWhenChecked = value
+  markedFootprints.clear()
+  for (var ref of value ? getStoredCheckboxRefs(value) : []) {
+    markedFootprints.add(ref)
+  }
   populateBomTable()
+  drawHighlights()
 }
 
 function prepCheckboxes() {
@@ -3919,8 +4559,8 @@ function prepCheckboxes() {
   }
 }
 
-function populateDarkenWhenCheckedOptions() {
-  var container = document.getElementById('darkenWhenCheckedContainer')
+function populateMarkWhenCheckedOptions() {
+  var container = document.getElementById('markWhenCheckedContainer')
 
   if (settings.checkboxes.length == 0) {
     container.parentElement.style.display = 'none'
@@ -3931,21 +4571,21 @@ function populateDarkenWhenCheckedOptions() {
   container.parentElement.style.display = 'inline-block'
 
   function createOption(name, displayName) {
-    var id = 'darkenWhenChecked-' + name
+    var id = 'markWhenChecked-' + name
 
     var div = document.createElement('div')
     div.classList.add('radio-container')
 
     var input = document.createElement('input')
     input.type = 'radio'
-    input.name = 'darkenWhenChecked'
+    input.name = 'markWhenChecked'
     input.value = name
     input.id = id
-    input.onchange = () => setDarkenWhenChecked(name)
+    input.onchange = () => setMarkWhenChecked(name)
     div.appendChild(input)
 
     // Preserve the selected element when the checkboxes change
-    if (name == settings.darkenWhenChecked) {
+    if (name == settings.markWhenChecked) {
       input.checked = true
     }
 
@@ -4033,6 +4673,7 @@ document.onkeydown = function (e) {
     }
     if (e.key >= '1' && e.key <= '9') {
       toggleBomCheckbox(currentHighlightedRowId, parseInt(e.key))
+      e.preventDefault()
     }
   }
 }
@@ -4059,7 +4700,7 @@ function initBOM(e) {
     hideNetlistButton()
   }
   initDone = true
-  prepCheckboxes()
+  setBomCheckboxes(document.getElementById('bomCheckboxes').value)
   // Triggers render
   changeBomLayout(settings.bomlayout)
 

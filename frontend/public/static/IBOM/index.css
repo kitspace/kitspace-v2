@@ -1,9 +1,14 @@
 :root {
   --pcb-edge-color: black;
   --pad-color: #878787;
+  --pad-hole-color: #cccccc;
   --pad-color-highlight: #d04040;
+  --pad-color-highlight-both: #d0d040;
+  --pad-color-highlight-marked: #44a344;
   --pin1-outline-color: #ffb629;
-  --pin1-outline-color-highlight: #b4ff03;
+  --pin1-outline-color-highlight: #ffb629;
+  --pin1-outline-color-highlight-both: #fcbb39;
+  --pin1-outline-color-highlight-marked: #fdbe41;
   --silkscreen-edge-color: #aa4;
   --silkscreen-polygon-color: #4aa;
   --silkscreen-text-color: #4aa;
@@ -16,7 +21,7 @@
   --zone-color-highlight: #d0404080;
 }
 
-.ibom .dark.topmostdiv {
+.ibom topmostdiv {
   --pcb-edge-color: #eee;
   --pad-color: #808080;
   --pin1-outline-color: #ffa800;
@@ -184,6 +189,7 @@
   table-layout: fixed;
   width: 100%;
   margin-top: 1px;
+  position: relative;
 }
 
 .ibom .bom th,
@@ -226,11 +232,11 @@
 }
 
 .ibom .bom tr.checked {
-  color: #aaa;
+  color: #1cb53d;
 }
 
 .ibom .dark .bom tr.checked {
-  color: #666;
+  color: #2cce54;
 }
 
 .ibom .bom tr {
@@ -238,22 +244,14 @@
 }
 
 .ibom .bom .numCol {
-  width: 25px;
+  width: 30px;
 }
 
-.ibom .bom .Description {
-  width: 10%;
-}
-
-.ibom .bom .Part {
-  width: 10%;
-}
-
-.ibom .bom .Value {
+.ibom .bom .value {
   width: 15%;
 }
 
-.ibom .bom .Quantity {
+.ibom .bom .quantity {
   width: 65px;
 }
 
@@ -265,15 +263,11 @@
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent #221 transparent;
-  -webkit-transform-origin: 50% 85%;
   transform-origin: 50% 85%;
-  transition: opacity 0.2s, -webkit-transform 0.4s;
   transition: opacity 0.2s, transform 0.4s;
-  transition: opacity 0.2s, transform 0.4s, -webkit-transform 0.4s;
 }
 
 .ibom .dark .bom th .sortmark {
-  -webkit-filter: invert(1);
   filter: invert(1);
 }
 
@@ -282,7 +276,6 @@
 }
 
 .ibom .bom th .sortmark.desc {
-  -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
 }
 
@@ -293,8 +286,6 @@
 .ibom .bom .bom-checkbox {
   width: 30px;
   position: relative;
-  -webkit-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   -moz-user-select: none;
 }
@@ -329,6 +320,8 @@
 }
 
 .ibom .split {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
@@ -387,24 +380,8 @@
   color: #eee;
 }
 
-.ibom .searchbox::-webkit-input-placeholder {
-  color: #ccc;
-}
-
-.ibom .searchbox:-ms-input-placeholder {
-  color: #ccc;
-}
-
 .ibom .searchbox::placeholder {
   color: #ccc;
-}
-
-.ibom .dark .searchbox::-webkit-input-placeholder {
-  color: #666;
-}
-
-.ibom .dark .searchbox:-ms-input-placeholder {
-  color: #666;
 }
 
 .ibom .dark .searchbox::placeholder {
@@ -465,23 +442,29 @@
   background-repeat: no-repeat;
 }
 
+.ibom .visbtn {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath fill='none' stroke='%23333' d='M2.5 4.5h5v15h-5zM9.5 4.5h5v15h-5zM16.5 4.5h5v15h-5z'/%3E%3C/svg%3E");
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 15px;
+}
+
+.ibom #vismenu-content {
+  left: 0px;
+  font-family: Verdana, sans-serif;
+}
+
 .ibom .dark .statsbtn,
 .ibom .dark .savebtn,
 .ibom .dark .menubtn,
-.ibom .dark .iobtn {
-  -webkit-filter: invert(1);
+.ibom .dark .iobtn,
+.ibom .dark .visbtn {
   filter: invert(1);
 }
 
 .ibom .flexbox {
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-  -ms-flex-align: center;
   align-items: center;
-  -webkit-justify-content: space-between;
-  -ms-flex-pack: justify;
   justify-content: space-between;
   width: 100%;
 }
@@ -490,8 +473,6 @@
   background-color: #d6d6d6;
   width: auto;
   height: 30px;
-  -webkit-flex-grow: 1;
-  -ms-flex-positive: 1;
   flex-grow: 1;
   margin: 5px;
   border-radius: 4px;
@@ -533,14 +514,8 @@
   top: 0;
   height: 100%;
   width: 100%;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-  -ms-flex-align: center;
   align-items: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
   justify-content: center;
 }
 
@@ -555,6 +530,9 @@
 }
 
 .ibom .menu-content {
+  font-size: 12pt !important;
+  text-align: left !important;
+  font-weight: normal !important;
   display: none;
   position: absolute;
   background-color: white;
@@ -665,6 +643,7 @@
   padding: 0;
   outline: none;
   opacity: 0.7;
+  -webkit-transition: 0.2s;
   transition: opacity 0.2s;
   border-radius: 3px;
 }
@@ -765,12 +744,53 @@
 
 .ibom #frontcanvas,
 .ibom #backcanvas {
-  -ms-touch-action: none;
   touch-action: none;
 }
 
+.ibom .placeholder {
+  border: 1px dashed #9f9fda !important;
+  background-color: #edf2f7 !important;
+}
+
+.ibom .dragging {
+  z-index: 999;
+}
+
+.ibom .dark .dragging > table > tbody > tr {
+  background-color: #252c30;
+}
+
+.ibom .dark .placeholder {
+  filter: invert(1);
+}
+
+.ibom .column-spacer {
+  top: 0;
+  left: 0;
+  width: calc(100% - 4px);
+  position: absolute;
+  cursor: pointer;
+  user-select: none;
+  height: 100%;
+}
+
+.ibom .column-width-handle {
+  top: 0;
+  right: 0;
+  width: 4px;
+  position: absolute;
+  cursor: col-resize;
+  user-select: none;
+  height: 100%;
+}
+
+.ibom .column-width-handle:hover {
+  background-color: #4f99bd;
+}
+
 /* Start: Fix rendering only on fullscreen mode */
-#topmostdiv div:not(.button-container, .menu-content, .menu-content div, #top) {
+#topmostdiv
+  div:not(.button-container, .menu-content, .menu-content div, #bomdiv div, #top) {
   height: 90vh;
 }
 /* END: Fix rendering only on fullscreen mode */
