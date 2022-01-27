@@ -151,8 +151,8 @@
             />
           </label>
           <label class="menu-label">
-            <div style="margin-left: 5px;">Darken when checked</div>
-            <div id="darkenWhenCheckedContainer"></div>
+            <div style="margin-left: 5px;">Mark when checked</div>
+            <div id="markWhenCheckedContainer"></div>
           </label>
           <label class="menu-label">
             <span class="shameless-plug">
@@ -337,7 +337,7 @@
       <table class="fileinfo">
         <tbody>
           <tr>
-            <td id="title" class="title">
+            <td id="title" class="title" style="width: 70%;">
               Title
             </td>
             <td id="revision" class="title" style="width: 30%;">
@@ -358,7 +358,7 @@
   </div>
   <div id="bot" class="split" style="height: calc(100% - 80px);">
     <div id="bomdiv" class="split split-horizontal">
-      <div style="width: 100%; height: auto;">
+      <div style="width: 100%;">
         <input
           id="reflookup"
           class="textbox searchbox reflookup hideonprint"
@@ -381,7 +381,7 @@
           ></button>
         </div>
       </div>
-      <table class="bom">
+      <table class="bom" id="bomtable">
         <thead id="bomhead"></thead>
         <tbody id="bombody"></tbody>
       </table>
