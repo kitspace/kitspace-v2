@@ -3,7 +3,8 @@ name: Lint processor
 on: [push]
 
 defaults:
-  working-directory: processor
+  run:
+    working-directory: processor
 
 jobs:
   lint_processor:
@@ -13,7 +14,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16'
-
       - uses: actions/checkout@v2
       - run: 'yarn install'
       - run: 'yarn lint'
