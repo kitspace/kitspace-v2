@@ -9,6 +9,7 @@
     "start": "node src/server.js",
     "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
+    "tsc": "tsc",
     "fmt": "prettier --write '*.json' $(find src/ test/ -name '*.js')"
   },
   "dependencies": {
@@ -34,6 +35,7 @@
   "devDependencies": {
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
-    "supertest": "^6.0.1"
+    "supertest": "^6.0.1",
+    "tsc": "^2.0.4"
   }
 }
