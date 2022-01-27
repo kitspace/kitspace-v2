@@ -41,12 +41,10 @@ const workerFunctions = {
 
 function createWorkers() {
   const workers = []
-  for (const name in workerFunctions) {
+  for (const name of Object.keys(workerFunctions)) {
     workers.push(addWorker(name))
   }
-  const stop = () => {
-    return Promise.all(workers.map(worker => worker.close()))
-  }
+  const stop = () => Promise.all(workers.map(worker => worker.close()))
   return stop
 }
 

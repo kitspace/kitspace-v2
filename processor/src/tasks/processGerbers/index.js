@@ -1,4 +1,3 @@
-const fs = require('fs')
 const globule = require('globule')
 const path = require('path')
 const Jszip = require('jszip')
@@ -52,8 +51,7 @@ async function _processGerbers(
   plottedGerbers,
 ) {
   const nameSplit = name.split('/')
-  const zipFileName =
-    nameSplit[nameSplit.length - 1] + '-' + zipVersion + '-gerbers.zip'
+  const zipFileName = `${nameSplit[nameSplit.length - 1]}-${zipVersion}-gerbers.zip`
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')
@@ -89,7 +87,7 @@ async function _processGerbers(
     const gerberDir = kitspaceYaml.gerbers || ''
     const color = kitspaceYaml.color || 'green'
 
-    await exec('mkdir -p ' + path.join(outputDir, 'images'))
+    await exec(`mkdir -p ${path.join(outputDir, 'images')}`)
 
     const files = globule.find(path.join(inputDir, '**'))
 
@@ -109,9 +107,13 @@ async function _processGerbers(
       gerbers = plottedGerbers.gerbers
       inputFiles = plottedGerbers.inputFiles
     } else {
-      inputFiles = gerbers.reduce((result, k) => {
-        return { ...result, [path.relative(inputDir, k)]: gerberTypes[k] }
-      }, {})
+      inputFiles = gerbers.reduce(
+        (result, k) => ({
+          ...result,
+          [path.relative(inputDir, k)]: gerberTypes[k],
+        }),
+        {},
+      )
     }
 
     const gerberData = await readGerbers(gerbers)
@@ -248,10 +250,8 @@ function generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath) {
     }
     gerberInfo.width *= 25.4
     gerberInfo.height *= 25.4
-  } else {
-    if (stackup.bottom.units === 'in') {
-      throw new Error('Disparate units in PCB files. Expecting mm on bottom.')
-    }
+  } else if (stackup.bottom.units === 'in') {
+    throw new Error('Disparate units in PCB files. Expecting mm on bottom.')
   }
   gerberInfo.width = Math.ceil(gerberInfo.width)
   gerberInfo.height = Math.ceil(gerberInfo.height)

@@ -86,9 +86,8 @@ function findReadmeFile(inputDir) {
 
   if (readmeFiles.length >= 1) {
     return readmeFiles[0]
-  } else {
-    return null
   }
+  return null
 }
 
 async function renderMarkdown(rawMarkdown) {

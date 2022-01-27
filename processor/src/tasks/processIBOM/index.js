@@ -75,8 +75,8 @@ async function _processIBOM(job, inputDir, kitspaceYaml, outputDir, hash, name) 
     )
 }
 
-async function findBoardFile(path, ext, check) {
-  const f = globule.find(`${path}/**/*.` + ext)[0]
+async function findBoardFile(folderPath, ext, check) {
+  const f = globule.find(`${folderPath}/**/*.${ext}`)[0]
   if (check == null || (f != null && (await check(f)))) {
     return f
   }

@@ -9,6 +9,7 @@ const GITEA_DB_CONFIG = {
 }
 const MAXIMUM_REPO_MIGRATION_TIME = parseInt(
   process.env.MAXIMUM_REPO_MIGRATION_TIME,
+  10,
 )
 
 let REMOTE_API_TOKENS = process.env.REMOTE_API_TOKENS || ''
