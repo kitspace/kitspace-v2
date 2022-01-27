@@ -231,7 +231,7 @@ describe('projects API', () => {
   })
 
   afterEach(async () => {
-    this.app.stop()
+    await this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
   })
 })

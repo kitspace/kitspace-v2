@@ -9,24 +9,19 @@ const findGerberFiles = require('./findGerberFiles')
 const boardBuilder = require('./board_builder')
 
 function processGerbers(
-  events,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  zipVersion,
-  name,
-  plottedGerbers,
+  job,
+  { checkoutDir, kitspaceYaml, filesDir, zipVersion, name, plottedGerbers },
 ) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(outputDir, projectName)
+        const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         const projectPlottedGerbers = plottedGerbers[projectName]
         return _processGerbers(
-          events,
-          inputDir,
+          job,
+          checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
           zipVersion,
@@ -37,10 +32,10 @@ function processGerbers(
     )
   }
   return _processGerbers(
-    events,
-    inputDir,
+    job,
+    checkoutDir,
     kitspaceYaml,
-    outputDir,
+    filesDir,
     zipVersion,
     name,
     plottedGerbers,
@@ -48,7 +43,7 @@ function processGerbers(
 }
 
 async function _processGerbers(
-  events,
+  job,
   inputDir,
   kitspaceYaml,
   outputDir,
@@ -79,13 +74,13 @@ async function _processGerbers(
     topWithBgndPath,
   ]
 
-  for (const f of filePaths) {
-    events.emit('in_progress', f)
+  for (const file of filePaths) {
+    job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
-    for (const f of filePaths) {
-      events.emit('done', f)
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'done', file })
     }
     return
   }
@@ -124,54 +119,70 @@ async function _processGerbers(
     const promises = []
     promises.push(
       generateZip(zipPath, gerberData)
-        .then(() => events.emit('done', zipPath))
-        .catch(e => events.emit('failed', zipPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: zipPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: zipPath, error }),
+        ),
     )
 
     const stackup = await boardBuilder(gerberData, color)
 
     promises.push(
       writeFile(bottomSvgPath, stackup.bottom.svg)
-        .then(() => events.emit('done', bottomSvgPath))
-        .catch(e => events.emit('failed', bottomSvgPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: bottomSvgPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: bottomSvgPath, error }),
+        ),
     )
 
     promises.push(
       generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath)
-        .then(() => events.emit('done', gerberInfoPath))
-        .catch(e => events.emit('failed', gerberInfoPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: gerberInfoPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: gerberInfoPath, error }),
+        ),
     )
 
     await writeFile(topSvgPath, stackup.top.svg)
-      .then(() => events.emit('done', topSvgPath))
-      .catch(e => events.emit('failed', topSvgPath, e))
+      .then(() => job.updateProgress({ status: 'done', file: topSvgPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: topSvgPath, error }),
+      )
 
     promises.push(
       generateTopPng(topSvgPath, stackup, topPngPath)
-        .then(() => events.emit('done', topPngPath))
-        .catch(e => events.emit('failed', topPngPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: topPngPath, error }),
+        ),
     )
 
     promises.push(
       generateTopLargePng(topSvgPath, stackup, topLargePngPath)
-        .then(() => events.emit('done', topLargePngPath))
-        .catch(e => events.emit('failed', topLargePngPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: topLargePngPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
+        ),
     )
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
-      .then(() => events.emit('done', topMetaPngPath))
-      .catch(e => events.emit('failed', topMetaPngPath, e))
+      .then(() => job.updateProgress({ status: 'done', file: topMetaPngPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: topMetaPngPath, error }),
+      )
 
     promises.push(
       generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
-        .then(() => events.emit('done', topWithBgndPath))
-        .catch(e => events.emit('failed', topWithBgndPath, e)),
+        .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
+        .catch(error =>
+          job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
+        ),
     )
 
     await Promise.all(promises)
-  } catch (e) {
-    for (const f of filePaths) {
-      events.emit('failed', f, e)
+  } catch (error) {
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'failed', file, error })
     }
   }
 }

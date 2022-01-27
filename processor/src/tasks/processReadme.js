@@ -6,17 +6,20 @@ const cheerio = require('cheerio')
 const { exists, readFile, writeFile } = require('../utils')
 const { GITEA_URL } = require('../env')
 
-function processReadme(events, inputDir, kitspaceYaml, outputDir, projectFullname) {
+function processReadme(
+  job,
+  { checkoutDir, kitspaceYaml, filesDir, projectFullname },
+) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(outputDir, projectName)
+        const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
 
         return _processReadme(
-          events,
-          inputDir,
+          job,
+          checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
           projectFullname,
@@ -25,11 +28,11 @@ function processReadme(events, inputDir, kitspaceYaml, outputDir, projectFullnam
     )
   }
 
-  return _processReadme(events, inputDir, kitspaceYaml, outputDir, projectFullname)
+  return _processReadme(job, checkoutDir, kitspaceYaml, filesDir, projectFullname)
 }
 
 async function _processReadme(
-  events,
+  job,
   inputDir,
   kitspaceYaml,
   outputDir,
@@ -37,10 +40,10 @@ async function _processReadme(
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
-  events.emit('in_progress', readmePath)
+  job.updateProgress({ status: 'in_progress', file: readmePath })
 
   if (await exists(readmePath)) {
-    events.emit('done', readmePath)
+    job.updateProgress({ status: 'done', file: readmePath })
     return
   }
 
@@ -51,7 +54,11 @@ async function _processReadme(
   } else {
     const readmeFile = findReadmeFile(inputDir)
     if (readmeFile === null) {
-      events.emit('failed', readmePath, "couldn't find readme file")
+      job.updateProgress({
+        status: 'failed',
+        file: readmePath,
+        error: Error("couldn't find readme file"),
+      })
       return
     }
     readmeInputPath = readmeFile
@@ -63,8 +70,10 @@ async function _processReadme(
   const renderedReadme = postProcessMarkdown(readmeAsHTML, projectFullname)
 
   await writeFile(readmePath, renderedReadme)
-    .then(() => events.emit('done', readmePath))
-    .catch(e => events.emit('failed', readmePath, e))
+    .then(() => job.updateProgress({ status: 'done', file: readmePath }))
+    .catch(error =>
+      job.updateProgress({ status: 'failed', file: readmePath, error }),
+    )
 }
 
 function findReadmeFile(inputDir) {
@@ -110,7 +119,7 @@ function postProcessMarkdown(readmeAsHtml, projectFullname) {
       const rawUrl = `${GITEA_URL}/${projectFullname}/raw/${src}`
       img.attr('src', rawUrl)
     }
-    
+
     // load readme images lazily
     img.attr('loading', 'lazy')
   })

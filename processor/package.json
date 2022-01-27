@@ -14,6 +14,7 @@
   "dependencies": {
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#78df7bb0ebfbdb7beee99d13514b3737f010508f",
     "backoff": "^2.5.0",
+    "bullmq": "^1.66.0",
     "cheerio": "^1.0.0-rc.10",
     "chokidar": "^3.4.3",
     "express": "^4.17.1",

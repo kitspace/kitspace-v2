@@ -3,36 +3,46 @@ const express = require('express')
 const log = require('loglevel')
 const path = require('path')
 const fileUpload = require('express-fileupload')
+const { Queue } = require('bullmq')
 
 const processKicadPCB = require('./tasks/processKicadPCB')
 const processSchematics = require('./tasks/processSchematics')
 const { writeFile, exec } = require('./utils')
+const events = require('./events')
+const { connection } = require('./redisConnection')
 
 const { DATA_DIR, REMOTE_API_TOKENS } = require('./env')
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
+const processKicadPCBQueue = new Queue('processKicadPCB', { connection })
+const processSchematicsQueue = new Queue('processSchematics', { connection })
+
 function createRemoteAPI(app) {
   app.use(fileUpload())
-
-  const events = new EventEmitter()
 
   const processFileStatus = {}
 
   events.on('in_progress', x => {
-    x = path.relative(remoteProcessOutputDir, x)
-    processFileStatus[x] = { status: 'in_progress' }
-    log.debug('in_progress', x)
+    if (x.startsWith(remoteProcessOutputDir)) {
+      x = path.relative(remoteProcessOutputDir, x)
+      processFileStatus[x] = { status: 'in_progress' }
+      log.debug('in_progress', x)
+    }
   })
   events.on('done', x => {
-    x = path.relative(remoteProcessOutputDir, x)
-    processFileStatus[x] = { status: 'done' }
-    log.debug('done', x)
+    if (x.startsWith(remoteProcessOutputDir)) {
+      x = path.relative(remoteProcessOutputDir, x)
+      processFileStatus[x] = { status: 'done' }
+      log.debug('done', x)
+    }
   })
   events.on('failed', (x, e) => {
-    const error = e.message || e.stderr || 'Unknown error'
-    processFileStatus[x] = { status: 'failed', error }
-    log.debug('failed', x, error)
+    if (x.startsWith(remoteProcessOutputDir)) {
+      const error = e.message || e.stderr || 'Unknown error'
+      processFileStatus[x] = { status: 'failed', error }
+      log.debug('failed', x, error)
+    }
   })
 
   app.post('/process-file', async (req, res) => {
@@ -63,9 +73,17 @@ function createRemoteAPI(app) {
       await exec(`mkdir -p ${uploadFolder}`)
       await writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
-          processKicadPCB(events, uploadFolder, {}, outputDir)
+          processKicadPCBQueue.add('start', {
+            checkoutDir: uploadFolder,
+            kitspaceYaml: {},
+            filesDir: outputDir,
+          })
         } else if (ext === '.sch') {
-          processSchematics(events, uploadFolder, {}, outputDir)
+          processSchematicsQueue.add('start', {
+            checkoutDir: uploadFolder,
+            kitspaceYaml: {},
+            filesDir: outputDir,
+          })
         }
       })
       res.status(202).send({

@@ -4,37 +4,37 @@ const log = require('loglevel')
 
 const { existsAll, exec, findKicadSchematic } = require('../../utils')
 
-function processSchematics(events, inputDir, kitspaceYaml, outputDir) {
+function processSchematics(job, { checkoutDir, kitspaceYaml, filesDir }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(outputDir, projectName)
+        const projectOutputDir = path.join(filesDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return _processSchematics(
-          events,
-          inputDir,
+          job,
+          checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
         )
       }),
     )
   }
-  return _processSchematics(events, inputDir, kitspaceYaml, outputDir)
+  return _processSchematics(job, checkoutDir, kitspaceYaml, filesDir)
 }
 
-async function _processSchematics(events, inputDir, kitspaceYaml, outputDir) {
+async function _processSchematics(job, inputDir, kitspaceYaml, outputDir) {
   const schematicSvgPath = path.join(outputDir, 'images/schematic.svg')
 
   const filePaths = [schematicSvgPath]
 
-  for (const f of filePaths) {
-    events.emit('in_progress', f)
+  for (const file of filePaths) {
+    job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
-    for (const f of filePaths) {
-      events.emit('done', f)
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'done', file })
     }
   }
 
@@ -42,18 +42,23 @@ async function _processSchematics(events, inputDir, kitspaceYaml, outputDir) {
     const files = globule.find(path.join(inputDir, '**'))
     const topLevelSchematic = findKicadSchematic(inputDir, files, kitspaceYaml)
     if (topLevelSchematic == null) {
-      events.emit('failed', schematicSvgPath, Error('No .sch file found'))
+      job.updateProgress({
+        status: 'failed',
+        file: schematicSvgPath,
+        error: Error('No .sch file found'),
+      })
       return
     }
 
     await plotKicadSchematic(schematicSvgPath, topLevelSchematic)
-      .then(() => events.emit('done', schematicSvgPath))
-      .catch(e => events.emit('failed', schematicSvgPath, e))
-
-  } catch (e) {
-    log.error(e)
-    for (const f of filePaths) {
-      events.emit('failed', f, e)
+      .then(() => job.updateProgress({ status: 'done', file: schematicSvgPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: schematicSvgPath, error }),
+      )
+  } catch (error) {
+    log.error(error)
+    for (const file of filePaths) {
+      job.updateProgress({ status: 'failed', file, error })
     }
   }
 }
@@ -65,7 +70,9 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
   const tempFolder = path.join('/data/temp/kitspace', outputFolder, 'schematics')
   await exec(`rm -rf ${tempFolder} && mkdir -p ${tempFolder}`)
   const plot_kicad_sch_docker = path.join(__dirname, 'plot_kicad_sch_docker')
-  const r = await exec(`${plot_kicad_sch_docker} '${schematicPath}' '${tempFolder}'`)
+  const r = await exec(
+    `${plot_kicad_sch_docker} '${schematicPath}' '${tempFolder}'`,
+  )
   log.debug(r)
   const [tempSvg] = globule.find(path.join(tempFolder, '*.svg'))
   if (tempSvg == null) {

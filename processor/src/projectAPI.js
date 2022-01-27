@@ -1,39 +1,51 @@
-const EventEmitter = require('events')
 const express = require('express')
 const log = require('loglevel')
 const path = require('path')
 
 const watcher = require('./watcher')
+const { createWorkers } = require('./workers')
 
 const { DATA_DIR } = require('./env')
 const filesDir = path.join(DATA_DIR, 'files')
+const events = require('./events')
+
 
 function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   const fileStatus = {}
   const redirects = {}
 
-  const events = new EventEmitter()
   events.on('in_progress', x => {
-    x = path.relative(filesDir, x)
-    fileStatus[x] = { status: 'in_progress' }
-    const headPath = getHeadPath(x)
-    redirects[headPath] = x
-    log.debug('in_progress', x)
+    if (x.startsWith(filesDir)) {
+      x = path.relative(filesDir, x)
+      fileStatus[x] = { status: 'in_progress' }
+      const headPath = getHeadPath(x)
+      redirects[headPath] = x
+      log.debug('in_progress', x)
+    }
   })
   events.on('done', x => {
-    x = path.relative(filesDir, x)
-    fileStatus[x] = { status: 'done' }
-    log.debug('done', x)
+    if (x.startsWith(filesDir)) {
+      x = path.relative(filesDir, x)
+      fileStatus[x] = { status: 'done' }
+      log.debug('done', x)
+    }
   })
   events.on('failed', (x, e) => {
-    x = path.relative(filesDir, x)
-    const error = e.message || e.stderr || 'Unknown error'
-    fileStatus[x] = { status: 'failed', error }
-    log.debug('failed', x, error)
+    if (x.startsWith(filesDir)) {
+      x = path.relative(filesDir, x)
+      const error = e.message || e.stderr || 'Unknown error'
+      fileStatus[x] = { status: 'failed', error }
+      log.debug('failed', x, error)
+    }
   })
-  const unwatch = watcher.watch(events, repoDir, checkIsRepoReady)
 
-  app.stop = unwatch
+  const stopWorkers = createWorkers()
+  const unwatch = watcher.watch(repoDir, checkIsRepoReady)
+
+  app.stop = async () => {
+    unwatch()
+    await stopWorkers()
+  }
 
   app.get('/status/*', (req, res, next) => {
     let x = path.relative('/status/', req.path)

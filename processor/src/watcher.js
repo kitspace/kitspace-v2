@@ -1,18 +1,19 @@
 const chokidar = require('chokidar')
 const debounce = require('lodash.debounce')
-const jsYaml = require('js-yaml')
 const log = require('loglevel')
 const path = require('path')
+const jsYaml = require('js-yaml')
+const { Queue } = require('bullmq')
 
-const { DATA_DIR } = require('./env')
 const { exists, exec, writeFile, readFile } = require('./utils')
-const processGerbers = require('./tasks/processGerbers')
-const processBOM = require('./tasks/processBOM')
-const processIBOM = require('./tasks/processIBOM')
-const processKicadPCB = require('./tasks/processKicadPCB')
-const processReadme = require('./tasks/processReadme')
+const { DATA_DIR } = require('./env')
+const { connection } = require('./redisConnection')
 
-const running = {}
+const writeKitspaceYamlQueue = new Queue('writeKitspaceYaml', { connection })
+const processPCBQueue = new Queue('processPCB', { connection })
+const processBOMQueue = new Queue('processBOM', { connection })
+const processIBOMQueue = new Queue('processIBOM', { connection })
+const processReadmeQueue = new Queue('processReadme', { connection })
 
 /**
  *
@@ -21,7 +22,7 @@ const running = {}
  * @param {function=} checkIsRepoReady
  * @returns
  */
-function watch(events, repoDir = '/repositories', checkIsRepoReady) {
+function watch(repoDir = '/repositories', checkIsRepoReady) {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
@@ -33,12 +34,8 @@ function watch(events, repoDir = '/repositories', checkIsRepoReady) {
     // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
       const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
-      if (!running[gitDir] && isReady) {
-        running[gitDir] = true
-        await processRepo(events, repoDir, gitDir).catch(e => {
-          log.error(`Error processing '${gitDir}':`, e)
-        })
-        running[gitDir] = false
+      if (isReady) {
+        processRepo(repoDir, gitDir)
       }
     }, 1000)
 
@@ -82,7 +79,7 @@ function watch(events, repoDir = '/repositories', checkIsRepoReady) {
   return unwatch
 }
 
-async function processRepo(events, repoDir, gitDir) {
+async function processRepo(repoDir, gitDir) {
   // /repositories/user/project.git -> user/project
   const name = path.relative(repoDir, gitDir).slice(0, -4)
   const checkoutDir = path.join(DATA_DIR, 'checkout', name)
@@ -92,41 +89,21 @@ async function processRepo(events, repoDir, gitDir) {
   const hash = await getGitHash(checkoutDir)
   const filesDir = path.join(DATA_DIR, 'files', name, hash)
 
-  const kitspaceYamlJson = path.join(filesDir, 'kitspace-yaml.json')
-  events.emit('in_progress', kitspaceYamlJson)
-
   await exec(`mkdir -p ${filesDir}`)
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  const processPCB = async () => {
-    const plottedGerbers = await processKicadPCB(
-      events,
-      checkoutDir,
-      kitspaceYaml,
-      filesDir,
-    )
-    const zipVersion = hash.slice(0, 7)
-    return processGerbers(
-      events,
-      checkoutDir,
-      kitspaceYaml,
-      filesDir,
-      zipVersion,
-      name,
-      plottedGerbers,
-    )
-  }
-
-  await Promise.all([
-    writeFile(kitspaceYamlJson, JSON.stringify(kitspaceYaml, null, 2))
-      .then(() => events.emit('done', kitspaceYamlJson))
-      .catch(err => events.emit('failed', kitspaceYamlJson, err)),
-    processPCB(),
-    processBOM(events, checkoutDir, kitspaceYaml, filesDir),
-    processIBOM(events, checkoutDir, kitspaceYaml, filesDir, hash, name),
-    processReadme(events, checkoutDir, kitspaceYaml, filesDir, name),
-  ])
+  writeKitspaceYamlQueue.add('start', { kitspaceYaml, filesDir })
+  processPCBQueue.add('start', {
+    checkoutDir,
+    kitspaceYaml,
+    filesDir,
+    hash,
+    name,
+  })
+  processBOMQueue.add('start', { checkoutDir, kitspaceYaml, filesDir })
+  processIBOMQueue.add('start', { checkoutDir, kitspaceYaml, filesDir, hash, name })
+  processReadmeQueue.add('start', { checkoutDir, kitspaceYaml, filesDir, name })
 }
 
 async function getKitspaceYaml(checkoutDir) {
