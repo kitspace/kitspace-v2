@@ -57,12 +57,11 @@ async function checkIsRepoReady(gitDir) {
         `Repo: ${ownerName}/${repoName} migration is done, the repo is processable.`,
       )
       return true
-    } else {
-      log.debug(
-        `Repo: ${ownerName}/${repoName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
-      )
-      return false
     }
+    log.debug(
+      `Repo: ${ownerName}/${repoName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
+    )
+    return false
   }
 
   log.debug(`Repo: ${ownerName}/${repoName} is processable.`)
@@ -216,12 +215,9 @@ async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) {
     }
 
     backoffInstance
-      .on(
-        'backoff',
-        async (num, delay) => await onBackoff(num, delay, resetBackoffAndResolve),
-      )
+      .on('backoff', (num, delay) => onBackoff(num, delay, resetBackoffAndResolve))
       .on('ready', () => backoffInstance.backoff())
-      .on('fail', async () => await onFail(reject))
+      .on('fail', () => onFail(reject))
       .backoff()
   })
 }

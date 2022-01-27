@@ -6,9 +6,9 @@ const watcher = require('./watcher')
 const { createWorkers } = require('./workers')
 
 const { DATA_DIR } = require('./env')
+
 const filesDir = path.join(DATA_DIR, 'files')
 const events = require('./events')
-
 
 function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   const fileStatus = {}
@@ -47,7 +47,7 @@ function createProjectsAPI(app, repoDir, checkIsRepoReady) {
     await stopWorkers()
   }
 
-  app.get('/status/*', (req, res, next) => {
+  app.get('/status/*', (req, res) => {
     let x = path.relative('/status/', req.path)
     x = lowerCaseProject(x)
     if (x in redirects) {

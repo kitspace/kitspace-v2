@@ -1,7 +1,7 @@
 const pcbStackup = require('pcb-stackup')
 const xmlElementString = require('xml-element-string')
 
-const options = {
+const defaultOptions = {
   // copper finish
   cf: {
     bare: '#C87533',
@@ -36,9 +36,9 @@ const options = {
 const styleToOption = ({ copperFinish, solderMask, silkScreen }) => ({
   fr4: '#4D542C',
   cu: 'lightgrey',
-  cf: options.cf[copperFinish],
-  sm: options.sm[solderMask],
-  ss: options.ss[silkScreen],
+  cf: defaultOptions.cf[copperFinish],
+  sm: defaultOptions.sm[solderMask],
+  ss: defaultOptions.ss[silkScreen],
   sp: 'rgba(0, 0, 0, 0.0)',
   out: 'black',
 })
@@ -96,8 +96,8 @@ function styleString(options) {
   .pcb-stackup_out {color: ${options.out};}/* ]]> */`
 }
 
-module.exports = (layers, color, createElement) => {
-  return new Promise((resolve, reject) => {
+module.exports = (layers, color, createElement) =>
+  new Promise((resolve, reject) => {
     pcbStackup(
       layers,
       {
@@ -114,7 +114,6 @@ module.exports = (layers, color, createElement) => {
       },
     )
   })
-}
 
 module.exports.getStyle = function getStyle(color) {
   return styleString(styleToOption(colorToStyle[color]))

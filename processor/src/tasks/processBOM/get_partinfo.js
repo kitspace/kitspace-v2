@@ -36,15 +36,11 @@ function post(mpn) {
       },
     })
     .timeout(60000)
-    .then(res => {
-      return res.body.data.part
-    })
+    .then(res => res.body.data.part)
 }
 
 function getPartinfo(lines) {
-  const requests = lines.map(line => {
-    return Promise.all(line.partNumbers.map(post))
-  })
+  const requests = lines.map(line => Promise.all(line.partNumbers.map(post)))
   return Promise.all(requests).then(ramda.flatten)
 }
 

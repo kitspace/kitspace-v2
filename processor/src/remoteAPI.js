@@ -1,17 +1,15 @@
-const EventEmitter = require('events')
 const express = require('express')
 const log = require('loglevel')
 const path = require('path')
 const fileUpload = require('express-fileupload')
 const { Queue } = require('bullmq')
 
-const processKicadPCB = require('./tasks/processKicadPCB')
-const processSchematics = require('./tasks/processSchematics')
 const { writeFile, exec } = require('./utils')
 const events = require('./events')
 const { connection } = require('./redisConnection')
 
 const { DATA_DIR, REMOTE_API_TOKENS } = require('./env')
+
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
@@ -54,7 +52,7 @@ function createRemoteAPI(app) {
         return res.status(422).send('No file uploaded')
       }
 
-      const upload = req.files.upload
+      const { upload } = req.files
       if (upload == null) {
         return res
           .status(422)
@@ -95,8 +93,8 @@ function createRemoteAPI(app) {
     }
   })
 
-  app.get('/processed/status/*', (req, res, next) => {
-    let x = path.relative('/processed/status/', req.path)
+  app.get('/processed/status/*', (req, res) => {
+    const x = path.relative('/processed/status/', req.path)
     if (x in processFileStatus) {
       return res.send(processFileStatus[x])
     }
@@ -105,8 +103,8 @@ function createRemoteAPI(app) {
 
   const processStaticFiles = express.static(remoteProcessOutputDir)
 
-  app.get('/processed/files/*', (req, res, next) => {
-    let x = path.relative('/processed/files/', req.url)
+  app.get('/processed/files/*', (req, res) => {
+    const x = path.relative('/processed/files/', req.url)
 
     if (x in processFileStatus) {
       if (processFileStatus[x].status === 'in_progress') {
@@ -115,7 +113,7 @@ function createRemoteAPI(app) {
       }
       if (processFileStatus[x].status === 'done') {
         req.url = x
-        return processStaticFiles(req, res, next)
+        return processStaticFiles(req, res)
       }
       if (processFileStatus[x].status === 'failed') {
         // send a 424, "Failed Dependency" error when the asset processing failed

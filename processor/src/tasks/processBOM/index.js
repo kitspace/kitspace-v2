@@ -1,4 +1,5 @@
 const oneClickBOM = require('1-click-bom')
+const log = require('loglevel')
 const path = require('path')
 const getPartinfo = require('./get_partinfo')
 

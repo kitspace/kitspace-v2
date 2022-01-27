@@ -5,7 +5,7 @@ const path = require('path')
 const jsYaml = require('js-yaml')
 const { Queue } = require('bullmq')
 
-const { exists, exec, writeFile, readFile } = require('./utils')
+const { exists, exec, readFile } = require('./utils')
 const { DATA_DIR } = require('./env')
 const { connection } = require('./redisConnection')
 
@@ -22,7 +22,7 @@ const processReadmeQueue = new Queue('processReadme', { connection })
  * @param {function=} checkIsRepoReady
  * @returns
  */
-function watch(repoDir = '/repositories', checkIsRepoReady) {
+function watch(repoDir, checkIsRepoReady) {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
@@ -59,7 +59,7 @@ function watch(repoDir = '/repositories', checkIsRepoReady) {
   // re-scan every minute in case we missed a file-system event
   const timer = setInterval(() => {
     watcher.close()
-    for (const gitDir in dirWatchers) {
+    for (const gitDir of Object.keys(dirWatchers)) {
       dirWatchers[gitDir].add.close()
       dirWatchers[gitDir].unlinkDir.close()
     }
@@ -70,7 +70,7 @@ function watch(repoDir = '/repositories', checkIsRepoReady) {
   const unwatch = () => {
     clearInterval(timer)
     watcher.close()
-    for (const gitDir in dirWatchers) {
+    for (const gitDir of Object.keys(dirWatchers)) {
       dirWatchers[gitDir].add.close()
       dirWatchers[gitDir].unlinkDir.close()
     }
@@ -144,9 +144,8 @@ async function sync(gitDir, checkoutDir) {
       ) {
         log.warn('repo without any branches', checkoutDir)
         return err
-      } else {
-        throw err
       }
+      throw err
     })
   } else {
     await exec(`git clone ${gitDir} ${checkoutDir}`)

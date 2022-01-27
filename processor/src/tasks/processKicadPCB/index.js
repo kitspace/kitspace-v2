@@ -4,6 +4,7 @@ const util = require('util')
 const globule = require('globule')
 
 const { existsAll, findKicadPcbFile } = require('../../utils')
+
 const exec = util.promisify(cp.exec)
 
 function processKicadPCB(job, { checkoutDir, kitspaceYaml, filesDir }) {
@@ -78,7 +79,7 @@ async function _processKicadPCB(job, inputDir, kitspaceYaml, outputDir) {
     const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
     const inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
     return { inputFiles, gerbers }
-  } catch (e) {
+  } catch (error) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'failed', file, error })
     }

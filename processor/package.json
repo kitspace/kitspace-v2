@@ -9,7 +9,9 @@
     "start": "node src/server.js",
     "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
-    "fmt": "prettier --write '*.json' $(find src/ test/ -name '*.js')"
+    "tsc": "tsc",
+    "lint": "eslint src/",
+    "fmt": "prettier '*.json' src/ --write"
   },
   "dependencies": {
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#78df7bb0ebfbdb7beee99d13514b3737f010508f",
@@ -32,8 +34,16 @@
     "xml-element-string": "^1.0.0"
   },
   "devDependencies": {
+    "eslint": "^8.7.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-node": "^0.3.6",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
-    "supertest": "^6.0.1"
+    "prettier": "^2.5.1",
+    "supertest": "^6.0.1",
+    "typescript": "^4.5.5"
   }
 }

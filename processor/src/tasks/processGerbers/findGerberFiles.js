@@ -47,9 +47,10 @@ function findGerberFiles(files, gerberPath) {
 // looking them up in layerTypes
 // e.g. {"whatever-F.Cu.gbr": {type: "copper", side: "top"}}
 function toLayersWithTypes(layerNames, layerTypes) {
-  return layerNames.reduce((result, name) => {
-    return { ...result, [name]: layerTypes[name] }
-  }, {})
+  return layerNames.reduce(
+    (result, name) => ({ ...result, [name]: layerTypes[name] }),
+    {},
+  )
 }
 
 module.exports = findGerberFiles
