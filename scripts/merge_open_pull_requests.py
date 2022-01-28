@@ -22,8 +22,17 @@ def get_pulls():
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
 
+def get_last_bot_comment(issue_number):
+    # XXX won't work if there are more than 100 comments
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments?per_page=100"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    issues = json.loads(response)
+    print(issues)
+
 
 def post_comment(issue_number, message):
+    get_last_bot_comment(issue_number)
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments"
     data = json.dumps({"body": message}).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
