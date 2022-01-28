@@ -122,7 +122,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' || github.ref == 'refs/head/review' }}
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' || github.ref == 'refs/heads/review' }}
     name: Deploy to staging
     runs-on: ubuntu-20.04
     environment: staging
