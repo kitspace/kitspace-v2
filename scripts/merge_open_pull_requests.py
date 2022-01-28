@@ -21,12 +21,11 @@ def get_pulls():
 
 def post_comment(issue_number, message):
     url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/issues/{issue_number}/comments"
-    data = urllib.parse.urlencode({"body": message}).encode()
-    request = urllib.request.Request(url, method="POST", data=data)
+    request = urllib.request.Request(url, method="POST")
     request.add_header("Accept", "application/vnd.github.v3+json")
     request.add_header("Authorization", f"token {GITHUB_TOKEN}")
-    data = urllib.request.urlopen(request).read()
-    print(data)
+    request.add_header("Content-Type", "application/json")
+    data = urllib.request.urlopen(request, json.dumps({"body": message})).read()
     return json.loads(data)
 
 
