@@ -908,6 +908,14 @@ eslint-plugin-import@^2.25.4:
     resolve "^1.20.0"
     tsconfig-paths "^3.12.0"
 
+eslint-plugin-mocha@^10.0.3:
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-mocha/-/eslint-plugin-mocha-10.0.3.tgz#a4ecf2351828e852156316b7e936e7336fc0ff5e"
+  integrity sha512-9mM7PZGxfejpjey+MrG0Cu3Lc8MyA5E2s7eUCdHXgS4SY/H9zLuwa7wVAjnEaoDjbBilA+0bPEB+iMO7lBUPcg==
+  dependencies:
+    eslint-utils "^3.0.0"
+    ramda "^0.27.1"
+
 eslint-plugin-prettier@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-4.0.0.tgz#8b99d1e4b8b24a762472b4567992023619cb98e0"
@@ -3031,11 +3039,6 @@ touch@^3.1.0:
   integrity sha512-WBx8Uy5TLtOSRtIq+M03/sKDrXCLHxwDcquSP2c43Le03/9serjQBIztjRz6FkJez9D/hleyAXTBGLwwZUw9lA==
   dependencies:
     nopt "~1.0.10"
-
-tsc@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/tsc/-/tsc-2.0.4.tgz#5f6499146abea5dca4420b451fa4f2f9345238f5"
-  integrity sha512-fzoSieZI5KKJVBYGvwbVZs/J5za84f2lSTLPYf6AGiIf43tZ3GNrI1QzTLcjtyDDP4aLxd46RTZq1nQxe7+k5Q==
 
 tsconfig-paths@^3.12.0:
   version "3.12.0"

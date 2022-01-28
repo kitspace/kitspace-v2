@@ -4,12 +4,13 @@
     "commonjs": true,
     "es2021": true
   },
-  "extends": ["airbnb-base", "prettier"],
-  "plugins": ["prettier"],
+  "extends": ["airbnb-base", "prettier", "plugin:mocha/recommended"],
+  "plugins": ["prettier", "mocha"],
   "parserOptions": {
     "ecmaVersion": "latest"
   },
   "rules": {
+    "mocha/no-mocha-arrows": "off",
     "no-use-before-define": [
       "error",
       { "functions": false, "classes": true, "variables": true }
