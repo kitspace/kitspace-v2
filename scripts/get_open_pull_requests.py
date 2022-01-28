@@ -2,14 +2,19 @@
 from __future__ import print_function
 import json
 import os
-from urllib.request import urlopen
+import urllib.request
+
 
 def get_pulls():
-    url = (
-        f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/pulls"
-    )
-    data = urlopen(url).read()
+    url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/pulls"
+    request = urllib.request.Request(url, method="GET")
+    request.add_header("Accept", "application/vnd.github.v3+json")
+    data = urllib.request.urlopen(request).read()
     return json.loads(data)
 
 
-print(get_pulls())
+pulls = get_pulls()
+
+for pull in pulls:
+    if not pull['draft']:
+        print(pull['head']['ref'], pull['head']['repo']['clone_url'])
