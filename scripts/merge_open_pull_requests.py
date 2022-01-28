@@ -20,6 +20,14 @@ subprocess.run(
     ["git", "config", "pull.rebase", "false"],
     check=True,
 )
+subprocess.run(
+    ["git", "config", "user.email", "auto-merge-bot@kitspace.dev"],
+    check=True,
+)
+subprocess.run(
+    ["git", "config", "user.name", "Kitspace Auto-Merge Bot"],
+    check=True,
+)
 
 for pull in pulls:
     if not pull["draft"]:
