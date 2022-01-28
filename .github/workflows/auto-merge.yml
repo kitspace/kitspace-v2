@@ -1,0 +1,13 @@
+name: auto-merge
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ github.event.pull_request }}'
