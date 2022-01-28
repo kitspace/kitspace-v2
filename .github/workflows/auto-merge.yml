@@ -12,3 +12,4 @@ jobs:
     steps:
       - run: echo '${{ github.event.pull_request.state }}'
       - run: echo '${{ github.event.pull_request.draft }}'
+      - run: git push origin test-branch-for-auto-merge
