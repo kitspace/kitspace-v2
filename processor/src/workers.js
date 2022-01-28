@@ -54,7 +54,7 @@ function addWorker(name) {
   })
 
   worker.on('progress', (job, progress) => {
-    events.emit(progress.status, progress.file, progress.error)
+    events.emit(`${job.name}:${progress.status}`, progress.file, progress.error)
   })
 
   return worker

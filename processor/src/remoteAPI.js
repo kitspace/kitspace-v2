@@ -21,26 +21,20 @@ function createRemoteAPI(app) {
 
   const processFileStatus = {}
 
-  events.on('in_progress', x => {
-    if (x.startsWith(remoteProcessOutputDir)) {
-      x = path.relative(remoteProcessOutputDir, x)
-      processFileStatus[x] = { status: 'in_progress' }
-      log.debug('in_progress', x)
-    }
+  events.on('remoteAPI:in_progress', x => {
+    x = path.relative(remoteProcessOutputDir, x)
+    processFileStatus[x] = { status: 'in_progress' }
+    log.debug('in_progress', x)
   })
-  events.on('done', x => {
-    if (x.startsWith(remoteProcessOutputDir)) {
-      x = path.relative(remoteProcessOutputDir, x)
-      processFileStatus[x] = { status: 'done' }
-      log.debug('done', x)
-    }
+  events.on('remoteAPI:done', x => {
+    x = path.relative(remoteProcessOutputDir, x)
+    processFileStatus[x] = { status: 'done' }
+    log.debug('done', x)
   })
-  events.on('failed', (x, e) => {
-    if (x.startsWith(remoteProcessOutputDir)) {
-      const error = e.message || e.stderr || 'Unknown error'
-      processFileStatus[x] = { status: 'failed', error }
-      log.debug('failed', x, error)
-    }
+  events.on('remoteAPI:failed', (x, e) => {
+    const error = e.message || e.stderr || 'Unknown error'
+    processFileStatus[x] = { status: 'failed', error }
+    log.debug('failed', x, error)
   })
 
   app.post('/process-file', async (req, res) => {
@@ -71,13 +65,13 @@ function createRemoteAPI(app) {
       await exec(`mkdir -p ${uploadFolder}`)
       await writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
-          processKicadPCBQueue.add('start', {
+          processKicadPCBQueue.add('remoteAPI', {
             checkoutDir: uploadFolder,
             kitspaceYaml: {},
             filesDir: outputDir,
           })
         } else if (ext === '.sch') {
-          processSchematicsQueue.add('start', {
+          processSchematicsQueue.add('remoteAPI', {
             checkoutDir: uploadFolder,
             kitspaceYaml: {},
             filesDir: outputDir,
