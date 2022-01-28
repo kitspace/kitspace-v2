@@ -2,19 +2,32 @@
 from __future__ import print_function
 import json
 import os
+import sys
 import subprocess
 import urllib.request
+import urllib.parse
+
+GITHUB_TOKEN = sys.argv[1]
 
 
 def get_pulls():
     url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/pulls"
     request = urllib.request.Request(url, method="GET")
     request.add_header("Accept", "application/vnd.github.v3+json")
+    request.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
     data = urllib.request.urlopen(request).read()
     return json.loads(data)
 
 
-pulls = get_pulls()
+def post_comment(issue_number, message):
+    url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/issues/{issue_number}/comments"
+    data = urllib.parse({"body": message}).encode()
+    request = urllib.request.Request(url, method="POST", data=data)
+    request.add_header("Accept", "application/vnd.github.v3+json")
+    request.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
+    data = urllib.request.urlopen(request).read()
+    return json.loads(data)
+
 
 subprocess.run(
     ["git", "config", "pull.rebase", "false"],
@@ -29,9 +42,25 @@ subprocess.run(
     check=True,
 )
 
+pulls = get_pulls()
+
 for pull in pulls:
     if not pull["draft"]:
-        subprocess.run(
-            ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
-            check=True,
-        )
+        try:
+            subprocess.run(
+                ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
+                check=True,
+            )
+        except:
+            post_comment(
+                pull["number"],
+                f"Could not merge '{pull['head']['label']}' into 'review' branch.",
+            )
+        else:
+            post_comment(
+                pull["number"],
+                (
+                    f"Merged '{pull['head']['label']}' into 'review' branch. After build it"
+                    "will be deployed to [review.staging.kitspace.dev](https://review.staging.kitspace.dev)."
+                ),
+            )
