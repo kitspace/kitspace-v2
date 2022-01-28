@@ -68,7 +68,6 @@ pulls = get_pulls()
 
 for pull in pulls:
     if not pull["draft"]:
-        print(f"Merging '{pull['head']['label']}'")
         try:
             subprocess.run(
                 ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
@@ -80,6 +79,7 @@ for pull in pulls:
                 f":x: Could not merge this into the 'review' branch.",
             )
         else:
+            print(f"Merged '{pull['head']['label']}'")
             post_comment(
                 pull["number"],
                 (
