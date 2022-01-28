@@ -1,6 +1,9 @@
-name: auto-merge
+name: Auto merge
 on:
+  push:
+    branches: [master]
   pull_request:
+    branches: [master]
     types:
       - opened
       - reopened
@@ -8,14 +11,16 @@ on:
       - ready_for_review
 jobs:
   auto-merge:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - run: echo '${{ github.event.pull_request.state }}'
-      - run: echo '${{ github.event.pull_request.draft }}'
       - uses: actions/checkout@v2
         with:
-          ref: action-auto-merge
+          ref: master
+          # bit confused about what credentials it normally persists and why
+          # they don't work for us, but turning this to false works with what
+          # we do below
           persist-credentials: false
+          # 0 means fetch all commits, which we need for merging
           fetch-depth: 0
       - run: 'scripts/merge_open_pull_requests.py "${{ secrets.GITHUB_TOKEN }}"'
       - run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:review' --force;
