@@ -2,6 +2,7 @@
 from __future__ import print_function
 import json
 import os
+import subprocess
 import urllib.request
 
 
@@ -16,5 +17,7 @@ def get_pulls():
 pulls = get_pulls()
 
 for pull in pulls:
-    if not pull['draft']:
-        print(pull['head']['ref'], pull['head']['repo']['clone_url'])
+    if not pull["draft"]:
+        subprocess.call(
+            ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]]
+        )
