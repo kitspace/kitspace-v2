@@ -54,6 +54,19 @@ function findKicadSchematic(inputDir, files, kitspaceYaml) {
   return files.find(file => file.endsWith('.sch'))
 }
 
+/**
+ *
+ * @param {string} baseDir the file-system path of the folder where repositories are kept
+ * @param {string} gitDir the file-system path for the git repo
+ * @returns {{ownerName: string, projectName: string}} repo details
+ */
+
+function getOwnerAndProject(baseDir, gitDir) {
+  const name = path.relative(baseDir, gitDir).slice(0, -4)
+  const [ownerName, projectName] = name.split('/')
+  return { ownerName, projectName }
+}
+
 module.exports = {
   exists,
   existsAll,
@@ -62,4 +75,5 @@ module.exports = {
   exec,
   writeFile,
   readFile,
+  getOwnerAndProject,
 }

@@ -5,7 +5,7 @@ const path = require('path')
 const jsYaml = require('js-yaml')
 const { Queue } = require('bullmq')
 
-const { exists, exec, readFile } = require('./utils')
+const { exists, exec, readFile, getOwnerAndProject } = require('./utils')
 const { DATA_DIR } = require('./env')
 const { connection } = require('./redisConnection')
 
@@ -33,7 +33,8 @@ function watch(repoDir, checkIsRepoReady) {
     // additionally we ignore any invocations that happen while it's already running
     // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
-      const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
+      const isReady =
+        checkIsRepoReady == null || (await checkIsRepoReady(repoDir, gitDir))
       if (isReady) {
         processRepo(repoDir, gitDir)
       }
@@ -81,7 +82,8 @@ function watch(repoDir, checkIsRepoReady) {
 
 async function processRepo(repoDir, gitDir) {
   // /repositories/user/project.git -> user/project
-  const name = path.relative(repoDir, gitDir).slice(0, -4)
+  const { ownerName, projectName } = getOwnerAndProject(repoDir, gitDir)
+  const name = `${ownerName}/${projectName}`
   const checkoutDir = path.join(DATA_DIR, 'checkout', name)
 
   await sync(gitDir, checkoutDir)
@@ -102,8 +104,19 @@ async function processRepo(repoDir, gitDir) {
     name,
   })
   processBOMQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir })
-  processIBOMQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir, hash, name })
-  processReadmeQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir, name })
+  processIBOMQueue.add('projectAPI', {
+    checkoutDir,
+    kitspaceYaml,
+    filesDir,
+    hash,
+    name,
+  })
+  processReadmeQueue.add('projectAPI', {
+    checkoutDir,
+    kitspaceYaml,
+    filesDir,
+    name,
+  })
 }
 
 async function getKitspaceYaml(checkoutDir) {

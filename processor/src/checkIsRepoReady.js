@@ -1,6 +1,7 @@
 const backOff = require('backoff').exponential
 const log = require('loglevel')
 const { Client } = require('pg')
+const { getOwnerAndProject } = require('./utils')
 
 const { GITEA_DB_CONFIG, MAXIMUM_REPO_MIGRATION_TIME } = require('./env')
 
@@ -35,13 +36,13 @@ client.connect(e => {
  * @param {string} gitDir
  * @returns
  */
-async function checkIsRepoReady(gitDir) {
-  const { repoName, ownerName } = parseRepoGitDir(gitDir)
-  const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, repoName)
+async function checkIsRepoReady(repoDir, gitDir) {
+  const { projectName, ownerName } = getOwnerAndProject(repoDir, gitDir)
+  const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, projectName)
 
   if (isEmpty) {
     log.debug(
-      `Repo: ${ownerName}/${repoName} has no branches, it won't be processed!`,
+      `Repo: ${ownerName}/${projectName} has no branches, it won't be processed.`,
     )
     return false
   }
@@ -54,50 +55,33 @@ async function checkIsRepoReady(gitDir) {
 
     if (status === MigrationStatusIsDone) {
       log.debug(
-        `Repo: ${ownerName}/${repoName} migration is done, the repo is processable.`,
+        `Repo: ${ownerName}/${projectName} migration is done, the repo is processable.`,
       )
       return true
     }
     log.debug(
-      `Repo: ${ownerName}/${repoName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
+      `Repo: ${ownerName}/${projectName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
     )
     return false
   }
 
-  log.debug(`Repo: ${ownerName}/${repoName} is processable.`)
+  log.debug(`Repo: ${ownerName}/${projectName} is processable.`)
   return true
 }
 
 /**
  *
- * @param {string} gitDir the file-system path for the git repo
- * @returns {{ownerName: string, repoName: string}} repo details
- */
-
-function parseRepoGitDir(gitDir) {
-  // path on filesystem is something like: /gitea-data/git/repositories/kaspar/ulx3s.git
-  const p = gitDir.split('/')
-  const ownerName = p[4]
-  const repoName = p[5].slice(0, -4)
-  if (ownerName == null || repoName == null) {
-    throw new Error(`Failed to parse gitDir: ${gitDir}`)
-  }
-  return { ownerName, repoName }
-}
-
-/**
- *
  * @param {string} ownerName
- * @param {string} repoName
+ * @param {string} projectName
  * @returns {Promise<{id: string, isEmpty: boolean, isMirror: boolean}>}
  */
-async function queryGiteaRepoDetails(ownerName, repoName) {
+async function queryGiteaRepoDetails(ownerName, projectName) {
   const repoQuery = {
     name: 'fetch-repository',
     text:
       'select id, is_mirror, is_empty from repository' +
       ' where lower(owner_name)=$1 and lower_name=$2',
-    values: [ownerName, repoName],
+    values: [ownerName, projectName],
   }
 
   const { id, isEmpty, isMirror } = await queryGiteaRepoWithBackoff(repoQuery)
@@ -110,17 +94,17 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
  * @returns
  */
 async function queryGiteaRepoWithBackoff(repoQuery) {
-  const [ownerName, repoName] = repoQuery.values
+  const [ownerName, projectName] = repoQuery.values
 
   const onBackoff = async (num, delay, resolve) => {
     log.debug(
-      `Backoff started, querying repo ${ownerName}/${repoName}: ${num} ${delay}ms`,
+      `Backoff started, querying repo ${ownerName}/${projectName}: ${num} ${delay}ms`,
     )
     const repoQueryResult = await client.query(repoQuery)
 
     if (repoQueryResult.rows.length === 1) {
       const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
-      log.debug(`Repo: ${ownerName}/${repoName} was found`)
+      log.debug(`Repo: ${ownerName}/${projectName} was found`)
       return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
     }
   }
@@ -128,7 +112,7 @@ async function queryGiteaRepoWithBackoff(repoQuery) {
   const onFail = reject =>
     reject(
       new Error(
-        `Repo: ${ownerName}/${repoName} not found after ${MAXIMUM_NUM_OF_RETRIES} trials.`,
+        `Repo: ${ownerName}/${projectName} not found after ${MAXIMUM_NUM_OF_RETRIES} trials.`,
       ),
     )
 
