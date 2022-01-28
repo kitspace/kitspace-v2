@@ -18,6 +18,7 @@ pulls = get_pulls()
 
 for pull in pulls:
     if not pull["draft"]:
-        subprocess.call(
-            ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]]
+        subprocess.run(
+            ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
+            check=True,
         )

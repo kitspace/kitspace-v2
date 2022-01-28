@@ -17,5 +17,5 @@ jobs:
           ref: action-auto-merge
           persist-credentials: false
           fetch-depth: 0
-      - run: scripts/get_open_pull_requests.py
+      - run: scripts/merge_open_pull_requests.py
         #- run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:dev' --force;
