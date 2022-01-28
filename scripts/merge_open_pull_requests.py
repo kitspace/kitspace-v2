@@ -25,7 +25,8 @@ def post_comment(issue_number, message):
     request.add_header("Accept", "application/vnd.github.v3+json")
     request.add_header("Authorization", f"token {GITHUB_TOKEN}")
     request.add_header("Content-Type", "application/json")
-    data = urllib.request.urlopen(request, json.dumps({"body": message})).read()
+    data_to_send = json.dumps({"body": message}).encode("utf-8")
+    data = urllib.request.urlopen(request, data_to_send).read()
     return json.loads(data)
 
 
