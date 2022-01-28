@@ -21,7 +21,7 @@ def get_pulls():
 
 def post_comment(issue_number, message):
     url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/issues/{issue_number}/comments"
-    data = urllib.parse({"body": message}).encode()
+    data = urllib.parse.urlencode({"body": message}).encode()
     request = urllib.request.Request(url, method="POST", data=data)
     request.add_header("Accept", "application/vnd.github.v3+json")
     request.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
