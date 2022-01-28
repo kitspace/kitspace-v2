@@ -14,6 +14,7 @@ jobs:
       - run: echo '${{ github.event.pull_request.draft }}'
       - uses: actions/checkout@v2
         with:
+          ref: master
           persist-credentials: false
           fetch-depth: 0
       - run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:dev' --force;
