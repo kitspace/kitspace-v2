@@ -13,4 +13,4 @@ jobs:
       - run: echo '${{ github.event.pull_request.state }}'
       - run: echo '${{ github.event.pull_request.draft }}'
       - uses: actions/checkout@v2
-      - run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" dev --force;
+      - run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:dev' --force;
