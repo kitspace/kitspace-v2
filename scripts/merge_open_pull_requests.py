@@ -24,7 +24,7 @@ def post_comment(issue_number, message):
     data = urllib.parse.urlencode({"body": message}).encode()
     request = urllib.request.Request(url, method="POST", data=data)
     request.add_header("Accept", "application/vnd.github.v3+json")
-    request.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
+    request.add_header("Authorization", f"token {GITHUB_TOKEN}")
     data = urllib.request.urlopen(request).read()
     return json.loads(data)
 
