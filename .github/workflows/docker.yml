@@ -122,7 +122,7 @@ jobs:
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' }}
+    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' || github.ref == 'refs/head/review' }}
     name: Deploy to staging
     runs-on: ubuntu-20.04
     environment: staging
@@ -189,7 +189,7 @@ jobs:
           GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
-          remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.org
+          remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
           ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
           stack_file_name: docker-compose.yml,docker-compose.deploy.yml
