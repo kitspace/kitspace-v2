@@ -14,7 +14,7 @@ def get_pulls():
     url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/pulls"
     request = urllib.request.Request(url, method="GET")
     request.add_header("Accept", "application/vnd.github.v3+json")
-    request.add_header("Authorization", f"Bearer {GITHUB_TOKEN}")
+    request.add_header("Authorization", f"token {GITHUB_TOKEN}")
     data = urllib.request.urlopen(request).read()
     return json.loads(data)
 
@@ -26,6 +26,7 @@ def post_comment(issue_number, message):
     request.add_header("Accept", "application/vnd.github.v3+json")
     request.add_header("Authorization", f"token {GITHUB_TOKEN}")
     data = urllib.request.urlopen(request).read()
+    print(data)
     return json.loads(data)
 
 
