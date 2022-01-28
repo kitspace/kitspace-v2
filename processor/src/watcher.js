@@ -93,17 +93,17 @@ async function processRepo(repoDir, gitDir) {
 
   const kitspaceYaml = await getKitspaceYaml(checkoutDir)
 
-  writeKitspaceYamlQueue.add('start', { kitspaceYaml, filesDir })
-  processPCBQueue.add('start', {
+  writeKitspaceYamlQueue.add('projectAPI', { kitspaceYaml, filesDir })
+  processPCBQueue.add('projectAPI', {
     checkoutDir,
     kitspaceYaml,
     filesDir,
     hash,
     name,
   })
-  processBOMQueue.add('start', { checkoutDir, kitspaceYaml, filesDir })
-  processIBOMQueue.add('start', { checkoutDir, kitspaceYaml, filesDir, hash, name })
-  processReadmeQueue.add('start', { checkoutDir, kitspaceYaml, filesDir, name })
+  processBOMQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir })
+  processIBOMQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir, hash, name })
+  processReadmeQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir, name })
 }
 
 async function getKitspaceYaml(checkoutDir) {
