@@ -23,18 +23,24 @@ def get_pulls():
     return json.loads(response)
 
 
-def delete_bot_comments(issue_number):
-    # XXX won't work if there are more than 100 comments
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments?per_page=100"
+def get_comments(issue_number, page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments?page={page}&per_page={page_size}"
     request = urllib.request.Request(url, method="GET", headers=HEADERS)
     response = urllib.request.urlopen(request).read()
     comments = json.loads(response)
-    print(f"{len(comments)} comments")
+    if len(comments) == page_size:
+        comments += get_comments(issue_number, page=page + 1)
+    return comments
+
+
+def delete_bot_comments(issue_number):
+    comments = get_comments(issue_number)
     for comment in comments:
         if comment["user"]["login"] == "github-actions[bot]":
             url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/comments/{comment['id']}"
             request = urllib.request.Request(url, method="DELETE", headers=HEADERS)
-            response = urllib.request.urlopen(request).read()
+            urllib.request.urlopen(request)
 
 
 def post_comment(issue_number, message):
@@ -42,8 +48,7 @@ def post_comment(issue_number, message):
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments"
     data = json.dumps({"body": message}).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
-    response = urllib.request.urlopen(request).read()
-    return json.loads(response)
+    urllib.request.urlopen(request)
 
 
 subprocess.run(
@@ -63,6 +68,7 @@ pulls = get_pulls()
 
 for pull in pulls:
     if not pull["draft"]:
+        print(f"Merging '{pull['head']['label']}'")
         try:
             subprocess.run(
                 ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
