@@ -10,8 +10,8 @@
     "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
-    "lint": "eslint src/",
-    "fmt": "prettier '*.json' src/ --write"
+    "lint": "eslint src/ test/",
+    "fmt": "prettier '*.json' src/ test/ --write"
   },
   "dependencies": {
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#78df7bb0ebfbdb7beee99d13514b3737f010508f",
@@ -39,6 +39,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-mocha": "^10.0.3",
     "eslint-plugin-prettier": "^4.0.0",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.6",
