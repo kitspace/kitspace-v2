@@ -13,9 +13,4 @@ jobs:
       - run: echo '${{ github.event.pull_request.state }}'
       - run: echo '${{ github.event.pull_request.draft }}'
       - uses: actions/checkout@v2
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          branch: kaspar-dev
-          force: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" dev --force;
