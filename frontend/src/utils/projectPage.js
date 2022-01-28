@@ -210,6 +210,20 @@ export const hasInteractiveBom = async assetsPath => {
 }
 
 /**
+ * All PCB manufacturers, e.g., aisler, fail to follow redirection for gerbers zip.
+ * @param {string} assetsPath
+ * @param {string} zipPath
+ * @returns {Promise<string>} final location for zip URL
+ */
+export const getZipURLNoRedirect = async (assetsPath, zipPath) => {
+  const branchZipURL = `${assetsPath}/${zipPath}`
+
+  const afterRedirectRes = await fetch(branchZipURL, { method: 'HEAD' })
+
+  return afterRedirectRes.ok ? afterRedirectRes.url : ''
+}
+
+/**
  * Update the contents of kitspace.yaml if it exists or create it.
  * @param {string} selectedFile the path of the file
  * @param {string} kitspaceYAML the contents of `kitspace.yml` as JSON

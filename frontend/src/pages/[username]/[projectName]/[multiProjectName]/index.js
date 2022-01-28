@@ -9,6 +9,7 @@ import {
   hasInteractiveBom,
   getIsProcessingDone,
   getReadme,
+  getZipURLNoRedirect,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
 import Custom404 from '@pages/404'
@@ -55,7 +56,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
     const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
 
     const { zipPath, width, height, layers } = gerberInfo
-    const zipUrl = `${assetsPath}/${zipPath}`
+    const zipUrl = await getZipURLNoRedirect(assetsPath, zipPath)
 
     if (!projectKitspaceYAML) {
       // If there is not multiproject as specified in the url `{username}/{projectName}/{multiProjectName}`
