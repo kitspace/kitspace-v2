@@ -16,6 +16,11 @@ def get_pulls():
 
 pulls = get_pulls()
 
+subprocess.run(
+    ["git", "config", "pull.rebase", "false"],
+    check=True,
+)
+
 for pull in pulls:
     if not pull["draft"]:
         subprocess.run(
