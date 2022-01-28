@@ -55,13 +55,13 @@ for pull in pulls:
         except:
             post_comment(
                 pull["number"],
-                f"Could not merge '{pull['head']['label']}' into 'review' branch.",
+                f":x: Could not merge this into the 'review' branch.",
             )
         else:
             post_comment(
                 pull["number"],
                 (
-                    f"Merged '{pull['head']['label']}' into 'review' branch. After build it"
+                    f":heavy_check_mark: Merged this into the 'review' branch. After build it "
                     "will be deployed to [review.staging.kitspace.dev](https://review.staging.kitspace.dev)."
                 ),
             )
