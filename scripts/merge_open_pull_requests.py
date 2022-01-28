@@ -8,26 +8,27 @@ import urllib.request
 import urllib.parse
 
 GITHUB_TOKEN = sys.argv[1]
+GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
+HEADERS = {
+    "Accept": "application/vnd.github.v3+json",
+    "Authorization": f"token {GITHUB_TOKEN}",
+    "Content-Type": "application/json",
+}
 
 
 def get_pulls():
-    url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/pulls"
-    request = urllib.request.Request(url, method="GET")
-    request.add_header("Accept", "application/vnd.github.v3+json")
-    request.add_header("Authorization", f"token {GITHUB_TOKEN}")
-    data = urllib.request.urlopen(request).read()
-    return json.loads(data)
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/pulls"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    return json.loads(response)
 
 
 def post_comment(issue_number, message):
-    url = f"https://api.github.com/repos/{os.environ['GITHUB_REPOSITORY']}/issues/{issue_number}/comments"
-    request = urllib.request.Request(url, method="POST")
-    request.add_header("Accept", "application/vnd.github.v3+json")
-    request.add_header("Authorization", f"token {GITHUB_TOKEN}")
-    request.add_header("Content-Type", "application/json")
-    data_to_send = json.dumps({"body": message}).encode("utf-8")
-    data = urllib.request.urlopen(request, data_to_send).read()
-    return json.loads(data)
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments"
+    data = json.dumps({"body": message}).encode("utf-8")
+    request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
+    response = urllib.request.urlopen(request).read()
+    return json.loads(response)
 
 
 subprocess.run(
