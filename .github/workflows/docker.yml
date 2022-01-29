@@ -133,6 +133,9 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
+          # 0 means fetch all commits, which we need for "review" branch deploy
+          # reporting
+          fetch-depth: 0
 
       - name: Get commit SHA
         id: sha
@@ -170,6 +173,7 @@ jobs:
           env-file: .env.example
 
       - name: Deploy to ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
+        id: deploy_to_staging
         uses: kitspace/docker-remote-deployment-action@master
         env:
           POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}
@@ -194,6 +198,10 @@ jobs:
           ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
           stack_file_name: docker-compose.yml,docker-compose.deploy.yml
           args: up -d
+
+      - name: Report "review" deploy
+        if: ${{ github.ref == 'refs/heads/review' }}
+        run: scripts/report_auto_merge_deploy.py '${{ steps.deploy_to_staging.outcome }}'
 
   test:
     name: Test E2E
