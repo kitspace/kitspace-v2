@@ -7,7 +7,7 @@ import urllib.parse
 GITHUB_TOKEN = sys.argv[1]
 GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
 GITHUB_RUN_ID = os.environ["GITHUB_RUN_ID"]
-GITHUB_RUN_URL = f"https://github.com/{GITHUB_REPOSITORY}/runs/{GITHUB_RUN_ID}"
+GITHUB_RUN_URL = f"https://github.com/{GITHUB_REPOSITORY}/actions/runs/{GITHUB_RUN_ID}"
 
 HEADERS = {
     "Accept": "application/vnd.github.v3+json",
@@ -50,13 +50,13 @@ def post_comment(issue_number, message):
     urllib.request.urlopen(request)
 
 
-def create_commit_status(sha, state, description):
+def create_commit_status(sha, state, description, target_url=GITHUB_RUN_URL):
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/statuses/{sha}"
     data = json.dumps(
         {
             "state": state,
             "description": description,
-            "target_url": GITHUB_RUN_URL,
+            "target_url": target_url,
             "context": "auto-merge: review",
         }
     ).encode("utf-8")
