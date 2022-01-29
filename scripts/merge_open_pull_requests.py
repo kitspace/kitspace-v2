@@ -9,6 +9,8 @@ import urllib.parse
 
 GITHUB_TOKEN = sys.argv[1]
 GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
+GITHUB_RUN_ID = os.environ["GITHUB_RUN_ID"]
+GITHUB_RUN_URL = "https://github.com/{GITHUB_REPOSITORY}/runs/{GITHUB_RUN_ID}"
 HEADERS = {
     "Accept": "application/vnd.github.v3+json",
     "Authorization": f"token {GITHUB_TOKEN}",
@@ -51,6 +53,20 @@ def post_comment(issue_number, message):
     urllib.request.urlopen(request)
 
 
+def create_commit_status(sha, state, description):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/statuses/{sha}"
+    data = json.dumps(
+        {
+            "state": state,
+            "description": description,
+            "target_url": GITHUB_RUN_URL,
+            "context": "auto-merge",
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
+    urllib.request.urlopen(request)
+
+
 subprocess.run(
     ["git", "config", "pull.rebase", "false"],
     check=True,
@@ -67,23 +83,27 @@ subprocess.run(
 pulls = get_pulls()
 
 for pull in pulls:
-    if not pull["draft"]:
+    if not pull["draft"] and pull["head"] is not None:
+        ref = pull["head"]["ref"]
+        sha = pull["head"]["sha"]
         try:
             subprocess.run(
-                ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
-                check=True,
+                ["git", "pull", pull["head"]["repo"]["clone_url"], ref], check=True
             )
         except:
-            post_comment(
-                pull["number"],
-                f":x: Could not merge this into the 'review' branch.",
+            create_commit_status(
+                sha,
+                "failure",
+                'Could not merge this into the "review" branch.',
             )
         else:
-            print(f"Merged '{pull['head']['label']}'")
-            post_comment(
-                pull["number"],
+            print(f'Merged "{pull["head"]["label"]}"')
+            create_commit_status(
+                sha,
+                "success",
                 (
-                    f":heavy_check_mark: Merged this into the 'review' branch. After build it "
-                    "will be deployed to [review.staging.kitspace.dev](https://review.staging.kitspace.dev)."
+                    ':heavy_check_mark: Merged this into the "review" branch. After build it '
+                    "will be deployed to "
+                    "[review.staging.kitspace.dev](https://review.staging.kitspace.dev)."
                 ),
             )

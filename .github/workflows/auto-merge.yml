@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: master
+          ref: actions-auto-merge
           # bit confused about what credentials it normally persists and why
-          # they don't work for us, but turning this to false works with what
-          # we do below
+          # they don't work for us, but turning this to false works from experience
           persist-credentials: false
           # 0 means fetch all commits, which we need for merging
           fetch-depth: 0
       - run: 'scripts/merge_open_pull_requests.py "${{ secrets.GITHUB_TOKEN }}"'
+      # we use the AUTO_MERGE_BOT_TOKEN personal access token instead of GITHUB_TOKEN so that the push triggers subsequent workflows
       - run: git push "https://${{ secrets.AUTO_MERGE_BOT_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:review' --force;
