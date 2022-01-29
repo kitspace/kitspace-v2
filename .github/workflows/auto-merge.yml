@@ -1,5 +1,4 @@
 name: Auto merge
-# ensure we have write permission to issues for external pull requests (e.g. dependabot)
 on:
   push:
     branches: [master]
@@ -13,8 +12,6 @@ on:
 jobs:
   auto-merge:
     runs-on: ubuntu-20.04
-    permissions:
-      issues: write
     steps:
       - uses: actions/checkout@v2
         with:
