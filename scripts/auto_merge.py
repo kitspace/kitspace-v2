@@ -10,7 +10,7 @@ import urllib.parse
 GITHUB_TOKEN = sys.argv[1]
 GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
 GITHUB_RUN_ID = os.environ["GITHUB_RUN_ID"]
-GITHUB_RUN_URL = "https://github.com/{GITHUB_REPOSITORY}/runs/{GITHUB_RUN_ID}"
+GITHUB_RUN_URL = f"https://github.com/{GITHUB_REPOSITORY}/runs/{GITHUB_RUN_ID}"
 HEADERS = {
     "Accept": "application/vnd.github.v3+json",
     "Authorization": f"token {GITHUB_TOKEN}",
@@ -98,4 +98,4 @@ for pull in pulls:
             )
         else:
             print(f'Merged "{pull["head"]["label"]}"')
-            create_commit_status(sha, "pending", 'Merged into the "review" branch')
+            create_commit_status(sha, "pending", 'Successfully merged into the "review" branch')
