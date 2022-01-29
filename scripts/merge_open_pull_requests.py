@@ -58,9 +58,6 @@ def create_commit_status(sha, state, description):
     data = json.dumps(
         {
             "state": state,
-            "description": description,
-            "target_url": GITHUB_RUN_URL,
-            "context": "auto-merge",
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
