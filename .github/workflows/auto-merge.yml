@@ -1,8 +1,8 @@
-name: Auto merge
+name: Trigger auto-merge
 on:
   push:
     branches: [master]
-  pull_request:
+  pull_request_target:
     branches: [master]
     types:
       - opened
@@ -21,6 +21,8 @@ jobs:
           persist-credentials: false
           # 0 means fetch all commits, which we need for merging
           fetch-depth: 0
-      - run: 'scripts/merge_open_pull_requests.py "${{ secrets.GITHUB_TOKEN }}"'
-      # we use the AUTO_MERGE_BOT_TOKEN personal access token instead of GITHUB_TOKEN so that the push triggers subsequent workflows
+      - run: 'scripts/auto_merge.py "${{ secrets.GITHUB_TOKEN }}"'
+      # we use the AUTO_MERGE_BOT_TOKEN personal access token instead of
+      # GITHUB_TOKEN so that the push triggers subsequent github action
+      # workflows
       - run: git push "https://${{ secrets.AUTO_MERGE_BOT_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:review' --force;
