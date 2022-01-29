@@ -97,7 +97,7 @@ for pull in pulls:
             print(f'Merged "{pull["head"]["label"]}"')
             create_commit_status(
                 sha,
-                "success",
+                "pending",
                 (
                     ':heavy_check_mark: Merged this into the "review" branch. After build it '
                     "will be deployed to "
