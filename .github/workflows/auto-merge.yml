@@ -1,4 +1,7 @@
 name: Auto merge
+# ensure we have write permission to issues for external pull requests (e.g. dependabot)
+permissions:
+  issues: write
 on:
   push:
     branches: [master]
