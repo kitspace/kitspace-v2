@@ -13,9 +13,6 @@ on:
 jobs:
   auto-merge:
     runs-on: ubuntu-20.04
-    permissions:
-      issues: write
-      pull-requests: read
     steps:
       - uses: actions/checkout@v2
         with:
