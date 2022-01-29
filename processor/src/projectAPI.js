@@ -14,29 +14,23 @@ function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   const fileStatus = {}
   const redirects = {}
 
-  events.on('in_progress', x => {
-    if (x.startsWith(filesDir)) {
-      x = path.relative(filesDir, x)
-      fileStatus[x] = { status: 'in_progress' }
-      const headPath = getHeadPath(x)
-      redirects[headPath] = x
-      log.debug('in_progress', x)
-    }
+  events.on('projectAPI:in_progress', x => {
+    x = path.relative(filesDir, x)
+    fileStatus[x] = { status: 'in_progress' }
+    const headPath = getHeadPath(x)
+    redirects[headPath] = x
+    log.debug('in_progress', x)
   })
-  events.on('done', x => {
-    if (x.startsWith(filesDir)) {
-      x = path.relative(filesDir, x)
-      fileStatus[x] = { status: 'done' }
-      log.debug('done', x)
-    }
+  events.on('projectAPI:done', x => {
+    x = path.relative(filesDir, x)
+    fileStatus[x] = { status: 'done' }
+    log.debug('done', x)
   })
-  events.on('failed', (x, e) => {
-    if (x.startsWith(filesDir)) {
-      x = path.relative(filesDir, x)
-      const error = e.message || e.stderr || 'Unknown error'
-      fileStatus[x] = { status: 'failed', error }
-      log.debug('failed', x, error)
-    }
+  events.on('projectAPI:failed', (x, e) => {
+    x = path.relative(filesDir, x)
+    const error = e.message || e.stderr || 'Unknown error'
+    fileStatus[x] = { status: 'failed', error }
+    log.debug('failed', x, error)
   })
 
   const stopWorkers = createWorkers()
