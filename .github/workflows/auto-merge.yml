@@ -23,4 +23,4 @@ jobs:
           # 0 means fetch all commits, which we need for merging
           fetch-depth: 0
       - run: 'scripts/merge_open_pull_requests.py "${{ secrets.GITHUB_TOKEN }}"'
-      - run: git push "https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:review' --force;
+      - run: git push "https://${{ secrets.AUTO_MERGE_BOT_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" 'HEAD:review' --force;
