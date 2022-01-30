@@ -94,6 +94,7 @@ def create_deployment(ref):
             "ref": ref,
             "auto_merge": False,
             "environment": "review.staging.kitspace.dev",
+            "required_contexts": [],
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
