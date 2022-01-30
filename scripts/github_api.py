@@ -95,7 +95,6 @@ def create_deployment(ref):
             "auto_merge": False,
             "environment": "review.staging.kitspace.dev",
             "required_contexts": [],
-            "auto_inactive": False,
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
@@ -134,6 +133,7 @@ def create_deployment_status(deployment_id, state):
             "state": state,
             "log_url": GITHUB_RUN_URL,
             "environment_url": "https://review.staging.kitspace.dev",
+            "auto_inactive": False,
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
