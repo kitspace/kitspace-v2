@@ -211,9 +211,13 @@ jobs:
           stack_file_name: docker-compose.yml,docker-compose.deploy.yml
           args: up -d
 
-      - name: Report "review" deploy
-        if: ${{ github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' '${{ steps.deploy_to_staging.outcome }}'
+      - name: Report "review" deploy failure
+        if: ${{ failure() && github.ref == 'refs/heads/review' }}
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
+
+      - name: Report "review" deploy success
+        if: ${{ success() && github.ref == 'refs/heads/review' }}
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'success'
 
   test:
     name: Test E2E
