@@ -21,6 +21,7 @@ for line in merges:
     if email == "auto-merge-bot@kitspace.dev":
         # always take the second parent of the merge as the sha we are interested in
         sha = line[2]
+        print(state, sha)
         if state == "failure":
             github_api.create_commit_status(
                 sha,
@@ -44,4 +45,5 @@ for line in merges:
                 "pending",
                 "Building images",
             )
-            github_api.create_or_get_deployment(sha)
+            deployment = github_api.create_or_get_deployment(sha)
+            github_api.create_deployment_status(deployment["id"], "pending")
