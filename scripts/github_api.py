@@ -102,19 +102,22 @@ def create_deployment(ref):
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
 
-def get_deployments(ref = "none", page=1):
+def get_deployments(page=1):
     page_size = 30
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev&per_page={page_size}&page={page}"
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?environment=review.staging.kitspace.dev&per_page={page_size}&page={page}"
     request = urllib.request.Request(url, method="GET", headers=HEADERS)
     response = urllib.request.urlopen(request).read()
     deployments = json.loads(response)
     if len(deployments) == page_size:
-        deployments += get_deployments(ref, page + 1)
+        deployments += get_deployments(page + 1)
     return deployments
 
 
 def get_deployment(ref):
-    deployments = get_deployments(ref)
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    deployments = json.loads(response)
     return deployments[0] if len(deployments) > 0 else None
 
 
