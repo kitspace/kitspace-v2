@@ -29,6 +29,8 @@ for line in merges:
                 "Merged but could not be deployed",
             )
             deployment = github_api.get_deployment(sha)
+            if deployment is None:
+                raise Exception("No deployment found")
             github_api.create_deployment_status(deployment["id"], "failure")
         elif state == "success":
             github_api.create_commit_status(
@@ -37,13 +39,14 @@ for line in merges:
                 "Deployed",
                 target_url="https://review.staging.kitspace.dev",
             )
-            deployment = github_api.get_deployment(sha)
-            github_api.create_deployment_status(deployment["id"], "success")
+            github_api.create_success_deployment_status(sha)
         elif state == "pending":
             github_api.create_commit_status(
                 sha,
                 "pending",
                 "Building images",
             )
-            deployment = github_api.create_and_replace_deployment(sha)
+            deployment = github_api.get_deployment(sha)
+            if deployment is None:
+                deployment = github_api.create_deployment(sha)
             github_api.create_deployment_status(deployment["id"], "pending")

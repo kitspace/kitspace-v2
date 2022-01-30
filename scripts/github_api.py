@@ -111,11 +111,14 @@ def get_deployment(ref):
     return deployments[0] if len(deployments) > 0 else None
 
 
-def create_and_replace_deployment(ref):
+def create_success_deployment_status(ref):
+    # set previous deploys as inactive and then set ours to "success"
+    # this is similar to "auto_inactive" behaviour but works for multiple refs
     deployment = get_deployment(ref)
     if deployment is not None:
         create_deployment_status(deployment["id"], "inactive")
-    return create_deployment(ref)
+    deployment = create_deployment(ref)
+    create_deployment_status(deployment["id"], "success")
 
 
 def create_deployment_status(deployment_id, state):
