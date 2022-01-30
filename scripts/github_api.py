@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
-from __future__ import print_function
-import json
 import os
 import sys
-import subprocess
+import json
 import urllib.request
 import urllib.parse
 
 GITHUB_TOKEN = sys.argv[1]
 GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
+GITHUB_RUN_ID = os.environ["GITHUB_RUN_ID"]
+GITHUB_RUN_URL = f"https://github.com/{GITHUB_REPOSITORY}/actions/runs/{GITHUB_RUN_ID}"
+
 HEADERS = {
     "Accept": "application/vnd.github.v3+json",
     "Authorization": f"token {GITHUB_TOKEN}",
@@ -44,46 +44,44 @@ def delete_bot_comments(issue_number):
 
 
 def post_comment(issue_number, message):
-    delete_bot_comments(issue_number)
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/issues/{issue_number}/comments"
     data = json.dumps({"body": message}).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
     urllib.request.urlopen(request)
 
 
-subprocess.run(
-    ["git", "config", "pull.rebase", "false"],
-    check=True,
-)
-subprocess.run(
-    ["git", "config", "user.email", "auto-merge-bot@kitspace.dev"],
-    check=True,
-)
-subprocess.run(
-    ["git", "config", "user.name", "Kitspace Auto-Merge Bot"],
-    check=True,
-)
+def get_commit_statuses(sha, page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/commits/{sha}/statuses?page={page}&per_page={page_size}"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    statuses = json.loads(response)
+    if len(statuses) == page_size:
+        statuses += get_commit_statuses(sha, page=page + 1)
+    return statuses
 
-pulls = get_pulls()
 
-for pull in pulls:
-    if not pull["draft"]:
-        try:
-            subprocess.run(
-                ["git", "pull", pull["head"]["repo"]["clone_url"], pull["head"]["ref"]],
-                check=True,
-            )
-        except:
-            post_comment(
-                pull["number"],
-                f":x: Could not merge this into the 'review' branch.",
-            )
-        else:
-            print(f"Merged '{pull['head']['label']}'")
-            post_comment(
-                pull["number"],
-                (
-                    f":heavy_check_mark: Merged this into the 'review' branch. After build it "
-                    "will be deployed to [review.staging.kitspace.dev](https://review.staging.kitspace.dev)."
-                ),
-            )
+def has_success_commit_status(sha):
+    statuses = get_commit_statuses(sha)
+    for status in statuses:
+        if status["context"] == "auto-merge: review" and status["state"] == "success":
+            return True
+    return False
+
+
+def create_commit_status(sha, state, description, target_url=GITHUB_RUN_URL):
+    # don't replace a "success" status with "pending"
+    if state == "pending" and has_success_commit_status(sha):
+        return
+
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/statuses/{sha}"
+    data = json.dumps(
+        {
+            "state": state,
+            "description": description,
+            "target_url": target_url,
+            "context": "auto-merge: review",
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
+    urllib.request.urlopen(request)

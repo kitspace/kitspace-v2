@@ -3,6 +3,7 @@
     - abdo-dev
     - kaspar-dev
     - master
+    - review
   roles:
     - staging_server
 
