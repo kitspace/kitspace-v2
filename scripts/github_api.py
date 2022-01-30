@@ -85,3 +85,39 @@ def create_commit_status(sha, state, description, target_url=GITHUB_RUN_URL):
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
     urllib.request.urlopen(request)
+
+
+def create_deployement(ref):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments"
+    data = json.dumps(
+        {
+            "ref": ref,
+            "auto_merge": False,
+            "environment": "review.staging.kitspace.dev",
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
+    response = urllib.request.urlopen(request).read()
+    return json.loads(response)
+
+
+def get_deployment(ref):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    deployments = json.loads(response)
+    return deployments[0] if len(deployments) > 0 else None
+
+
+def create_deployment_status(deployment_id, state):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}/statuses"
+    data = json.dumps(
+        {
+            "state": state,
+            "log_url": GITHUB_RUN_URL,
+            "environment_url": "https://review.staging.kitspace.dev",
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
+    response = urllib.request.urlopen(request).read()
+    return json.loads(response)
