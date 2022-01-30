@@ -95,6 +95,7 @@ def create_deployment(ref):
             "auto_merge": False,
             "environment": "review.staging.kitspace.dev",
             "required_contexts": [],
+            "auto_inactive": False,
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
@@ -110,11 +111,11 @@ def get_deployment(ref):
     return deployments[0] if len(deployments) > 0 else None
 
 
-def create_or_get_deployment(ref):
+def create_and_replace_deployment(ref):
     deployment = get_deployment(ref)
-    if deployment is None:
-        deployment = create_deployment(ref)
-    return deployment
+    if deployment is not None:
+        create_deployment_status(deployment["id"], "inactive")
+    return create_deployment(ref)
 
 
 def create_deployment_status(deployment_id, state):
