@@ -17,7 +17,7 @@ jobs:
 
       - name: Report "review" deploy pending
         if: ${{ github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py 'pending'
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
 
       - name: Get commit SHA
         id: sha
@@ -130,7 +130,7 @@ jobs:
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py 'failure'
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
 
 
   deploy:
@@ -213,7 +213,7 @@ jobs:
 
       - name: Report "review" deploy
         if: ${{ github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py '${{ steps.deploy_to_staging.outcome }}'
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' '${{ steps.deploy_to_staging.outcome }}'
 
   test:
     name: Test E2E

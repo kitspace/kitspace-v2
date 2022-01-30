@@ -13,7 +13,7 @@ merges = (
     .splitlines()
 )
 
-state = sys.argv[1]
+state = sys.argv[2]
 
 for line in merges:
     line = line.split(" ")
