@@ -56,7 +56,6 @@ for line in merges:
 if state == "success":
     # mark any previous deployments as inactive and delete them
     deployments = github_api.get_deployments()
-    print("deployments", deployments)
     for deployment in deployments:
         print('deleting', deployment["id"], deployment["ref"])
         github_api.create_deployment_status(deployment["id"], "inactive")
