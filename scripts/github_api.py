@@ -101,6 +101,16 @@ def create_deployment(ref):
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
 
+def get_deployments(page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?environment=review.staging.kitspace.dev&per_page={page_size}&page={page}"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    deployments = json.loads(response)
+    if len(deployments) == page_size:
+        deployments += get_deployments(page + 1)
+    return deployments
+
 
 def get_deployment(ref):
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev"
@@ -110,11 +120,10 @@ def get_deployment(ref):
     return deployments[0] if len(deployments) > 0 else None
 
 
-def create_or_get_deployment(ref):
-    deployment = get_deployment(ref)
-    if deployment is None:
-        deployment = create_deployment(ref)
-    return deployment
+def delete_deployment(deployment_id):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}"
+    request = urllib.request.Request(url, method="DELETE", headers=HEADERS)
+    urllib.request.urlopen(request)
 
 
 def create_deployment_status(deployment_id, state):
@@ -124,6 +133,7 @@ def create_deployment_status(deployment_id, state):
             "state": state,
             "log_url": GITHUB_RUN_URL,
             "environment_url": "https://review.staging.kitspace.dev",
+            "auto_inactive": False,
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
