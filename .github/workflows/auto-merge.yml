@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: actions-auto-merge-use-deployment
+          ref: master
           # bit confused about what credentials it normally persists and why
           # they don't work for us, but turning this to false works from experience
           persist-credentials: false
