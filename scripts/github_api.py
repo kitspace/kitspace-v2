@@ -87,7 +87,7 @@ def create_commit_status(sha, state, description, target_url=GITHUB_RUN_URL):
     urllib.request.urlopen(request)
 
 
-def create_deployement(ref):
+def create_deployment(ref):
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments"
     data = json.dumps(
         {
@@ -107,6 +107,13 @@ def get_deployment(ref):
     response = urllib.request.urlopen(request).read()
     deployments = json.loads(response)
     return deployments[0] if len(deployments) > 0 else None
+
+
+def create_or_get_deployment(ref):
+    deployment = get_deployment(ref)
+    if deployment is None:
+        deployment = create_deployment(ref)
+    return deployment
 
 
 def create_deployment_status(deployment_id, state):
