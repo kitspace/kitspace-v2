@@ -50,7 +50,30 @@ def post_comment(issue_number, message):
     urllib.request.urlopen(request)
 
 
+def get_commit_statuses(sha, page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/commits/{sha}/statuses?page={page}&per_page={page_size}"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    statuses = json.loads(response)
+    if len(statuses) == page_size:
+        statuses += get_commit_statuses(sha, page=page + 1)
+    return statuses
+
+
+def has_success_commit_status(sha):
+    statuses = get_commit_statuses(sha)
+    for status in statuses:
+        if status["context"] == "auto-merge: review" and status["state"] == "success":
+            return True
+    return False
+
+
 def create_commit_status(sha, state, description, target_url=GITHUB_RUN_URL):
+    # don't replace a "success" status with "pending"
+    if state == "pending" and has_success_commit_status(sha):
+        return
+
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/statuses/{sha}"
     data = json.dumps(
         {
