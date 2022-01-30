@@ -102,23 +102,26 @@ def create_deployment(ref):
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
 
-
-def get_deployment(ref):
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev"
+def get_deployments(ref = "none", page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev&per_page={page_size}&page={page}"
     request = urllib.request.Request(url, method="GET", headers=HEADERS)
     response = urllib.request.urlopen(request).read()
     deployments = json.loads(response)
+    if len(deployments) == page_size:
+        deployments += get_deployments(ref, page + 1)
+    return deployments
+
+
+def get_deployment(ref):
+    deployments = get_deployments(ref)
     return deployments[0] if len(deployments) > 0 else None
 
 
-def create_success_deployment_status(ref):
-    # set previous deploys as inactive and then set ours to "success"
-    # this is similar to "auto_inactive" behaviour but works for multiple refs
-    deployment = get_deployment(ref)
-    if deployment is not None:
-        create_deployment_status(deployment["id"], "inactive")
-    deployment = create_deployment(ref)
-    create_deployment_status(deployment["id"], "success")
+def delete_deployment(deployment_id):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}"
+    request = urllib.request.Request(url, method="DELETE", headers=HEADERS)
+    urllib.request.urlopen(request)
 
 
 def create_deployment_status(deployment_id, state):

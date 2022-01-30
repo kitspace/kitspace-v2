@@ -15,12 +15,15 @@ merges = (
 
 state = sys.argv[2]
 
+shas = []
+
 for line in merges:
     line = line.split(" ")
     email = line[0]
     if email == "auto-merge-bot@kitspace.dev":
         # always take the second parent of the merge as the sha we are interested in
         sha = line[2]
+        shas.append(sha)
         print(state, sha)
         if state == "failure":
             github_api.create_commit_status(
@@ -39,7 +42,6 @@ for line in merges:
                 "Deployed",
                 target_url="https://review.staging.kitspace.dev",
             )
-            github_api.create_success_deployment_status(sha)
         elif state == "pending":
             github_api.create_commit_status(
                 sha,
@@ -50,3 +52,13 @@ for line in merges:
             if deployment is None:
                 deployment = github_api.create_deployment(sha)
             github_api.create_deployment_status(deployment["id"], "pending")
+
+if state == "success":
+    # mark any previous deployments as inactive and delete them
+    deployments = github_api.get_deployments()
+    for deployment in deployments:
+        github_api.create_deployment_status(deployment["id"], "inactive")
+        github_api.delete_deployment(deployment["id"])
+    for sha in shas:
+        deployment = github_api.create_deployment(sha)
+        github_api.create_deployment_status(deployment["id"], "success")
