@@ -14,6 +14,9 @@ jobs:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
     name: Build images
     runs-on: ubuntu-20.04
+    outputs:
+      sha_short: ${{ steps.sha.outputs.sha_short }}
+      gitea_sha_short: ${{ steps.sha.outputs.gitea_sha_short }}
 
     steps:
       - name: Check out the repo
@@ -161,14 +164,6 @@ jobs:
           # reporting
           fetch-depth: 0
 
-      - name: Get commit SHA
-        id: sha
-        shell: bash
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-
       - name: Get branch name
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
@@ -211,10 +206,10 @@ jobs:
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: kaspar@kitspace.org
           COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
           remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
@@ -257,14 +252,6 @@ jobs:
         with:
           env-file: .env.example
 
-      - name: Get commit SHA
-        id: sha
-        shell: bash
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-
       - name: Install Microsoft Edge
         if: ${{ matrix.browser == 'edge' }}
         timeout-minutes: 10
@@ -284,10 +271,10 @@ jobs:
         shell: bash
         timeout-minutes: 5
         env:
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
 
@@ -304,10 +291,10 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MOZ_FORCE_DISABLE_E10S: 1
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           # wait for 2 minutes for the server to respond
@@ -324,26 +311,14 @@ jobs:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
     needs:
+      - build
       - test
 
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - name: Get commit SHA
-        id: sha
-        shell: bash
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-
       - name: Tag frontend:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/frontend/manifests/${{ steps.sha.outputs.sha_short }} \
+            https://ghcr.io/v2/kitspace/frontend/manifests/${{ needs.build.outputs.sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
@@ -357,7 +332,7 @@ jobs:
       - name: Tag processor:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/processor/manifests/${{ steps.sha.outputs.sha_short }} \
+            https://ghcr.io/v2/kitspace/processor/manifests/${{ needs.build.outputs.sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
@@ -371,7 +346,7 @@ jobs:
       - name: Tag nginx:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.sha_short }} \
+            https://ghcr.io/v2/kitspace/nginx/manifests/${{ needs.build.outputs.sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
@@ -385,7 +360,7 @@ jobs:
       - name: Tag gitea:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/gitea/manifests/${{ steps.sha.outputs.gitea_sha_short }} \
+            https://ghcr.io/v2/kitspace/gitea/manifests/${{ needs.build.outputs.gitea_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
