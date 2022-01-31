@@ -1,8 +1,17 @@
 name: Docker
 
-on: [push]
+on:
+  push:
+    branches: [master, abdo-dev, kaspar-dev, review]
+  # using "pull_request_target" instead of "pull_request" runs this in the
+  # "master" branch context and makes secrets work with external pull requests
+  # (incl. dependabot). we check for author_association below so first-time
+  # contributors can't run this workflow.
+  pull_request_target:
+    branches: [master]
 jobs:
   build:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
     name: Build images
     runs-on: ubuntu-20.04
 
@@ -10,6 +19,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
+          # check out the pull-request when triggered by "pull_request_target",
+          # when triggered on "push" this is empty and checks out the branch
+          # pushed to
+          ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'recursive'
           # 0 means fetch all commits, which we need for "review" branch deploy
           # reporting
@@ -131,7 +144,6 @@ jobs:
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
-
 
   deploy:
     if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' || github.ref == 'refs/heads/review' }}
