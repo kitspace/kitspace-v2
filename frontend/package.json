@@ -27,7 +27,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
-    "next": "^12.0.5",
+    "next": "^12.0.9",
     "next-composition": "^1.0.0",
     "node-sass": "^4.13.0",
     "prop-types": "^15.7.2",
