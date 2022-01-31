@@ -15,7 +15,9 @@ jobs:
     name: Build images
     runs-on: ubuntu-20.04
     outputs:
-      sha_short: ${{ steps.sha.outputs.sha_short }}
+      frontend_sha_short: ${{ steps.sha.outputs.frontend_sha_short }}
+      processor_sha_short: ${{ steps.sha.outputs.processor_sha_short }}
+      nginx_sha_short: ${{ steps.sha.outputs.nginx_sha_short }}
       gitea_sha_short: ${{ steps.sha.outputs.gitea_sha_short }}
 
     steps:
@@ -39,7 +41,9 @@ jobs:
         id: sha
         shell: bash
         run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=frontend_sha_short::$(git log --format=%h -n1 frontend/)"
+          echo "::set-output name=processor_sha_short::$(git log --format=%h -n1 processor/)"
+          echo "::set-output name=nginx_sha_short::$(git log --format=%h -n1 nginx/)"
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
@@ -72,48 +76,57 @@ jobs:
       - name: Pull frontend image
         id: pull_frontend
         shell: bash
-        run: docker pull ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
+        run: docker pull ghcr.io/kitspace/frontend:${{ steps.sha.outputs.frontend_sha_short }}
         continue-on-error: true
 
       - name: Build and push frontend
         # If the previous step failed, i.e., there's no image tagged:
-        # frontend:${{gitea_sha_short}} in ghcr, build image and push it
+        # frontend:${{frontend_sha_short}} in ghcr, build image and push it
         if: steps.pull_frontend.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
           push: true
-          tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.frontend_sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Pull processor image
         id: pull_processor
         shell: bash
-        run: docker pull ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
+        run: docker pull ghcr.io/kitspace/processor:${{ steps.sha.outputs.processor_sha_short }}
         continue-on-error: true
 
       - name: Build and push processor
         # If the previous step failed, i.e., there's no image tagged:
-        # processor:${{gitea_sha_short}} in ghcr, build image and push it
+        # processor:${{processor_sha_short}} in ghcr, build image and push it
         if: steps.pull_processor.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
           context: ./processor
           file: ./processor/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.processor_sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
+      - name: Pull nginx image
+        id: pull_nginx
+        shell: bash
+        run: docker pull ghcr.io/kitspace/processor:${{ steps.sha.outputs.nginx_sha_short }}
+        continue-on-error: true
+
       - name: Build and push nginx
+        # If the previous step failed, i.e., there's no image tagged:
+        # processor:${{nginx_sha_short}} in ghcr, build image and push it
+        if: steps.pull_nginx.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
           context: ./nginx
           file: ./nginx/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.nginx_sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -206,9 +219,9 @@ jobs:
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: kaspar@kitspace.org
           COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.nginx_sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
@@ -271,9 +284,9 @@ jobs:
         shell: bash
         timeout-minutes: 5
         env:
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.nginx_sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
@@ -291,9 +304,9 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MOZ_FORCE_DISABLE_E10S: 1
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.nginx_sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
@@ -318,7 +331,7 @@ jobs:
       - name: Tag frontend:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/frontend/manifests/${{ needs.build.outputs.sha_short }} \
+            https://ghcr.io/v2/kitspace/frontend/manifests/${{ needs.build.outputs.frontend_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
@@ -332,7 +345,7 @@ jobs:
       - name: Tag processor:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/processor/manifests/${{ needs.build.outputs.sha_short }} \
+            https://ghcr.io/v2/kitspace/processor/manifests/${{ needs.build.outputs.processor_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
@@ -346,7 +359,7 @@ jobs:
       - name: Tag nginx:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/nginx/manifests/${{ needs.build.outputs.sha_short }} \
+            https://ghcr.io/v2/kitspace/nginx/manifests/${{ needs.build.outputs.nginx_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
