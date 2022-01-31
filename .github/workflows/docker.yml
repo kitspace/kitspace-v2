@@ -80,8 +80,8 @@ jobs:
         continue-on-error: true
 
       - name: Build and push frontend
-        # If the previous step failed, i.e., there's no image tagged:
-        # frontend:${{frontend_sha_short}} in ghcr, build image and push it
+        # If the previous step failed, i.e. no image tagged with this sha,
+        # build the image and push it
         if: steps.pull_frontend.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
@@ -99,8 +99,8 @@ jobs:
         continue-on-error: true
 
       - name: Build and push processor
-        # If the previous step failed, i.e., there's no image tagged:
-        # processor:${{processor_sha_short}} in ghcr, build image and push it
+        # If the previous step failed, i.e. no image tagged with this sha,
+        # build the image and push it
         if: steps.pull_processor.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
@@ -118,8 +118,8 @@ jobs:
         continue-on-error: true
 
       - name: Build and push nginx
-        # If the previous step failed, i.e., there's no image tagged:
-        # processor:${{nginx_sha_short}} in ghcr, build image and push it
+        # If the previous step failed, i.e. no image tagged with this sha,
+        # build the image and push it
         if: steps.pull_nginx.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
@@ -137,8 +137,8 @@ jobs:
         continue-on-error: true
 
       - name: Build and push gitea
-        # If the previous step failed, i.e., there's no image tagged
-        # gitea:${{gitea_sha_short}} in ghcr, build image and push it
+        # If the previous step failed, i.e. no image tagged with this sha,
+        # build the image and push it
         if: steps.pull_gitea.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
