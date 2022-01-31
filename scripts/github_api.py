@@ -16,11 +16,15 @@ HEADERS = {
 }
 
 
-def get_pulls():
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/pulls"
+def get_pulls(page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/pulls?page={page}&per_page={page_size}"
     request = urllib.request.Request(url, method="GET", headers=HEADERS)
     response = urllib.request.urlopen(request).read()
-    return json.loads(response)
+    pulls = json.loads(response)
+    if len(pulls) == page_size:
+        pulls += get_pulls(page=page + 1)
+    return pulls
 
 
 def get_comments(issue_number, page=1):
@@ -61,17 +65,20 @@ def get_commit_statuses(sha, page=1):
     return statuses
 
 
-def has_success_commit_status(sha):
-    statuses = get_commit_statuses(sha)
-    for status in statuses:
-        if status["context"] == "auto-merge: review" and status["state"] == "success":
-            return True
-    return False
+def get_last_commit_status_state(sha):
+    states = [
+        status["state"]
+        for status in get_commit_statuses(sha)
+        if status["context"] == "auto-merge: review"
+    ]
+    if len(states) == 0:
+        return None
+    return states[0]
 
 
 def create_commit_status(sha, state, description, target_url=GITHUB_RUN_URL):
     # don't replace a "success" status with "pending"
-    if state == "pending" and has_success_commit_status(sha):
+    if (state == "pending") and (get_last_commit_status_state(sha) == "success"):
         return
 
     url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/statuses/{sha}"
@@ -101,27 +108,27 @@ def create_deployment(ref):
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
 
-def get_deployments(page=1):
+
+def get_deployments(ref="", page=1):
     page_size = 30
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?environment=review.staging.kitspace.dev&per_page={page_size}&page={page}"
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?environment=review.staging.kitspace.dev&ref={ref}&per_page={page_size}&page={page}"
     request = urllib.request.Request(url, method="GET", headers=HEADERS)
     response = urllib.request.urlopen(request).read()
     deployments = json.loads(response)
     if len(deployments) == page_size:
-        deployments += get_deployments(page + 1)
+        deployments += get_deployments(ref, page + 1)
     return deployments
 
 
 def get_deployment(ref):
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments?ref={ref}&environment=review.staging.kitspace.dev"
-    request = urllib.request.Request(url, method="GET", headers=HEADERS)
-    response = urllib.request.urlopen(request).read()
-    deployments = json.loads(response)
+    deployments = get_deployments(ref)
     return deployments[0] if len(deployments) > 0 else None
 
 
 def delete_deployment(deployment_id):
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}"
+    url = (
+        f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}"
+    )
     request = urllib.request.Request(url, method="DELETE", headers=HEADERS)
     urllib.request.urlopen(request)
 
@@ -139,3 +146,18 @@ def create_deployment_status(deployment_id, state):
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
+
+
+def get_deployment_statuses(deployment_id):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}/statuses"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    statuses = json.loads(response)
+    return statuses
+
+
+def get_last_deployment_status_state(deployment_id):
+    statuses = get_deployment_statuses(deployment_id)
+    if len(statuses) == 0:
+        return None
+    return statuses[0]["state"]

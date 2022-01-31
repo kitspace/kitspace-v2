@@ -2,7 +2,10 @@ name: Trigger auto-merge
 on:
   push:
     branches: [master]
-  pull_request:
+  # we use "pull_request_target" instead of "pull_request" so this event
+  # works with dependabot pull requests. this is only the trigger to the
+  # merge on all pull-requests. we still only merge in trusted pull-requests.
+  pull_request_target:
     branches: [master]
     types:
       - opened

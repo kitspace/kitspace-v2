@@ -35,13 +35,6 @@ for line in merges:
             if deployment is None:
                 raise Exception("No deployment found")
             github_api.create_deployment_status(deployment["id"], "failure")
-        elif state == "success":
-            github_api.create_commit_status(
-                sha,
-                "success",
-                "Deployed",
-                target_url="https://review.staging.kitspace.dev",
-            )
         elif state == "pending":
             github_api.create_commit_status(
                 sha,
@@ -51,17 +44,23 @@ for line in merges:
             deployment = github_api.get_deployment(sha)
             if deployment is None:
                 deployment = github_api.create_deployment(sha)
-            github_api.create_deployment_status(deployment["id"], "pending")
+                github_api.create_deployment_status(deployment["id"], "pending")
+            elif (
+                github_api.get_last_deployment_status_state(deployment["id"])
+                != "success"
+            ):
+                github_api.create_deployment_status(deployment["id"], "pending")
+
 
 if state == "success":
     # mark any previous deployments as inactive and delete them
     deployments = github_api.get_deployments()
-    print("deployments", deployments)
     for deployment in deployments:
-        print('deleting', deployment["id"], deployment["ref"])
+        print("deleting", deployment["id"], deployment["ref"])
         github_api.create_deployment_status(deployment["id"], "inactive")
         github_api.delete_deployment(deployment["id"])
     for sha in shas:
         print("posting", sha, "success")
+        github_api.create_commit_status(sha, "success", "Deployed")
         deployment = github_api.create_deployment(sha)
         github_api.create_deployment_status(deployment["id"], "success")

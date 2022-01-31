@@ -18,7 +18,8 @@ subprocess.run(
 pulls = github_api.get_pulls()
 
 for pull in pulls:
-    if not pull["draft"] and pull["head"] is not None:
+    is_allowed = pull["author_association"] == "MEMBER" or pull["author_association"] == "CONTRIBUTOR"
+    if is_allowed and not pull["draft"] and pull["head"] is not None:
         ref = pull["head"]["ref"]
         sha = pull["head"]["sha"]
         try:
