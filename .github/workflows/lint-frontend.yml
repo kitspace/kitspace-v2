@@ -1,6 +1,13 @@
 name: Lint frontend
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'frontend/**'
+
+defaults:
+  run:
+    working-directory: frontend
 
 jobs:
   lint_frontend:
@@ -12,5 +19,5 @@ jobs:
           node-version: '14'
 
       - uses: actions/checkout@v2
-      - run: 'cd frontend && yarn install'
-      - run: 'cd frontend && yarn lint'
+      - run: 'yarn install'
+      - run: 'yarn lint'

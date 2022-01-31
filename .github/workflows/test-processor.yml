@@ -1,6 +1,9 @@
 name: Test processor
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'processor/**'
 
 jobs:
   test_processor:
