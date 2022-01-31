@@ -18,13 +18,17 @@ subprocess.run(
 pulls = github_api.get_pulls()
 
 for pull in pulls:
-    is_allowed = pull["author_association"] == "MEMBER" or pull["author_association"] == "CONTRIBUTOR"
+    is_allowed = (
+        pull["author_association"] == "MEMBER"
+        or pull["author_association"] == "CONTRIBUTOR"
+    )
     if is_allowed and not pull["draft"] and pull["head"] is not None:
         ref = pull["head"]["ref"]
         sha = pull["head"]["sha"]
         try:
             subprocess.run(
-                ["git", "pull", pull["head"]["repo"]["clone_url"], ref], check=True
+                ["git", "pull", pull["head"]["repo"]["clone_url"], ref, "--no-ff"],
+                check=True,
             )
         except:
             github_api.create_commit_status(
