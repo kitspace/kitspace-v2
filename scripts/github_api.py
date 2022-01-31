@@ -16,11 +16,15 @@ HEADERS = {
 }
 
 
-def get_pulls():
-    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/pulls"
+def get_pulls(page=1):
+    page_size = 30
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/pulls?page={page}&per_page={page_size}"
     request = urllib.request.Request(url, method="GET", headers=HEADERS)
     response = urllib.request.urlopen(request).read()
-    return json.loads(response)
+    pulls = json.loads(response)
+    if len(pulls) == page_size:
+        pulls += get_pulls(page=page + 1)
+    return pulls
 
 
 def get_comments(issue_number, page=1):
