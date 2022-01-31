@@ -142,3 +142,18 @@ def create_deployment_status(deployment_id, state):
     request = urllib.request.Request(url, method="POST", headers=HEADERS, data=data)
     response = urllib.request.urlopen(request).read()
     return json.loads(response)
+
+
+def get_deployment_statuses(deployment_id):
+    url = f"https://api.github.com/repos/{GITHUB_REPOSITORY}/deployments/{deployment_id}/statuses"
+    request = urllib.request.Request(url, method="GET", headers=HEADERS)
+    response = urllib.request.urlopen(request).read()
+    statuses = json.loads(response)
+    return statuses
+
+
+def get_last_deployment_status_state(deployment_id):
+    statuses = get_deployment_statuses(deployment_id)
+    if len(statuses) == 0:
+        return None
+    return statuses[0]["state"]
