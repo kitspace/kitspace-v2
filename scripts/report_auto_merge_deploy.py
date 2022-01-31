@@ -61,11 +61,6 @@ if state == "success":
         github_api.delete_deployment(deployment["id"])
     for sha in shas:
         print("posting", sha, "success")
-        github_api.create_commit_status(
-            sha,
-            "success",
-            "Deployed",
-            target_url="https://review.staging.kitspace.dev",
-        )
+        github_api.create_commit_status(sha, "success", "Deployed")
         deployment = github_api.create_deployment(sha)
         github_api.create_deployment_status(deployment["id"], "success")
