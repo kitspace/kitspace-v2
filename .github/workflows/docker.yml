@@ -146,7 +146,7 @@ jobs:
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
 
   deploy:
-    if: ${{ github.event_name == "push" }}
+    if: ${{ github.event_name == 'push' }}
     name: Deploy to staging
     runs-on: ubuntu-20.04
     environment: staging
