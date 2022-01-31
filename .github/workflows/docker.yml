@@ -114,7 +114,7 @@ jobs:
       - name: Pull nginx image
         id: pull_nginx
         shell: bash
-        run: docker pull ghcr.io/kitspace/processor:${{ steps.sha.outputs.nginx_sha_short }}
+        run: docker pull ghcr.io/kitspace/nginx:${{ steps.sha.outputs.nginx_sha_short }}
         continue-on-error: true
 
       - name: Build and push nginx
