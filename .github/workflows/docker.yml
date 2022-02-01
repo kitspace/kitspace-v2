@@ -35,23 +35,18 @@ jobs:
           submodules: 'recursive'
 
       - name: Get commit SHA
-
-        if: ${{ matrix.service != 'gitea' }}
         id: sha
         shell: bash
         run: |
-          echo "::set-output name=${{ matrix.service }}_sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
-          echo "::set-output name=sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
-
-      - name: Get commit SHA
-        if: ${{ matrix.service == 'gitea' }}
-        id: sha
-        shell: bash
-        run: |
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-          echo "::set-output name=sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+          if [ '${{ matrix.service }}' == 'gitea' ]; then
+            echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+              | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+            echo "::set-output name=sha_short::$( git submodule foreach 'echo "$sha1"' \
+              | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+          else
+            echo "::set-output name=${{ matrix.service }}_sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
+            echo "::set-output name=sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
