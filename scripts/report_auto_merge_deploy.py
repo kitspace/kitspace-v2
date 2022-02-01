@@ -33,13 +33,13 @@ for line in merges:
             )
             deployment = github_api.get_deployment(sha)
             if deployment is None:
-                raise Exception("No deployment found")
+                deployment = github_api.create_deployment(sha)
             github_api.create_deployment_status(deployment["id"], "failure")
         elif state == "pending":
             github_api.create_commit_status(
                 sha,
                 "pending",
-                "Building images",
+                "Requested deployment",
             )
             deployment = github_api.get_deployment(sha)
             if deployment is None:

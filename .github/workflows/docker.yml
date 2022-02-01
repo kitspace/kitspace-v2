@@ -10,11 +10,15 @@ on:
   pull_request_target:
     branches: [master]
 jobs:
-  build:
+  get_version:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
-    name: Build images
+    name: Get git version
     runs-on: ubuntu-20.04
-
+    outputs:
+      frontend_sha_short: ${{ steps.sha.outputs.frontend_sha_short }}
+      processor_sha_short: ${{ steps.sha.outputs.processor_sha_short }}
+      nginx_sha_short: ${{ steps.sha.outputs.nginx_sha_short }}
+      gitea_sha_short: ${{ steps.sha.outputs.gitea_sha_short }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -24,34 +28,75 @@ jobs:
           # pushed to
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'recursive'
-          # 0 means fetch all commits, which we need for "review" branch deploy
-          # reporting
-          fetch-depth: 0
-
-      - name: Report "review" deploy pending
-        if: ${{ github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
 
       - name: Get commit SHA
         id: sha
         shell: bash
         run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=frontend_sha_short::$(git log --format=%h -n1 frontend/)"
+          echo "::set-output name=processor_sha_short::$(git log --format=%h -n1 processor/)"
+          echo "::set-output name=nginx_sha_short::$(git log --format=%h -n1 nginx/)"
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
+  build:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
+    name: Build image
+    runs-on: ubuntu-20.04
+    needs:
+      - get_version
+    strategy:
+      fail-fast: true
+      matrix:
+        service: [frontend, processor, nginx, gitea]
+
+    steps:
+      - name: Set SHA output
+        id: sha
+        shell: bash
+        run: |
+          case '${{ matrix.service }}' in
+            frontend)
+              sha_short="${{ needs.get_version.outputs.frontend_sha_short }}";;
+            processor)
+              sha_short="${{ needs.get_version.outputs.processor_sha_short }}";;
+            nginx)
+              sha_short="${{ needs.get_version.outputs.nginx_sha_short }}";;
+            gitea)
+              sha_short="${{ needs.get_version.outputs.gitea_sha_short }}";;
+          esac
+          echo "::set-output name=sha_short::${sha_short}"
+
+      - name: Check for ${{ matrix.service }} image
+        id: check_for_image
+        shell: bash
+        run: |
+          if [ "$(curl \
+           https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.sha.outputs.sha_short }} \
+           -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
+           -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            | jq .errors)" == "null" ];
+            then image_exists='true'
+            else image_exists='false'
+          fi
+          echo "::set-output name=image_exists::${image_exists}"
+
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        if: steps.check_for_image.outputs.image_exists == 'false'
+        with:
+          # check out the pull-request when triggered by "pull_request_target",
+          # when triggered on "push" this is empty and checks out the branch
+          # pushed to
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: 'recursive'
+
       - name: Set up Docker Buildx
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/setup-buildx-action@v1
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
       - name: Login to ghcr.io
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -60,86 +105,23 @@ jobs:
 
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
-      - name: Pull frontend image
-        id: pull_frontend
-        shell: bash
-        run: docker pull ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
-        continue-on-error: true
-
-      - name: Build and push frontend
-        # If the previous step failed, i.e., there's no image tagged:
-        # frontend:${{gitea_sha_short}} in ghcr, build image and push it
-        if: steps.pull_frontend.outcome != 'success'
+      - name: Build and push ${{ matrix.service }}
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/build-push-action@v2
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile.prod
+          context: ./${{ matrix.service }}
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Pull processor image
-        id: pull_processor
-        shell: bash
-        run: docker pull ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
-        continue-on-error: true
-
-      - name: Build and push processor
-        # If the previous step failed, i.e., there's no image tagged:
-        # processor:${{gitea_sha_short}} in ghcr, build image and push it
-        if: steps.pull_processor.outcome != 'success'
-        uses: docker/build-push-action@v2
-        with:
-          context: ./processor
-          file: ./processor/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Build and push nginx
-        uses: docker/build-push-action@v2
-        with:
-          context: ./nginx
-          file: ./nginx/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Pull gitea image
-        id: pull_gitea
-        shell: bash
-        run: docker pull ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
-        continue-on-error: true
-
-      - name: Build and push gitea
-        # If the previous step failed, i.e., there's no image tagged
-        # gitea:${{gitea_sha_short}} in ghcr, build image and push it
-        if: steps.pull_gitea.outcome != 'success'
-        uses: docker/build-push-action@v2
-        with:
-          context: ./gitea
-          file: ./gitea/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - # Temp fix
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-        name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          tags: ghcr.io/kitspace/${{ matrix.service }}:${{ steps.sha.outputs.sha_short }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
@@ -151,6 +133,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment: staging
     needs:
+      - get_version
       - build
     steps:
       - name: Check out the repo
@@ -161,13 +144,9 @@ jobs:
           # reporting
           fetch-depth: 0
 
-      - name: Get commit SHA
-        id: sha
-        shell: bash
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+      - name: Report "review" deploy pending
+        if: ${{ github.ref == 'refs/heads/review' }}
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
 
       - name: Get branch name
         id: branch
@@ -211,10 +190,10 @@ jobs:
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: kaspar@kitspace.org
           COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
           remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
@@ -235,6 +214,7 @@ jobs:
     name: Test E2E
     runs-on: ubuntu-20.04
     needs:
+      - get_version
       - build
     strategy:
       fail-fast: false
@@ -257,14 +237,6 @@ jobs:
         with:
           env-file: .env.example
 
-      - name: Get commit SHA
-        id: sha
-        shell: bash
-        run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-
       - name: Install Microsoft Edge
         if: ${{ matrix.browser == 'edge' }}
         timeout-minutes: 10
@@ -284,10 +256,10 @@ jobs:
         shell: bash
         timeout-minutes: 5
         env:
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
 
@@ -304,10 +276,10 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MOZ_FORCE_DISABLE_E10S: 1
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ steps.sha.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           # wait for 2 minutes for the server to respond
@@ -321,76 +293,37 @@ jobs:
 
   publish:
     name: Tag "latest"
-    if: github.ref == 'refs/heads/master'
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-20.04
     needs:
+      - get_version
+      - build
       - test
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [frontend, processor, nginx, gitea]
 
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
-
-      - name: Get commit SHA
-        id: sha
-        shell: bash
+      - name: Tag ${{ matrix.service }}:latest
         run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-
-      - name: Tag frontend:latest
-        run: |
+          case '${{ matrix.service }}' in
+            frontend)
+              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}';;
+            processor)
+              sha_short='${{ needs.get_version.outputs.processor_sha_short }}';;
+            nginx)
+              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}';;
+            gitea)
+              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}';;
+          esac
           curl \
-            https://ghcr.io/v2/kitspace/frontend/manifests/${{ steps.sha.outputs.sha_short }} \
+            "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha_short}" \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
-            https://ghcr.io/v2/kitspace/frontend/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
-          rm manifest.json
-
-      - name: Tag processor:latest
-        run: |
-          curl \
-            https://ghcr.io/v2/kitspace/processor/manifests/${{ steps.sha.outputs.sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/processor/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
-          rm manifest.json
-
-      - name: Tag nginx:latest
-        run: |
-          curl \
-            https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/nginx/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
-          rm manifest.json
-
-      - name: Tag gitea:latest
-        run: |
-          curl \
-            https://ghcr.io/v2/kitspace/gitea/manifests/${{ steps.sha.outputs.gitea_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/gitea/manifests/latest \
+            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/latest \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'

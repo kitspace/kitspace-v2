@@ -1,6 +1,9 @@
 name: Lint processor
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'processor/**'
 
 defaults:
   run:
