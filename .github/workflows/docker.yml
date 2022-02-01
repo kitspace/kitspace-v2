@@ -10,20 +10,15 @@ on:
   pull_request_target:
     branches: [master]
 jobs:
-  build:
+  get_version:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
-    name: Build image
+    name: Get git version
     runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: true
-      matrix:
-        service: [frontend, processor, nginx, gitea]
     outputs:
-      frontend_sha_short: ${{ steps.sha_named.outputs.frontend_sha_short }}
-      processor_sha_short: ${{ steps.sha_named.outputs.processor_sha_short }}
-      nginx_sha_short: ${{ steps.sha_named.outputs.nginx_sha_short }}
-      gitea_sha_short: ${{ steps.sha_named.outputs.gitea_sha_short }}
-
+      frontend_sha_short: ${{ steps.sha.outputs.frontend_sha_short }}
+      processor_sha_short: ${{ steps.sha.outputs.processor_sha_short }}
+      nginx_sha_short: ${{ steps.sha.outputs.nginx_sha_short }}
+      gitea_sha_short: ${{ steps.sha.outputs.gitea_sha_short }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -38,17 +33,48 @@ jobs:
         id: sha
         shell: bash
         run: |
-          if [ '${{ matrix.service }}' == 'gitea' ]; then
-            echo "::set-output name=sha_short::$( git submodule foreach 'echo "$sha1"' \
-              | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
-          else
-            echo "::set-output name=sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
-          fi
+          echo "::set-output name=frontend_sha_short::$(git log --format=%h -n1 frontend/)"
+          echo "::set-output name=processor_sha_short::$(git log --format=%h -n1 processor/)"
+          echo "::set-output name=nginx_sha_short::$(git log --format=%h -n1 nginx/)"
+          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+  build:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
+    name: Build image
+    runs-on: ubuntu-20.04
+    needs:
+      - get_version
+    strategy:
+      fail-fast: true
+      matrix:
+        service: [frontend, processor, nginx, gitea]
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+        with:
+          # check out the pull-request when triggered by "pull_request_target",
+          # when triggered on "push" this is empty and checks out the branch
+          # pushed to
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: 'recursive'
 
       - name: Set SHA output
-        id: sha_named
+        id: sha
         shell: bash
-        run: echo '::set-output name=${{ matrix.service }}_sha_short::${{ steps.sha.output.sha_short }}'
+        run: |
+          case '${{ matrix.service }}' in
+            frontend)
+              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}'
+            processor)
+              sha_short='${{ needs.get_version.outputs.processor_sha_short }}'
+            nginx)
+              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}'
+            gitea)
+              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}'
+          esac
+          echo "::set-output name=$sha_short::${sha_short}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -102,6 +128,7 @@ jobs:
     runs-on: ubuntu-20.04
     environment: staging
     needs:
+      - get_version
       - build
     steps:
       - name: Check out the repo
@@ -158,10 +185,10 @@ jobs:
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: kaspar@kitspace.org
           COMPOSE_PROJECT_NAME: kitspace-${{ steps.branch.outputs.short_ref }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.frontend_sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.processor_sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.nginx_sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
         with:
           remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
@@ -182,6 +209,7 @@ jobs:
     name: Test E2E
     runs-on: ubuntu-20.04
     needs:
+      - get_version
       - build
     strategy:
       fail-fast: false
@@ -223,10 +251,10 @@ jobs:
         shell: bash
         timeout-minutes: 5
         env:
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.frontend_sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.processor_sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.nginx_sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
         run: |
           scripts/install_gitea.sh
 
@@ -243,10 +271,10 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MOZ_FORCE_DISABLE_E10S: 1
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.frontend_sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.processor_sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.nginx_sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.build.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
         with:
           start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
           # wait for 2 minutes for the server to respond
@@ -263,6 +291,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-20.04
     needs:
+      - get_version
       - build
       - test
     strategy:
@@ -275,13 +304,13 @@ jobs:
         run: |
           case '${{ matrix.service }}' in
             frontend)
-              export sha_short='${{ needs.build.outputs.frontend_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}'
             processor)
-              export sha_short='${{ needs.build.outputs.processor_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.processor_sha_short }}'
             nginx)
-              export sha_short='${{ needs.build.outputs.nginx_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}'
             gitea)
-              export sha_short='${{ needs.build.outputs.gitea_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}'
           esac
           curl \
             "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha_short}" \
