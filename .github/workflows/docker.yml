@@ -77,11 +77,11 @@ jobs:
         id: check_frontend
         shell: bash
         run: |
-          [ "$(curl \
+          if [ "$(curl \
             https://ghcr.io/v2/kitspace/frontend/manifests/${{ steps.sha.outputs.frontend_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .error)" == "null" ]
+             | jq .error)" != "null" ]; then false; fi
         continue-on-error: true
 
       - name: Build and push frontend
@@ -101,11 +101,11 @@ jobs:
         id: check_processor
         shell: bash
         run: |
-          [ "$(curl \
+          if [ "$(curl \
             https://ghcr.io/v2/kitspace/processor/manifests/${{ steps.sha.outputs.processor_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .error)" == "null" ]
+             | jq .error)" != "null" ]; then false; fi
         continue-on-error: true
 
       - name: Build and push processor
@@ -125,11 +125,11 @@ jobs:
         id: check_nginx
         shell: bash
         run: |
-          [ "$(curl \
+          if [ "$(curl \
             https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.nginx_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .error)" == "null" ]
+             | jq .error)" != "null" ]; then false; fi
         continue-on-error: true
 
       - name: Build and push nginx
@@ -149,11 +149,11 @@ jobs:
         id: check_gitea
         shell: bash
         run: |
-          [ "$(curl \
+          if [ "$(curl \
             https://ghcr.io/v2/kitspace/gitea/manifests/${{ steps.sha.outputs.gitea_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .error)" == "null" ]
+             | jq .error)" != "null" ]; then false; fi
         continue-on-error: true
 
       - name: Build and push gitea
