@@ -66,13 +66,13 @@ jobs:
         run: |
           case '${{ matrix.service }}' in
             frontend)
-              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}';;
             processor)
-              sha_short='${{ needs.get_version.outputs.processor_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.processor_sha_short }}';;
             nginx)
-              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}';;
             gitea)
-              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}';;
           esac
           echo "::set-output name=$sha_short::${sha_short}"
 
@@ -304,13 +304,13 @@ jobs:
         run: |
           case '${{ matrix.service }}' in
             frontend)
-              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}';;
             processor)
-              sha_short='${{ needs.get_version.outputs.processor_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.processor_sha_short }}';;
             nginx)
-              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}';;
             gitea)
-              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}'
+              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}';;
           esac
           curl \
             "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha_short}" \
