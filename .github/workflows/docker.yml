@@ -28,6 +28,8 @@ jobs:
           # pushed to
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'recursive'
+          # 0 means fetch all commits, which we need for getting the right git versions of each folder
+          fetch-depth: 0
 
       - name: Get commit SHA
         id: sha
