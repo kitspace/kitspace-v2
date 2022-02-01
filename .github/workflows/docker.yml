@@ -14,6 +14,10 @@ jobs:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
     name: Build images
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        service: [frontend, processor, nginx, gitea]
     outputs:
       frontend_sha_short: ${{ steps.sha.outputs.frontend_sha_short }}
       processor_sha_short: ${{ steps.sha.outputs.processor_sha_short }}
@@ -29,34 +33,28 @@ jobs:
           # pushed to
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'recursive'
-          # 0 means fetch all commits, which we need for "review" branch deploy
-          # reporting
-          fetch-depth: 0
-
-      - name: Report "review" deploy pending
-        if: ${{ github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
 
       - name: Get commit SHA
+
+        if: ${{ matrix.service != 'gitea' }}
         id: sha
         shell: bash
         run: |
-          echo "::set-output name=frontend_sha_short::$(git log --format=%h -n1 frontend/)"
-          echo "::set-output name=processor_sha_short::$(git log --format=%h -n1 processor/)"
-          echo "::set-output name=nginx_sha_short::$(git log --format=%h -n1 nginx/)"
+          echo "::set-output name=${{ matrix.service }}_sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
+          echo "::set-output name=sha_short::$(git log --format=%h -n1 ${{ matrix.service }}/)"
+
+      - name: Get commit SHA
+        if: ${{ matrix.service == 'gitea' }}
+        id: sha
+        shell: bash
+        run: |
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+          echo "::set-output name=sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
 
       - name: Login to ghcr.io
         uses: docker/login-action@v1
@@ -73,118 +71,32 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
-      - name: Check for frontend image
-        id: check_frontend
+      - name: Check for ${{ matrix.service }} image
+        id: check_for_image
         shell: bash
         run: |
           if [ "$(curl \
-            https://ghcr.io/v2/kitspace/frontend/manifests/${{ steps.sha.outputs.frontend_sha_short }} \
+            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.sha.outputs.sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
              | jq .errors)" != "null" ]; then false; fi
         continue-on-error: true
 
-      - name: Build and push frontend
+      - name: Build and push ${{ matrix.service }}
         # If the previous step failed, i.e. no image tagged with this sha,
         # build the image and push it
-        if: steps.check_frontend.outcome != 'success'
+        if: steps.check_for_image.outcome != 'success'
         uses: docker/build-push-action@v2
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile.prod
+          context: ./${{ matrix.service }}
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/frontend:${{ steps.sha.outputs.frontend_sha_short }}
+          tags: ghcr.io/kitspace/${{ matrix.service }}:${{ steps.sha.outputs.sha_short }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Check for processor image
-        id: check_processor
-        shell: bash
-        run: |
-          if [ "$(curl \
-            https://ghcr.io/v2/kitspace/processor/manifests/${{ steps.sha.outputs.processor_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .errors)" != "null" ]; then false; fi
-        continue-on-error: true
-
-      - name: Build and push processor
-        # If the previous step failed, i.e. no image tagged with this sha,
-        # build the image and push it
-        if: steps.check_processor.outcome != 'success'
-        uses: docker/build-push-action@v2
-        with:
-          context: ./processor
-          file: ./processor/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/processor:${{ steps.sha.outputs.processor_sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Check for nginx image
-        id: check_nginx
-        shell: bash
-        run: |
-          if [ "$(curl \
-            https://ghcr.io/v2/kitspace/nginx/manifests/${{ steps.sha.outputs.nginx_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .errors)" != "null" ]; then false; fi
-        continue-on-error: true
-
-      - name: Build and push nginx
-        # If the previous step failed, i.e. no image tagged with this sha,
-        # build the image and push it
-        if: steps.check_nginx.outcome != 'success'
-        uses: docker/build-push-action@v2
-        with:
-          context: ./nginx
-          file: ./nginx/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/nginx:${{ steps.sha.outputs.nginx_sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - name: Check for gitea image
-        id: check_gitea
-        shell: bash
-        run: |
-          if [ "$(curl \
-            https://ghcr.io/v2/kitspace/gitea/manifests/${{ steps.sha.outputs.gitea_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .errors)" != "null" ]; then false; fi
-        continue-on-error: true
-
-      - name: Build and push gitea
-        # If the previous step failed, i.e. no image tagged with this sha,
-        # build the image and push it
-        if: steps.check_gitea.outcome != 'success'
-        uses: docker/build-push-action@v2
-        with:
-          context: ./gitea
-          file: ./gitea/Dockerfile
-          push: true
-          tags: ghcr.io/kitspace/gitea:${{ steps.sha.outputs.gitea_sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      - # Temp fix for cache growing ever bigger
-        # https://github.com/docker/build-push-action/issues/252
-        # https://github.com/moby/buildkit/issues/1896
-        name: Move cache
-        run: |
-          if [ -f '/tmp/.buildx-cache-new' ]; then
-            rm -rf /tmp/.buildx-cache
-            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-          fi
-
-      - name: Report "review" deploy failure
-        if: ${{ failure() && github.ref == 'refs/heads/review' }}
-        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/abdo-dev'|| github.ref == 'refs/heads/kaspar-dev' || github.ref == 'refs/heads/review' }}
+    if: ${{ github.event_name == 'push' }}
     name: Deploy to staging
     runs-on: ubuntu-20.04
     environment: staging
@@ -343,7 +255,7 @@ jobs:
 
   publish:
     name: Tag "latest"
-    if: github.ref == 'refs/heads/master'
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-20.04
     needs:
       - build
