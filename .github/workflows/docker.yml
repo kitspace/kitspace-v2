@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
-    name: Build images
+    name: Build image
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: true
@@ -87,8 +87,8 @@ jobs:
           file: ./${{ matrix.service }}/Dockerfile
           push: true
           tags: ghcr.io/kitspace/${{ matrix.service }}:${{ steps.sha.outputs.sha_short }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     if: ${{ github.event_name == 'push' }}
