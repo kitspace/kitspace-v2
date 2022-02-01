@@ -259,59 +259,21 @@ jobs:
     needs:
       - build
       - test
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [frontend, processor, nginx, gitea]
 
     steps:
-      - name: Tag frontend:latest
+      - name: Tag ${{ matrix.service }}:latest
         run: |
           curl \
-            https://ghcr.io/v2/kitspace/frontend/manifests/${{ needs.build.outputs.frontend_sha_short }} \
+            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ needs.build.outputs.${{ matrix.service }}_sha_short }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
-            https://ghcr.io/v2/kitspace/frontend/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
-          rm manifest.json
-
-      - name: Tag processor:latest
-        run: |
-          curl \
-            https://ghcr.io/v2/kitspace/processor/manifests/${{ needs.build.outputs.processor_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/processor/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
-          rm manifest.json
-
-      - name: Tag nginx:latest
-        run: |
-          curl \
-            https://ghcr.io/v2/kitspace/nginx/manifests/${{ needs.build.outputs.nginx_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/nginx/manifests/latest \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
-          rm manifest.json
-
-      - name: Tag gitea:latest
-        run: |
-          curl \
-            https://ghcr.io/v2/kitspace/gitea/manifests/${{ needs.build.outputs.gitea_sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/gitea/manifests/latest \
+            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/latest \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
