@@ -72,15 +72,18 @@ jobs:
         shell: bash
         run: |
           if [ "$(curl \
-            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.sha.outputs.sha_short }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-             | jq .errors)" != "null" ]; then false; fi
-        continue-on-error: true
+           https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.sha.outputs.sha_short }} \
+           -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
+           -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            | jq .errors)" == "null" ];
+            then image_exists='true'
+            else image_exists='false'
+          fi
+          echo "::set-output name=image_exists::${image_exists}"
 
       - name: Check out the repo
         uses: actions/checkout@v2
-        if: steps.check_for_image.outcome != 'success'
+        if: steps.check_for_image.outputs.image_exists == 'false'
         with:
           # check out the pull-request when triggered by "pull_request_target",
           # when triggered on "push" this is empty and checks out the branch
@@ -89,11 +92,11 @@ jobs:
           submodules: 'recursive'
 
       - name: Set up Docker Buildx
-        if: steps.check_for_image.outcome != 'success'
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/setup-buildx-action@v1
 
       - name: Login to ghcr.io
-        if: steps.check_for_image.outcome != 'success'
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -102,7 +105,7 @@ jobs:
 
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
-        if: steps.check_for_image.outcome != 'success'
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
@@ -110,9 +113,7 @@ jobs:
         continue-on-error: true
 
       - name: Build and push ${{ matrix.service }}
-        # If the previous step failed, i.e. no image tagged with this sha,
-        # build the image and push it
-        if: steps.check_for_image.outcome != 'success'
+        if: steps.check_for_image.outputs.image_exists == 'false'
         uses: docker/build-push-action@v2
         with:
           context: ./${{ matrix.service }}
