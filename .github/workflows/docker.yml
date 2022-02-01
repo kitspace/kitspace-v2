@@ -269,8 +269,18 @@ jobs:
     steps:
       - name: Tag ${{ matrix.service }}:latest
         run: |
+          case '${{ matrix.service }}' in
+            frontend)
+              export sha_short='${{ needs.build.outputs.frontend_sha_short }}'
+            processor)
+              export sha_short='${{ needs.build.outputs.processor_sha_short }}'
+            nginx)
+              export sha_short='${{ needs.build.outputs.nginx_sha_short }}'
+            gitea)
+              export sha_short='${{ needs.build.outputs.gitea_sha_short }}'
+          esac
           curl \
-            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ needs.build.outputs.${{ matrix.service }}_sha_short }} \
+            "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha_short}" \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
