@@ -106,6 +106,10 @@ jobs:
           # reporting
           fetch-depth: 0
 
+      - name: Report "review" deploy pending
+        if: ${{ github.ref == 'refs/heads/review' }}
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
+
       - name: Get branch name
         id: branch
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
