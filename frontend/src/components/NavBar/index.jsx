@@ -3,7 +3,6 @@ import { bool } from 'prop-types'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
-import _JSXStyle from 'styled-jsx/style'
 
 import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
