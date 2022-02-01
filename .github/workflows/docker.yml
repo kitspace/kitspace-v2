@@ -92,6 +92,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Report "review" deploy failure
+        if: ${{ failure() && github.ref == 'refs/heads/review' }}
+        run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
+
   deploy:
     if: ${{ github.event_name == 'push' }}
     name: Deploy to staging
