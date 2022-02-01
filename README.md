@@ -75,6 +75,10 @@ This repo auto deploys the `master` branch (whether e2e tests pass or not) to ou
 
 - [master.staging.kitspace.dev](https://master.staging.kitspace.dev)
 
+Open pull requests from trusted contributors that are not drafts get automatically merged into the `review` branch (reset to `master` before these auto-merges) and deployed to:
+
+- [review.staging.kitspace.dev](https://review.staging.kitspace.dev)
+
 We also auto deploy some development branches:
 
 - [abdo-dev.staging.kitspace.dev](https://abdo-dev.staging.kitspace.dev) (from [abdo-dev](https://github.com/kitspace/kitspace-v2/tree/abdo-dev), [@AbdulrhmnGhanem](https://github.com/AbdulrhmnGhanem)'s branch)
