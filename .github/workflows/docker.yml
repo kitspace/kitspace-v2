@@ -74,7 +74,7 @@ jobs:
             gitea)
               sha_short='${{ needs.get_version.outputs.gitea_sha_short }}';;
           esac
-          echo "::set-output name=$sha_short::${sha_short}"
+          echo "::set-output name=sha_short::${sha_short}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
