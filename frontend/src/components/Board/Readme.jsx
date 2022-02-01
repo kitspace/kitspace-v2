@@ -1,6 +1,5 @@
 import React from 'react'
 import { string } from 'prop-types'
-import _JSXStyle from 'styled-jsx/style'
 
 const Readme = ({ renderedReadme }) => (
   <div data-cy="readme" id="readme">
