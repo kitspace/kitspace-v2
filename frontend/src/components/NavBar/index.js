@@ -37,6 +37,7 @@ const Logo = () => {
           objectFit="scale-down"
           src="/static/logo.svg"
           width={160}
+          priority={true}
         />
       </a>
     </Link>
