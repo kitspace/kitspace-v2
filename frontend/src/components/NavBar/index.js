@@ -86,20 +86,16 @@ const SmallBar = () => (
 )
 
 const AddProjectButton = () => {
-  const { pathname } = useRouter()
-
-  return pathname !== '/login' ? (
-    <>
-      <Menu.Item id="add-project">
-        <Link passHref href="/projects/new">
-          <Button icon as="a" color="green" id="add_project" labelPosition="left">
-            <Icon name="plus" />
-            Add a project
-          </Button>
-        </Link>
-      </Menu.Item>
-    </>
-  ) : null
+  return (
+    <Menu.Item id="add-project">
+      <Link passHref href="/projects/new">
+        <Button icon as="a" color="green" id="add_project" labelPosition="left">
+          <Icon name="plus" />
+          Add a project
+        </Button>
+      </Link>
+    </Menu.Item>
+  )
 }
 
 const SiteMenuItems = () => {
