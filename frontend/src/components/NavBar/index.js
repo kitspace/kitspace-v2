@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { bool } from 'prop-types'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 import _JSXStyle from 'styled-jsx/style'
@@ -30,15 +29,9 @@ const Logo = () => {
   return (
     <Link href="/">
       <a>
-        <Image
-          alt="logo"
-          className={styles.logoImg}
-          height={46}
-          objectFit="scale-down"
-          src="/static/logo.svg"
-          width={160}
-          priority={true}
-        />
+        {/* using next/image here causes it to blink on page transitions in firefox */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="logo" className={styles.logoImg} src="/static/logo.svg" />
       </a>
     </Link>
   )
