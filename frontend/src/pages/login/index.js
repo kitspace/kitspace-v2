@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { composeInitialProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
@@ -28,22 +28,22 @@ const Login = () => {
 
   return (
     <Page title="Kitspace | Login">
-      <Grid
-        id="login-grid"
-        style={{ maxWidth: '500px', margin: 'auto' }}
-        verticalAlign="middle"
-      >
+      <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
         <Grid.Column>
           <Tab
             activeIndex={openPane}
             panes={[
               {
                 menuItem: 'Sign up',
-                render: () => <SignUpForm openLoginPane={() => setOpenPane(1)} />,
+                render: function FirstPane() {
+                  return <SignUpForm openLoginPane={() => setOpenPane(1)} />
+                },
               },
               {
                 menuItem: 'Login',
-                render: () => <SignInForm />,
+                render: function SecondPane() {
+                  return <SignInForm />
+                },
               },
             ]}
             onTabChange={handlePaneChange}
