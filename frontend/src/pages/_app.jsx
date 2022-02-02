@@ -1,4 +1,3 @@
-import '../wdyr'
 import React from 'react'
 import { bool, func, object, shape, string } from 'prop-types'
 
