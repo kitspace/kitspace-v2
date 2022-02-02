@@ -24,17 +24,7 @@ import styles from './index.module.scss'
 
 const Login = () => {
   const [openPane, setOpenPane] = useState(0)
-  const { query, push } = useRouter()
   const handlePaneChange = e => setOpenPane(e.target.value)
-
-  useEffect(() => {
-    const openLoginPane = query.hasOwnProperty('1')
-    if (openLoginPane) {
-      // Remove the query parameter (`1`) from the url w/o reloading.
-      push('/login', null, { shallow: true })
-      setOpenPane(1)
-    }
-  }, [query, push])
 
   return (
     <Page title="Kitspace | Login">
@@ -49,21 +39,11 @@ const Login = () => {
             panes={[
               {
                 menuItem: 'Sign up',
-                render: function SignUpTab() {
-                  return (
-                    <SignUpForm
-                      openLoginPane={() =>
-                        push('/login?1', null, { shallow: true })
-                      }
-                    />
-                  )
-                },
+                render: () => <SignUpForm openLoginPane={() => setOpenPane(1)} />,
               },
               {
                 menuItem: 'Login',
-                render: function SignInTab() {
-                  return <SignInForm />
-                },
+                render: () => <SignInForm />,
               },
             ]}
             onTabChange={handlePaneChange}
