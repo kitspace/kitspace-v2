@@ -192,10 +192,7 @@ const ContactMenu = () => (
  * Log in button if the user is unauthenticated, user menu otherwise.
  */
 const UserControllerButton = ({ smallNavBar }) => {
-  const { pathname } = useRouter()
-
   const { isAuthenticated } = useContext(AuthContext)
-  const isLogInRoute = pathname === '/login'
 
   if (isAuthenticated) {
     if (smallNavBar) {
@@ -203,10 +200,6 @@ const UserControllerButton = ({ smallNavBar }) => {
     }
 
     return <UserDropDownMenu />
-  }
-
-  if (isLogInRoute) {
-    return null
   }
 
   return <LogInButton />
