@@ -8,7 +8,7 @@ const { GITEA_URL } = require('../env')
 
 function processReadme(
   job,
-  { checkoutDir, kitspaceYaml, filesDir, projectFullname },
+  { checkoutDir, kitspaceYaml, filesDir,  name },
 ) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
@@ -22,13 +22,13 @@ function processReadme(
           checkoutDir,
           projectKitspaceYaml,
           projectOutputDir,
-          projectFullname,
+          name,
         )
       }),
     )
   }
 
-  return _processReadme(job, checkoutDir, kitspaceYaml, filesDir, projectFullname)
+  return _processReadme(job, checkoutDir, kitspaceYaml, filesDir, name)
 }
 
 async function _processReadme(
