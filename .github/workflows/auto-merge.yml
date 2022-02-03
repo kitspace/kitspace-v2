@@ -10,8 +10,10 @@ on:
     types:
       - opened
       - reopened
+      - closed
       - synchronize
       - ready_for_review
+      - converted_to_draft
 jobs:
   auto-merge:
     runs-on: ubuntu-20.04
