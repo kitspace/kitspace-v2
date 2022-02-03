@@ -8,16 +8,19 @@ _work in progress_
 Re-writing [Kitspace](https://github.com/kitspace/kitspace) to use [Gitea](https://github.com/go-gitea/gitea) as a Git and authentication service.
 
 ## Goals
+
 Allow people to:
+
 1. Add projects without knowing Git/Github
 2. Still import/sync external Git repositories
 3. Edit/make improvements and propose these changes to project creators
 
-
 ## Development
 
 ### Set Up
+
 0. Get all the source code
+
 ```
 git clone https://github.com/kitspace/kitspace-v2
 cd kitspace-v2
@@ -25,7 +28,7 @@ git submodule update --init
 ```
 
 1. Install [Docker](https://www.docker.com/get-started) and [docker-compose](https://pypi.org/project/docker-compose/) (on Ubuntu: `snap install docker` and `apt install docker-compose`)
-2. Add the required lines to `/etc/hosts`  (If you are not using Linux this probably won't work, please open an issue and we'll figure out how to support non-Linux development).
+2. Add the required lines to `/etc/hosts` (If you are not using Linux this probably won't work, please open an issue and we'll figure out how to support non-Linux development).
 
 ```
 cat ./config/hosts | sudo tee -a /etc/hosts
@@ -36,13 +39,14 @@ cat ./config/hosts | sudo tee -a /etc/hosts
 ```
 cp .env.example .env
 ```
+
 4. Build and run the docker containers
+
 ```
 docker-compose up
 ```
 
 5. Go to [gitea.kitspace.test:3000/user/sign_up](http://gitea.kitspace.test:3000/user/sign_up) and create a new user. This will be the admin user.
-
 
 ## Frontend
 
@@ -63,11 +67,9 @@ This is built from a git submodule of [our fork of Gitea](https://github.com/kit
 
 When it first builds the docker container it builds the whole Gitea project (`make clean-all build`). When you restart the container it recompiles only the backend and doesn't recompile unchanged files (`make backend`).
 
-
 ## Processor
 
 This is a NodeJS and [Express](https://expressjs.com/) server that processes all the assets. As with the frontend, changing dependencies requires you to restart the development container.
-
 
 ## Auto Deploys
 
@@ -88,7 +90,6 @@ We also auto deploy some development branches:
 
 We configure our staging servers using [Ansible](https://docs.ansible.com/ansible/latest/index.html). Our playbooks and roles are in the [ansible](ansible/) directory.
 
-
 ## Running Integration Tests
 
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
@@ -102,3 +103,9 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 5. The Cypress GUI should pop up.
 
 6. To run all tests, press `Run all specs`.
+
+### Recording new visual tests:
+
+1. Make sure you have Chrome, Edge, and Firefox (Cypress installs Electron by default) installed on your machine. For Edge on Linux create a symbolic link `sudo ln -s sudo ln -s /usr/bin/microsoft-edge-stable /usr/bin/edge` so Cypress can find it.
+2. Write the test in `cypress/integration/newTest.visual.spec.js`, See [IBOM.visual.spec.js](https://github.com/kitspace/kitspace-v2/blob/master/frontend/cypress/integration/IBOM.visual.spec.js) .
+3. Run `./scripts/record_visual_spec.sh cypress/integration/newTest.visual.spec.js`.
