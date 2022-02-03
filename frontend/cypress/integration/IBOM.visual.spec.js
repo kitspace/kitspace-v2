@@ -38,14 +38,10 @@ describe('Regression test for IBOM ', () => {
     'should match the existing snapshot for the IBOM (electron)',
     { browser: 'electron' },
     () => {
-      // Wait until the ibom is visible
-      cy.get('.topmostdiv').should('be.visible')
-
       // Compare/save the snapshot
       cy.get('#bot').matchImageSnapshot({
-        comparisonMethod: 'ssim',
-        failureThresholdType: 'percent',
         failureThreshold: 0.03,
+        failureThresholdType: 'percent',
       })
     },
   )
@@ -58,11 +54,7 @@ describe('Regression test for IBOM ', () => {
       cy.get('.topmostdiv').should('be.visible')
 
       // Compare/save the snapshot
-      cy.get('#bot').matchImageSnapshot({
-        comparisonMethod: 'ssim',
-        failureThresholdType: 'percent',
-        failureThreshold: 0.03,
-      })
+      cy.get('#bot').matchImageSnapshot()
     },
   )
 
@@ -74,11 +66,7 @@ describe('Regression test for IBOM ', () => {
       cy.get('.topmostdiv').should('be.visible')
 
       // Compare/save the snapshot
-      cy.get('#bot').matchImageSnapshot({
-        comparisonMethod: 'ssim',
-        failureThresholdType: 'percent',
-        failureThreshold: 0.03,
-      })
+      cy.get('#bot').matchImageSnapshot()
     },
   )
 })
