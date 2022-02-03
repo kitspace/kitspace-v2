@@ -28,6 +28,9 @@ describe('Regression test for IBOM ', () => {
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit(`${username}/${repoName}/IBOM`)
+
+    // Wait until the ibom is visible
+    cy.get('.topmostdiv').should('be.visible')
   })
 
   /*
@@ -50,9 +53,6 @@ describe('Regression test for IBOM ', () => {
     'should match the existing snapshot for the IBOM (chrome)',
     { browser: 'chrome' },
     () => {
-      // Wait until the ibom is visible
-      cy.get('.topmostdiv').should('be.visible')
-
       // Compare/save the snapshot
       cy.get('#bot').matchImageSnapshot()
     },
@@ -62,9 +62,15 @@ describe('Regression test for IBOM ', () => {
     'should match the existing snapshot for the IBOM (firefox)',
     { browser: 'firefox' },
     () => {
-      // Wait until the ibom is visible
-      cy.get('.topmostdiv').should('be.visible')
+      // Compare/save the snapshot
+      cy.get('#bot').matchImageSnapshot()
+    },
+  )
 
+  it(
+    'should match the existing snapshot for the IBOM (edge)',
+    { browser: 'edge' },
+    () => {
       // Compare/save the snapshot
       cy.get('#bot').matchImageSnapshot()
     },
