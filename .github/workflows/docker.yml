@@ -232,6 +232,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
+          # check out the pull-request when triggered by "pull_request_target",
+          # when triggered on "push" this is empty and checks out the branch
+          # pushed to
+          ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'recursive'
 
       - name: Set environment variables
