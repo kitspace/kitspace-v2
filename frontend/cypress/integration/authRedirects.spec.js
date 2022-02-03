@@ -21,7 +21,7 @@ describe('It validates authentication redirects', () => {
     cy.clearCookies()
     // `/project/new` is marked as require sign in.
     cy.forceVisit('/projects/new')
-    cy.get('#login-grid').should('be.visible')
+    cy.get('[data-cy=login-grid]').should('be.visible')
   })
 
   it("should redirect unauthenticated users to '/login' when accessing require sign in page (client)", () => {
@@ -31,14 +31,14 @@ describe('It validates authentication redirects', () => {
     // navigate to `/projects/new`with client-side interactions.
     cy.get('#add-project').click({ timeout: 10000 })
     // `/project/new` is marked as require sign in.
-    cy.get('#login-grid').should('be.visible')
+    cy.get('[data-cy=login-grid]').should('be.visible')
   })
 
   /*
    ! There is no (client) version of this because there is no user interaction which will lead to redirecting to `/login`
    ! when the user is already logged in.
    */
-  it('should redirects authenticated users to homepage when accessing reqSignOut page (server)', () => {
+  it('should redirect authenticated users to homepage when accessing reqSignOut page (server)', () => {
     // Sign in
     cy.visit('/login')
     cy.signIn(username, password)
@@ -91,7 +91,7 @@ describe('It validates redirects after login', () => {
 
     cy.visit(requireSignInPage)
 
-    cy.get('#login-grid').should('be.visible')
+    cy.get('[data-cy=login-grid]').should('be.visible')
     cy.signIn(username, password)
     cy.url().should('eq', `http://kitspace.test:3000${requireSignInPage}`)
 
@@ -132,7 +132,7 @@ describe('It validates redirects after sing up', () => {
 
     cy.visit(requireSignInPage)
 
-    cy.get('#login-grid').should('be.visible')
+    cy.get('[data-cy=login-grid]').should('be.visible')
 
     // sign the user up
     const username = getFakeUsername()

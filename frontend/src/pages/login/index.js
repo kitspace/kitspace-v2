@@ -28,7 +28,11 @@ const Login = () => {
 
   return (
     <Page title="Kitspace | Login">
-      <Grid style={{ maxWidth: '500px', margin: 'auto' }} verticalAlign="middle">
+      <Grid
+        data-cy="login-grid"
+        style={{ maxWidth: '500px', margin: 'auto' }}
+        verticalAlign="middle"
+      >
         <Grid.Column>
           <Tab
             activeIndex={openPane}
