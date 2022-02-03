@@ -222,6 +222,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chrome, edge, electron]
+        containers: [1, 2, 3, 4]
 
     steps:
       - name: Setup Node 14
@@ -293,6 +294,7 @@ jobs:
           # This value is in seconds
           wait-on-timeout: 120
           working-directory: frontend
+          parallel: true
           record: true
           browser: ${{ matrix.browser }}
           group: ${{ matrix.browser }}
