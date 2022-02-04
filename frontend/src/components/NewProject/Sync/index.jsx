@@ -3,7 +3,7 @@ import { func } from 'prop-types'
 import { Input, Button, Form, Message } from 'semantic-ui-react'
 
 import { useRouter } from 'next/router'
-import { isEmpty } from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 
 import { AuthContext } from '@contexts/AuthContext'
 import { mirrorRepo } from '@utils/giteaApi'
