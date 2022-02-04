@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { func, node, object } from 'prop-types'
 import { Popup, Image, Table, Icon, Button } from 'semantic-ui-react'
-import { flattenDeep } from 'lodash'
+import { flattenDeep } from 'lodash/flattenDeep'
 
 import styles from './MpnPopup.module.scss'
 

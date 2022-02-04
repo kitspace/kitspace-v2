@@ -14,7 +14,7 @@ import {
 
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash/isEmpty'
 
 import Page from '@components/Page'
 import DropZone from '@components/DropZone'

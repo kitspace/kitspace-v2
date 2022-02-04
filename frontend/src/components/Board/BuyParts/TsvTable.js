@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Table } from 'semantic-ui-react'
-import { flattenDeep } from 'lodash'
+import { flattenDeep } from 'lodash/flattenDeep'
 
 import { array, bool, string } from 'prop-types'
 import MpnPopup from './MpnPopup'

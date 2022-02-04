@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
-import { isEqual } from 'lodash'
+import { isEqual } from 'lodash/isEqual'
 import { backOff } from 'exponential-backoff'
 import { Loader } from 'semantic-ui-react'
 

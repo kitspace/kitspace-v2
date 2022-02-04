@@ -1,5 +1,5 @@
 import React from 'react'
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash/isEmpty'
 import { arrayOf, object, string } from 'prop-types'
 
 import Page from '@components/Page'
