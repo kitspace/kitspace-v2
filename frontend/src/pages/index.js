@@ -1,10 +1,5 @@
-export const getServerSideProps = async () => ({
-  redirect: {
-    destination: '/search',
-    permanent: true,
-  },
-})
+import Search from './search'
 
-const Home = () => {}
+const Home = Search
 
 export default Home

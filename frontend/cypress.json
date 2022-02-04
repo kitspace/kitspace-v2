@@ -13,6 +13,6 @@
     "runMode": 3
   },
   "env": {
-    "home_url": "search"
+    "home_path": "/"
   }
 }
