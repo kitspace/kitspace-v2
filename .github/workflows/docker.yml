@@ -221,8 +221,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, edge, electron]
-        containers: [1, 2, 3, 4]
+        browser: [chrome, edge, electron, firefox]
+        containers: [1, 2, 3]
 
     steps:
       - name: Setup Node 14
@@ -278,6 +278,9 @@ jobs:
         uses: cypress-io/github-action@v2
         timeout-minutes: 40
         env:
+          # Set the viewport for firefox, see https://github.com/cypress-io/cypress/issues/15481#issuecomment-810062823
+          MOZ_HEADLESS_WIDTH: 1500
+          MOZ_HEADLESS_HEIGHT: 800
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
