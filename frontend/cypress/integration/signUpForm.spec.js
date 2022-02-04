@@ -4,12 +4,9 @@ import { getFakeUsername } from '../support/getFakeUsername'
 import SignUpFormModel from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
-  beforeEach(() => {
-    // deauthenticate the user and reload the page to update the CSRF token
-    cy.clearCookies()
-    cy.reload()
-
+  before(() => {
     cy.visit('/login')
+    cy.get('a').contains('Sign up').click({ force: true })
   })
 
   afterEach(() => {

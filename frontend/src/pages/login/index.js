@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { composeInitialProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
@@ -24,22 +24,12 @@ import styles from './index.module.scss'
 
 const Login = () => {
   const [openPane, setOpenPane] = useState(0)
-  const { query, push } = useRouter()
   const handlePaneChange = e => setOpenPane(e.target.value)
-
-  useEffect(() => {
-    const openLoginPane = query.hasOwnProperty('1')
-    if (openLoginPane) {
-      // Remove the query parameter (`1`) from the url w/o reloading.
-      push('/login', null, { shallow: true })
-      setOpenPane(1)
-    }
-  }, [query, push])
 
   return (
     <Page title="Kitspace | Login">
       <Grid
-        id="login-grid"
+        data-cy="login-grid"
         style={{ maxWidth: '500px', margin: 'auto' }}
         verticalAlign="middle"
       >
@@ -49,19 +39,13 @@ const Login = () => {
             panes={[
               {
                 menuItem: 'Sign up',
-                render: function SignUpTab() {
-                  return (
-                    <SignUpForm
-                      openLoginPane={() =>
-                        push('/login?1', null, { shallow: true })
-                      }
-                    />
-                  )
+                render: function FirstPane() {
+                  return <SignUpForm openLoginPane={() => setOpenPane(1)} />
                 },
               },
               {
                 menuItem: 'Login',
-                render: function SignInTab() {
+                render: function SecondPane() {
                   return <SignInForm />
                 },
               },

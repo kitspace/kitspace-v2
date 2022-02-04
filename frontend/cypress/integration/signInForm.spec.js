@@ -4,12 +4,9 @@ import { getFakeUsername } from '../support/getFakeUsername'
 import SignInFormModel from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
-  before(() => cy.visit('/login?1'))
-
-  it('should route to sign in form based on params', () => {
-    cy.visit('/login?1')
-    // The form is rendered on screen.
-    cy.contains('Login')
+  before(() => {
+    cy.visit('/login')
+    cy.get('a').contains('Login').click({ force: true })
   })
 
   it('should have the proper fields', () => {
@@ -47,7 +44,8 @@ describe('Log in form submission', () => {
   before(() => {
     // create user and log him in.
     cy.createUser(username, email, password)
-    cy.visit('login?1')
+    cy.visit('login')
+    cy.get('a').contains('Login').click({ force: true })
   })
 
   it('should display error message on submitting form with wrong username', () => {
