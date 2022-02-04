@@ -221,7 +221,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, edge, electron]
+        browser: [chrome, edge, electron, firefox]
         containers: [1, 2, 3, 4]
 
     steps:
