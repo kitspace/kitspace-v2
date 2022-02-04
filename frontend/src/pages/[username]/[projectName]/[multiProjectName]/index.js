@@ -59,6 +59,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
 
     if (!projectKitspaceYAML) {
       // If there is not multiproject as specified in the url `{username}/{projectName}/{multiProjectName}`
+      res.statusCode = 404
       return { notFound: true }
     }
 

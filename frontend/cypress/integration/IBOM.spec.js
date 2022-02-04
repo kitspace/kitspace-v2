@@ -11,7 +11,7 @@ describe('IBOM page', () => {
     cy.visit('/')
   })
 
-  it('should redirect to the multi project page (multiproject)', () => {
+  it('should redirect to project page (multi project)', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -60,7 +60,7 @@ describe('IBOM page', () => {
     )
   })
 
-  it('should redirect to the multi project page', () => {
+  it('should redirect to the multi project page (normal project)', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -96,6 +96,25 @@ describe('IBOM page', () => {
     cy.url({ timeout: 20_000 }).should(
       'eq',
       `${Cypress.config().baseUrl}/${username}/${normalRepoName}`,
+    )
+  })
+})
+
+describe('404 IBOM for nonexistent projects', () => {
+  it("should return 404 status code for IBOM if the project isn't found (multiproject)", () => {
+    cy.request({
+      url: '/someone/multi/project/IBOM',
+      failOnStatusCode: false,
+    }).then(res => {
+      expect(res.status).to.eq(404)
+    })
+  })
+
+  it("should return 404 status code for IBOM if the project isn't found (normal project)", () => {
+    cy.request({ url: '/someone/project/IBOM', failOnStatusCode: false }).then(
+      res => {
+        expect(res.status).to.eq(404)
+      },
     )
   })
 })

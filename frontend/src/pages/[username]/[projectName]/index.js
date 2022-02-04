@@ -14,11 +14,11 @@ import SharedProjectPage from '@components/SharedProjectPage'
 import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
-import ErrorPage from '@pages/_error'
+import Custom404 from '@pages/404'
 
 const ProjectPage = props => {
   if (props.notFound) {
-    return <ErrorPage statusCode={404} />
+    return <Custom404 />
   }
 
   if (props?.subProjects)
