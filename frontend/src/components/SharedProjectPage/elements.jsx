@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { bool, objectOf, string, number, shape, object } from 'prop-types'
 import { useRouter } from 'next/router'
-import { uniqBy } from 'lodash'
+import uniqBy from 'lodash/uniqBy'
 import { Button, Form, Input, Loader, Segment, TextArea } from 'semantic-ui-react'
 
 import useForm from '@hooks/useForm'
