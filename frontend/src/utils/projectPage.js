@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
 import { updateFile, uploadFile } from '@utils/giteaApi'
-import { flatten } from 'lodash'
+import { flatten } from 'lodash/flatten'
 import getConfig from 'next/config'
 
 const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL

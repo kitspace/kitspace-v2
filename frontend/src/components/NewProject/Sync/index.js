@@ -3,7 +3,7 @@ import { func, number, shape, string } from 'prop-types'
 import { Input, Button, Form, Message } from 'semantic-ui-react'
 
 import { useRouter } from 'next/router'
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash/isEmpty'
 
 import SyncRepoFromModel from '@models/SyncRepoForm'
 import useForm from '@hooks/useForm'

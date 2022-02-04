@@ -12,7 +12,7 @@ import {
   Segment,
   Tab,
 } from 'semantic-ui-react'
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash/isEmpty'
 import getConfig from 'next/config'
 
 import Page from '@components/Page'
