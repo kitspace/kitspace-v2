@@ -130,15 +130,21 @@ const SiteMenuItems = ({ isProjectRoute }) => {
 
   return (
     <>
-      <Menu.Item active={isProjectRoute} as="a" href="/" id="projects">
-        Projects
-      </Menu.Item>
-      <Menu.Item active={pathname === '/bom-builder'} as="a" href="/bom-builder">
-        BOM Builder
-      </Menu.Item>
-      <Menu.Item active={pathname === '/1-click-bom'} as="a" href="/1-click-bom">
-        1-click BOM
-      </Menu.Item>
+      <Link passHref href="/">
+        <Menu.Item active={isProjectRoute} as="a" id="projects">
+          Projects
+        </Menu.Item>
+      </Link>
+      <Link passHref href="/bom-builder">
+        <Menu.Item active={pathname === '/bom-builder'} as="a">
+          BOM Builder
+        </Menu.Item>
+      </Link>
+      <Link passHref href="/1-click-bom">
+        <Menu.Item active={pathname === '/1-click-bom'} as="a">
+          1-click BOM
+        </Menu.Item>
+      </Link>
       <Menu.Item className={styles.SearchBarContainer}>
         <SearchBar />
       </Menu.Item>
@@ -158,10 +164,12 @@ const SocialMenuItems = () => (
       <Icon name="chat" />
       Chat
     </Menu.Item>
-    <Menu.Item as="a" href="/newsletter/">
-      <Icon name="envelope" />
-      Email & Newsletter
-    </Menu.Item>
+    <Link passHref href="/newsletter">
+      <Menu.Item as="a">
+        <Icon name="envelope" />
+        Email & Newsletter
+      </Menu.Item>
+    </Link>
     <Menu.Item as="a" href="https://twitter.com/kitspaceorg">
       <Icon name="twitter" />
       Twitter
