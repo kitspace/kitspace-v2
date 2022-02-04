@@ -14,7 +14,9 @@ export const getServerSideProps = async ({ params }) => {
   const projectFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
     `${processorUrl}/status/${projectFullname}/HEAD/interactive_bom.json`,
-  ).then(r => r.json().then(body => body.status))
+  )
+    .then(r => r.json().then(body => body.status))
+    .catch(() => 'fail')
 
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
