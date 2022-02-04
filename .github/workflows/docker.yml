@@ -222,7 +222,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chrome, edge, electron, firefox]
-        containers: [1, 2, 3, 4]
+        containers: [1, 2, 3]
 
     steps:
       - name: Setup Node 14
