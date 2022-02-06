@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { bool, func, number, shape, string } from 'prop-types'
-import { Input, Button, Modal, Form, Loader } from 'semantic-ui-react'
+import { func, number, shape, string } from 'prop-types'
+import { Input, Button, Modal, Form, Loader, Progress } from 'semantic-ui-react'
 
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
@@ -11,6 +11,7 @@ import { createRepo, repoExists } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
 import useForm from '@hooks/useForm'
 import ExistingProjectFromModel from '@models/ExistingProjectForm'
+import styles from './index.module.scss'
 
 const Upload = ({ user, csrf }) => {
   const { push } = useRouter()
@@ -24,6 +25,7 @@ const Upload = ({ user, csrf }) => {
   const [originalProjectName, setOriginalProjectName] = useState('')
   const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [failedToCreateProject, setFailedToCreateProject] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   const onDrop = async droppedFiles => {
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
@@ -44,10 +46,11 @@ const Upload = ({ user, csrf }) => {
         files: droppedFiles,
         repo: `${user.username}/${tempProjectName}`,
         csrf,
+        onProgress: setProgress,
       })
 
       if (didUploadSuccessfully) {
-        await push(`/${user.username}/${tempProjectName}?create=true`)
+        await push(`/${user.username}/${tempProjectName}`)
       } else {
         setFailedToCreateProject(!didUploadSuccessfully)
       }
@@ -65,7 +68,7 @@ const Upload = ({ user, csrf }) => {
       repo: `${user.username}/${differentName}`,
       csrf,
     })
-    await push(`/${user.username}/${differentName}?create=true`)
+    await push(`/${user.username}/${differentName}`)
   }
 
   const onUpdateExisting = async () => {
@@ -117,65 +120,97 @@ const Upload = ({ user, csrf }) => {
 
   return (
     <>
-      <NewProjectDropZone
-        didDropFiles={droppedFiles.length !== 0}
-        failedToCreateProject={failedToCreateProject}
-        onDrop={onDrop}
-      />
-      <Modal
-        closeIcon
-        data-cy="collision-modal"
-        open={conflictModalOpen}
-        onClose={() => setConflictModalOpen(false)}
-      >
-        <Modal.Header>Heads up!</Modal.Header>
-        <Modal.Content>
-          <p>
-            You have an existing project with the same name. You can either choose a
-            different name or update this file in the existing project.
-          </p>
-          <Form>
-            <Form.Field
-              fluid
-              control={Input}
-              error={formatProjectNameError()}
-              label={didChangeName ? 'New project name' : 'Project name'}
-              name="name"
-              value={form.name || ''}
-              onChange={onChange}
-            />
-          </Form>
-        </Modal.Content>
-        <Modal.Actions>
-          {didChangeName ? (
-            <Button
-              color="green"
-              content="OK"
-              data-cy="collision-different-name"
-              disabled={!isValidProjectName}
-              onClick={onDifferentName}
-            />
-          ) : (
-            <Button
-              color="orange"
-              content={`Add files to "${originalProjectName}"`}
-              data-cy="collision-update"
-              onClick={onUpdateExisting}
-            />
-          )}
-        </Modal.Actions>
-      </Modal>
+      {!failedToCreateProject ? (
+        <NewProjectDropZone
+          progressValue={progress}
+          totalNumberOfFiles={droppedFiles.length}
+          onDrop={onDrop}
+        />
+      ) : (
+        <Modal
+          closeIcon
+          data-cy="collision-modal"
+          open={conflictModalOpen}
+          onClose={() => {
+            // Close the modal
+            setConflictModalOpen(false)
+
+            // reset the state as if the user didn't drop anything
+            setFailedToCreateProject(false)
+            setDroppedFiles([])
+          }}
+        >
+          <Modal.Header>Heads up!</Modal.Header>
+          <Modal.Content>
+            <p>
+              You have an existing project with the same name. You can either choose
+              a different name or update this file in the existing project.
+            </p>
+            <Form>
+              <Form.Field
+                fluid
+                control={Input}
+                error={formatProjectNameError()}
+                label={didChangeName ? 'New project name' : 'Project name'}
+                name="name"
+                value={form.name || ''}
+                onChange={onChange}
+              />
+            </Form>
+          </Modal.Content>
+          <Modal.Actions>
+            {didChangeName ? (
+              <Button
+                color="green"
+                content="OK"
+                data-cy="collision-different-name"
+                disabled={!isValidProjectName}
+                onClick={onDifferentName}
+              />
+            ) : (
+              <Button
+                color="orange"
+                content={`Add files to "${originalProjectName}"`}
+                data-cy="collision-update"
+                onClick={onUpdateExisting}
+              />
+            )}
+          </Modal.Actions>
+        </Modal>
+      )}
     </>
   )
 }
 
-const NewProjectDropZone = ({ onDrop, didDropFiles, failedToCreateProject }) => {
-  if (didDropFiles && !failedToCreateProject)
+const NewProjectDropZone = ({ onDrop, totalNumberOfFiles, progressValue }) => {
+  const didDropFiles = totalNumberOfFiles !== 0
+  const didStartUploading = didDropFiles && progressValue > 0
+  const didFinishUploading = didDropFiles && progressValue === totalNumberOfFiles
+
+  if (didStartUploading) {
+    return (
+      <Progress
+        active={!didFinishUploading}
+        className={styles.progressBar}
+        color={didFinishUploading ? 'green' : 'blue'}
+        label={
+          totalNumberOfFiles === progressValue
+            ? 'Initializing the project...'
+            : 'Uploading files...'
+        }
+        progress="ratio"
+        total={totalNumberOfFiles}
+        value={progressValue}
+      />
+    )
+  } else if (didDropFiles) {
     return (
       <Loader active data-cy="creating-project-loader">
         Creating Project...
       </Loader>
     )
+  }
+
   return (
     <DropZone overrideStyle={{ maxWidth: '70%', margin: 'auto' }} onDrop={onDrop} />
   )
@@ -188,8 +223,8 @@ Upload.propTypes = {
 
 NewProjectDropZone.propTypes = {
   onDrop: func.isRequired,
-  didDropFiles: bool.isRequired,
-  failedToCreateProject: bool.isRequired,
+  totalNumberOfFiles: number.isRequired,
+  progressValue: number.isRequired,
 }
 
 export default Upload
