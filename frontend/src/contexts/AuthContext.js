@@ -47,7 +47,7 @@ const AuthProvider = ({ children, initialUser, initialCsrf }) => {
 AuthProvider.propTypes = {
   children: node.isRequired,
   initialUser: string.isRequired,
-  initalCsrf: string.isRequired,
+  initialCsrf: string.isRequired,
 }
 
 export default AuthProvider
