@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { node, string } from 'prop-types'
+import { node, string, object } from 'prop-types'
 
 import { logout } from '@utils/giteaInternalApi'
 
@@ -46,7 +46,7 @@ const AuthProvider = ({ children, initialUser, initialCsrf }) => {
 
 AuthProvider.propTypes = {
   children: node.isRequired,
-  initialUser: string.isRequired,
+  initialUser: object,
   initialCsrf: string.isRequired,
 }
 

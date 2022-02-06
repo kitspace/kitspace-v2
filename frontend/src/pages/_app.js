@@ -34,9 +34,27 @@ import './_app.scss'
 import AuthProvider from '@contexts/AuthContext'
 import { bool, func, object } from 'prop-types'
 
-function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
+function KitspaceApp({
+  Component,
+  pageProps,
+  serverSideSession,
+  clientSideSession,
+  isStaticFallback,
+}) {
+  const setSession = serverSideSession ? (
+    <script
+      // using dangerouslySetInnerHTML to avoid browser parsing errors
+      // (could be that these only happen in development mode)
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{
+        __html: `window.session = ${JSON.stringify(serverSideSession)};`,
+      }}
+    />
+  ) : null
   const setStaticFallback = isStaticFallback ? (
     <script
+      // using dangerouslySetInnerHTML to avoid browser parsing errors
+      // (could be that these only happen in development mode)
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: `window.isStaticFallback = ${JSON.stringify(isStaticFallback)};`,
@@ -47,9 +65,13 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
-    <AuthProvider initalCsrf={session.csrf} initialUser={session.user}>
+    <AuthProvider
+      initialCsrf={serverSideSession?.csrf || clientSideSession?.csrf}
+      initialUser={serverSideSession?.user || clientSideSession?.user}
+    >
       <SWRConfig value={{}}>
         <Head>
+          {setSession}
           {setStaticFallback}
           <script>
             {
@@ -66,17 +88,23 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
 
 KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
-  let session
+  let serverSideSession
+  let clientSideSession
   if (appContext.ctx.req != null) {
-    session = {
+    serverSideSession = {
       user: appContext.ctx.req.session.user,
       csrf: appContext.ctx.req.session._csrf,
     }
   } else if (typeof window !== 'undefined') {
-    session = window.session
+    clientSideSession = window.session
   }
   const { isStaticFallback } = appContext.ctx.query
-  return { ...appProps, session, isStaticFallback }
+  return {
+    ...appProps,
+    serverSideSession,
+    clientSideSession,
+    isStaticFallback,
+  }
 }
 
 function ErrorMessage() {
@@ -96,8 +124,9 @@ function ErrorMessage() {
 KitspaceApp.propTypes = {
   Component: func.isRequired,
   pageProps: object.isRequired,
-  session: object,
   isStaticFallback: bool,
+  serverSideSession: object,
+  clientSideSession: object,
 }
 
 KitspaceApp.defaultProps = {
