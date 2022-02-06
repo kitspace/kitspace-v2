@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { composeInitialProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
@@ -18,6 +18,7 @@ import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import { withRequireSignOut } from '@utils/authHandlers'
 import SignInFormModel from '@models/SignInForm'
+import { AuthContext } from '@contexts/AuthContext'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
 import styles from './index.module.scss'
@@ -65,7 +66,8 @@ Login.getInitialProps = composeInitialProps({
 const SignInForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
-  const { reload } = useRouter()
+  const { push, query } = useRouter()
+  const { setUser } = useContext(AuthContext)
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -89,10 +91,9 @@ const SignInForm = () => {
 
     const data = await response.json()
 
-    if (response.ok) {
-      // After successful login the page must be reloaded,
-      // because cookies are injected on server-side
-      reload()
+    if (response.ok && data.user) {
+      setUser(data.user)
+      push(query.redirect || '/')
     } else {
       const { error, message } = data
       setApiResponse({
