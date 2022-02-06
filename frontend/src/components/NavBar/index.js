@@ -216,10 +216,12 @@ const UserControllerButton = ({ smallNavBar }) => {
 }
 
 const LogInButton = () => {
-  const { asPath, push } = useRouter()
+  const { push, pathname } = useRouter()
 
   const onClick = async () => {
-    await push(`/login?redirect=${asPath}`)
+    if (pathname !== '/login') {
+      await push(`/login?redirect=${pathname}`)
+    }
   }
 
   return (
