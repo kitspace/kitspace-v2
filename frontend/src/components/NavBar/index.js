@@ -196,10 +196,11 @@ const ContactMenu = () => (
 const UserControllerButton = ({ smallNavBar }) => {
   const { pathname } = useRouter()
 
-  const { isAuthenticated } = useContext(AuthContext)
   const isLogInRoute = pathname === '/login'
 
-  if (isAuthenticated) {
+  const { user } = useContext(AuthContext)
+
+  if (user != null) {
     if (smallNavBar) {
       return <UserMenuItems />
     }

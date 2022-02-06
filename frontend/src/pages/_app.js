@@ -35,14 +35,6 @@ import AuthProvider from '@contexts/AuthContext'
 import { bool, func, object } from 'prop-types'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
-  const setSession = session ? (
-    <script
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{
-        __html: `window.session = ${JSON.stringify(session)};`,
-      }}
-    />
-  ) : null
   const setStaticFallback = isStaticFallback ? (
     <script
       // eslint-disable-next-line react/no-danger
@@ -55,10 +47,9 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
-    <AuthProvider>
+    <AuthProvider initialUser={session.user} initalCsrf={session.csrf}>
       <SWRConfig value={{}}>
         <Head>
-          {setSession}
           {setStaticFallback}
           <script>
             {
@@ -75,7 +66,15 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
 
 KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
-  const session = appContext.ctx.req ? appContext.ctx.req.session : null
+  let session
+  if (appContext.ctx.req != null) {
+    session = {
+      user: appContext.ctx.req.session.user,
+      csrf: appContext.ctx.req.session._csrf,
+    }
+  } else if (typeof window !== 'undefined') {
+    session = window.session
+  }
   const { isStaticFallback } = appContext.ctx.query
   return { ...appProps, session, isStaticFallback }
 }

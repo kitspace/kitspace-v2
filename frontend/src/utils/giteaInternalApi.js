@@ -219,11 +219,5 @@ export const logout = async csrf => {
     },
     credentials: 'include',
   })
-
-  if (res.ok) {
-    delete window.session.user
-    return true
-  } else {
-    return false
-  }
+  return res.ok
 }
