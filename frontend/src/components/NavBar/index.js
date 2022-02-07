@@ -216,19 +216,20 @@ const UserControllerButton = ({ smallNavBar }) => {
 }
 
 const LogInButton = () => {
-  const { push, pathname } = useRouter()
+  const { asPath } = useRouter()
 
-  const onClick = async () => {
-    if (pathname !== '/login') {
-      await push(`/login?redirect=${pathname}`)
-    }
+  const href = { pathname: '/login' }
+  if (!asPath.startsWith('/login')) {
+    href.query = { redirect: asPath }
   }
 
   return (
     <Menu.Item>
-      <Button color="green" id="login" onClick={onClick}>
-        Login
-      </Button>
+      <Link passHref href={href}>
+        <Button as="a" color="green" id="login">
+          Login
+        </Button>
+      </Link>
     </Menu.Item>
   )
 }
