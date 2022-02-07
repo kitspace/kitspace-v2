@@ -91,10 +91,7 @@ KitspaceApp.getInitialProps = async appContext => {
   let serverSideSession
   let clientSideSession
   if (appContext.ctx.req != null) {
-    serverSideSession = {
-      user: appContext.ctx.req.session.user,
-      csrf: appContext.ctx.req.session._csrf,
-    }
+    serverSideSession = appContext.ctx.req.session
   } else if (typeof window !== 'undefined') {
     clientSideSession = window.session
   }

@@ -2,7 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const next = require('next')
 const conf = require('./next.config.js')
-const bodyParser = require('body-parser')
+const fetch = require('node-fetch')
 
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -19,19 +19,12 @@ app.prepare().then(() => {
     server.use(morgan('tiny'))
   }
 
-  server.all('/_next/*', nextHandler)
-
-  server.get('*', bodyParser.json(), (req, res) => {
-    // our session information is sent from gitea as the body of a get request
-    // this server should not be exposed to the public, i.e. all get requests
-    // need to be routed through gitea with any original body removed or we
-    // have a security vulnerability
-    req.session = req.body
-    req.body = {}
-    nextHandler(req, res)
+  server.all('*', async (req, res, next) => {
+    req.session = await fetch('http://gitea:3000/user/kitspace/session', {
+      headers: { ...req.headers, accept: 'application/json' },
+    }).then(r => r.json())
+    nextHandler(req, res, next)
   })
-
-  server.all('*', nextHandler)
 
   server.listen(port, err => {
     if (err) {

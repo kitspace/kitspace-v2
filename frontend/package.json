@@ -30,6 +30,7 @@
     "morgan": "^1.10.0",
     "next": "^12.0.9",
     "next-composition": "^1.0.0",
+    "node-fetch": "2",
     "prop-types": "^15.7.2",
     "raw-loader": "^4.0.0",
     "react": "^17.0.2",
