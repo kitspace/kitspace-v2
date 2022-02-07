@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { composeInitialProps } from 'next-composition'
+import { composeServerSideProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
 import {
@@ -16,7 +16,7 @@ import { isEmpty } from 'lodash'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
-import { withRequireSignOut } from '@utils/authHandlers'
+import { withAlreadySignedIn } from '@utils/authHandlers'
 import SignInFormModel from '@models/SignInForm'
 import { AuthContext } from '@contexts/AuthContext'
 import OAuthButtons from '@components/OAuthButtons'
@@ -59,8 +59,8 @@ const Login = () => {
   )
 }
 
-Login.getInitialProps = composeInitialProps({
-  use: [withRequireSignOut],
+export const getServerSideProps = composeServerSideProps({
+  use: [withAlreadySignedIn],
 })
 
 const SignInForm = () => {
