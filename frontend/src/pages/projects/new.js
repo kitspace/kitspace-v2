@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react'
-import { composeInitialProps } from 'next-composition'
+import { composeServerSideProps } from 'next-composition'
 import { bool, func, number, shape, string } from 'prop-types'
 import {
   Grid,
@@ -80,7 +80,7 @@ const New = () => {
   )
 }
 
-New.getInitialProps = composeInitialProps({
+export const getServerSideProps = composeServerSideProps({
   use: [withRequireSignIn('/projects/new')],
 })
 

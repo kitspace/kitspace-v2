@@ -3,25 +3,26 @@ import Router from 'next/router'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 /**
- * @param {string} asPath the page path e.g., `/project/new`.
+ * @param {string} asPath the page path e.g., `/projects/new`.
  */
 export const withRequireSignIn =
   asPath =>
   /**
-   * @param {{req: NextApiRequest, res: NextApiResponse}}
+   * @param {{req: !NextApiRequest }}
    */
-  ({ req, res }) => {
-    const session = req?.session ?? window?.session
+  ({ req }) => {
+    const session = req.session
 
     const isRelativePath = asPath.startsWith('/')
     if (!isAuthenticated(session) && isRelativePath) {
-      if (res) {
-        res.writeHead(307, { Location: `/login?redirect=${asPath}` })
-        res.end()
-      } else {
-        Router.replace(`/login?redirect=${asPath}`)
+      return {
+        redirect: {
+          destination: `/login?redirect=${encodeURIComponent(asPath)}`,
+          permanent: false,
+        },
       }
     }
+    return {}
   }
 
 /**
