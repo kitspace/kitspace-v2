@@ -17,8 +17,7 @@ describe('Upload project', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -54,8 +53,7 @@ describe('User projects name collision', () => {
     // User authentication is done in `before` because this spec test name collisions for the same user.
     // i.e., the same user is used for all tests in this spec.
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')

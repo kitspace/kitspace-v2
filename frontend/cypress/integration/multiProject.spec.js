@@ -26,8 +26,7 @@ describe('Render project cards', () => {
     const repoName = syncedRepoUrlMultiProjects.split('/').slice(-1).toString()
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -60,8 +59,7 @@ describe('Render project cards', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -109,8 +107,7 @@ describe('Render project cards', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -159,8 +156,7 @@ describe('Multi project page', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -212,8 +208,7 @@ describe('Multi project page', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')

@@ -2,7 +2,7 @@ import faker from 'faker'
 
 import { getFakeUsername } from '../support/getFakeUsername'
 
-describe('It validates authentication redirects', () => {
+describe('Authentication redirects', () => {
   const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
@@ -50,7 +50,7 @@ describe('It validates authentication redirects', () => {
   })
 })
 
-describe('It validates redirects after login', () => {
+describe('Redirect after login', () => {
   const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
@@ -99,7 +99,7 @@ describe('It validates redirects after login', () => {
   })
 })
 
-describe('It validates redirects after sing up', () => {
+describe('Redirect after sign-up', () => {
   it('should redirect to homepage if there is no redirect query', () => {
     // sign the user up
     const username = getFakeUsername()
@@ -138,7 +138,6 @@ describe('It validates redirects after sing up', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
-
     cy.signUp(username, email, password)
 
     cy.url().should('eq', `http://kitspace.test:3000${requireSignInPage}`)
@@ -146,14 +145,13 @@ describe('It validates redirects after sing up', () => {
   })
 })
 
-describe('It validates redirect after logout', () => {
+describe('Redirect after logout', () => {
   it('should redirect to login page', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
     cy.createUser(username, email, password)
     cy.visit('/login')
-    cy.signIn(username, password)
 
     // Press the logout button
     cy.get('img[alt=avatar]').trigger('mousemove').click()
@@ -164,7 +162,7 @@ describe('It validates redirect after logout', () => {
   })
 })
 
-describe('It validates `Add Project` behavior', () => {
+describe('"Add Project" behavior', () => {
   const username = getFakeUsername()
   const email = faker.unique(faker.internet.email)
   const password = '123456'
@@ -180,14 +178,19 @@ describe('It validates `Add Project` behavior', () => {
     cy.reload()
   })
 
-  it('should redirect unauthenticated user to /login?redirect=/projects/new', () => {
+  it('should redirect unauthenticated user to /login and then back to /projects/new', () => {
     // The user is unauthenticated
-    cy.window().its('session.user').should('eq', null)
+    cy.window().its('session.user').should('not.ok')
 
     // Clicking `Add Project` redirects to the login page.
     // and adds redirect query to `/projects/new/`
     cy.get('#add_project').click()
-    cy.url().should('eq', 'http://kitspace.test:3000/login?redirect=/projects/new')
+
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+    cy.createUser(username, email, password)
+    cy.url().should('eq', 'http://kitspace.test:3000/projects/new')
   })
 
   it('should redirect authenticated user to /projects/new', () => {

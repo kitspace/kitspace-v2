@@ -17,8 +17,7 @@ describe('IBOM page', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -66,8 +65,7 @@ describe('IBOM page', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     /* Migrate the normal repo */

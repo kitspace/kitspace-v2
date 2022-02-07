@@ -37,32 +37,6 @@ Cypress.Commands.add('signOut', () => {
   })
 })
 
-Cypress.Commands.add('stubSignInReq', (ok, response, path) => {
-  cy.visit(path ? path : '/login', {
-    onBeforeLoad(win) {
-      cy.stub(win, 'fetch')
-        .withArgs(signInEndpoint)
-        .resolves({
-          ok,
-          json: () => response,
-        })
-    },
-  })
-})
-
-Cypress.Commands.add('stubUpdateProject', (ok, response, projectName) => {
-  cy.visit(`/projects/update/${projectName}`, {
-    onBeforeLoad(win) {
-      cy.stub(win, 'fetch')
-        .withArgs(`http://gitea.kitspace.test:3000/api/v1/repos/${projectName}`)
-        .resolves({
-          ok,
-          json: () => response,
-        })
-    },
-  })
-})
-
 Cypress.Commands.add('goToUsersAdminPanel', () => {
   // Users database are at `{gitea}/admin/users`
   // Kitspace user interaction should appear there.

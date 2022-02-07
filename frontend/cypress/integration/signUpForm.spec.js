@@ -87,7 +87,7 @@ describe('Sign up form submission', () => {
     cy.visit('/')
     cy.clearCookies()
 
-    // Create user used for conflicts test then sing out again.
+    // Create user used for conflicts test then sign out again.
     cy.visit('/login')
     cy.signUp(username, email, password)
     cy.clearCookies()
@@ -104,11 +104,8 @@ describe('Sign up form submission', () => {
 
     cy.signUp(newUsername, newEmail, newPassword)
 
-    // the user should be signed in, i.e., the `session.user` object won't be null
+    // the user should be signed in
     cy.get('[data-cy=user-menu]').should('be.visible')
-    cy.window().then(win => {
-      assert(win.session.user, 'Auto sign in.')
-    })
   })
 
   it('should display error message on submitting a from with used username', () => {

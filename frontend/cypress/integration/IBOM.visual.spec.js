@@ -12,8 +12,7 @@ describe('Regression test for IBOM ', () => {
     const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
