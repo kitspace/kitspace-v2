@@ -221,3 +221,15 @@ export const logout = async csrf => {
   })
   return res.ok
 }
+
+export const getSession = async () => {
+  const endpoint = `${giteaURL}/user/kitspace/session`
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+    credentials: 'include',
+  })
+  return res.json()
+}

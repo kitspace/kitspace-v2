@@ -17,6 +17,7 @@ import { isEmpty } from 'lodash'
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
 import { withAlreadySignedIn } from '@utils/authHandlers'
+import { getSession } from '@utils/giteaInternalApi'
 import SignInFormModel from '@models/SignInForm'
 import { AuthContext } from '@contexts/AuthContext'
 import OAuthButtons from '@components/OAuthButtons'
@@ -67,7 +68,7 @@ const SignInForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
   const { push, query } = useRouter()
-  const { setUser } = useContext(AuthContext)
+  const { setUser, setCsrf } = useContext(AuthContext)
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -93,6 +94,8 @@ const SignInForm = () => {
 
     if (response.ok && data.user) {
       setUser(data.user)
+      const session = await getSession()
+      setCsrf(session.csrf)
       push(query.redirect || '/')
     } else {
       const { error, message } = data
@@ -165,7 +168,7 @@ const SignInForm = () => {
 const SignUpForm = ({ openLoginPane }) => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
-  const { setUser } = useContext(AuthContext)
+  const { setUser, setCsrf } = useContext(AuthContext)
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
     SignUpFormModel,
     true,
@@ -184,6 +187,8 @@ const SignUpForm = ({ openLoginPane }) => {
 
     if (response.ok && data.user) {
       setUser(data.user)
+      const session = await getSession()
+      setCsrf(session.csrf)
       push(query.redirect || '/')
     } else {
       const { error, message } = data

@@ -2,13 +2,14 @@ import React, { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { node, string, object } from 'prop-types'
 
-import { logout } from '@utils/giteaInternalApi'
+import { logout, getSession } from '@utils/giteaInternalApi'
 
 export const AuthContext = createContext({
   isAuthenticated: false,
   user: null,
   logout: async () => false,
   setUser: () => {},
+  setCsrf: () => {},
   csrf: '',
 })
 
@@ -26,8 +27,10 @@ const AuthProvider = ({ children, initialUser, initialCsrf }) => {
 
   const deAuthorize = async () => {
     setUser(null)
-    push('/login')
     await logout()
+    const { csrf } = await getSession()
+    setCsrf(csrf)
+    push('/login')
   }
 
   return (
@@ -36,6 +39,7 @@ const AuthProvider = ({ children, initialUser, initialCsrf }) => {
         user,
         logout: deAuthorize,
         setUser,
+        setCsrf,
         csrf,
       }}
     >
