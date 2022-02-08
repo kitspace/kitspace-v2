@@ -94,9 +94,9 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 
 1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
 
-2. navigate to `frontend`: `cd frontend/`.
+2. navigate to the frontend: `cd frontend/`.
 
-3. Source the `.env` file with `set -a && source ../.env && set +a`
+3. Source the env file with `set -a && source ../.env && set +a`
 
 4. Start the testing client with the `npx cypress open` command.
 
@@ -106,6 +106,6 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 
 ### Recording new visual tests:
 
-1. Make sure you have Chrome, Edge, and Firefox (Cypress installs Electron by default) installed on your machine. For Edge on Linux create a symbolic link `sudo ln -s sudo ln -s /usr/bin/microsoft-edge-stable /usr/bin/edge` so Cypress can find it.
+1. Make sure you have Chrome, Edge, and Firefox (Cypress installs Electron by default) installed on your machine. For Edge on Linux create a symbolic link `sudo ln -s /usr/bin/microsoft-edge-stable /usr/bin/edge` so Cypress can find it.
 2. Write the test in `cypress/integration/newTest.visual.spec.js`, See [IBOM.visual.spec.js](https://github.com/kitspace/kitspace-v2/blob/master/frontend/cypress/integration/IBOM.visual.spec.js) .
 3. Run `./scripts/record_visual_spec.sh cypress/integration/newTest.visual.spec.js`.
