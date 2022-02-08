@@ -7,7 +7,7 @@ const { existsAll, findKicadPcbFile } = require('../../utils')
 
 const exec = util.promisify(cp.exec)
 
-async function processKicadPCB(job, {inputDir, kitspaceYaml, outputDir}) {
+async function processKicadPCB(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
   const filePaths = [layoutSvgPath]

@@ -3,7 +3,7 @@ const processKicadPCB = require('./processKicadPCB')
 
 async function processPCB(
   job,
-  { inputDir, kitspaceYaml, outputDir, hash, name },
+  { inputDir, kitspaceYaml = {}, outputDir, hash, name },
 ) {
   const plottedGerbers = await processKicadPCB(job, {
     inputDir,

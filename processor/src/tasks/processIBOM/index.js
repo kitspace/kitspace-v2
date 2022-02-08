@@ -9,7 +9,7 @@ const { exists } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
-async function processIBOM(job, {inputDir, kitspaceYaml, outputDir, name}) {
+async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 

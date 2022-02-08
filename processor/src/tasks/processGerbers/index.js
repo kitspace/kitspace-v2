@@ -9,7 +9,7 @@ const boardBuilder = require('./board_builder')
 
 async function processGerbers(
   job,
-  { inputDir, kitspaceYaml, outputDir, zipVersion, name, plottedGerbers },
+  { inputDir, kitspaceYaml = {}, outputDir, zipVersion, name, plottedGerbers },
 ) {
   const nameSplit = name.split('/')
   const zipFileName = `${nameSplit[nameSplit.length - 1]}-${zipVersion}-gerbers.zip`

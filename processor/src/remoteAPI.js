@@ -67,13 +67,11 @@ function createRemoteAPI(app) {
         if (ext === '.kicad_pcb') {
           processKicadPCBQueue.add('remoteAPI', {
             inputDir: uploadFolder,
-            kitspaceYaml: {},
             outputDir,
           })
         } else if (ext === '.sch') {
           processSchematicsQueue.add('remoteAPI', {
             inputDir: uploadFolder,
-            kitspaceYaml: {},
             outputDir,
           })
         }

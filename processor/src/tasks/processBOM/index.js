@@ -5,7 +5,7 @@ const getPartinfo = require('./get_partinfo')
 
 const { exists, existsAll, writeFile, readFile } = require('../../utils')
 
-async function processBOM(job, {inputDir, kitspaceYaml = {}, outputDir}) {
+async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
 

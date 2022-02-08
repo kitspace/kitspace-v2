@@ -6,7 +6,10 @@ const cheerio = require('cheerio')
 const { exists, readFile, writeFile } = require('../utils')
 const { GITEA_URL } = require('../env')
 
-async function processReadme(job, { inputDir, kitspaceYaml, outputDir, name }) {
+async function processReadme(
+  job,
+  { inputDir, kitspaceYaml = {}, outputDir, name },
+) {
   const readmePath = path.join(outputDir, 'readme.html')
 
   job.updateProgress({ status: 'in_progress', file: readmePath })

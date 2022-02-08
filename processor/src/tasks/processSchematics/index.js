@@ -4,7 +4,7 @@ const log = require('loglevel')
 
 const { existsAll, exec, findKicadSchematic } = require('../../utils')
 
-async function processSchematics(job, {inputDir, kitspaceYaml, outputDir}) {
+async function processSchematics(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   const schematicSvgPath = path.join(outputDir, 'images/schematic.svg')
 
   const filePaths = [schematicSvgPath]
