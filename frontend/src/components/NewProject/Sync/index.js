@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { number, shape, string } from 'prop-types'
+import { func, number, shape, string } from 'prop-types'
 import { Input, Button, Form, Message } from 'semantic-ui-react'
 
 import { useRouter } from 'next/router'
@@ -10,8 +10,9 @@ import useForm from '@hooks/useForm'
 import { mirrorRepo } from '@utils/giteaApi'
 import { urlToName } from '@utils/index'
 import styles from './index.module.scss'
+import { SyncOp, NoOp } from '../Ops'
 
-const Sync = ({ user, csrf }) => {
+const Sync = ({ csrf, setUserOp, user }) => {
   const { push } = useRouter()
   const { form, errors, onChange } = useForm(SyncRepoFromModel)
 
@@ -25,6 +26,9 @@ const Sync = ({ user, csrf }) => {
 
   const handleClick = async () => {
     if (isEmpty(errors)) {
+      // Syncing can be instantaneous, avoid flickering by delaying setting the user operation.
+      const delayedSyncOp = setTimeout(() => setUserOp(SyncOp), 500)
+
       setLoading(true)
       setMessage({
         content: 'Processing the repository, this may take a while...',
@@ -45,6 +49,11 @@ const Sync = ({ user, csrf }) => {
         })
         await push(`/${username}/${repoName}`)
       } else {
+        // If migration failed don't remove the uploading side.
+        clearTimeout(delayedSyncOp)
+        setUserOp(NoOp)
+
+        setLoading(false)
         if (alreadySynced) {
           setMessage({
             content: 'Repository is already synced!',
@@ -56,8 +65,6 @@ const Sync = ({ user, csrf }) => {
             color: 'red',
           })
         }
-
-        setLoading(false)
       }
     } else {
       setMessage({
@@ -113,6 +120,7 @@ const Sync = ({ user, csrf }) => {
 Sync.propTypes = {
   user: shape({ username: string, id: number }),
   csrf: string.isRequired,
+  setUserOp: func.isRequired,
 }
 
 export default Sync

@@ -12,8 +12,9 @@ import { slugifiedNameFromFiles } from '@utils/index'
 import useForm from '@hooks/useForm'
 import ExistingProjectFromModel from '@models/ExistingProjectForm'
 import styles from './index.module.scss'
+import { UploadOp, NoOp } from '../Ops'
 
-const Upload = ({ user, csrf }) => {
+const Upload = ({ csrf, setUserOp, user }) => {
   const { push } = useRouter()
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ExistingProjectFromModel,
@@ -28,6 +29,8 @@ const Upload = ({ user, csrf }) => {
   const [progress, setProgress] = useState(0)
 
   const onDrop = async droppedFiles => {
+    setUserOp(UploadOp)
+
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
     const repo = await createRepo(tempProjectName, '', csrf)
 
@@ -139,6 +142,7 @@ const Upload = ({ user, csrf }) => {
         data-cy="collision-modal"
         open={conflictModalOpen}
         onClose={() => {
+          setUserOp(NoOp)
           // Close the modal
           setConflictModalOpen(false)
           // reset the state as if the user didn't drop anything
@@ -223,6 +227,7 @@ const Uploader = ({ isNewProject, onDrop, totalNumberOfFiles, progressValue }) =
 Upload.propTypes = {
   user: shape({ username: string, id: number }),
   csrf: string.isRequired,
+  setUserOp: func.isRequired,
 }
 
 Uploader.propTypes = {
