@@ -38,6 +38,7 @@ for pull in pulls:
                 "failure",
                 'Could not be merged into the "review" branch',
             )
+            subprocess.run(["git", "merge", "--abort"], check=True)
         else:
             print(f'Merged "{pull["head"]["label"]}"')
             github_api.create_commit_status(
