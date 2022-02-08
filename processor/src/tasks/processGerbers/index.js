@@ -9,18 +9,18 @@ const boardBuilder = require('./board_builder')
 
 function processGerbers(
   job,
-  { checkoutDir, kitspaceYaml, filesDir, zipVersion, name, plottedGerbers },
+  { inputDir, kitspaceYaml, outputDir, zipVersion, name, plottedGerbers },
 ) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
+        const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         const projectPlottedGerbers = plottedGerbers[projectName]
         return _processGerbers(
           job,
-          checkoutDir,
+          inputDir,
           projectKitspaceYaml,
           projectOutputDir,
           zipVersion,
@@ -32,9 +32,9 @@ function processGerbers(
   }
   return _processGerbers(
     job,
-    checkoutDir,
+    inputDir,
     kitspaceYaml,
-    filesDir,
+    outputDir,
     zipVersion,
     name,
     plottedGerbers,

@@ -66,15 +66,15 @@ function createRemoteAPI(app) {
       await writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
           processKicadPCBQueue.add('remoteAPI', {
-            checkoutDir: uploadFolder,
+            inputDir: uploadFolder,
             kitspaceYaml: {},
-            filesDir: outputDir,
+            outputDir,
           })
         } else if (ext === '.sch') {
           processSchematicsQueue.add('remoteAPI', {
-            checkoutDir: uploadFolder,
+            inputDir: uploadFolder,
             kitspaceYaml: {},
-            filesDir: outputDir,
+            outputDir,
           })
         }
       })

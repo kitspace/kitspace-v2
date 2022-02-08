@@ -9,16 +9,16 @@ const { exists } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
-function processIBOM(job, { checkoutDir, kitspaceYaml, filesDir, hash, name }) {
+function processIBOM(job, { inputDir, kitspaceYaml, outputDir, hash, name }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
+        const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return _processIBOM(
           job,
-          checkoutDir,
+          inputDir,
           projectKitspaceYaml,
           projectOutputDir,
           hash,
@@ -27,7 +27,7 @@ function processIBOM(job, { checkoutDir, kitspaceYaml, filesDir, hash, name }) {
       }),
     )
   }
-  return _processIBOM(job, checkoutDir, kitspaceYaml, filesDir, hash, name)
+  return _processIBOM(job, inputDir, kitspaceYaml, outputDir, hash, name)
 }
 
 async function _processIBOM(job, inputDir, kitspaceYaml, outputDir, hash, name) {

@@ -5,18 +5,18 @@ const getPartinfo = require('./get_partinfo')
 
 const { exists, existsAll, writeFile, readFile } = require('../../utils')
 
-function processBOM(job, { checkoutDir, kitspaceYaml, filesDir }) {
+function processBOM(job, { inputDir, kitspaceYaml, outputDir }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
+        const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        return _processBOM(job, checkoutDir, projectKitspaceYaml, projectOutputDir)
+        return _processBOM(job, inputDir, projectKitspaceYaml, projectOutputDir)
       }),
     )
   }
-  return _processBOM(job, checkoutDir, kitspaceYaml, filesDir)
+  return _processBOM(job, inputDir, kitspaceYaml, outputDir)
 }
 
 async function _processBOM(job, inputDir, kitspaceYaml, outputDir) {

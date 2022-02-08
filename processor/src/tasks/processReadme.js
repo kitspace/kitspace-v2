@@ -6,20 +6,17 @@ const cheerio = require('cheerio')
 const { exists, readFile, writeFile } = require('../utils')
 const { GITEA_URL } = require('../env')
 
-function processReadme(
-  job,
-  { checkoutDir, kitspaceYaml, filesDir,  name },
-) {
+function processReadme(job, { inputDir, kitspaceYaml, outputDir, name }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
+        const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
 
         return _processReadme(
           job,
-          checkoutDir,
+          inputDir,
           projectKitspaceYaml,
           projectOutputDir,
           name,
@@ -28,7 +25,7 @@ function processReadme(
     )
   }
 
-  return _processReadme(job, checkoutDir, kitspaceYaml, filesDir, name)
+  return _processReadme(job, inputDir, kitspaceYaml, outputDir, name)
 }
 
 async function _processReadme(

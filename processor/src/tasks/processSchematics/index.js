@@ -4,23 +4,23 @@ const log = require('loglevel')
 
 const { existsAll, exec, findKicadSchematic } = require('../../utils')
 
-function processSchematics(job, { checkoutDir, kitspaceYaml, filesDir }) {
+function processSchematics(job, { inputDir, kitspaceYaml, outputDir }) {
   if (kitspaceYaml.multi) {
     const projectNames = Object.keys(kitspaceYaml.multi)
     return Promise.all(
       projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
+        const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
         return _processSchematics(
           job,
-          checkoutDir,
+          inputDir,
           projectKitspaceYaml,
           projectOutputDir,
         )
       }),
     )
   }
-  return _processSchematics(job, checkoutDir, kitspaceYaml, filesDir)
+  return _processSchematics(job, inputDir, kitspaceYaml, outputDir)
 }
 
 async function _processSchematics(job, inputDir, kitspaceYaml, outputDir) {

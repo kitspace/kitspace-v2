@@ -11,18 +11,18 @@ const events = require('./events')
 
 async function processPCB(
   eventBus,
-  { checkoutDir, kitspaceYaml, filesDir, hash, name },
+  { inputDir, kitspaceYaml, outputDir, hash, name },
 ) {
   const plottedGerbers = await processKicadPCB(eventBus, {
-    checkoutDir,
+    inputDir,
     kitspaceYaml,
-    filesDir,
+    outputDir,
   })
   const zipVersion = hash.slice(0, 7)
   return processGerbers(eventBus, {
-    checkoutDir,
+    inputDir,
     kitspaceYaml,
-    filesDir,
+    outputDir,
     zipVersion,
     name,
     plottedGerbers,

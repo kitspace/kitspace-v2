@@ -1,8 +1,8 @@
 const path = require('path')
 const { writeFile } = require('../utils')
 
-function writeKitspaceYaml(job, { kitspaceYaml, filesDir }) {
-  const kitspaceYamlJson = path.join(filesDir, 'kitspace-yaml.json')
+function writeKitspaceYaml(job, { kitspaceYaml, outputDir }) {
+  const kitspaceYamlJson = path.join(outputDir, 'kitspace-yaml.json')
   job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson })
 
   return writeFile(kitspaceYamlJson, JSON.stringify(kitspaceYaml, null, 2))
