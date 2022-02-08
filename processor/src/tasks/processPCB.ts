@@ -1,7 +1,7 @@
-const processGerbers = require('./processGerbers')
-const processKicadPCB = require('./processKicadPCB')
+import processGerbers from './processGerbers'
+import processKicadPCB from './processKicadPCB'
 
-async function processPCB(
+export default async function processPCB(
   job,
   { inputDir, kitspaceYaml = {}, outputDir, hash, name },
 ) {
@@ -20,5 +20,3 @@ async function processPCB(
     plottedGerbers,
   })
 }
-
-module.exports = processPCB

@@ -1,15 +1,16 @@
-const cp = require('child_process')
-const util = require('util')
-const fs = require('fs')
-const path = require('path')
-const globule = require('globule')
+import * as child_process from 'child_process'
+import { promisify } from 'util'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as globule from 'globule'
 
-const { exists } = require('../../utils')
+import { exists } from '../../utils'
 
-const exec = util.promisify(cp.exec)
-const readFile = util.promisify(fs.readFile)
+const exec = promisify(child_process.exec)
+const readFile = promisify(fs.readFile)
 
-async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }) {
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }: any) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
@@ -54,7 +55,7 @@ async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }
     )
 }
 
-async function findBoardFile(folderPath, ext, check) {
+async function findBoardFile(folderPath, ext, check?) {
   const f = globule.find(`${folderPath}/**/*.${ext}`)[0]
   if (check == null || (f != null && (await check(f)))) {
     return f
@@ -67,4 +68,4 @@ async function checkEagleFile(f) {
   return contents.includes('eagle.dtd')
 }
 
-module.exports = processIBOM
+export default processIBOM

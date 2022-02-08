@@ -1,16 +1,16 @@
-const express = require('express')
-const log = require('loglevel')
-const path = require('path')
+import * as express from 'express'
+import log from 'loglevel'
+import * as path from 'path'
 
-const watcher = require('./watcher')
-const { createWorkers } = require('./workers')
+import * as watcher from './watcher'
+import { createWorkers } from './workers'
 
-const { DATA_DIR } = require('./env')
+import { DATA_DIR } from './env'
+import events from './events'
 
 const filesDir = path.join(DATA_DIR, 'files')
-const events = require('./events')
 
-function createProjectsAPI(app, repoDir, checkIsRepoReady) {
+export function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   const fileStatus = {}
   const redirects = {}
 
@@ -94,5 +94,3 @@ function getHeadPath(x) {
   p[2] = 'HEAD'
   return p.join('/')
 }
-
-module.exports = { createProjectsAPI }

@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
     "noEmit": true,
+    "esModuleInterop": true,
     "allowJs": true
   },
   "include": ["src/**/*", "test/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/tasks/processIBOM/InteractiveHtmlBom/"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true
+  }
 }

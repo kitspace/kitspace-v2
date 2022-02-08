@@ -1,5 +1,5 @@
-const pcbStackup = require('pcb-stackup')
-const xmlElementString = require('xml-element-string')
+import pcbStackup from 'pcb-stackup'
+import xmlElementString from 'xml-element-string'
 
 const defaultOptions = {
   // copper finish
@@ -96,8 +96,9 @@ function styleString(options) {
   .pcb-stackup_out {color: ${options.out};}/* ]]> */`
 }
 
-module.exports = (layers, color, createElement) =>
-  new Promise((resolve, reject) => {
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export default function boardBuilder(layers, color, createElement?) : any {
+  return new Promise((resolve, reject) => {
     pcbStackup(
       layers,
       {
@@ -114,7 +115,8 @@ module.exports = (layers, color, createElement) =>
       },
     )
   })
+}
 
-module.exports.getStyle = function getStyle(color) {
+export function getStyle(color) {
   return styleString(styleToOption(colorToStyle[color]))
 }

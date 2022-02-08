@@ -1,11 +1,11 @@
-const path = require('path')
-const cp = require('child_process')
-const util = require('util')
-const globule = require('globule')
+import * as path from 'path'
+import * as cp from 'child_process'
+import { promisify } from 'util'
+import * as globule from 'globule'
 
-const { existsAll, findKicadPcbFile } = require('../../utils')
+import { existsAll, findKicadPcbFile } from '../../utils'
 
-const exec = util.promisify(cp.exec)
+const exec = promisify(cp.exec)
 
 async function processKicadPCB(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
@@ -75,4 +75,4 @@ async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
   return exec(plotCommand)
 }
 
-module.exports = processKicadPCB
+export default processKicadPCB

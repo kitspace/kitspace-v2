@@ -1,11 +1,13 @@
-const oneClickBOM = require('1-click-bom')
-const log = require('loglevel')
-const path = require('path')
-const getPartinfo = require('./get_partinfo')
+import * as ClickBom from '1-click-bom'
+import * as loglevel from 'loglevel'
+import * as path from 'path'
+import getPartinfo from './get_partinfo'
 
-const { exists, existsAll, writeFile, readFile } = require('../../utils')
+import { exists, existsAll, writeFile, readFile } from '../../utils'
 
-async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
 
@@ -33,18 +35,18 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
       }
     }
     const content = await readFile(bomInputPath)
-    const bom = oneClickBOM.parse(content, {
+    const bom = ClickBom.parse(content, {
       ext: /\.kicad_pcb$/i.test(bomInputPath) ? 'kicad_pcb' : null,
     })
 
     if (bom.invalid != null) {
       bom.invalid.forEach(invalid => {
-        log.warn('invalid line:', invalid)
+        loglevel.warn('invalid line:', invalid)
       })
     }
     if (bom.warnings != null) {
       bom.warnings.forEach(warning => {
-        log.warn('warning:', warning)
+        loglevel.warn('warning:', warning)
       })
     }
     if (!bom.lines || bom.lines.length === 0) {
@@ -57,7 +59,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
       }
       return
     }
-    bom.tsv = oneClickBOM.writeTSV(bom.lines)
+    bom.tsv = ClickBom.writeTSV(bom.lines)
 
     bom.parts = await getPartinfo(bom.lines)
 
@@ -81,4 +83,4 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   }
 }
 
-module.exports = processBOM
+export default processBOM

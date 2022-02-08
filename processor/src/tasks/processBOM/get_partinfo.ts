@@ -1,5 +1,5 @@
-const superagent = require('superagent')
-const ramda = require('ramda')
+import superagent from 'superagent'
+import ramda from 'ramda'
 
 const partinfoURL = 'https://partinfo.kitspace.org/graphql'
 
@@ -39,9 +39,7 @@ function post(mpn) {
     .then(res => res.body.data.part)
 }
 
-function getPartinfo(lines) {
+export default function getPartinfo(lines) {
   const requests = lines.map(line => Promise.all(line.partNumbers.map(post)))
   return Promise.all(requests).then(ramda.flatten)
 }
-
-module.exports = getPartinfo

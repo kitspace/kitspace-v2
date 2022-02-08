@@ -1,8 +1,8 @@
-const backOff = require('backoff').exponential
-const log = require('loglevel')
-const { Client } = require('pg')
+import { exponential as backOff } from 'backoff'
+import * as log from 'loglevel'
+import { Client } from 'pg'
 
-const { GITEA_DB_CONFIG, MAXIMUM_REPO_MIGRATION_TIME } = require('./env')
+import { GITEA_DB_CONFIG, MAXIMUM_REPO_MIGRATION_TIME } from './env'
 
 const BACKOFF_INITIAL_DELAY = 100
 const MAXIMUM_NUM_OF_RETRIES = Math.ceil(
@@ -35,7 +35,7 @@ client.connect(e => {
  * @param {string} gitDir
  * @returns
  */
-async function checkIsRepoReady(gitDir) {
+export async function checkIsRepoReady(gitDir) {
   const { repoName, ownerName } = parseRepoGitDir(gitDir)
   const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, repoName)
 
@@ -107,9 +107,10 @@ async function queryGiteaRepoDetails(ownerName, repoName) {
 
 /**
  * Query the migration task status for a gitea repo, with exponential backoff.
- * @returns
  */
-async function queryGiteaRepoWithBackoff(repoQuery) {
+async function queryGiteaRepoWithBackoff(
+  repoQuery,
+): Promise<{ id: string; isEmpty: boolean; isMirror: boolean }> {
   const [ownerName, repoName] = repoQuery.values
 
   const onBackoff = async (num, delay, resolve) => {
@@ -201,7 +202,8 @@ async function queryMigrationStatusWithBackoff(migrationStatusQuery, repoId) {
  * @param {ExponentialOptions=} config
  * @returns
  */
-async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) {
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) : Promise<any> {
   const backoffInstance = backOff({
     ...config,
     initialDelay: BACKOFF_INITIAL_DELAY,
@@ -221,5 +223,3 @@ async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) {
       .backoff()
   })
 }
-
-module.exports = { checkIsRepoReady }
