@@ -7,48 +7,9 @@ const { existsAll, writeFile, readFile, exec } = require('../../utils')
 const findGerberFiles = require('./findGerberFiles')
 const boardBuilder = require('./board_builder')
 
-function processGerbers(
+async function processGerbers(
   job,
   { inputDir, kitspaceYaml, outputDir, zipVersion, name, plottedGerbers },
-) {
-  if (kitspaceYaml.multi) {
-    const projectNames = Object.keys(kitspaceYaml.multi)
-    return Promise.all(
-      projectNames.map(projectName => {
-        const projectOutputDir = path.join(outputDir, projectName)
-        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        const projectPlottedGerbers = plottedGerbers[projectName]
-        return _processGerbers(
-          job,
-          inputDir,
-          projectKitspaceYaml,
-          projectOutputDir,
-          zipVersion,
-          projectName,
-          projectPlottedGerbers,
-        )
-      }),
-    )
-  }
-  return _processGerbers(
-    job,
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    zipVersion,
-    name,
-    plottedGerbers,
-  )
-}
-
-async function _processGerbers(
-  job,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  zipVersion,
-  name,
-  plottedGerbers,
 ) {
   const nameSplit = name.split('/')
   const zipFileName = `${nameSplit[nameSplit.length - 1]}-${zipVersion}-gerbers.zip`

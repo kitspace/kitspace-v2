@@ -94,6 +94,25 @@ async function processRepo(repoDir, gitDir) {
   const kitspaceYaml = await getKitspaceYaml(inputDir)
 
   writeKitspaceYamlQueue.add('projectAPI', { kitspaceYaml, outputDir })
+
+  if (kitspaceYaml.multi) {
+    for (const projectName of Object.keys(kitspaceYaml.multi)) {
+      const projectOutputDir = path.join(outputDir, projectName)
+      const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+      addToQueues(
+        inputDir,
+        projectKitspaceYaml,
+        projectOutputDir,
+        projectName,
+        hash,
+      )
+    }
+  } else {
+    addToQueues(inputDir, kitspaceYaml, outputDir, name, hash)
+  }
+}
+
+function addToQueues(inputDir, kitspaceYaml, outputDir, name, hash) {
   processPCBQueue.add('projectAPI', {
     inputDir,
     kitspaceYaml,
@@ -106,7 +125,6 @@ async function processRepo(repoDir, gitDir) {
     inputDir,
     kitspaceYaml,
     outputDir,
-    hash,
     name,
   })
   processReadmeQueue.add('projectAPI', {
