@@ -9,13 +9,13 @@ const processIBOM = require('./tasks/processIBOM')
 const processReadme = require('./tasks/processReadme')
 const events = require('./events')
 
-const defaultConcurrency = 10
+const defaultConcurrency = 2
 
 function createWorkers() {
   const workers = [
     addWorker('writeKitspaceYaml', writeKitspaceYaml),
     addWorker('processKicadPCB', processKicadPCB),
-    addWorker('processSchematics', processSchematics, { concurrency: 2 }),
+    addWorker('processSchematics', processSchematics, { concurrency: 1 }),
     addWorker('processPCB', processPCB),
     addWorker('processBOM', processBOM),
     addWorker('processIBOM', processIBOM),
