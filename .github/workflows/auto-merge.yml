@@ -16,6 +16,8 @@ on:
       - converted_to_draft
 jobs:
   auto-merge:
+    # triggers on pushes to master, any actions on non-draft pull requests and when a pull-request is converted to a draft
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft || github.event.action == 'converted_to_draft' }}
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
