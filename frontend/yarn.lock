@@ -359,6 +359,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@justinribeiro/lite-youtube@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@justinribeiro/lite-youtube/-/lite-youtube-1.3.1.tgz#a383ba94b19f94f78e837d520a382a66e7bcd183"
+  integrity sha512-MNJLXSBf2PBQH++aPro/tO/iF9up97UgTfe4b1PxSxHkQoXlYCOmVfLoWwsqYgVRCkwm0FgA45FLlJ+xBfbvhA==
+
 "@next/env@12.0.9":
   version "12.0.9"
   resolved "https://registry.yarnpkg.com/@next/env/-/env-12.0.9.tgz#4c9e9eef00226145d9629a846b8cc31878e1328c"
