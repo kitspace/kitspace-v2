@@ -1,7 +1,6 @@
-import React, { forwardRef, useContext } from 'react'
+import React, { useContext } from 'react'
 import { bool } from 'prop-types'
 import Link from 'next/link'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 import _JSXStyle from 'styled-jsx/style'
@@ -26,38 +25,24 @@ const NavBar = () => {
   )
 }
 
-// eslint-disable-next-line react/prop-types
-const Logo = forwardRef(function LogoWithRef({ onClick, href }, ref) {
-  /*
-   TODO: FIXME when there's a better way(w/o forwardRef) to wrap a functional component with `Link`.
-   * Wrapping the `Image` directly with `Link` causes a runtime error:
-    ```
-    ! Warning: Function components cannot be given refs.
-    ```
-   * To get around this the image is wrapped in `a` tag with `forwardRef`.
-  */
+const Logo = () => {
   return (
-    <a ref={ref} href={href} style={{ display: 'flex' }} onClick={onClick}>
-      <Image
-        alt="logo"
-        className={styles.logoImg}
-        height={46}
-        objectFit="scale-down"
-        src="/static/logo.svg"
-        width={160}
-      />
-    </a>
+    <Link href="/">
+      <a>
+        {/* using next/image here causes it to blink on page transitions in firefox */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="logo" className={styles.logoImg} src="/static/logo.svg" />
+      </a>
+    </Link>
   )
-})
+}
 
 const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
   /* This is the Navbar rendered on big screens */
   <>
     <div className={styles.bigSiteMenu}>
       <Menu inverted pointing secondary>
-        <Link passHref href="/">
-          <Logo />
-        </Link>
+        <Logo />
         <SiteMenuItems isProjectRoute={isProjectRoute} />
       </Menu>
     </div>
@@ -74,9 +59,7 @@ const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
 const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
   /* This is the Navbar render on small screens */
   <div className={styles.smallMenu}>
-    <Link passHref href="/">
-      <Logo />
-    </Link>
+    <Logo />
     <Popup
       basic
       inverted

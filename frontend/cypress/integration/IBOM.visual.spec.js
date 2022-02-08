@@ -59,15 +59,6 @@ describe('Regression test for IBOM ', () => {
   )
 
   it(
-    'should match the existing snapshot for the IBOM (firefox)',
-    { browser: 'firefox' },
-    () => {
-      // Compare/save the snapshot
-      cy.get('#bot').matchImageSnapshot()
-    },
-  )
-
-  it(
     'should match the existing snapshot for the IBOM (edge)',
     { browser: 'edge' },
     () => {
@@ -75,4 +66,6 @@ describe('Regression test for IBOM ', () => {
       cy.get('#bot').matchImageSnapshot()
     },
   )
+
+  // TODO: firefox, see issue #294
 })
