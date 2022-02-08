@@ -1,33 +1,13 @@
 const { Worker } = require('bullmq')
 const { connection } = require('./redisConnection')
 const writeKitspaceYaml = require('./tasks/writeKitspaceYaml')
-const processGerbers = require('./tasks/processGerbers')
+const processPCB = require('./tasks/processPCB')
 const processKicadPCB = require('./tasks/processKicadPCB')
 const processSchematics = require('./tasks/processSchematics')
 const processBOM = require('./tasks/processBOM')
 const processIBOM = require('./tasks/processIBOM')
 const processReadme = require('./tasks/processReadme')
 const events = require('./events')
-
-async function processPCB(
-  eventBus,
-  { inputDir, kitspaceYaml, outputDir, hash, name },
-) {
-  const plottedGerbers = await processKicadPCB(eventBus, {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-  })
-  const zipVersion = hash.slice(0, 7)
-  return processGerbers(eventBus, {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    zipVersion,
-    name,
-    plottedGerbers,
-  })
-}
 
 function createWorkers() {
   const workers = [
