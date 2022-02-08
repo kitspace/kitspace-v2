@@ -29,28 +29,24 @@ async function processPCB(
   })
 }
 
-const workerFunctions = {
-  writeKitspaceYaml,
-  processKicadPCB,
-  processSchematics,
-  processPCB,
-  processBOM,
-  processIBOM,
-  processReadme,
-}
-
 function createWorkers() {
-  const workers = []
-  for (const name of Object.keys(workerFunctions)) {
-    workers.push(addWorker(name))
-  }
+  const workers = [
+    addWorker('writeKitspaceYaml', writeKitspaceYaml, { concurrency: 10 }),
+    addWorker('processKicadPCB', processKicadPCB, { concurrency: 10 }),
+    addWorker('processSchematics', processSchematics, { concurrency: 2 }),
+    addWorker('processPCB', processPCB, { concurrency: 10 }),
+    addWorker('processBOM', processBOM, { concurrency: 10 }),
+    addWorker('processIBOM', processIBOM, { concurrency: 10 }),
+    addWorker('processReadme', processReadme, { concurrency: 10 }),
+  ]
   const stop = () => Promise.all(workers.map(worker => worker.close()))
   return stop
 }
 
-function addWorker(name) {
-  const worker = new Worker(name, job => workerFunctions[name](job, job.data), {
+function addWorker(name, fn, options) {
+  const worker = new Worker(name, job => fn(job, job.data), {
     connection,
+    ...options,
   })
 
   worker.on('progress', (job, progress) => {
