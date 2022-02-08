@@ -9,15 +9,17 @@ const processIBOM = require('./tasks/processIBOM')
 const processReadme = require('./tasks/processReadme')
 const events = require('./events')
 
+const defaultConcurrency = 10
+
 function createWorkers() {
   const workers = [
-    addWorker('writeKitspaceYaml', writeKitspaceYaml, { concurrency: 10 }),
-    addWorker('processKicadPCB', processKicadPCB, { concurrency: 10 }),
+    addWorker('writeKitspaceYaml', writeKitspaceYaml),
+    addWorker('processKicadPCB', processKicadPCB),
     addWorker('processSchematics', processSchematics, { concurrency: 2 }),
-    addWorker('processPCB', processPCB, { concurrency: 10 }),
-    addWorker('processBOM', processBOM, { concurrency: 10 }),
-    addWorker('processIBOM', processIBOM, { concurrency: 10 }),
-    addWorker('processReadme', processReadme, { concurrency: 10 }),
+    addWorker('processPCB', processPCB),
+    addWorker('processBOM', processBOM),
+    addWorker('processIBOM', processIBOM),
+    addWorker('processReadme', processReadme),
   ]
   const stop = () => Promise.all(workers.map(worker => worker.close()))
   return stop
@@ -26,6 +28,7 @@ function createWorkers() {
 function addWorker(name, fn, options) {
   const worker = new Worker(name, job => fn(job, job.data), {
     connection,
+    concurrency: defaultConcurrency,
     ...options,
   })
 
