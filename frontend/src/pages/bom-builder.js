@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 
 import Page from '@components/Page'
+import LiteYouTube from '@components/LiteYouTube'
 
 const BomBuilder = () => (
   <Page title="BOM Builder">
@@ -23,29 +24,16 @@ const BomBuilder = () => (
     <h2 id="a-quick-demo-of-the-alpha-version">
       A quick demo of the alpha version
     </h2>
-    <iframe
-      allowFullScreen
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      frameBorder="0"
-      height="315"
-      src="https://www.youtube.com/embed/m96G7B1doRQ"
-      style={{ maxWidth: '90%' }}
-      title="A quick demo of the alpha version"
-      width="560"
+    <LiteYouTube
+      videoid="m96G7B1doRQ"
+      videotitle="A quick demo of the alpha version"
     />
-
     <h2 id="a-demo-of-all-the-features-of-the-beta-version">
       A demo of all the features of the beta version
     </h2>
-    <iframe
-      allowFullScreen
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      frameBorder="0"
-      height="315"
-      src="https://www.youtube.com/embed/U7GB7RV1VzE"
-      style={{ maxWidth: '90%' }}
-      title="A demo of all the features of the beta version"
-      width="560"
+    <LiteYouTube
+      videoid="U7GB7RV1VzE"
+      videotitle="A demo of all the features of the beta version"
     />
   </Page>
 )
