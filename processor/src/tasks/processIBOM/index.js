@@ -9,28 +9,7 @@ const { exists } = require('../../utils')
 const exec = util.promisify(cp.exec)
 const readFile = util.promisify(fs.readFile)
 
-function processIBOM(job, { checkoutDir, kitspaceYaml, filesDir, hash, name }) {
-  if (kitspaceYaml.multi) {
-    const projectNames = Object.keys(kitspaceYaml.multi)
-    return Promise.all(
-      projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
-        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        return _processIBOM(
-          job,
-          checkoutDir,
-          projectKitspaceYaml,
-          projectOutputDir,
-          hash,
-          projectName,
-        )
-      }),
-    )
-  }
-  return _processIBOM(job, checkoutDir, kitspaceYaml, filesDir, hash, name)
-}
-
-async function _processIBOM(job, inputDir, kitspaceYaml, outputDir, hash, name) {
+async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
@@ -83,8 +62,9 @@ async function findBoardFile(folderPath, ext, check) {
   return null
 }
 
-function checkEagleFile(f) {
-  return readFile(f, 'utf8').then(contents => contents.includes('eagle.dtd'))
+async function checkEagleFile(f) {
+  const contents = await readFile(f, 'utf8')
+  return contents.includes('eagle.dtd')
 }
 
 module.exports = processIBOM

@@ -82,37 +82,66 @@ function watch(repoDir, checkIsRepoReady) {
 async function processRepo(repoDir, gitDir) {
   // /repositories/user/project.git -> user/project
   const name = path.relative(repoDir, gitDir).slice(0, -4)
-  const checkoutDir = path.join(DATA_DIR, 'checkout', name)
+  const inputDir = path.join(DATA_DIR, 'checkout', name)
 
-  await sync(gitDir, checkoutDir)
+  await sync(gitDir, inputDir)
 
-  const hash = await getGitHash(checkoutDir)
-  const filesDir = path.join(DATA_DIR, 'files', name, hash)
+  const hash = await getGitHash(inputDir)
+  const outputDir = path.join(DATA_DIR, 'files', name, hash)
 
-  await exec(`mkdir -p ${filesDir}`)
+  await exec(`mkdir -p ${outputDir}`)
 
-  const kitspaceYaml = await getKitspaceYaml(checkoutDir)
+  const kitspaceYaml = await getKitspaceYaml(inputDir)
 
-  writeKitspaceYamlQueue.add('projectAPI', { kitspaceYaml, filesDir })
+  writeKitspaceYamlQueue.add('projectAPI', { kitspaceYaml, outputDir })
+
+  if (kitspaceYaml.multi) {
+    for (const projectName of Object.keys(kitspaceYaml.multi)) {
+      const projectOutputDir = path.join(outputDir, projectName)
+      const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+      addToQueues(
+        inputDir,
+        projectKitspaceYaml,
+        projectOutputDir,
+        projectName,
+        hash,
+      )
+    }
+  } else {
+    addToQueues(inputDir, kitspaceYaml, outputDir, name, hash)
+  }
+}
+
+function addToQueues(inputDir, kitspaceYaml, outputDir, name, hash) {
   processPCBQueue.add('projectAPI', {
-    checkoutDir,
+    inputDir,
     kitspaceYaml,
-    filesDir,
+    outputDir,
     hash,
     name,
   })
-  processBOMQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir })
-  processIBOMQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir, hash, name })
-  processReadmeQueue.add('projectAPI', { checkoutDir, kitspaceYaml, filesDir, name })
+  processBOMQueue.add('projectAPI', { inputDir, kitspaceYaml, outputDir })
+  processIBOMQueue.add('projectAPI', {
+    inputDir,
+    kitspaceYaml,
+    outputDir,
+    name,
+  })
+  processReadmeQueue.add('projectAPI', {
+    inputDir,
+    kitspaceYaml,
+    outputDir,
+    name,
+  })
 }
 
-async function getKitspaceYaml(checkoutDir) {
+async function getKitspaceYaml(inputDir) {
   const filePaths = [
     'kitspace.yaml',
     'kitspace.yml',
     'kitnic.yaml',
     'kitnic.yml',
-  ].map(p => path.join(checkoutDir, p))
+  ].map(p => path.join(inputDir, p))
   const yamlFile = await Promise.all(filePaths.map(tryReadFile)).then(
     ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
   )

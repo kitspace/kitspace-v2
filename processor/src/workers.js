@@ -1,7 +1,7 @@
 const { Worker } = require('bullmq')
 const { connection } = require('./redisConnection')
 const writeKitspaceYaml = require('./tasks/writeKitspaceYaml')
-const processGerbers = require('./tasks/processGerbers')
+const processPCB = require('./tasks/processPCB')
 const processKicadPCB = require('./tasks/processKicadPCB')
 const processSchematics = require('./tasks/processSchematics')
 const processBOM = require('./tasks/processBOM')
@@ -9,48 +9,27 @@ const processIBOM = require('./tasks/processIBOM')
 const processReadme = require('./tasks/processReadme')
 const events = require('./events')
 
-async function processPCB(
-  eventBus,
-  { checkoutDir, kitspaceYaml, filesDir, hash, name },
-) {
-  const plottedGerbers = await processKicadPCB(eventBus, {
-    checkoutDir,
-    kitspaceYaml,
-    filesDir,
-  })
-  const zipVersion = hash.slice(0, 7)
-  return processGerbers(eventBus, {
-    checkoutDir,
-    kitspaceYaml,
-    filesDir,
-    zipVersion,
-    name,
-    plottedGerbers,
-  })
-}
-
-const workerFunctions = {
-  writeKitspaceYaml,
-  processKicadPCB,
-  processSchematics,
-  processPCB,
-  processBOM,
-  processIBOM,
-  processReadme,
-}
+const defaultConcurrency = 2
 
 function createWorkers() {
-  const workers = []
-  for (const name of Object.keys(workerFunctions)) {
-    workers.push(addWorker(name))
-  }
+  const workers = [
+    addWorker('writeKitspaceYaml', writeKitspaceYaml),
+    addWorker('processKicadPCB', processKicadPCB),
+    addWorker('processSchematics', processSchematics, { concurrency: 1 }),
+    addWorker('processPCB', processPCB),
+    addWorker('processBOM', processBOM),
+    addWorker('processIBOM', processIBOM),
+    addWorker('processReadme', processReadme),
+  ]
   const stop = () => Promise.all(workers.map(worker => worker.close()))
   return stop
 }
 
-function addWorker(name) {
-  const worker = new Worker(name, job => workerFunctions[name](job, job.data), {
+function addWorker(name, fn, options) {
+  const worker = new Worker(name, job => fn(job, job.data), {
     connection,
+    concurrency: defaultConcurrency,
+    ...options,
   })
 
   worker.on('progress', (job, progress) => {

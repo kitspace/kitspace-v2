@@ -28,10 +28,7 @@ describe('Upload project', () => {
     })
 
     cy.get('[data-cy=creating-project-loader]')
-    cy.url().should(
-      'eq',
-      `${Cypress.config().baseUrl}/${username}/example?create=true`,
-    )
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example`)
 
     // TODO FIXME, when writing test for project page
     // cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')

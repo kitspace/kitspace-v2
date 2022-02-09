@@ -30,12 +30,15 @@ for pull in pulls:
                 ["git", "pull", pull["head"]["repo"]["clone_url"], ref, "--no-ff"],
                 check=True,
             )
-        except:
+        except Exception as e:
+            print(f'Error with merging "{pull["head"]["label"]}"')
+            print(e)
             github_api.create_commit_status(
                 sha,
                 "failure",
                 'Could not be merged into the "review" branch',
             )
+            subprocess.run(["git", "merge", "--abort"], check=True)
         else:
             print(f'Merged "{pull["head"]["label"]}"')
             github_api.create_commit_status(
