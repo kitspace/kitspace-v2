@@ -151,7 +151,6 @@ describe('Redirect after logout', () => {
     const email = faker.unique(faker.internet.email)
     const password = '123456'
     cy.createUser(username, email, password)
-    cy.visit('/login')
 
     // Press the logout button
     cy.get('img[alt=avatar]').trigger('mousemove').click()
