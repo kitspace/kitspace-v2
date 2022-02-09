@@ -20,9 +20,7 @@ const AuthProvider = ({ children, initialUser, initialCsrf }) => {
   const { push } = useRouter()
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.session = { user, csrf }
-    }
+    window.session = { user, csrf }
   }, [user, csrf])
 
   const deAuthorize = async () => {
