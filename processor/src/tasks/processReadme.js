@@ -6,37 +6,9 @@ const cheerio = require('cheerio')
 const { exists, readFile, writeFile } = require('../utils')
 const { GITEA_URL } = require('../env')
 
-function processReadme(
+async function processReadme(
   job,
-  { checkoutDir, kitspaceYaml, filesDir,  name },
-) {
-  if (kitspaceYaml.multi) {
-    const projectNames = Object.keys(kitspaceYaml.multi)
-    return Promise.all(
-      projectNames.map(projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
-        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-
-        return _processReadme(
-          job,
-          checkoutDir,
-          projectKitspaceYaml,
-          projectOutputDir,
-          name,
-        )
-      }),
-    )
-  }
-
-  return _processReadme(job, checkoutDir, kitspaceYaml, filesDir, name)
-}
-
-async function _processReadme(
-  job,
-  inputDir,
-  kitspaceYaml,
-  outputDir,
-  projectFullname,
+  { inputDir, kitspaceYaml = {}, outputDir, name },
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -67,7 +39,7 @@ async function _processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
   const readmeAsHTML = await renderMarkdown(rawMarkdown)
 
-  const renderedReadme = postProcessMarkdown(readmeAsHTML, projectFullname)
+  const renderedReadme = postProcessMarkdown(readmeAsHTML, name)
 
   await writeFile(readmePath, renderedReadme)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))

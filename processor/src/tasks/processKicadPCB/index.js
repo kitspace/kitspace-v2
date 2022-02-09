@@ -7,36 +7,7 @@ const { existsAll, findKicadPcbFile } = require('../../utils')
 
 const exec = util.promisify(cp.exec)
 
-function processKicadPCB(job, { checkoutDir, kitspaceYaml, filesDir }) {
-  if (kitspaceYaml.multi) {
-    const projectNames = Object.keys(kitspaceYaml.multi)
-    return Promise.all(
-      projectNames.map(async projectName => {
-        const projectOutputDir = path.join(filesDir, projectName)
-        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        return {
-          [projectName]: await _processKicadPCB(
-            job,
-            checkoutDir,
-            projectKitspaceYaml,
-            projectOutputDir,
-          ),
-        }
-      }),
-    ).then(all =>
-      all.reduce(
-        (result, plottedGerbers) => ({
-          ...result,
-          ...plottedGerbers,
-        }),
-        {},
-      ),
-    )
-  }
-  return _processKicadPCB(job, checkoutDir, kitspaceYaml, filesDir)
-}
-
-async function _processKicadPCB(job, inputDir, kitspaceYaml, outputDir) {
+async function processKicadPCB(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
   const filePaths = [layoutSvgPath]
