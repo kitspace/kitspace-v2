@@ -53,11 +53,23 @@ const uploadFileToGiteaServer = async (repo, file, filePath, csrf) => {
  * @param files{[]}
  * @param filePaths{[]string}
  * @param csrf{string}
+ * @param onProgress{function=} a callback for reporting uploading progress
  * @returns {Promise<string[]>}
  */
-export const uploadFilesToGiteaServer = async (repo, files, filePaths, csrf) => {
+export const uploadFilesToGiteaServer = async (
+  repo,
+  files,
+  filePaths,
+  csrf,
+  onProgress,
+) => {
+  let currentProgress = 0
   const filesUUIDs = await Promise.all(
-    files.map((file, i) => uploadFileToGiteaServer(repo, file, filePaths[i], csrf)),
+    files.map(async (file, i) => {
+      const res = await uploadFileToGiteaServer(repo, file, filePaths[i], csrf)
+      onProgress?.(++currentProgress)
+      return res
+    }),
   )
   return filesUUIDs.map(res => res.uuid)
 }
@@ -126,6 +138,7 @@ export const commitFilesWithUUIDs = async ({
  * @param treePath{=string}
  * @param newBranchName{=string}
  * @param csrf{string}
+ * @param onProgress{function=} a callback for reporting uploading progress
  * @returns {Promise<boolean>}
  */
 export const commitInitialFiles = async ({
@@ -136,6 +149,7 @@ export const commitInitialFiles = async ({
   commitChoice,
   newBranchName,
   csrf,
+  onProgress,
 }) => {
   let filePaths = files.map(file => {
     let filePath = file.path
@@ -157,7 +171,13 @@ export const commitInitialFiles = async ({
   if (!hasTopLevelFile) {
     filePaths = filePaths.map(filePath => filePath.split('/').slice(1).join('/'))
   }
-  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
+  const filesUUIDs = await uploadFilesToGiteaServer(
+    repo,
+    files,
+    filePaths,
+    csrf,
+    onProgress,
+  )
 
   return commitFilesWithUUIDs({
     repo,
@@ -179,6 +199,7 @@ export const commitInitialFiles = async ({
  * @param commitChoice{=string}
  * @param treePath{=string}
  * @param newBranchName{=string}
+ * @param onProgress{=function} a callback for reporting uploading progress
  * @param csrf{string}
  * @returns {Promise<boolean>}
  */
@@ -190,13 +211,20 @@ export const commitFiles = async ({
   commitChoice,
   newBranchName,
   csrf,
+  onProgress,
 }) => {
   // remove any leading "/"
   const filePaths = files.map(file =>
     file.path.startsWith('/') ? file.path.substring(1) : file.path,
   )
 
-  const filesUUIDs = await uploadFilesToGiteaServer(repo, files, filePaths, csrf)
+  const filesUUIDs = await uploadFilesToGiteaServer(
+    repo,
+    files,
+    filePaths,
+    csrf,
+    onProgress,
+  )
 
   return commitFilesWithUUIDs({
     repo,
