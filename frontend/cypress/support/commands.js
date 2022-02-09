@@ -37,20 +37,6 @@ Cypress.Commands.add('signOut', () => {
   })
 })
 
-Cypress.Commands.add('goToUsersAdminPanel', () => {
-  // Users database are at `{gitea}/admin/users`
-  // Kitspace user interaction should appear there.
-
-  cy.clearCookies()
-  cy.reload()
-  cy.visit('http://gitea.kitspace.test:3000/user/login')
-  cy.wait(1000)
-  cy.get('input#user_name').type(Cypress.env('GITEA_ADMIN_USERNAME'))
-  cy.get('input#password').type(Cypress.env('GITEA_ADMIN_PASSWORD'))
-  cy.get('button').click()
-  cy.visit('http://gitea.kitspace.test:3000/admin/users?sort=newest')
-})
-
 Cypress.Commands.add('hasProperFields', schema => {
   const formFields = schema.schema().$_terms.keys.map(field => field.key)
 

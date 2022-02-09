@@ -41,16 +41,6 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
-     * Users database are at `{gitea}/admin/users`
-     * Kitspace user interaction should appear there.
-     * @example
-     * cy.goToUsersAdminPanel()
-     */
-    goToUsersAdminPanel()
-  }
-
-  interface Chainable<Subject> {
-    /**
      * Validate the form has all the proper fields defined in a schema
      * ignoring private fields(added automatically e.g., _csrf)
      * @example
