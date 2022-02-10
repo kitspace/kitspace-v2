@@ -1,47 +1,45 @@
 import React, { createContext, useState, useEffect } from 'react'
-import { node } from 'prop-types'
+import { useRouter } from 'next/router'
+import { node, string, object } from 'prop-types'
 
-import { logout } from '@utils/giteaInternalApi'
+import { logout, getSession } from '@utils/giteaInternalApi'
 
 export const AuthContext = createContext({
   isAuthenticated: false,
   user: null,
-  logout: async () => true,
+  logout: async () => false,
+  setUser: () => {},
+  setCsrf: () => {},
   csrf: '',
 })
 
-const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(false)
-  const [authenticatedUser, setAuthenticatedUser] = useState(null)
-  const [csrf, setCsrf] = useState('')
+const AuthProvider = ({ children, initialUser, initialCsrf }) => {
+  const [user, setUser] = useState(initialUser)
+  const [csrf, setCsrf] = useState(initialCsrf)
+
+  const { push } = useRouter()
 
   useEffect(() => {
-    setCsrf(window.session._csrf)
-  }, [authenticatedUser, auth])
+    window.session = { user, csrf }
+  }, [user, csrf])
 
-  const authorize = user => {
-    setAuth(true)
-    setAuthenticatedUser(user)
+  const deAuthorize = async () => {
+    setUser(null)
+    await logout()
+    const { csrf } = await getSession()
+    setCsrf(csrf)
+    push('/login')
   }
-
-  const deAuthorize = () => {
-    setAuth(false)
-    setAuthenticatedUser(null)
-  }
-
-  useEffect(() => {
-    const session = window?.session
-
-    if (session?.user) {
-      authorize(session.user, session._csrf)
-    } else {
-      deAuthorize()
-    }
-  })
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated: auth, user: authenticatedUser, logout, csrf }}
+      value={{
+        user,
+        logout: deAuthorize,
+        setUser,
+        setCsrf,
+        csrf,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -50,6 +48,8 @@ const AuthProvider = ({ children }) => {
 
 AuthProvider.propTypes = {
   children: node.isRequired,
+  initialUser: object,
+  initialCsrf: string.isRequired,
 }
 
 export default AuthProvider

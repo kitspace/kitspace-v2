@@ -11,16 +11,10 @@ import { UserMenuItems, UserDropDownMenu } from './UserMenu'
 import styles from './index.module.scss'
 
 const NavBar = () => {
-  const { pathname } = useRouter()
-
-  const isSubmitRoute = RegExp('^/projects/new').test(pathname)
-  const isProjectRoute =
-    isSubmitRoute || pathname === '/' || RegExp('^/projects/').test(pathname)
-
   return (
     <div className={styles.titleBar} id="nav">
-      <BigBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
-      <SmallBar isProjectRoute={isProjectRoute} isSubmitRoute={isSubmitRoute} />
+      <BigBar />
+      <SmallBar />
     </div>
   )
 }
@@ -37,18 +31,18 @@ const Logo = () => {
   )
 }
 
-const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
+const BigBar = () => (
   /* This is the Navbar rendered on big screens */
   <>
     <div className={styles.bigSiteMenu}>
       <Menu inverted pointing secondary>
         <Logo />
-        <SiteMenuItems isProjectRoute={isProjectRoute} />
+        <SiteMenuItems />
       </Menu>
     </div>
     <div className={styles.bigSocialMenu}>
       <Menu inverted pointing secondary>
-        {!isSubmitRoute ? <AddProjectButton /> : null}
+        <AddProjectButton />
         <ContactMenu />
         <UserControllerButton />
       </Menu>
@@ -56,7 +50,7 @@ const BigBar = ({ isProjectRoute, isSubmitRoute }) => (
   </>
 )
 
-const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
+const SmallBar = () => (
   /* This is the Navbar render on small screens */
   <div className={styles.smallMenu}>
     <Logo />
@@ -73,8 +67,8 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
     >
       <Menu inverted vertical id="small-menu">
         <UserControllerButton smallNavBar />
-        {!isSubmitRoute ? <AddProjectButton /> : null}
-        <SiteMenuItems isProjectRoute={isProjectRoute} />
+        <AddProjectButton />
+        <SiteMenuItems />
         <SocialMenuItems />
       </Menu>
       {
@@ -92,24 +86,24 @@ const SmallBar = ({ isProjectRoute, isSubmitRoute }) => (
 )
 
 const AddProjectButton = () => {
-  const { pathname } = useRouter()
-
-  return pathname !== '/login' ? (
-    <>
-      <Menu.Item id="add-project">
-        <Link passHref href="/projects/new">
-          <Button icon as="a" color="green" id="add_project" labelPosition="left">
-            <Icon name="plus" />
-            Add a project
-          </Button>
-        </Link>
-      </Menu.Item>
-    </>
-  ) : null
+  return (
+    <Menu.Item id="add-project">
+      <Link passHref href="/projects/new">
+        <Button icon as="a" color="green" id="add_project" labelPosition="left">
+          <Icon name="plus" />
+          Add a project
+        </Button>
+      </Link>
+    </Menu.Item>
+  )
 }
 
-const SiteMenuItems = ({ isProjectRoute }) => {
+const SiteMenuItems = () => {
   const { pathname } = useRouter()
+  const isProjectRoute =
+    pathname === '/' ||
+    pathname === '/search' ||
+    RegExp('^/projects/').test(pathname)
 
   return (
     <>
@@ -194,12 +188,9 @@ const ContactMenu = () => (
  * Log in button if the user is unauthenticated, user menu otherwise.
  */
 const UserControllerButton = ({ smallNavBar }) => {
-  const { pathname } = useRouter()
+  const { user } = useContext(AuthContext)
 
-  const { isAuthenticated } = useContext(AuthContext)
-  const isLogInRoute = pathname === '/login'
-
-  if (isAuthenticated) {
+  if (user != null) {
     if (smallNavBar) {
       return <UserMenuItems />
     }
@@ -207,41 +198,26 @@ const UserControllerButton = ({ smallNavBar }) => {
     return <UserDropDownMenu />
   }
 
-  if (isLogInRoute) {
-    return null
-  }
-
   return <LogInButton />
 }
 
 const LogInButton = () => {
-  const { asPath, push } = useRouter()
+  const { asPath } = useRouter()
 
-  const onClick = async () => {
-    await push(`/login?redirect=${asPath}`)
+  const href = { pathname: '/login' }
+  if (!asPath.startsWith('/login')) {
+    href.query = { redirect: asPath }
   }
 
   return (
     <Menu.Item>
-      <Button color="green" id="login" onClick={onClick}>
-        Login
-      </Button>
+      <Link passHref href={href}>
+        <Button as="a" color="green" id="login">
+          Login
+        </Button>
+      </Link>
     </Menu.Item>
   )
-}
-
-BigBar.propTypes = {
-  isProjectRoute: bool.isRequired,
-  isSubmitRoute: bool.isRequired,
-}
-
-SmallBar.propTypes = {
-  isProjectRoute: bool.isRequired,
-  isSubmitRoute: bool.isRequired,
-}
-
-SiteMenuItems.propTypes = {
-  isProjectRoute: bool.isRequired,
 }
 
 UserControllerButton.propTypes = {

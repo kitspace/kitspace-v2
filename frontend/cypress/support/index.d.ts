@@ -5,39 +5,11 @@ import * as Joi from 'joi'
 declare namespace Cypress {
   interface Chainable<Subject> {
     /**
-     * stub all request to the Gitea `/user/kitspace/sign_up`
-     * @example
-     * cy.stubSignUpReq(true, { email, ActiveCodeLives: duration })
-     */
-    stubSignUpReq(ok: boolean, response: object): Chainable<any>
-  }
-
-  interface Chainable<Subject> {
-      /**
-     * stub all request to the Gitea `/user/kitspace/sign_in`
-     * @example
-     * cy.stubSignUpReq(true, LoggedInSuccessfully: true)
-     */
-    stubSignInReq(ok: boolean, response: object, path?: string): Chainable<any>
-  }
-
-  interface Chainable<Subject> {
-    /**
      * Creat a user into Gitea
      * @example
      * cy.creatUser(username, email, password)
      */
     createUser(username: string, email: string, password: string): Chainable<any>
-  }
-
-  interface Chainable<Subject> {
-    /**
-     * stub request for the
-     * @param ok
-     * @param response
-     * @param projectName
-     */
-    stubUpdateProject(ok: boolean, response: object, projectName: string): Chainable<any>
   }
 
   interface Chainable<Subject> {
@@ -69,16 +41,6 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
-     * Users database are at `{gitea}/admin/users`
-     * Kitspace user interaction should appear there.
-     * @example
-     * cy.goToUsersAdminPanel()
-     */
-    goToUsersAdminPanel()
-  }
-
-  interface Chainable<Subject> {
-    /**
      * Validate the form has all the proper fields defined in a schema
      * ignoring private fields(added automatically e.g., _csrf)
      * @example
@@ -102,9 +64,9 @@ declare namespace Cypress {
 
   interface Chainable<Subject> {
     /**
-     * 
+     *
      * @param path
-     * @param timeout number of milliseconds 
+     * @param timeout number of milliseconds
      */
     forceVisit(path: string, timeout: number): Chainable<any>
   }

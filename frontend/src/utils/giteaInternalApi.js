@@ -247,11 +247,17 @@ export const logout = async csrf => {
     },
     credentials: 'include',
   })
+  return res.ok
+}
 
-  if (res.ok) {
-    delete window.session.user
-    return true
-  } else {
-    return false
-  }
+export const getSession = async () => {
+  const endpoint = `${giteaURL}/user/kitspace/session`
+  const res = await fetch(endpoint, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+    credentials: 'include',
+  })
+  return res.json()
 }

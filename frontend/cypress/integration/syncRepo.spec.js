@@ -20,8 +20,7 @@ describe('Syncing a project behavior validation', () => {
     const password = '123456'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')
@@ -29,11 +28,7 @@ describe('Syncing a project behavior validation', () => {
     cy.get('button').contains('Sync').click()
     cy.get('[data-cy=sync-result-message]').should('have.class', 'green')
 
-    // Go to Gitea dashboard and assert the repo has been migrated
-    cy.visit(`http://gitea.kitspace.test:3000/${username}`)
-    cy.get('.ui.repository.list').children().get('.header').contains(repoName)
-
-    // assert the repo is on `{frontend}/projects/mine`
+    // assert the repo is on the user's project page
     cy.visit(`/${username}`)
     cy.get('[data-cy=project-card]').contains(repoName)
   })
@@ -47,8 +42,7 @@ describe('Syncing a project behavior validation', () => {
     const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
 
     cy.createUser(username, email, password)
-    cy.visit('/login')
-    cy.signIn(username, password)
+    cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
     cy.forceVisit('/projects/new')

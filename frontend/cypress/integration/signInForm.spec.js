@@ -6,7 +6,7 @@ import SignInFormModel from '../../src/models/SignInForm'
 describe('Log in form validation', () => {
   before(() => {
     cy.visit('/login')
-    cy.get('a').contains('Login').click({ force: true })
+    cy.get('[data-cy=login-grid] a').contains('Login').click({ force: true })
   })
 
   it('should have the proper fields', () => {
@@ -44,43 +44,18 @@ describe('Log in form submission', () => {
   before(() => {
     // create user and log him in.
     cy.createUser(username, email, password)
-    cy.visit('login')
-    cy.get('a').contains('Login').click({ force: true })
+    cy.clearCookies()
+    cy.visit('/login')
+    cy.get('[data-cy=login-grid] a').contains('Login').click({ force: true })
   })
 
   it('should display error message on submitting form with wrong username', () => {
-    cy.stubSignInReq(false, {
-      error: 'Not Found',
-      message: 'Wrong username or password.',
-    })
     cy.signIn('nonRegUser', password)
     cy.get('.negative').should('include.text', 'Wrong username or password')
   })
 
   it('should display error message on submitting form with wrong password', () => {
-    cy.stubSignInReq(false, {
-      error: 'Not Found',
-      message: 'Wrong username or password.',
-    })
     cy.signIn(username, 'wrong_password_1234')
     cy.get('.negative').should('include.text', 'Wrong username or password')
-  })
-
-  it('should display error message on submitting form for inactive account', () => {
-    cy.stubSignInReq(false, {
-      error: 'ActivationRequired',
-      message: 'Activate your account.',
-    })
-    cy.signIn('inactiveUser', password)
-    cy.get('.negative').should('include.text', 'Activate your account.')
-  })
-
-  it('should display error message on submitting form for prohibited user', () => {
-    cy.stubSignInReq(false, {
-      error: 'Prohibited',
-      message: 'Prohibited login.',
-    })
-    cy.signIn('prohibitedUser', password)
-    cy.get('.negative').should('include.text', 'Prohibited login.')
   })
 })

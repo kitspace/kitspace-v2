@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { composeInitialProps } from 'next-composition'
+import { composeServerSideProps } from 'next-composition'
 import { Grid, Divider } from 'semantic-ui-react'
 
 import Page from '@components/Page'
@@ -74,7 +74,7 @@ const New = () => {
   )
 }
 
-New.getInitialProps = composeInitialProps({
+export const getServerSideProps = composeServerSideProps({
   use: [withRequireSignIn('/projects/new')],
 })
 

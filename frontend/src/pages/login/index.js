@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { composeInitialProps } from 'next-composition'
+import React, { useState, useContext } from 'react'
+import { composeServerSideProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
 import {
@@ -16,8 +16,10 @@ import { isEmpty } from 'lodash'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
-import { withRequireSignOut } from '@utils/authHandlers'
+import { withAlreadySignedIn } from '@utils/authHandlers'
+import { getSession } from '@utils/giteaInternalApi'
 import SignInFormModel from '@models/SignInForm'
+import { AuthContext } from '@contexts/AuthContext'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
 import styles from './index.module.scss'
@@ -58,14 +60,15 @@ const Login = () => {
   )
 }
 
-Login.getInitialProps = composeInitialProps({
-  use: [withRequireSignOut],
+export const getServerSideProps = composeServerSideProps({
+  use: [withAlreadySignedIn],
 })
 
 const SignInForm = () => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
-  const { reload } = useRouter()
+  const { push, query } = useRouter()
+  const { setUser, setCsrf } = useContext(AuthContext)
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -89,10 +92,11 @@ const SignInForm = () => {
 
     const data = await response.json()
 
-    if (response.ok) {
-      // After successful login the page must be reloaded,
-      // because cookies are injected on server-side
-      reload()
+    if (response.ok && data.user) {
+      setUser(data.user)
+      const session = await getSession()
+      setCsrf(session.csrf)
+      push(query.redirect || '/')
     } else {
       const { error, message } = data
       setApiResponse({
@@ -164,28 +168,13 @@ const SignInForm = () => {
 const SignUpForm = ({ openLoginPane }) => {
   const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
+  const { setUser, setCsrf } = useContext(AuthContext)
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
     SignUpFormModel,
     true,
   )
   const [apiResponse, setApiResponse] = useState({})
-  const { reload } = useRouter()
-
-  const autoSignIn = async (username, password) => {
-    const signInEndpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
-    const response = await fetch(signInEndpoint, {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    })
-
-    if (response.ok) {
-      reload()
-    } else {
-      console.error('Failed to auto sign in the user.')
-    }
-  }
+  const { push, query } = useRouter()
 
   const submit = async () => {
     const response = await fetch(endpoint, {
@@ -196,10 +185,11 @@ const SignUpForm = ({ openLoginPane }) => {
     })
     const data = await response.json()
 
-    if (response.ok) {
-      const { email, ActiveCodeLives } = data
-      setApiResponse({ email, duration: ActiveCodeLives })
-      await autoSignIn(form.username, form.password)
+    if (response.ok && data.user) {
+      setUser(data.user)
+      const session = await getSession()
+      setCsrf(session.csrf)
+      push(query.redirect || '/')
     } else {
       const { error, message } = data
       setApiResponse({

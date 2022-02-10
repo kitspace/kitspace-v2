@@ -1,49 +1,50 @@
-import Router from 'next/router'
 // eslint-disable-next-line no-unused-vars
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 
 /**
- * @param {string} asPath the page path e.g., `/project/new`.
+ * @param {string} asPath the page path e.g., `/projects/new`.
  */
 export const withRequireSignIn =
   asPath =>
   /**
-   * @param {{req: NextApiRequest, res: NextApiResponse}}
+   * @param {{req: !NextApiRequest }}
    */
-  ({ req, res }) => {
-    const session = req?.session ?? window?.session
+  ({ req }) => {
+    const session = req.session
 
     const isRelativePath = asPath.startsWith('/')
     if (!isAuthenticated(session) && isRelativePath) {
-      if (res) {
-        res.writeHead(307, { Location: `/login?redirect=${asPath}` })
-        res.end()
-      } else {
-        Router.replace(`/login?redirect=${asPath}`)
+      return {
+        redirect: {
+          destination: `/login?redirect=${encodeURIComponent(asPath)}`,
+          permanent: false,
+        },
       }
     }
+    return {}
   }
 
 /**
  *
- * @param {{req: NextApiRequest, res: NextApiResponse}}
+ * @param {{req: !NextApiRequest }}
  */
-export const withRequireSignOut = ({ req, res }) => {
-  const session = req?.session ?? window?.session
+export const withAlreadySignedIn = ({ req }) => {
+  const session = req.session
 
   if (isAuthenticated(session)) {
-    if (res) {
-      const { redirect = '/' } = req.query
+    const { redirect = '/' } = req.query
 
-      // Only redirect if it belongs to our website.
-      if (redirect.startsWith('/')) {
-        res.writeHead(307, { Location: redirect })
-        res.end()
+    // Only redirect if it belongs to our website.
+    if (redirect.startsWith('/')) {
+      return {
+        redirect: {
+          destination: redirect,
+          permanent: false,
+        },
       }
-    } else {
-      Router.replace('/')
     }
   }
+  return {}
 }
 
 const isAuthenticated = session => session?.user != null
