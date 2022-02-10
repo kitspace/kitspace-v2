@@ -54,7 +54,7 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
 
   const repoFullname = `${username}/${projectName}`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
-  const session = req?.session ?? window?.session
+  const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   if (await repoExists(repoFullname)) {
     const [

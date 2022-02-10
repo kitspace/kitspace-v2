@@ -28,7 +28,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
 
   const kitspaceYAMLPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
-  const session = req?.session ?? window?.session
+  const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   if (await repoExists(repoFullname)) {
     const [

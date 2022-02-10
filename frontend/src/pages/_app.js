@@ -33,25 +33,9 @@ import 'semantic-ui-css/components/progress.min.css'
 
 import './_app.scss'
 import AuthProvider from '@contexts/AuthContext'
-import { bool, func, object } from 'prop-types'
+import { bool, func, object, shape, string } from 'prop-types'
 
-function KitspaceApp({
-  Component,
-  pageProps,
-  serverSideSession,
-  clientSideSession,
-  isStaticFallback,
-}) {
-  const setSession = serverSideSession ? (
-    <script
-      // using dangerouslySetInnerHTML to avoid browser parsing errors
-      // (could be that these only happen in development mode)
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{
-        __html: `window.session = ${JSON.stringify(serverSideSession)};`,
-      }}
-    />
-  ) : null
+function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setStaticFallback = isStaticFallback ? (
     <script
       // using dangerouslySetInnerHTML to avoid browser parsing errors
@@ -66,13 +50,9 @@ function KitspaceApp({
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
-    <AuthProvider
-      initialCsrf={serverSideSession?.csrf || clientSideSession?.csrf}
-      initialUser={serverSideSession?.user || clientSideSession?.user}
-    >
+    <AuthProvider initialCsrf={session?.csrf} initialUser={session?.user}>
       <SWRConfig value={{}}>
         <Head>
-          {setSession}
           {setStaticFallback}
           <script>
             {
@@ -89,18 +69,15 @@ function KitspaceApp({
 
 KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
-  let serverSideSession
-  let clientSideSession
-  if (appContext.ctx.req != null) {
-    serverSideSession = appContext.ctx.req.session
-  } else if (typeof window !== 'undefined') {
-    clientSideSession = window.session
-  }
+
   const { isStaticFallback } = appContext.ctx.query
+  const session =
+    appContext.ctx?.req?.session ??
+    JSON.parse(window?.sessionStorage.getItem('session'))
+
   return {
     ...appProps,
-    serverSideSession,
-    clientSideSession,
+    session,
     isStaticFallback,
   }
 }
@@ -123,8 +100,7 @@ KitspaceApp.propTypes = {
   Component: func.isRequired,
   pageProps: object.isRequired,
   isStaticFallback: bool,
-  serverSideSession: object,
-  clientSideSession: object,
+  session: shape({ csrf: string.isRequired, user: object }),
 }
 
 KitspaceApp.defaultProps = {
