@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import useThumbnail from '@hooks/useThumbnail'
-import styles from './ProjectCard.module.scss'
+import styles from './index.module.scss'
 
 const ProjectCard = ({
   name,
