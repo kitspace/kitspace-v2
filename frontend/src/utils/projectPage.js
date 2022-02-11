@@ -20,7 +20,9 @@ export const getFlatProjects = async repos => {
       `${processorUrl}/files/${fullname}/HEAD/kitspace-yaml.json`,
     )
 
-    if (!res.ok) return null
+    if (!res.ok) {
+      return null
+    }
 
     const kitspaceYAML = await res.json()
     return kitspaceYAML?.multi
@@ -148,7 +150,9 @@ export const getIsProcessingDone = async assetsPath => {
 
   const kitspaceYAML = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
 
-  if (!kitspaceYAML?.ok) return false
+  if (!kitspaceYAML?.ok) {
+    return false
+  }
 
   const kitspaceYAMLBody = await kitspaceYAML.json()
   const isMultiProject = kitspaceYAMLBody.hasOwnProperty('multi')
@@ -170,7 +174,9 @@ export const getIsProcessingDone = async assetsPath => {
     )
 
     // If any request failed
-    if (allMultiProjectsAssetsStatus.some(r => !r.ok)) return false
+    if (allMultiProjectsAssetsStatus.some(r => !r.ok)) {
+      return false
+    }
 
     // If any asset is still in progress
     return allMultiProjectsAssetsStatus.every(async r => {
@@ -184,7 +190,9 @@ export const getIsProcessingDone = async assetsPath => {
     )
 
     // If any request failed
-    if (allAssetsStatus.some(r => !r.ok)) return false
+    if (allAssetsStatus.some(r => !r.ok)) {
+      return false
+    }
 
     // If any asset is still in progress
     return allAssetsStatus.every(async r => {
@@ -203,7 +211,9 @@ export const hasInteractiveBom = async assetsPath => {
   const statusPath = getStatusPath(assetsPath)
   const res = await fetch(`${statusPath}/interactive_bom.json`)
 
-  if (!res.ok) return false
+  if (!res.ok) {
+    return false
+  }
 
   const { status } = await res.json()
   return status === 'done'

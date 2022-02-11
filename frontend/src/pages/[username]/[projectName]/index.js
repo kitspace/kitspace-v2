@@ -21,13 +21,14 @@ const ProjectPage = props => {
     return <Custom404 />
   }
 
-  if (props?.subProjects)
+  if (props?.subProjects) {
     return (
       <SubProjectsGrid
         parentProject={props.parentProject}
         projects={props.subProjects}
       />
     )
+  }
 
   return <SharedProjectPage {...props} />
 }

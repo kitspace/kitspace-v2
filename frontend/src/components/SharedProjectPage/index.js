@@ -42,7 +42,9 @@ const SharedProjectPage = props => {
   }, [migrationStatus, props.isEmpty, props.isSynced, reload])
 
   useEffect(() => {
-    if (!props.finishedProcessing && done) reload()
+    if (!props.finishedProcessing && done) {
+      reload()
+    }
   }, [props.finishedProcessing, done, reload])
 
   if (!props.finishedProcessing) {

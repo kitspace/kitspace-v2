@@ -5,7 +5,11 @@ import styles from './index.module.scss'
 
 const LiteYouTube = props => {
   // lite-youtube exports a web component so it has to be loaded on the client-side.
-  useEffect(() => import('@justinribeiro/lite-youtube'), [])
+  useEffect(() => {
+    if (!customElements.get('lite-youtube')) {
+      import('@justinribeiro/lite-youtube')
+    }
+  }, [])
   return (
     <div className={props.className}>
       <lite-youtube {...props}></lite-youtube>

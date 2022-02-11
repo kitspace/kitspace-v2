@@ -141,7 +141,9 @@ const PageElements = ({
     }
   }, [form.name, isValid, projectName, owner])
 
-  if (isLoading) return <Loader active />
+  if (isLoading) {
+    return <Loader active />
+  }
 
   const AssetPlaceholderWithUploadPermissions = ({ asset }) => (
     <AssetPlaceholder
