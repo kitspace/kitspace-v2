@@ -1,10 +1,10 @@
 import React from 'react'
 import { string, bool, node } from 'prop-types'
 
-import Head from './Head'
-import NavBar from './NavBar'
-import styles from './Page.module.scss'
+import Head from '@components/Head'
+import NavBar from '@components/NavBar'
 import SearchProvider from '@contexts/SearchContext'
+import styles from './index.module.scss'
 
 const Content = ({ contentFullSize, children }) => {
   return <Container contentFullSize={contentFullSize}>{children}</Container>

@@ -2,7 +2,7 @@ import { arrayOf, bool, func, object, string } from 'prop-types'
 import React, { useState, useEffect } from 'react'
 import { Icon, List } from 'semantic-ui-react'
 
-import styles from './FilesPreview.module.scss'
+import styles from './index.module.scss'
 
 const Tree = ({
   files,

@@ -1,5 +1,6 @@
 import '../wdyr'
 import React from 'react'
+import { bool, func, object, shape, string } from 'prop-types'
 
 import App from 'next/app'
 import Head from 'next/head'
@@ -31,9 +32,8 @@ import 'semantic-ui-css/components/dimmer.min.css'
 import 'semantic-ui-css/components/table.min.css'
 import 'semantic-ui-css/components/progress.min.css'
 
-import './_app.scss'
 import AuthProvider from '@contexts/AuthContext'
-import { bool, func, object, shape, string } from 'prop-types'
+import './_app.scss'
 
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setStaticFallback = isStaticFallback ? (
