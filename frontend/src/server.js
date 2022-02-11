@@ -1,8 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const next = require('next')
-const conf = require('./next.config.js')
 const fetch = require('node-fetch')
+const conf = require('../next.config.js')
 
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
