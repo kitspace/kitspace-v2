@@ -33,6 +33,7 @@
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "no-underscore-dangle": "off",
+    "curly": "error",
     "prettier/prettier": "error",
     "react/forbid-prop-types": "off",
     "react/react-in-jsx-scope": "off",

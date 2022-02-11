@@ -15,7 +15,9 @@ const SearchProvider = ({ children, initialQuery }) => {
   } = useRouter()
 
   useEffect(() => {
-    if (q == null) setQuery('')
+    if (q == null) {
+      setQuery('')
+    }
   }, [q])
 
   return (
