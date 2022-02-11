@@ -1,10 +1,10 @@
 {
   "name": "kitspace-frontend",
   "scripts": {
-    "dev": "node --inspect=0.0.0.0:9229 server.js",
+    "dev": "node --inspect=0.0.0.0:9229 src/server.js",
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
-    "start": "node server.js",
+    "start": "node src/server.js",
     "e2e": "cypress run",
     "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)",
     "lint": "eslint src/"
