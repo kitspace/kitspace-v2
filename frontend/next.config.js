@@ -31,6 +31,7 @@ module.exports = {
       `processor.${process.env.KITSPACE_DOMAIN}`,
       'github.com',
       'raw.githubusercontent.com',
+      'secure.gravatar.com',
     ],
   },
   webpack(config) {
