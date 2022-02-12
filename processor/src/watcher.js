@@ -14,6 +14,7 @@ const processPCBQueue = new Queue('processPCB', { connection })
 const processBOMQueue = new Queue('processBOM', { connection })
 const processIBOMQueue = new Queue('processIBOM', { connection })
 const processReadmeQueue = new Queue('processReadme', { connection })
+const processSchematicsQueue = new Queue('processSchematics', { connection })
 
 /**
  *
@@ -133,6 +134,7 @@ function addToQueues(inputDir, kitspaceYaml, outputDir, name, hash) {
     outputDir,
     name,
   })
+  processSchematicsQueue.add('projectAPI', { inputDir, kitspaceYaml, outputDir })
 }
 
 async function getKitspaceYaml(inputDir) {

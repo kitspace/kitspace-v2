@@ -64,6 +64,7 @@ or
         - `images/top-meta.png`
         - `images/top-with-background.png`
         - `images/layout.svg`
+        - `images/schematic.svg`
         - `1-click-BOM.tsv`
         - `bom-info.json`
         - `interactive_bom.json`
@@ -77,7 +78,7 @@ or
 
 #### POST `/process-file`
 
-- Multi-part form data with an input name of "upload" and a filename that ends with `.kicad_pcb`
+- Multi-part form data with an input name of "upload" and a filename that ends with `.kicad_pcb` or `.sch`
 - Must include a header `Authorization` with contents `Bearer ${KITSPACE_PROCESSOR_REMOTE_API_TOKEN}`
 
 Responds with:
@@ -102,6 +103,7 @@ Responds like "GET `/files/[user]/[project]/[git-ref]/[file]`" above.
 The remote API only supports:
 
 - `images/layout.svg`
+- `images/schematic.svg`
 
 ## Development
 
