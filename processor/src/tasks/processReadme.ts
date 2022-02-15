@@ -89,6 +89,7 @@ function postProcessMarkdown(readmeAsHtml, projectFullname) {
     if (isRelativeUri) {
       const rawUrl = `${GITEA_URL}/${projectFullname}/raw/${src}`
       img.attr('src', rawUrl)
+      img.attr('data-cy', 'relative-readme-img')
     }
 
     // load readme images lazily
