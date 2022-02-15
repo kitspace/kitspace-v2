@@ -1,5 +1,5 @@
-import * as ClickBom from '1-click-bom'
-import * as loglevel from 'loglevel'
+import * as oneClickBom from '1-click-bom'
+import log from 'loglevel'
 import * as path from 'path'
 import getPartinfo from './get_partinfo'
 
@@ -35,18 +35,18 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
       }
     }
     const content = await readFile(bomInputPath)
-    const bom = ClickBom.parse(content, {
+    const bom = oneClickBom.parse(content, {
       ext: /\.kicad_pcb$/i.test(bomInputPath) ? 'kicad_pcb' : null,
     })
 
     if (bom.invalid != null) {
       bom.invalid.forEach(invalid => {
-        loglevel.warn('invalid line:', invalid)
+        log.warn('invalid line:', invalid)
       })
     }
     if (bom.warnings != null) {
       bom.warnings.forEach(warning => {
-        loglevel.warn('warning:', warning)
+        log.warn('warning:', warning)
       })
     }
     if (!bom.lines || bom.lines.length === 0) {
@@ -59,7 +59,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
       }
       return
     }
-    bom.tsv = ClickBom.writeTSV(bom.lines)
+    bom.tsv = oneClickBom.writeTSV(bom.lines)
 
     bom.parts = await getPartinfo(bom.lines)
 
