@@ -24,6 +24,9 @@ services:
       - GITEA__database__NAME=gitea
       - GITEA__database__USER=gitea
       - GITEA__database__PASSWD=${POSTGRES_PASSWORD}
+    args:
+      # Ignore adding version control information to the go binary
+      - CGO_EXTRA_CFLAGS="-buildvcs=false"
     volumes:
       - gitea-data:/data
       - /etc/timezone:/etc/timezone:ro
