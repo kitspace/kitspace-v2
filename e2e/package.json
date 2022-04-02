@@ -1,0 +1,23 @@
+{
+  "name": "kitspace-frontend",
+  "scripts": {
+    "e2e": "cypress run",
+    "fmt": "prettier '*.json' cypress/ --write",
+    "lint": "eslint cypress/"
+  },
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@types/faker": "^5.1.0",
+    "cypress": "^9.4.1",
+    "cypress-fail-fast": "^3.3.0",
+    "cypress-image-snapshot": "^4.0.1",
+    "cypress-terminal-report": "^3.4.1",
+    "eslint": ">=7.0.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "3.4.0",
+    "faker": "^5.1.0",
+    "prettier": "^2.0.5"
+  }
+}

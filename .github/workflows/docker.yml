@@ -284,32 +284,19 @@ jobs:
         run: scripts/pre_e2e.sh
 
       - name: e2e
-        uses: cypress-io/github-action@v2
         timeout-minutes: 40
         env:
-          # Set the viewport for firefox, see https://github.com/cypress-io/cypress/issues/15481#issuecomment-810062823
-          MOZ_HEADLESS_WIDTH: 1500
-          MOZ_HEADLESS_HEIGHT: 800
-          # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MOZ_FORCE_DISABLE_E10S: 1
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
           GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
-        with:
-          start: docker-compose -f ../docker-compose.yml -f ../docker-compose.deploy.yml up
-          # wait for 2 minutes for the server to respond
-          wait-on: 'http://kitspace.test:3000'
-          # This value is in seconds
-          wait-on-timeout: 120
-          working-directory: frontend
-          parallel: true
-          record: true
           browser: ${{ matrix.browser }}
           group: ${{ matrix.browser }}
+        run: |
+          docker-compose -f docker-compose.yml -f docker-compose.deploy.yml -f docker-compose.e2e.yml up
 
   publish:
     name: Tag "latest"

@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  cypress:
+    image: cypress/included:9.5.1
+    # `command` can be used here, instead we should use `entrypoint`.
+    # see https://github.com/cypress-io/cypress-docker-images/tree/master/included#entry
+    entrypoint: /bin/sh -c 'cypress run --parallel --record -k $CYPRESS_RECORD_KEY -b $browser --group $group --ci-build-id $GITHUB_TOKEN'
+    environment:
+        # Set the viewport for firefox, see https://github.com/cypress-io/cypress/issues/15481#issuecomment-810062823
+      - MOZ_HEADLESS_WIDTH=1500
+      - MOZ_HEADLESS_HEIGHT=800
+      - MOZ_FORCE_DISABLE_E10S=1
+      - CYPRESS_RECORD_KEY=${CYPRESS_RECORD_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - group=${group}
+      - browser=${browser}      
+    depends_on:
+      - nginx
+    working_dir: /e2e
+    volumes:
+      - ./e2e:/e2e
+      - /etc/hosts:/etc/hosts
