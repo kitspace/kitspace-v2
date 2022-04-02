@@ -7,7 +7,8 @@ services:
     # see https://github.com/cypress-io/cypress-docker-images/tree/master/included#entry
     entrypoint: > 
           /bin/sh -c 
-          'npx wait-on http://kitspace.test:3000 && cypress run --parallel --record -k $CYPRESS_RECORD_KEY 
+          'yarn && 
+           npx wait-on http://kitspace.test:3000 && cypress run --parallel --record -k $CYPRESS_RECORD_KEY \
             -b $browser --group $group --ci-build-id $GITHUB_TOKEN'
     environment:
         # Set the viewport for firefox, see https://github.com/cypress-io/cypress/issues/15481#issuecomment-810062823
