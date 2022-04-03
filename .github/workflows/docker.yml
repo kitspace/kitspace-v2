@@ -43,8 +43,15 @@ jobs:
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
 
       - name: Create e2e matrix
+        # For master run e2e across all browsers otherwise, run it only in chrome
         id: set-matrix
-        run: echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\", \"firefox\"],\"containers\":[1,2,3]}"
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]];
+          then 
+            echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\", \"firefox\"],\"containers\":[1,2,3]}"
+          else
+            echo "::set-output name=matrix::{\"browser\":[\"chrome\"],\"containers\":[1,2,3]}"
+          fi
 
   build:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
