@@ -2,16 +2,9 @@ version: '2'
 
 services:
   cypress:
-    image: cypress/included:9.5.1
-    # `command` can be used here, instead we should use `entrypoint`.
-    # see https://github.com/cypress-io/cypress-docker-images/tree/master/included#entry
-    entrypoint: > 
-          /bin/sh -c 
-          'yarn && 
-           npx wait-on http://kitspace.test:3000 && cypress run --parallel --record -k $CYPRESS_RECORD_KEY \
-            -b $browser --group $group --ci-build-id $GITHUB_TOKEN'
+    build:
+      context: e2e
     environment:
-      - MOZ_FORCE_DISABLE_E10S=1
       - CYPRESS_RECORD_KEY=${CYPRESS_RECORD_KEY}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - group=${group}

@@ -1,12 +1,12 @@
 {
-  "name": "kitspace-frontend",
+  "name": "kitspace-e2e",
   "scripts": {
     "e2e": "cypress run",
     "fmt": "prettier '*.json' cypress/ --write",
     "lint": "eslint cypress/"
   },
   "license": "AGPL-3.0",
-  "devDependencies": {
+  "dependencies": {
     "@types/faker": "^5.1.0",
     "cypress": "^9.4.1",
     "cypress-fail-fast": "^3.3.0",
