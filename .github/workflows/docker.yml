@@ -19,6 +19,7 @@ jobs:
       processor_sha_short: ${{ steps.sha.outputs.processor_sha_short }}
       nginx_sha_short: ${{ steps.sha.outputs.nginx_sha_short }}
       gitea_sha_short: ${{ steps.sha.outputs.gitea_sha_short }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -40,6 +41,17 @@ jobs:
           echo "::set-output name=nginx_sha_short::$(git log --format=%h -n1 nginx/)"
           echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
             | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+
+      - name: Create e2e matrix
+        # For master run e2e across all browsers otherwise, run it only in chrome
+        id: set-matrix
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]];
+          then 
+            echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\", \"firefox\"],\"containers\":[1,2,3]}"
+          else
+            echo "::set-output name=matrix::{\"browser\":[\"chrome\"],\"containers\":[1,2,3]}"
+          fi
 
   build:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
@@ -220,10 +232,7 @@ jobs:
       - build
     strategy:
       fail-fast: false
-      matrix:
-        browser: [chrome, edge, electron, firefox]
-        containers: [1, 2, 3]
-
+      matrix: ${{ fromJson(needs.get_version.outputs.matrix) }}
     steps:
       - name: Setup Node 14
         uses: actions/setup-node@v2

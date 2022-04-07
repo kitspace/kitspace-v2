@@ -3,7 +3,7 @@ import faker from 'faker'
 import { getFakeUsername } from '../support/getFakeUsername'
 
 describe('Regression test for IBOM ', () => {
-  beforeEach(() => {
+  before(() => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -32,22 +32,6 @@ describe('Regression test for IBOM ', () => {
     cy.get('.topmostdiv').should('be.visible')
   })
 
-  /*
-   * The name of test is used for saving the snapshot.
-   */
-
-  it(
-    'should match the existing snapshot for the IBOM (electron)',
-    { browser: 'electron' },
-    () => {
-      // Compare/save the snapshot
-      cy.get('#bot').matchImageSnapshot({
-        failureThreshold: 0.03,
-        failureThresholdType: 'percent',
-      })
-    },
-  )
-
   it(
     'should match the existing snapshot for the IBOM (chrome)',
     { browser: 'chrome' },
@@ -56,15 +40,4 @@ describe('Regression test for IBOM ', () => {
       cy.get('#bot').matchImageSnapshot()
     },
   )
-
-  it(
-    'should match the existing snapshot for the IBOM (edge)',
-    { browser: 'edge' },
-    () => {
-      // Compare/save the snapshot
-      cy.get('#bot').matchImageSnapshot()
-    },
-  )
-
-  // TODO: firefox, see issue #294
 })
