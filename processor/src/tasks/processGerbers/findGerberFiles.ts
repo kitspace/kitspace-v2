@@ -1,7 +1,7 @@
-const whatsThatGerber = require('whats-that-gerber')
-const path = require('path')
+import whatsThatGerber from 'whats-that-gerber'
+import path from 'path'
 
-function findGerberFiles(files, gerberPath) {
+export default function findGerberFiles(files, gerberPath) {
   if (gerberPath != null) {
     files = files.filter(f => f.startsWith(gerberPath))
   }
@@ -52,5 +52,3 @@ function toLayersWithTypes(layerNames, layerTypes) {
     {},
   )
 }
-
-module.exports = findGerberFiles

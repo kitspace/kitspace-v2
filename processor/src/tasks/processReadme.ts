@@ -1,14 +1,15 @@
-const globule = require('globule')
-const path = require('path')
-const superagent = require('superagent')
-const cheerio = require('cheerio')
+import * as globule from 'globule'
+import * as path from 'path'
+import * as superagent from 'superagent'
+import * as cheerio from 'cheerio'
 
-const { exists, readFile, writeFile } = require('../utils')
-const { GITEA_URL } = require('../env')
+import { exists, readFile, writeFile } from '../utils'
+import { GITEA_URL } from '../env'
 
 async function processReadme(
   job,
-  { inputDir, kitspaceYaml = {}, outputDir, name },
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  { inputDir, kitspaceYaml = {}, outputDir, name }: any,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -65,8 +66,7 @@ function findReadmeFile(inputDir) {
 async function renderMarkdown(rawMarkdown) {
   const giteaMarkdownEndpoint = 'http://gitea:3000/api/v1/markdown/raw'
 
-  const res = await superagent
-    .post(giteaMarkdownEndpoint)
+  const res = await superagent.post(giteaMarkdownEndpoint)
     .set('Content-Type', 'application/json')
     .send(rawMarkdown)
 
@@ -107,4 +107,4 @@ function postProcessMarkdown(readmeAsHtml, projectFullname) {
   return $.html()
 }
 
-module.exports = processReadme
+export default processReadme

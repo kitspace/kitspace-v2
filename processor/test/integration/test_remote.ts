@@ -1,12 +1,12 @@
-const supertest = require('supertest')
-const assert = require('assert')
-const cp = require('child_process')
-const util = require('util')
-const path = require('path')
+import supertest from 'supertest'
+import assert from 'assert'
+import * as child_process from 'child_process'
+import * as util from 'util'
+import * as path from 'path'
 
-const exec = util.promisify(cp.exec)
+import { createApp } from '../../src/app'
 
-const { createApp } = require('../../src/app')
+const exec = util.promisify(child_process.exec)
 
 const tmpDir = '/data/test/kitspace-processor-test-from-remote'
 const emptyRepoDir = '/data/test/kitspace-processor-test-empty-repo-dir'
@@ -15,26 +15,26 @@ const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS.split(',')
   .map(x => x.trim())
   .filter(x => x)[0]
 
-describe('remote API', () => {
-  beforeEach(async () => {
+describe('remote API', function () {
+  beforeEach(async function () {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${emptyRepoDir}`)
     this.app = createApp(emptyRepoDir, null)
     this.supertest = supertest(this.app)
   })
 
-  it('creates app', async () => {
+  it('creates app', async function () {
     assert(this.app != null)
   })
 
-  it('rejects posts to /process-file without token', async () => {
+  it('rejects posts to /process-file without token', async function () {
     await this.supertest
       .post('/process-file')
       .attach('upload', path.join(__dirname, 'fixtures/push-on-hold-off.kicad_pcb'))
       .expect(403)
   })
 
-  it('accepts post on /process-file ', async () => {
+  it('accepts post on /process-file ', async function () {
     await this.supertest
       .post('/process-file')
       .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
@@ -42,7 +42,7 @@ describe('remote API', () => {
       .expect(202)
   })
 
-  it('gives a 422 error when no file uploaded ', async () => {
+  it('gives a 422 error when no file uploaded ', async function () {
     await this.supertest
       .post('/process-file')
       .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
@@ -50,7 +50,7 @@ describe('remote API', () => {
       .expect(422)
   })
 
-  it('plots layout.svg', async () => {
+  it('plots layout.svg', async function () {
     let r = await this.supertest
       .post('/process-file')
       .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
@@ -67,7 +67,7 @@ describe('remote API', () => {
     r = await this.supertest.get(layoutSvg).expect(200)
   })
 
-  afterEach(async () => {
+  afterEach(async function () {
     await this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
   })

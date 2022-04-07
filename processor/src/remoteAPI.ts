@@ -1,14 +1,14 @@
-const express = require('express')
-const log = require('loglevel')
-const path = require('path')
-const fileUpload = require('express-fileupload')
-const { Queue } = require('bullmq')
+import * as express from 'express'
+import log from 'loglevel'
+import * as path from 'path'
+import  fileUpload from 'express-fileupload'
+import { Queue } from 'bullmq'
 
-const { writeFile, exec } = require('./utils')
-const events = require('./events')
-const { connection } = require('./redisConnection')
+import * as utils from './utils'
+import events from './events'
+import connection from './redisConnection'
 
-const { DATA_DIR, REMOTE_API_TOKENS } = require('./env')
+import { DATA_DIR, REMOTE_API_TOKENS } from './env'
 
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
@@ -16,7 +16,7 @@ const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 const processKicadPCBQueue = new Queue('processKicadPCB', { connection })
 const processSchematicsQueue = new Queue('processSchematics', { connection })
 
-function createRemoteAPI(app) {
+export function createRemoteAPI(app) {
   app.use(fileUpload())
 
   const processFileStatus = {}
@@ -62,8 +62,8 @@ function createRemoteAPI(app) {
       }
       const uploadPath = path.join(uploadFolder, upload.md5 + ext)
       const outputDir = path.join(remoteProcessOutputDir, upload.md5)
-      await exec(`mkdir -p ${uploadFolder}`)
-      await writeFile(uploadPath, upload.data).then(() => {
+      await utils.exec(`mkdir -p ${uploadFolder}`)
+      await utils.writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
           processKicadPCBQueue.add('remoteAPI', {
             inputDir: uploadFolder,
@@ -95,7 +95,7 @@ function createRemoteAPI(app) {
 
   const processStaticFiles = express.static(remoteProcessOutputDir)
 
-  app.get('/processed/files/*', (req, res) => {
+  app.get('/processed/files/*', (req, res, next) => {
     const x = path.relative('/processed/files/', req.url)
 
     if (x in processFileStatus) {
@@ -105,7 +105,7 @@ function createRemoteAPI(app) {
       }
       if (processFileStatus[x].status === 'done') {
         req.url = x
-        return processStaticFiles(req, res)
+        return processStaticFiles(req, res, next)
       }
       if (processFileStatus[x].status === 'failed') {
         // send a 424, "Failed Dependency" error when the asset processing failed
@@ -118,5 +118,3 @@ function createRemoteAPI(app) {
 
   return app
 }
-
-module.exports = { createRemoteAPI }

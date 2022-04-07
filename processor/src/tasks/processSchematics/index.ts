@@ -1,8 +1,8 @@
-const path = require('path')
-const globule = require('globule')
-const log = require('loglevel')
+import * as path from 'path'
+import * as globule from 'globule'
+import log from 'loglevel'
 
-const { existsAll, exec, findKicadSchematic } = require('../../utils')
+import { existsAll, exec, findKicadSchematic } from '../../utils'
 
 async function processSchematics(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   const schematicSvgPath = path.join(outputDir, 'images/schematic.svg')
@@ -64,4 +64,4 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
   await exec(`rm -rf ${tempFolder}`)
 }
 
-module.exports = processSchematics
+export default processSchematics

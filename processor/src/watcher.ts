@@ -1,19 +1,19 @@
-const chokidar = require('chokidar')
-const debounce = require('lodash.debounce')
-const log = require('loglevel')
-const path = require('path')
-const jsYaml = require('js-yaml')
-const { Queue } = require('bullmq')
+import * as chokidar from 'chokidar'
+import debounce from 'lodash.debounce'
+import * as log from 'loglevel'
+import * as path from 'path'
+import * as jsYaml from 'js-yaml'
+import * as bullmq from 'bullmq'
 
-const { exists, exec, readFile } = require('./utils')
-const { DATA_DIR } = require('./env')
-const { connection } = require('./redisConnection')
+import { exists, exec, readFile } from './utils'
+import { DATA_DIR } from './env'
+import connection from './redisConnection'
 
-const writeKitspaceYamlQueue = new Queue('writeKitspaceYaml', { connection })
-const processPCBQueue = new Queue('processPCB', { connection })
-const processBOMQueue = new Queue('processBOM', { connection })
-const processIBOMQueue = new Queue('processIBOM', { connection })
-const processReadmeQueue = new Queue('processReadme', { connection })
+const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', { connection })
+const processPCBQueue = new bullmq.Queue('processPCB', { connection })
+const processBOMQueue = new bullmq.Queue('processBOM', { connection })
+const processIBOMQueue = new bullmq.Queue('processIBOM', { connection })
+const processReadmeQueue = new bullmq.Queue('processReadme', { connection })
 
 /**
  *
@@ -22,7 +22,7 @@ const processReadmeQueue = new Queue('processReadme', { connection })
  * @param {function=} checkIsRepoReady
  * @returns
  */
-function watch(repoDir, checkIsRepoReady) {
+export function watch(repoDir, checkIsRepoReady) {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project
@@ -181,5 +181,3 @@ async function sync(gitDir, checkoutDir) {
     log.debug('cloned into', checkoutDir)
   }
 }
-
-module.exports = { watch }

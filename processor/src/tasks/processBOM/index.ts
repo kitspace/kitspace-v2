@@ -1,11 +1,13 @@
-const oneClickBOM = require('1-click-bom')
-const log = require('loglevel')
-const path = require('path')
-const getPartinfo = require('./get_partinfo')
+import * as oneClickBom from '1-click-bom'
+import log from 'loglevel'
+import * as path from 'path'
+import getPartinfo from './get_partinfo'
 
-const { exists, existsAll, writeFile, readFile } = require('../../utils')
+import { exists, existsAll, writeFile, readFile } from '../../utils'
 
-async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
 
@@ -33,7 +35,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
       }
     }
     const content = await readFile(bomInputPath)
-    const bom = oneClickBOM.parse(content, {
+    const bom = oneClickBom.parse(content, {
       ext: /\.kicad_pcb$/i.test(bomInputPath) ? 'kicad_pcb' : null,
     })
 
@@ -57,7 +59,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
       }
       return
     }
-    bom.tsv = oneClickBOM.writeTSV(bom.lines)
+    bom.tsv = oneClickBom.writeTSV(bom.lines)
 
     bom.parts = await getPartinfo(bom.lines)
 
@@ -81,4 +83,4 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir }) {
   }
 }
 
-module.exports = processBOM
+export default processBOM

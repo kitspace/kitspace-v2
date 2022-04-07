@@ -1,12 +1,13 @@
-const supertest = require('supertest')
-const assert = require('assert')
-const cp = require('child_process')
-const util = require('util')
-const path = require('path')
+import supertest from 'supertest'
+import assert from 'assert'
+import * as cp from 'child_process'
+import * as util from 'util'
+import * as path from 'path'
+import { describe, beforeEach, it } from 'mocha'
+
+import { createApp } from '../../src/app'
 
 const exec = util.promisify(cp.exec)
-
-const { createApp } = require('../../src/app')
 
 const tmpDir = '/data/test/temp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
@@ -26,31 +27,31 @@ const standardProjectFiles = [
   'bom-info.json',
 ]
 
-describe('projects API', () => {
-  beforeEach(async () => {
+describe('projects API', function () {
+  beforeEach(async function () {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)
     this.app = createApp(repoDir, null)
     this.supertest = supertest(this.app)
   })
 
-  it('creates app', async () => {
+  it('creates app', async function() {
     assert(this.app != null)
   })
 
-  it('404s root', async () => {
+  it('404s root', async function() {
     await this.supertest.get('/').expect(404)
   })
 
-  it('404s a file', async () => {
+  it('404s a file', async function() {
     await this.supertest.get('/files/user/project/HEAD/top.png').expect(404)
   })
 
-  it('404s status', async () => {
+  it('404s status', async function() {
     await this.supertest.get('/files/user/project/HEAD/top.png').expect(404)
   })
 
-  it('reports status of failed processing', async () => {
+  it('reports status of failed processing', async function() {
     // make a simple git repo without the right files
     await exec(`mkdir -p ${sourceRepo}`)
     await exec(
@@ -88,15 +89,13 @@ describe('projects API', () => {
     assert(r.status === 424, `expected 424 but got ${r.status}`)
   })
 
-  const testRuler = hash => async () => {
+  const testRuler = hash => async function() {
     // first we reset HEAD/master to an exact version of the ruler repo
     // so future changes of the repo don't affect this test
     const tmpBare = path.join(tmpDir, 'ruler.git')
     await exec(`git clone --bare https://github.com/kitspace/ruler ${tmpBare}`)
     await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
-    await exec(
-      `git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace/ruler.git')}`,
-    )
+    await exec(`git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace/ruler.git')}`)
 
     const files = [
       `ruler-${hash.slice(0, 7)}-gerbers.zip`,
@@ -153,7 +152,7 @@ describe('projects API', () => {
   it('processes the kitspace ruler project', testRuler(nonKicadHash))
   it('processes the kitspace ruler project with eda: kicad', testRuler(kicadHash))
 
-  it('processes a multi project correctly', async () => {
+  it('processes a multi project correctly', async function() {
     // first we reset HEAD/master to an exact version of the repo
     // so future changes of the repo don't affect this test
     const hash = '53a7770a66fe0209b38a826d560bc8a4b6b56a0d'
@@ -230,7 +229,7 @@ describe('projects API', () => {
     }
   })
 
-  afterEach(async () => {
+  afterEach(async function() {
     await this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
   })

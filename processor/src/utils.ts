@@ -1,15 +1,15 @@
-const fs = require('fs')
-const path = require('path')
-const util = require('util')
-const cp = require('child_process')
+import * as fs from 'fs'
+import * as path from 'path'
+import * as util from 'util'
+import * as cp from 'child_process'
 
 const accessPromise = util.promisify(fs.access)
 
-const exec = util.promisify(cp.exec)
-const { writeFile } = fs.promises
-const readFile = util.promisify(fs.readFile)
+export const exec = util.promisify(cp.exec)
+export const { writeFile } = fs.promises
+export const readFile = util.promisify(fs.readFile)
 
-function exists(file) {
+export function exists(file) {
   return accessPromise(file, fs.constants.F_OK)
     .then(x => x == null)
     .catch(err => {
@@ -20,7 +20,7 @@ function exists(file) {
     })
 }
 
-async function existsAll(paths) {
+export async function existsAll(paths) {
   let allDoExist = true
   for (const p of paths) {
     allDoExist = allDoExist && (await exists(p))
@@ -28,7 +28,7 @@ async function existsAll(paths) {
   return allDoExist
 }
 
-function findKicadPcbFile(inputDir, files, kitspaceYaml) {
+export function findKicadPcbFile(inputDir, files, kitspaceYaml) {
   if (
     kitspaceYaml.eda &&
     kitspaceYaml.eda.type === 'kicad' &&
@@ -39,7 +39,7 @@ function findKicadPcbFile(inputDir, files, kitspaceYaml) {
   return files.find(file => file.endsWith('.kicad_pcb'))
 }
 
-function findKicadSchematic(inputDir, files, kitspaceYaml) {
+export function findKicadSchematic(inputDir, files, kitspaceYaml) {
   if (kitspaceYaml.eda && kitspaceYaml.eda.type === 'kicad') {
     const { pcb } = kitspaceYaml.eda
     const sch = kitspaceYaml.eda.schematic || pcb.replace(/\.kicad_pcb$/, '.sch')
@@ -52,14 +52,4 @@ function findKicadSchematic(inputDir, files, kitspaceYaml) {
     return pro.replace(/\.pro/, '.sch')
   }
   return files.find(file => file.endsWith('.sch'))
-}
-
-module.exports = {
-  exists,
-  existsAll,
-  findKicadPcbFile,
-  findKicadSchematic,
-  exec,
-  writeFile,
-  readFile,
 }

@@ -1,26 +1,44 @@
 {
   "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": "latest"
+  },
   "env": {
     "commonjs": true,
     "es2021": true
   },
-  "extends": ["airbnb-base", "prettier", "plugin:mocha/recommended"],
-  "plugins": ["prettier", "mocha"],
-  "parserOptions": {
-    "ecmaVersion": "latest"
-  },
+  "extends": [
+    "airbnb-base",
+    "airbnb-typescript/base",
+    "prettier",
+    "plugin:mocha/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["prettier", "mocha", "@typescript-eslint"],
   "rules": {
-    "mocha/no-mocha-arrows": "off",
-    "no-use-before-define": [
+    "@typescript-eslint/no-use-before-define": [
       "error",
       { "functions": false, "classes": true, "variables": true }
     ],
+    "@typescript-eslint/naming-convention": "off",
     "camelcase": "off",
     "consistent-return": "off",
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
     "no-await-in-loop": "off",
+    "import/prefer-default-export": "off",
     "no-underscore-dangle": "off"
   },
-  "ignorePatterns": ["src/tasks/processIBOM/InteractiveHtmlBom/**/*"]
+  "ignorePatterns": ["src/tasks/processIBOM/InteractiveHtmlBom/**/*"],
+  "overrides": [
+    {
+      "files": ["test/**/*.ts"],
+      "rules": {
+        "func-names": "off",
+        "prefer-arrow-callback": "off"
+      }
+    }
+  ]
 }

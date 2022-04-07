@@ -1,15 +1,16 @@
-const globule = require('globule')
-const path = require('path')
-const Jszip = require('jszip')
+import globule from 'globule'
+import path from 'path'
+import Jszip from 'jszip'
 
-const { existsAll, writeFile, readFile, exec } = require('../../utils')
+import { existsAll, writeFile, readFile, exec } from '../../utils'
 
-const findGerberFiles = require('./findGerberFiles')
-const boardBuilder = require('./board_builder')
+import findGerberFiles from './findGerberFiles'
+import boardBuilder from './board_builder'
 
-async function processGerbers(
+export default async function processGerbers(
   job,
-  { inputDir, kitspaceYaml = {}, outputDir, zipVersion, name, plottedGerbers },
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  { inputDir, kitspaceYaml = {}, outputDir, zipVersion, name, plottedGerbers }: any,
 ) {
   const nameSplit = name.split('/')
   const zipFileName = `${nameSplit[nameSplit.length - 1]}-${zipVersion}-gerbers.zip`
@@ -243,5 +244,3 @@ async function generateZip(zipPath, gerberData) {
     })
     .then(content => writeFile(zipPath, content))
 }
-
-module.exports = processGerbers
