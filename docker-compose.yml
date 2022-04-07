@@ -86,9 +86,17 @@ services:
     image: redis:6.2-alpine
     command: redis-server --requirepass ${REDIS_PASSWORD}
 
+  meilisearch:
+    image: getmeili/meilisearch:v0.26.1
+    environment:
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+    volumes:
+      - meilisearch-data:/data.ms
+
 volumes:
   frontend-next: null
   frontend-public: null
   gitea-data: null
   postgres-data: null
   processor-data: null
+  meilisearch-data: null
