@@ -27,3 +27,8 @@ services:
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
     restart: always
+
+  meilisearch:
+    environment:
+      - MEILI_ENV=production
+    restart: always

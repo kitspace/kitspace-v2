@@ -50,6 +50,12 @@ services:
     ports:
       - '6379:6379'
 
+  meilisearch:
+    ports:
+      - 7700:7700
+    environment:
+      - MEILI_ENV=development
+
 volumes:
   frontend-node_modules:
   processor-node_modules:
