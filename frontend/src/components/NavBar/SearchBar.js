@@ -36,7 +36,7 @@ const SearchBar = () => {
   }
 
   return (
-    <Form onSubmit={onSubmit}>
+    <Form data-cy="search-form" onSubmit={onSubmit}>
       <Form.Field
         fluid
         control={Input}
