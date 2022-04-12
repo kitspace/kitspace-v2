@@ -8,7 +8,7 @@ on:
   # (incl. dependabot). we check for author_association below so first-time
   # contributors can't run this workflow.
   pull_request_target:
-    branches: [master]
+    branches: [test-pull_request_target]
 jobs:
   get_version:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
@@ -45,8 +45,10 @@ jobs:
       - name: Create e2e matrix
         # For master run e2e across all browsers otherwise, run it only in chrome
         id: set-matrix
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/master" ]];
+        # Run e2e across all tests on `push` event to the `master` branch (merging another branch into master triggers push too).
+        # Run e2e in chrome only otherwise.
+         run: |
+          if [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "test-pull_request_target" ]];
           then 
             echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\", \"firefox\"],\"containers\":[1,2,3]}"
           else
