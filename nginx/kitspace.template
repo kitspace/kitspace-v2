@@ -82,6 +82,7 @@ server {
         add_header          'Access-Control-Allow-Methods' 'GET, OPTIONS, POST';
         add_header          'Access-Control-Allow-Headers' 'Content-Type, Authorization';
 
+        client_max_body_size @MAX_FILE_SIZE;
 
         if ($request_method = OPTIONS) {
             return 204;
