@@ -1,19 +1,12 @@
 import faker from 'faker'
 
 import { getFakeUsername } from '../support/getFakeUsername'
-import SignInFormModel from '../../src/models/SignInForm'
 
 describe('Log in form validation', () => {
   before(() => {
     cy.visit('/login')
     cy.get('[data-cy=login-grid] a').contains('Login').click({ force: true })
   })
-
-  it('should have the proper fields', () => {
-    // The form contains all the fields from the `SingInForm` model.
-    cy.hasProperFields(SignInFormModel)
-  })
-
   it('should validate username field', () => {
     const invalidUsernames = ['abc ', 'abc@', ' ', '^', 'ZqFe3jOudI7DuBOJ1wyXT']
 

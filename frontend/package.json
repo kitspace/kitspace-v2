@@ -5,7 +5,6 @@
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node src/server.js",
-    "e2e": "cypress run",
     "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)",
     "lint": "eslint src/"
   },
@@ -47,21 +46,13 @@
     "webpack": "^5.0.0"
   },
   "devDependencies": {
-    "@types/faker": "^5.1.0",
-    "@types/stripe": "^7.13.25",
     "@welldone-software/why-did-you-render": "^6.2.0",
-    "cypress": "^9.4.1",
-    "cypress-fail-fast": "^3.3.0",
-    "cypress-image-snapshot": "^4.0.1",
-    "cypress-terminal-report": "^3.4.1",
     "eslint": ">=7.0.0",
     "eslint-config-next": "^11.0.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "3.4.0",
-    "faker": "^5.1.0",
-    "lint-staged": ">=10",
     "prettier": "^2.0.5",
     "sass": "^1.49.6"
   }

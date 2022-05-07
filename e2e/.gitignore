@@ -1,0 +1,7 @@
+# e2e cypress results
+cypress/videos
+cypress/screenshots
+cypress/fixtures/auto-gen
+
+node_modules
+yarn-error.log

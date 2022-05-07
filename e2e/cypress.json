@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/cypress-io/cypress/develop/cli/schema/cypress.schema.json",
+  "projectId": "d8hk55",
   "baseUrl": "http://kitspace.test:3000",
   "experimentalFetchPolyfill": true,
   "numTestsKeptInMemory": 25,

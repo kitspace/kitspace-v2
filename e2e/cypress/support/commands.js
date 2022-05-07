@@ -37,18 +37,6 @@ Cypress.Commands.add('signOut', () => {
   })
 })
 
-Cypress.Commands.add('hasProperFields', schema => {
-  const formFields = schema.schema().$_terms.keys.map(field => field.key)
-
-  formFields.forEach(field => {
-    if (!field.startsWith('_')) {
-      // fields starting with `_` are added automatically not by the user
-      // e.g., `_csrf` field
-      cy.get(`input[name=${field}]`)
-    }
-  })
-})
-
 // credits https://gist.github.com/ZwaarContrast/00101934954980bcaa4ae70ac9930c60
 Cypress.Commands.add(
   'dropFiles',

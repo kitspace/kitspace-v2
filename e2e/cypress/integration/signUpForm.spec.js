@@ -1,7 +1,6 @@
 import faker from 'faker'
 
 import { getFakeUsername } from '../support/getFakeUsername'
-import SignUpFormModel from '../../src/models/SignUpForm'
 
 describe('Sign up form validation', () => {
   before(() => {
@@ -17,11 +16,6 @@ describe('Sign up form validation', () => {
   it('should route to sign up form based on params', () => {
     // The form is rendered on screen.
     cy.contains('Create a new account')
-  })
-
-  it('should have the proper fields', () => {
-    // The form contains all the fields from the `SingUpForm` model.
-    cy.hasProperFields(SignUpFormModel)
   })
 
   it('should display error message on using invalid username', () => {
