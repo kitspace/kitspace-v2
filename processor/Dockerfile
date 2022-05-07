@@ -17,6 +17,7 @@ RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
     nodejs \
     yarn \
     docker-ce \
+    python3-pip \
     git
 
 RUN mkdir /app
@@ -25,5 +26,6 @@ WORKDIR /app
 COPY . .
 
 RUN yarn install
+RUN pip3 install -r requirements.txt
 
 CMD ["yarn", "start"]

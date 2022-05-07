@@ -1,0 +1,2 @@
+lxml==4.8.0
+svgpathtools==1.4.1
