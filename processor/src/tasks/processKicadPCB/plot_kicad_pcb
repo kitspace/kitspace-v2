@@ -13,10 +13,11 @@ import time
 import os
 import sys
 import glob
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
 import copy
 
-from util import remove_color
+from util import remove_color, empty_svg
+from shrink_svg import shrink_svg
 
 plot_format = sys.argv[1]
 input_file = sys.argv[2]
@@ -59,7 +60,7 @@ plot_plan = (
         ("B_Cu", pcbnew.B_Cu, "Bottom layer"),
         ("B_Mask", pcbnew.B_Mask, "Mask Bottom"),
         ("F_Mask", pcbnew.F_Mask, "Mask top"),
-        ("B_Paster", pcbnew.B_Paste, "Paste Bottom"),
+        ("B_Paste", pcbnew.B_Paste, "Paste Bottom"),
         ("F_Paste", pcbnew.F_Paste, "Paste Top"),
         ("F_SilkS", pcbnew.F_SilkS, "Silk Top"),
         ("B_SilkS", pcbnew.B_SilkS, "Silk Bottom"),
@@ -75,9 +76,10 @@ for (layer_name, layer_id, layer_description) in plot_plan:
     time.sleep(0.01)
     plot_control.ClosePlot()
 
+
+
 if plot_format == pcbnew.PLOT_FORMAT_SVG:
 
-    ET.register_namespace("", "http://www.w3.org/2000/svg")
     layers = []
     for (layer_name, _, __) in plot_plan:
         fileglob = os.path.join(plot_directory, f"*-{layer_name}.svg")
@@ -85,11 +87,8 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
         tree = ET.parse(filepath)
         layers.append((layer_name, tree))
 
-    new_tree = copy.deepcopy(layers[0][1])
+    new_tree = empty_svg()
     new_root = new_tree.getroot()
-
-    for child in new_root[:]:
-        new_root.remove(child)
 
     for (layer_name, tree) in layers:
         layer = tree.getroot()
@@ -104,6 +103,8 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
             for e in child.iter():
                 remove_color(e)
             g.append(child)
+
+    shrink_svg(new_tree, 1)
 
     folder = os.path.dirname(output_file)
     os.makedirs(folder, exist_ok=True)
