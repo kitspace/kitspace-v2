@@ -45,8 +45,10 @@ jobs:
       - name: Create e2e matrix
         # For master run e2e across all browsers otherwise, run it only in chrome
         id: set-matrix
+        # Run e2e across all tests on `push` event to the `master` branch (merging another branch into master triggers push too).
+        # Run e2e in chrome only otherwise.
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/master" ]];
+          if [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "refs/heads/master" ]];
           then 
             echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\", \"firefox\"],\"containers\":[1,2,3]}"
           else
