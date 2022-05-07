@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -qq -y software-properties-common curl
-RUN add-apt-repository -y ppa:kicad/kicad-5.1-releases
+RUN add-apt-repository -y ppa:kicad/kicad-6.0-releases
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -

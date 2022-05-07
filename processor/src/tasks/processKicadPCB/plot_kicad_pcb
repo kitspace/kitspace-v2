@@ -35,7 +35,7 @@ plot_control = pcbnew.PLOT_CONTROLLER(board)
 plot_options = plot_control.GetPlotOptions()
 plot_options.SetOutputDirectory(plot_directory)
 plot_options.SetPlotFrameRef(False)
-plot_options.SetLineWidth(pcbnew.FromMM(0.35))
+plot_options.SetSketchPadLineWidth(pcbnew.FromMM(0.35))
 plot_options.SetAutoScale(False)
 plot_options.SetMirror(False)
 plot_options.SetUseGerberAttributes(False)
@@ -115,7 +115,7 @@ elif plot_format == pcbnew.PLOT_FORMAT_GERBER:
 
     mirror = False
     minimal_header = False
-    offset = board.GetAuxOrigin()
+    offset = board.GetDesignSettings().GetAuxOrigin()
     merge_npth = True
     drill_writer.SetOptions(mirror, minimal_header, offset, merge_npth)
 
