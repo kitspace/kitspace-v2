@@ -107,7 +107,7 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
                 remove_color(e)
             g.append(child)
 
-    shrink_svg(new_tree, 1)
+    shrink_svg(new_tree, margin=1500)
 
     folder = os.path.dirname(output_file)
     os.makedirs(folder, exist_ok=True)
