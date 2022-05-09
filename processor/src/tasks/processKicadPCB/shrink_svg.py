@@ -3,7 +3,7 @@
 import sys
 from typing import Callable, Tuple, Union
 import svgpathtools
-from lxml import etree
+import xml.etree.ElementTree as ET
 
 Numeric = Union[int, float]
 Box = Tuple[Numeric, Numeric, Numeric, Numeric]
@@ -20,18 +20,15 @@ def ki2mm(val: int) -> float:
     return val / 1000000.0
 
 
-def shrink_svg(svg: etree.ElementTree, margin: int) -> None:
+def shrink_svg(svg: ET.ElementTree, margin: int) -> None:
     """
     Shrink the SVG canvas to the size of the drawing. Add margin in
     KiCAD units.
     """
-    # We have to overcome the limitation of different base types between
-    # PcbDraw and svgpathtools
-    from xml.etree.ElementTree import fromstring as xmlParse
-
-    from lxml.etree import tostring as serializeXml  # type: ignore
-
-    paths = svgpathtools.document.flattened_paths(xmlParse(serializeXml(svg)))
+    root = svg.getroot()
+    # not sure why we need to do `tostring` and then `fromstring` here but
+    # otherwise we just get an empty list for `paths`. `copy.deepcopy(root)` didn't work.
+    paths = svgpathtools.document.flattened_paths(ET.fromstring(ET.tostring(root)))
 
     if len(paths) == 0:
         return
@@ -44,9 +41,9 @@ def shrink_svg(svg: etree.ElementTree, margin: int) -> None:
     bbox[2] -= int(margin)
     bbox[3] += int(margin)
 
-    root = svg.getroot()
-    root.attrib["viewBox"] = "{} {} {} {}".format(
-        bbox[0], bbox[2], bbox[1] - bbox[0], bbox[3] - bbox[2]
+    root.set(
+        "viewBox",
+        "{} {} {} {}".format(bbox[0], bbox[2], bbox[1] - bbox[0], bbox[3] - bbox[2]),
     )
-    root.attrib["width"] = str(ki2mm(int(bbox[1] - bbox[0]))) + "mm"
-    root.attrib["height"] = str(ki2mm(int(bbox[3] - bbox[2]))) + "mm"
+    root.set("width", str(ki2mm(int(bbox[1] - bbox[0]))) + "mm")
+    root.set("height", str(ki2mm(int(bbox[3] - bbox[2]))) + "mm")

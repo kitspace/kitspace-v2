@@ -1,4 +1,4 @@
-import lxml.etree as ET
+import xml.etree.ElementTree as ET
 
 def remove_color(svgElement):
     """

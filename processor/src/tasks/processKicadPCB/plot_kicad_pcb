@@ -13,7 +13,7 @@ import time
 import os
 import sys
 import glob
-import lxml.etree as ET
+import xml.etree.ElementTree as ET
 import copy
 
 from util import remove_color, empty_svg
@@ -79,6 +79,8 @@ for (layer_name, layer_id, layer_description) in plot_plan:
 
 
 if plot_format == pcbnew.PLOT_FORMAT_SVG:
+
+    ET.register_namespace("", "http://www.w3.org/2000/svg")
 
     layers = []
     for (layer_name, _, __) in plot_plan:
