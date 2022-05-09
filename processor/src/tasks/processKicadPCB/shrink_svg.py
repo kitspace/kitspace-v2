@@ -17,7 +17,7 @@ def merge_bbox(left: Box, right: Box) -> Box:
 
 
 def ki2mm(val: int) -> float:
-    return val / 1000000.0
+    return val / 1000.0
 
 
 def shrink_svg(svg: ET.ElementTree, margin: int) -> None:

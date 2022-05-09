@@ -48,6 +48,7 @@ plot_options.SetPlotReference(True)
 plot_options.SetPlotValue(True)
 plot_options.SetPlotInvisibleText(False)
 plot_options.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
+plot_options.SetSvgPrecision(aPrecision=1, aUseInch=False)
 
 # remove solder mask from silk to be sure there is no silk on pads
 plot_options.SetSubtractMaskFromSilk(True)
