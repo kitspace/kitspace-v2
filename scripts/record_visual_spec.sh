@@ -2,6 +2,6 @@
 set -Eeuo pipefail
 
 spec_name=$1
-cd frontend
+cd e2e
 
 npx cypress run --browser chrome --env updateSnapshots=true --spec $spec_name
