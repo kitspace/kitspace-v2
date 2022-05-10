@@ -14,7 +14,6 @@ import os
 import sys
 import glob
 import xml.etree.ElementTree as ET
-import copy
 
 from util import remove_color, empty_svg
 from shrink_svg import shrink_svg
@@ -55,31 +54,28 @@ plot_options.SetSubtractMaskFromSilk(True)
 
 copper_layer_count = board.GetCopperLayerCount()
 plot_plan = (
-    [["F_Cu", pcbnew.F_Cu, "Top layer", "copper f"]]
+    [["F_Cu", pcbnew.F_Cu, "copper f"]]
+    + [[f"Inner{n}", n, f"copper in{n}"] for n in range(1, copper_layer_count - 1)]
     + [
-        [f"Inner{n}", n, "Inner", f"copper in{n}"]
-        for n in range(1, copper_layer_count - 1)
-    ]
-    + [
-        ["B_Cu", pcbnew.B_Cu, "Bottom layer", "copper b"],
-        ["B_Mask", pcbnew.B_Mask, "Mask Bottom", None],
-        ["F_Mask", pcbnew.F_Mask, "Mask top", None],
-        ["B_Paste", pcbnew.B_Paste, "Paste Bottom", None],
-        ["F_Paste", pcbnew.F_Paste, "Paste Top", None],
-        ["F_SilkS", pcbnew.F_SilkS, "Silk Top", None],
-        ["B_SilkS", pcbnew.B_SilkS, "Silk Bottom", None],
-        ["Edge_Cuts", pcbnew.Edge_Cuts, "Edges", None],
+        ["B_Cu", pcbnew.B_Cu, "copper b"],
+        ["B_Mask", pcbnew.B_Mask, None],
+        ["F_Mask", pcbnew.F_Mask, None],
+        ["B_Paste", pcbnew.B_Paste, None],
+        ["F_Paste", pcbnew.F_Paste, None],
+        ["F_SilkS", pcbnew.F_SilkS, None],
+        ["B_SilkS", pcbnew.B_SilkS, None],
+        ["Edge_Cuts", pcbnew.Edge_Cuts, None],
     ]
 )
 
 for layer in plot_plan:
-    if layer[3] is None:
-        layer[3] = layer[0].lower()
+    if layer[2] is None:
+        layer[2] = layer[0].lower()
 
 
-for (layer_name, layer_id, layer_description, _) in plot_plan:
+for (layer_name, layer_id, _) in plot_plan:
     plot_control.SetLayer(layer_id)
-    plot_control.OpenPlotfile(layer_name, plot_format, layer_description)
+    plot_control.OpenPlotfile(layer_name, plot_format, aSheetDesc=layer_name)
     plot_control.PlotLayer()
     time.sleep(0.01)
     plot_control.ClosePlot()
@@ -90,7 +86,7 @@ if plot_format == pcbnew.PLOT_FORMAT_SVG:
     ET.register_namespace("", "http://www.w3.org/2000/svg")
 
     layers = []
-    for (layer_name, _, __, css_classes) in plot_plan:
+    for (layer_name, _, css_classes) in plot_plan:
         fileglob = os.path.join(plot_directory, f"*-{layer_name}.svg")
         (filepath,) = glob.glob(fileglob)
         tree = ET.parse(filepath)
