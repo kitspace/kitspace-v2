@@ -1,0 +1,1 @@
+svgpathtools==1.4.1
