@@ -7,6 +7,7 @@ services:
       - KITSPACE_PROCESSOR_URL=${KITSPACE_SCHEME}://processor.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
       - KITSPACE_DOMAIN=${KITSPACE_DOMAIN}
       - MAX_FILE_SIZE=${MAX_FILE_SIZE}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     volumes:
       - frontend-next:/app/.next/
       - frontend-public:/app/public/
@@ -73,6 +74,7 @@ services:
       - REMOTE_API_TOKENS=${KITSPACE_PROCESSOR_REMOTE_API_TOKENS}
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     depends_on:
       - postgres
       - redis
