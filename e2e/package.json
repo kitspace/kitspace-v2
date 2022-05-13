@@ -1,7 +1,8 @@
 {
   "name": "kitspace-e2e",
   "scripts": {
-    "e2e": "cypress run",
+    "e2e": "npx cypress run",
+    "gui": "npx cypress open",
     "fmt": "prettier '*.json' cypress/ --write",
     "lint": "eslint cypress/"
   },
