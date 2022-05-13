@@ -288,7 +288,7 @@ jobs:
           group: ${{ matrix.browser }}
         run: |
           docker-compose -f docker-compose.yml -f docker-compose.deploy.yml -f docker-compose.e2e.yml up \
-            --abort-on-container-exit --exit-code-from cypress
+            --abort-on-container-exit --exit-code-from e2e
 
   publish:
     name: Tag "latest"

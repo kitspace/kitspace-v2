@@ -92,17 +92,29 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 
 ## Running Integration Tests
 
-1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps.
+1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps. You can use one of the following options.
 
-2. navigate to the frontend: `cd frontend/`.
+### Run the tests in a docker container
 
-3. Source the env file with `set -a && source ../.env && set +a`
+```console
+docker-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up e2e
+```
 
-4. Start the testing client with the `npx cypress open` command.
+### w/o docker
 
-5. The Cypress GUI should pop up.
+```console
+cd e2e
+yarn
+yarn e2e
+```
 
-6. To run all tests, press `Run all specs`.
+### GUI
+
+```console
+cd e2e
+yarn
+yarn gui
+```
 
 ### Recording new visual tests:
 

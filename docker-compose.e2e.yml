@@ -1,14 +1,14 @@
 version: '2'
 
 services:
-  cypress:
+  e2e:
     build:
       context: e2e
     environment:
       - CYPRESS_RECORD_KEY=${CYPRESS_RECORD_KEY}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - group=${group}
-      - browser=${browser}      
+      - browser=${browser}
     depends_on:
       - nginx
     working_dir: /e2e
