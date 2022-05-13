@@ -1,6 +1,3 @@
-# The `cypress/included` images don't have any image with edge installed
-# so we have to install it manually.
-
 FROM cypress/included:9.6.1
 
 # Install testing dependencies
