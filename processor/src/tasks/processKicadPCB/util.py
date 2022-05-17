@@ -15,7 +15,7 @@ def remove_color(svgElement):
 
         new_style = []
         for key, value in style:
-            if key not in ("fill", "stroke"):
+            if key not in ("fill", "stroke", "fill-opacity", "stroke-opacity"):
                 new_style.append((key, value))
 
         new_style_string = ""
