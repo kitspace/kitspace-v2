@@ -9,11 +9,27 @@ import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import connection from './redisConnection'
 
-const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', { connection })
-const processPCBQueue = new bullmq.Queue('processPCB', { connection })
-const processBOMQueue = new bullmq.Queue('processBOM', { connection })
-const processIBOMQueue = new bullmq.Queue('processIBOM', { connection })
-const processReadmeQueue = new bullmq.Queue('processReadme', { connection })
+const defaultJobOptions = { removeOnComplete: true }
+const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
+  connection,
+  defaultJobOptions,
+})
+const processPCBQueue = new bullmq.Queue('processPCB', {
+  connection,
+  defaultJobOptions,
+})
+const processBOMQueue = new bullmq.Queue('processBOM', {
+  connection,
+  defaultJobOptions,
+})
+const processIBOMQueue = new bullmq.Queue('processIBOM', {
+  connection,
+  defaultJobOptions,
+})
+const processReadmeQueue = new bullmq.Queue('processReadme', {
+  connection,
+  defaultJobOptions,
+})
 
 /**
  *
@@ -30,8 +46,6 @@ export function watch(repoDir, checkIsRepoReady) {
     log.debug('addDir', gitDir)
 
     // we debounce the file-system event to only invoke once per change in the repo
-    // additionally we ignore any invocations that happen while it's already running
-    // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
       const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
       if (isReady) {
@@ -113,26 +127,47 @@ async function processRepo(repoDir, gitDir) {
 }
 
 function addToQueues(inputDir, kitspaceYaml, outputDir, name, hash) {
-  processPCBQueue.add('projectAPI', {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    hash,
-    name,
-  })
-  processBOMQueue.add('projectAPI', { inputDir, kitspaceYaml, outputDir })
-  processIBOMQueue.add('projectAPI', {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    name,
-  })
-  processReadmeQueue.add('projectAPI', {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    name,
-  })
+  processPCBQueue.add(
+    'projectAPI',
+    {
+      inputDir,
+      kitspaceYaml,
+      outputDir,
+      hash,
+      name,
+    },
+    { jobId: outputDir },
+  )
+  processBOMQueue.add(
+    'projectAPI',
+    { inputDir, kitspaceYaml, outputDir },
+    { jobId: outputDir },
+  )
+  processIBOMQueue.add(
+    'projectAPI',
+    {
+      inputDir,
+      kitspaceYaml,
+      outputDir,
+      name,
+    },
+    { jobId: outputDir },
+  )
+  processBOMQueue.add(
+    'projectAPI',
+    { inputDir, kitspaceYaml, outputDir },
+    { jobId: outputDir },
+  )
+  processReadmeQueue.add(
+    'projectAPI',
+    {
+      inputDir,
+      kitspaceYaml,
+      outputDir,
+      name,
+    },
+    { jobId: outputDir },
+  )
 }
 
 async function getKitspaceYaml(inputDir) {
