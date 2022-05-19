@@ -14,16 +14,16 @@ const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
 const defaultJobOptions = { removeOnComplete: true }
-const processKicadPCBQueue = new bullmq.Queue('processKicadPCB', {
-  connection,
-  defaultJobOptions,
-})
-const processSchematicsQueue = new bullmq.Queue('processSchematics', {
-  connection,
-  defaultJobOptions,
-})
 
 export function createRemoteAPI(app) {
+  const processKicadPCBQueue = new bullmq.Queue('processKicadPCB', {
+    connection,
+    defaultJobOptions,
+  })
+  const processSchematicsQueue = new bullmq.Queue('processSchematics', {
+    connection,
+    defaultJobOptions,
+  })
   app.use(fileUpload())
 
   const processFileStatus = {}
@@ -129,6 +129,13 @@ export function createRemoteAPI(app) {
       }
     }
     return res.sendStatus(404)
+  })
+
+  app.cleanup.push(async () => {
+    await Promise.all([
+      processKicadPCBQueue.obliterate({ force: true }),
+      processSchematicsQueue.obliterate({ force: true }),
+    ])
   })
 
   return app
