@@ -113,21 +113,17 @@ export default async function processGerbers(
         job.updateProgress({ status: 'failed', file: topSvgPath, error }),
       )
 
-    promises.push(
-      generateTopPng(topSvgPath, stackup, topPngPath)
-        .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
-        .catch(error =>
-          job.updateProgress({ status: 'failed', file: topPngPath, error }),
-        ),
-    )
+    await generateTopPng(topSvgPath, stackup, topPngPath)
+      .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: topPngPath, error }),
+      )
 
-    promises.push(
-      generateTopLargePng(topSvgPath, stackup, topLargePngPath)
-        .then(() => job.updateProgress({ status: 'done', file: topLargePngPath }))
-        .catch(error =>
-          job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
-        ),
-    )
+    await generateTopLargePng(topSvgPath, stackup, topLargePngPath)
+      .then(() => job.updateProgress({ status: 'done', file: topLargePngPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
+      )
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
       .then(() => job.updateProgress({ status: 'done', file: topMetaPngPath }))
@@ -135,13 +131,11 @@ export default async function processGerbers(
         job.updateProgress({ status: 'failed', file: topMetaPngPath, error }),
       )
 
-    promises.push(
-      generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
-        .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
-        .catch(error =>
-          job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
-        ),
-    )
+    await generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
+      .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
+      .catch(error =>
+        job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
+      )
 
     await Promise.all(promises)
   } catch (error) {
@@ -208,7 +202,7 @@ function generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath) {
   }
   if (stackup.top.units === 'in') {
     if (stackup.bottom.units !== 'in') {
-      throw new Error('Disparate units in PCB files. Expecting in on bottom.')
+      throw new Error('Disparate units in PCB files. Expecting inches on bottom.')
     }
     gerberInfo.width *= 25.4
     gerberInfo.height *= 25.4
