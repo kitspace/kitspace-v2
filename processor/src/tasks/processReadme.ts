@@ -17,7 +17,7 @@ async function processReadme(
 
   if (await exists(readmePath)) {
     job.updateProgress({ status: 'done', file: readmePath })
-    return
+    return readFile(readmePath, 'utf-8')
   }
 
   let readmeInputPath
@@ -32,7 +32,7 @@ async function processReadme(
         file: readmePath,
         error: Error("couldn't find readme file"),
       })
-      return
+      return ''
     }
     readmeInputPath = readmeFile
   }
@@ -40,13 +40,15 @@ async function processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
   const readmeAsHTML = await renderMarkdown(rawMarkdown)
 
-  const renderedReadme = postProcessMarkdown(readmeAsHTML, name)
+  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, name)
 
-  await writeFile(readmePath, renderedReadme)
+  await writeFile(readmePath, processedReadmeHTML)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: readmePath, error }),
     )
+
+  return processedReadmeHTML
 }
 
 function findReadmeFile(inputDir) {
@@ -66,7 +68,8 @@ function findReadmeFile(inputDir) {
 async function renderMarkdown(rawMarkdown) {
   const giteaMarkdownEndpoint = 'http://gitea:3000/api/v1/markdown/raw'
 
-  const res = await superagent.post(giteaMarkdownEndpoint)
+  const res = await superagent
+    .post(giteaMarkdownEndpoint)
     .set('Content-Type', 'application/json')
     .send(rawMarkdown)
 
