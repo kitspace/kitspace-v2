@@ -11,80 +11,42 @@ import redisConnection from './redisConnection'
 
 function createQueues() {
   const defaultJobOptions = { removeOnComplete: true }
-  const queues = []
 
   const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
     connection: redisConnection,
     defaultJobOptions,
   })
-  queues.push(writeKitspaceYamlQueue)
 
+  const projectQueues = []
   const processPCBQueue = new bullmq.Queue('processPCB', {
     connection: redisConnection,
     defaultJobOptions,
   })
-  queues.push(processPCBQueue)
+  projectQueues.push(processPCBQueue)
 
   const processBOMQueue = new bullmq.Queue('processBOM', {
     connection: redisConnection,
     defaultJobOptions,
   })
-  queues.push(processBOMQueue)
+  projectQueues.push(processBOMQueue)
 
   const processIBOMQueue = new bullmq.Queue('processIBOM', {
     connection: redisConnection,
     defaultJobOptions,
   })
-  queues.push(processIBOMQueue)
+  projectQueues.push(processIBOMQueue)
 
   const processReadmeQueue = new bullmq.Queue('processReadme', {
     connection: redisConnection,
     defaultJobOptions,
   })
-  queues.push(processReadmeQueue)
+  projectQueues.push(processReadmeQueue)
 
-  function addToAllQueues(inputDir, kitspaceYaml, outputDir, name, hash) {
-    processPCBQueue.add(
-      'projectAPI',
-      {
-        inputDir,
-        kitspaceYaml,
-        outputDir,
-        hash,
-        name,
-      },
-      { jobId: outputDir },
-    )
-    processBOMQueue.add(
-      'projectAPI',
-      { inputDir, kitspaceYaml, outputDir },
-      { jobId: outputDir },
-    )
-    processIBOMQueue.add(
-      'projectAPI',
-      {
-        inputDir,
-        kitspaceYaml,
-        outputDir,
-        name,
-      },
-      { jobId: outputDir },
-    )
-    processBOMQueue.add(
-      'projectAPI',
-      { inputDir, kitspaceYaml, outputDir },
-      { jobId: outputDir },
-    )
-    processReadmeQueue.add(
-      'projectAPI',
-      {
-        inputDir,
-        kitspaceYaml,
-        outputDir,
-        name,
-      },
-      { jobId: outputDir },
-    )
+  function createJobs(jobData) {
+    const jobId = jobData.outputDir
+    for (const q of projectQueues) {
+      q.add('projectAPI', jobData, { jobId })
+    }
   }
 
   async function addProjectToQueues(repoDir, gitDir) {
@@ -101,27 +63,32 @@ function createQueues() {
 
     const kitspaceYaml = await getKitspaceYaml(inputDir)
 
-    writeKitspaceYamlQueue.add('projectAPI', { kitspaceYaml, outputDir })
+    writeKitspaceYamlQueue.add(
+      'projectAPI',
+      { kitspaceYaml, outputDir },
+      { jobId: outputDir },
+    )
 
     if (kitspaceYaml.multi) {
       for (const projectName of Object.keys(kitspaceYaml.multi)) {
         const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        addToAllQueues(
+        createJobs({
           inputDir,
-          projectKitspaceYaml,
-          projectOutputDir,
-          projectName,
+          kitspaceYaml: projectKitspaceYaml,
+          outputDir: projectOutputDir,
+          name: projectName,
           hash,
-        )
+        })
       }
     } else {
-      addToAllQueues(inputDir, kitspaceYaml, outputDir, name, hash)
+      createJobs({ inputDir, kitspaceYaml, outputDir, name, hash })
     }
   }
 
   async function stopQueues() {
-    await Promise.all(queues.map(q => q.obliterate({ force: true })))
+    const qs = projectQueues.concat([writeKitspaceYamlQueue])
+    await Promise.all(qs.map(q => q.obliterate({ force: true })))
   }
   return { addProjectToQueues, stopQueues }
 }
