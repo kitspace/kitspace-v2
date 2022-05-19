@@ -1,5 +1,6 @@
 import { MeiliSearch } from 'meilisearch'
 import log from 'loglevel'
+import cheerio from 'cheerio'
 
 const meili = new MeiliSearch({
   host: 'http://meilisearch:7700',
@@ -8,7 +9,7 @@ const meili = new MeiliSearch({
 
 export default async function addToSearch(
   job,
-  { searchId, bom, kitspaceYaml, name, hash },
+  { searchId, bom, kitspaceYaml, name, hash, readmeHTML },
 ) {
   if (searchId == null) {
     log.warn(`Not adding '${name}' to meilisearch due to missing searchId`)
@@ -19,6 +20,7 @@ export default async function addToSearch(
   if (searchId.split('-').length > 1) {
     multiParentId = searchId.split('-')[0]
   }
+  const readme = getReadmeAsText(readmeHTML)
   const document = {
     id: searchId,
     name,
@@ -27,8 +29,14 @@ export default async function addToSearch(
       lines: bom.lines,
     },
     gitHash: hash,
+    readme,
     multiParentId,
   }
   log.debug(`meilisearch: adding/updating document id='${searchId}'`)
   await index.addDocuments([document])
+}
+
+function getReadmeAsText(readmeHTML) {
+  const $ = cheerio.load(readmeHTML)
+  return $.text()
 }
