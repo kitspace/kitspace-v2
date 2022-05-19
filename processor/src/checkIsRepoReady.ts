@@ -43,7 +43,7 @@ export async function checkIsRepoReady(gitDir) {
     log.debug(
       `Repo: ${ownerName}/${repoName} has no branches, it won't be processed!`,
     )
-    return false
+    return { isReady: false, id }
   }
 
   if (isMirror) {
@@ -56,16 +56,16 @@ export async function checkIsRepoReady(gitDir) {
       log.debug(
         `Repo: ${ownerName}/${repoName} migration is done, the repo is processable.`,
       )
-      return true
+      return { isReady: true, id }
     }
     log.debug(
       `Repo: ${ownerName}/${repoName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
     )
-    return false
+    return { isReady: false, id }
   }
 
   log.debug(`Repo: ${ownerName}/${repoName} is processable.`)
-  return true
+  return { isReady: true, id }
 }
 
 /**
@@ -202,8 +202,13 @@ async function queryMigrationStatusWithBackoff(migrationStatusQuery, repoId) {
  * @param {ExponentialOptions=} config
  * @returns
  */
+async function asyncBackoff(
+  onBackoff,
+  onFail,
+  maximumRetries,
+  config = {},
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-async function asyncBackoff(onBackoff, onFail, maximumRetries, config = {}) : Promise<any> {
+): Promise<any> {
   const backoffInstance = backOff({
     ...config,
     initialDelay: BACKOFF_INITIAL_DELAY,

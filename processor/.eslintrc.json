@@ -29,6 +29,7 @@
     "no-restricted-syntax": "off",
     "no-await-in-loop": "off",
     "import/prefer-default-export": "off",
+    "prefer-destructuring": "off",
     "no-underscore-dangle": "off"
   },
   "ignorePatterns": ["src/tasks/processIBOM/InteractiveHtmlBom/**/*"],
