@@ -27,6 +27,7 @@
     "jszip": "^3.7.0",
     "lodash.debounce": "^4.0.8",
     "loglevel": "^1.7.1",
+    "meilisearch": "^0.25.1",
     "pcb-stackup": "^4.2.5",
     "pg": "^8.7.1",
     "ramda": "^0.27.1",

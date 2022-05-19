@@ -21,7 +21,8 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
     for (const file of filePaths) {
       job.updateProgress({ status: 'done', file })
     }
-    return
+    const info = JSON.parse(await readFile(infoJsonPath, 'utf-8'))
+    return info.bom
   }
 
   try {
@@ -76,6 +77,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
           job.updateProgress({ status: 'failed', file: bomOutputPath, error }),
         ),
     ])
+    return info.bom
   } catch (error) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'failed', file, error })

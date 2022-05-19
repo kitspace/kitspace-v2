@@ -24,11 +24,11 @@ function createQueues() {
   })
   projectQueues.push(processPCBQueue)
 
-  const processBOMQueue = new bullmq.Queue('processBOM', {
+  const processInfoQueue = new bullmq.Queue('processInfo', {
     connection: redisConnection,
     defaultJobOptions,
   })
-  projectQueues.push(processBOMQueue)
+  projectQueues.push(processInfoQueue)
 
   const processIBOMQueue = new bullmq.Queue('processIBOM', {
     connection: redisConnection,
@@ -49,7 +49,7 @@ function createQueues() {
     }
   }
 
-  async function addProjectToQueues(repoDir, gitDir) {
+  async function addProjectToQueues(giteaId, repoDir, gitDir) {
     // /repositories/user/project.git -> user/project
     const name = path.relative(repoDir, gitDir).slice(0, -4)
     const inputDir = path.join(DATA_DIR, 'checkout', name)
@@ -73,7 +73,9 @@ function createQueues() {
       for (const projectName of Object.keys(kitspaceYaml.multi)) {
         const projectOutputDir = path.join(outputDir, projectName)
         const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        const searchId = giteaId != null ? `${giteaId}-${projectName}` : null
         createJobs({
+          searchId,
           inputDir,
           kitspaceYaml: projectKitspaceYaml,
           outputDir: projectOutputDir,
@@ -82,7 +84,14 @@ function createQueues() {
         })
       }
     } else {
-      createJobs({ inputDir, kitspaceYaml, outputDir, name, hash })
+      createJobs({
+        searchId: giteaId,
+        inputDir,
+        kitspaceYaml,
+        outputDir,
+        name,
+        hash,
+      })
     }
   }
 
@@ -111,9 +120,15 @@ export function watch(repoDir, checkIsRepoReady) {
 
     // we debounce the file-system event to only invoke once per change in the repo
     const debouncedProcessRepo = debounce(async () => {
-      const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
+      let isReady = true
+      let giteaId = null
+      if (checkIsRepoReady != null) {
+        const response = await checkIsRepoReady(gitDir)
+        isReady = response.isReady
+        giteaId = response.id
+      }
       if (isReady) {
-        addProjectToQueues(repoDir, gitDir)
+        addProjectToQueues(giteaId, repoDir, gitDir)
       }
     }, 1000)
 
