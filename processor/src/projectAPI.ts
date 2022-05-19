@@ -37,8 +37,7 @@ export function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   const unwatch = watcher.watch(repoDir, checkIsRepoReady)
 
   app.cleanup.push(async () => {
-    unwatch()
-    await stopWorkers()
+    await Promise.all([unwatch(), stopWorkers()])
   })
 
   app.get('/status/*', (req, res) => {
