@@ -9,19 +9,19 @@ import processIBOM from './tasks/processIBOM'
 import processReadme from './tasks/processReadme'
 import events from './events'
 
-const defaultConcurrency = 2
+const defaultConcurrency = 1
 
 type JobProgress = {
-  status: string,
-  file: string,
-  error?: Error,
+  status: string
+  file: string
+  error?: Error
 }
 
 export function createWorkers() {
   const workers = [
     addWorker('writeKitspaceYaml', writeKitspaceYaml),
     addWorker('processKicadPCB', processKicadPCB),
-    addWorker('processSchematics', processSchematics, { concurrency: 1 }),
+    addWorker('processSchematics', processSchematics),
     addWorker('processPCB', processPCB),
     addWorker('processBOM', processBOM),
     addWorker('processIBOM', processIBOM),

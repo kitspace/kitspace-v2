@@ -7,13 +7,91 @@ import * as bullmq from 'bullmq'
 
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
-import connection from './redisConnection'
+import redisConnection from './redisConnection'
 
-const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', { connection })
-const processPCBQueue = new bullmq.Queue('processPCB', { connection })
-const processBOMQueue = new bullmq.Queue('processBOM', { connection })
-const processIBOMQueue = new bullmq.Queue('processIBOM', { connection })
-const processReadmeQueue = new bullmq.Queue('processReadme', { connection })
+function createQueues() {
+  const defaultJobOptions = { removeOnComplete: true }
+
+  const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
+    connection: redisConnection,
+    defaultJobOptions,
+  })
+
+  const projectQueues = []
+  const processPCBQueue = new bullmq.Queue('processPCB', {
+    connection: redisConnection,
+    defaultJobOptions,
+  })
+  projectQueues.push(processPCBQueue)
+
+  const processBOMQueue = new bullmq.Queue('processBOM', {
+    connection: redisConnection,
+    defaultJobOptions,
+  })
+  projectQueues.push(processBOMQueue)
+
+  const processIBOMQueue = new bullmq.Queue('processIBOM', {
+    connection: redisConnection,
+    defaultJobOptions,
+  })
+  projectQueues.push(processIBOMQueue)
+
+  const processReadmeQueue = new bullmq.Queue('processReadme', {
+    connection: redisConnection,
+    defaultJobOptions,
+  })
+  projectQueues.push(processReadmeQueue)
+
+  function createJobs(jobData) {
+    const jobId = jobData.outputDir
+    for (const q of projectQueues) {
+      q.add('projectAPI', jobData, { jobId })
+    }
+  }
+
+  async function addProjectToQueues(repoDir, gitDir) {
+    // /repositories/user/project.git -> user/project
+    const name = path.relative(repoDir, gitDir).slice(0, -4)
+    const inputDir = path.join(DATA_DIR, 'checkout', name)
+
+    await sync(gitDir, inputDir)
+
+    const hash = await getGitHash(inputDir)
+    const outputDir = path.join(DATA_DIR, 'files', name, hash)
+
+    await exec(`mkdir -p ${outputDir}`)
+
+    const kitspaceYaml = await getKitspaceYaml(inputDir)
+
+    writeKitspaceYamlQueue.add(
+      'projectAPI',
+      { kitspaceYaml, outputDir },
+      { jobId: outputDir },
+    )
+
+    if (kitspaceYaml.multi) {
+      for (const projectName of Object.keys(kitspaceYaml.multi)) {
+        const projectOutputDir = path.join(outputDir, projectName)
+        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
+        createJobs({
+          inputDir,
+          kitspaceYaml: projectKitspaceYaml,
+          outputDir: projectOutputDir,
+          name: projectName,
+          hash,
+        })
+      }
+    } else {
+      createJobs({ inputDir, kitspaceYaml, outputDir, name, hash })
+    }
+  }
+
+  async function stopQueues() {
+    const qs = projectQueues.concat([writeKitspaceYamlQueue])
+    await Promise.all(qs.map(q => q.obliterate({ force: true })))
+  }
+  return { addProjectToQueues, stopQueues }
+}
 
 /**
  *
@@ -25,17 +103,17 @@ const processReadmeQueue = new bullmq.Queue('processReadme', { connection })
 export function watch(repoDir, checkIsRepoReady) {
   let dirWatchers = {}
 
+  const { addProjectToQueues, stopQueues } = createQueues()
+
   // watch repositories for file-system events and process the project
   const handleAddDir = gitDir => {
     log.debug('addDir', gitDir)
 
     // we debounce the file-system event to only invoke once per change in the repo
-    // additionally we ignore any invocations that happen while it's already running
-    // to prevent it from trying to overwrite files that are already being written to
     const debouncedProcessRepo = debounce(async () => {
       const isReady = checkIsRepoReady == null || (await checkIsRepoReady(gitDir))
       if (isReady) {
-        processRepo(repoDir, gitDir)
+        addProjectToQueues(repoDir, gitDir)
       }
     }, 1000)
 
@@ -67,72 +145,17 @@ export function watch(repoDir, checkIsRepoReady) {
     watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
   }, 60_000)
 
-  const unwatch = () => {
+  const unwatch = async () => {
     clearInterval(timer)
     watcher.close()
     for (const gitDir of Object.keys(dirWatchers)) {
       dirWatchers[gitDir].add.close()
       dirWatchers[gitDir].unlinkDir.close()
     }
+    await stopQueues()
   }
 
   return unwatch
-}
-
-async function processRepo(repoDir, gitDir) {
-  // /repositories/user/project.git -> user/project
-  const name = path.relative(repoDir, gitDir).slice(0, -4)
-  const inputDir = path.join(DATA_DIR, 'checkout', name)
-
-  await sync(gitDir, inputDir)
-
-  const hash = await getGitHash(inputDir)
-  const outputDir = path.join(DATA_DIR, 'files', name, hash)
-
-  await exec(`mkdir -p ${outputDir}`)
-
-  const kitspaceYaml = await getKitspaceYaml(inputDir)
-
-  writeKitspaceYamlQueue.add('projectAPI', { kitspaceYaml, outputDir })
-
-  if (kitspaceYaml.multi) {
-    for (const projectName of Object.keys(kitspaceYaml.multi)) {
-      const projectOutputDir = path.join(outputDir, projectName)
-      const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-      addToQueues(
-        inputDir,
-        projectKitspaceYaml,
-        projectOutputDir,
-        projectName,
-        hash,
-      )
-    }
-  } else {
-    addToQueues(inputDir, kitspaceYaml, outputDir, name, hash)
-  }
-}
-
-function addToQueues(inputDir, kitspaceYaml, outputDir, name, hash) {
-  processPCBQueue.add('projectAPI', {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    hash,
-    name,
-  })
-  processBOMQueue.add('projectAPI', { inputDir, kitspaceYaml, outputDir })
-  processIBOMQueue.add('projectAPI', {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    name,
-  })
-  processReadmeQueue.add('projectAPI', {
-    inputDir,
-    kitspaceYaml,
-    outputDir,
-    name,
-  })
 }
 
 async function getKitspaceYaml(inputDir) {

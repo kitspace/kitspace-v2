@@ -36,10 +36,9 @@ export function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   const stopWorkers = createWorkers()
   const unwatch = watcher.watch(repoDir, checkIsRepoReady)
 
-  app.stop = async () => {
-    unwatch()
-    await stopWorkers()
-  }
+  app.cleanup.push(async () => {
+    await Promise.all([unwatch(), stopWorkers()])
+  })
 
   app.get('/status/*', (req, res) => {
     let x = path.relative('/status/', req.path)

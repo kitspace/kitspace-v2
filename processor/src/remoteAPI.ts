@@ -1,10 +1,10 @@
 import * as express from 'express'
 import log from 'loglevel'
 import * as path from 'path'
-import  fileUpload from 'express-fileupload'
-import { Queue } from 'bullmq'
+import fileUpload from 'express-fileupload'
+import * as bullmq from 'bullmq'
 
-import * as utils from './utils'
+import { exec, writeFile } from './utils'
 import events from './events'
 import connection from './redisConnection'
 
@@ -13,10 +13,17 @@ import { DATA_DIR, REMOTE_API_TOKENS } from './env'
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
 
-const processKicadPCBQueue = new Queue('processKicadPCB', { connection })
-const processSchematicsQueue = new Queue('processSchematics', { connection })
+const defaultJobOptions = { removeOnComplete: true }
 
 export function createRemoteAPI(app) {
+  const processKicadPCBQueue = new bullmq.Queue('processKicadPCB', {
+    connection,
+    defaultJobOptions,
+  })
+  const processSchematicsQueue = new bullmq.Queue('processSchematics', {
+    connection,
+    defaultJobOptions,
+  })
   app.use(fileUpload())
 
   const processFileStatus = {}
@@ -62,18 +69,26 @@ export function createRemoteAPI(app) {
       }
       const uploadPath = path.join(uploadFolder, upload.md5 + ext)
       const outputDir = path.join(remoteProcessOutputDir, upload.md5)
-      await utils.exec(`mkdir -p ${uploadFolder}`)
-      await utils.writeFile(uploadPath, upload.data).then(() => {
+      await exec(`mkdir -p ${uploadFolder}`)
+      await writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
-          processKicadPCBQueue.add('remoteAPI', {
-            inputDir: uploadFolder,
-            outputDir,
-          })
+          processKicadPCBQueue.add(
+            'remoteAPI',
+            {
+              inputDir: uploadFolder,
+              outputDir,
+            },
+            { jobId: outputDir },
+          )
         } else if (ext === '.sch') {
-          processSchematicsQueue.add('remoteAPI', {
-            inputDir: uploadFolder,
-            outputDir,
-          })
+          processSchematicsQueue.add(
+            'remoteAPI',
+            {
+              inputDir: uploadFolder,
+              outputDir,
+            },
+            { jobId: outputDir },
+          )
         }
       })
       res.status(202).send({
@@ -114,6 +129,13 @@ export function createRemoteAPI(app) {
       }
     }
     return res.sendStatus(404)
+  })
+
+  app.cleanup.push(async () => {
+    await Promise.all([
+      processKicadPCBQueue.obliterate({ force: true }),
+      processSchematicsQueue.obliterate({ force: true }),
+    ])
   })
 
   return app
