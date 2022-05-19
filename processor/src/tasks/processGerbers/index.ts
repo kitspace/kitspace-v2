@@ -113,6 +113,10 @@ export default async function processGerbers(
         job.updateProgress({ status: 'failed', file: topSvgPath, error }),
       )
 
+    // The generate*Png tasks shouldn't run concurrently so we `await` them in
+    // sequence. They all invoke Inkscape and can use a lot of RAM so we run them
+    // one at a time even though they don't depend on each other.
+
     await generateTopPng(topSvgPath, stackup, topPngPath)
       .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
       .catch(error =>
