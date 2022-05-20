@@ -30,6 +30,7 @@
     "meilisearch": "^0.25.1",
     "pcb-stackup": "^4.2.5",
     "pg": "^8.7.1",
+    "prexit": "^1.0.0",
     "ramda": "^0.27.1",
     "superagent": "^6.1.0",
     "ts-node": "^10.5.0",

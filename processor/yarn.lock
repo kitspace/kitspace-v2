@@ -2966,6 +2966,11 @@ prettier@^2.5.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.5.1.tgz#fff75fa9d519c54cf0fce328c1017d94546bc56a"
   integrity sha512-vBZcPRUR5MZJwoyi3ZoyQlc1rXeEck8KgeC9AwwOn+exuxLxq5toTRDTSaVrXHxelDMHy9zlicw8u66yxoSUFg==
 
+prexit@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/prexit/-/prexit-1.0.0.tgz#b718cbcd7c8a4853d6d771fc3db2877c739af1e4"
+  integrity sha512-/isfZs8xYFCvIrQOcAxevCHSbVbKdi62yPgW1AQAd7C7Vedn13IhJ4c9NuyxFifQw97LrQl/wFtbW59tuHOHgg==
+
 printj@~1.1.0, printj@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/printj/-/printj-1.1.2.tgz#d90deb2975a8b9f600fb3a1c94e3f4c53c78a222"

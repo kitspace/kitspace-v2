@@ -58,7 +58,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
           error: Error('No lines in BOM found'),
         })
       }
-      return
+      return {}
     }
     bom.tsv = oneClickBom.writeTSV(bom.lines)
 

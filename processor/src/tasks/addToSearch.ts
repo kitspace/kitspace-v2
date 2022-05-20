@@ -48,7 +48,7 @@ export default async function addToSearch(
     multiParentId,
     multiParentName,
   }
-  log.debug(`meilisearch: adding/updating document id='${searchId}'`)
+  log.debug(`meilisearch: adding/updating document id='${searchId}', name=${name}`)
 
   await index.addDocuments([document])
 

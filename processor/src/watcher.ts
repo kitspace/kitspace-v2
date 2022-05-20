@@ -10,7 +10,13 @@ import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
 
 function createQueues() {
-  const defaultJobOptions = { removeOnComplete: true }
+  const defaultJobOptions: bullmq.JobsOptions = {
+    removeOnComplete: true,
+    // remove our failed jobs while developing, so they are re-tried
+    // in production we don't want them to be retried since it would waste
+    // resources continutally retrying them
+    removeOnFail: process.env.NODE_ENV !== 'production',
+  }
 
   const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
     connection: redisConnection,
