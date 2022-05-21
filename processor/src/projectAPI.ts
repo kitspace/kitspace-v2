@@ -10,7 +10,7 @@ import events from './events'
 
 const filesDir = path.join(DATA_DIR, 'files')
 
-export function createProjectsAPI(app, repoDir, checkIsRepoReady) {
+export function createProjectsAPI(app, repoDir, { giteaDB }) {
   const fileStatus = {}
   const redirects = {}
 
@@ -34,7 +34,7 @@ export function createProjectsAPI(app, repoDir, checkIsRepoReady) {
   })
 
   const stopWorkers = createWorkers()
-  const unwatch = watcher.watch(repoDir, checkIsRepoReady)
+  const unwatch = watcher.watch(repoDir, { giteaDB })
 
   app.cleanup.push(async () => {
     await Promise.all([unwatch(), stopWorkers()])

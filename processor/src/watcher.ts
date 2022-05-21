@@ -4,6 +4,7 @@ import * as log from 'loglevel'
 import * as path from 'path'
 import * as jsYaml from 'js-yaml'
 import * as bullmq from 'bullmq'
+import { GiteaDB } from './giteatDB'
 
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
@@ -55,9 +56,7 @@ function createQueues() {
     }
   }
 
-  async function addProjectToQueues(giteaId, repoDir, gitDir) {
-    // /repositories/user/project.git -> user/project
-    const name = path.relative(repoDir, gitDir).slice(0, -4)
+  async function addProjectToQueues(name, giteaId, repoDir, gitDir) {
     const inputDir = path.join(DATA_DIR, 'checkout', name)
 
     await sync(gitDir, inputDir)
@@ -115,7 +114,11 @@ function createQueues() {
  * @param {function=} checkIsRepoReady
  * @returns
  */
-export function watch(repoDir, checkIsRepoReady) {
+
+interface WatchOptions {
+  giteaDB: GiteaDB
+}
+export function watch(repoDir, { giteaDB }: WatchOptions) {
   let dirWatchers = {}
 
   const { addProjectToQueues, stopQueues } = createQueues()
@@ -124,21 +127,51 @@ export function watch(repoDir, checkIsRepoReady) {
   const handleAddDir = gitDir => {
     log.debug('addDir', gitDir)
 
+    dirWatchers[gitDir] = {}
+
     // we debounce the file-system event to only invoke once per change in the repo
     const debouncedProcessRepo = debounce(async () => {
-      let isReady = true
-      let giteaId = null
-      if (checkIsRepoReady != null) {
-        const response = await checkIsRepoReady(gitDir)
-        isReady = response.isReady
-        giteaId = response.id
-      }
-      if (isReady) {
-        addProjectToQueues(giteaId, repoDir, gitDir)
+      if (!dirWatchers[gitDir].queuing) {
+        dirWatchers[gitDir].queuing = true
+
+        // '/repositories/user/project.git' -> ['user', 'project']
+        const [ownerName, repoName] = path
+          .relative(repoDir, gitDir)
+          .slice(0, -4)
+          .split('/')
+
+        let giteaId = null
+
+        if (giteaDB != null) {
+          const giteaRepo = await giteaDB.getRepoInfo(ownerName, repoName)
+          if (giteaRepo == null) {
+            log.error(`${ownerName}/${repoName} is not in giteaDB`)
+            dirWatchers[gitDir].queuing = false
+            return
+          }
+
+          giteaId = giteaRepo.id
+
+          if (giteaRepo.is_empty) {
+            await giteaDB.waitForNonEmpty(giteaId)
+          }
+
+          if (giteaRepo.is_mirror) {
+            await giteaDB.waitForRepoMigration(giteaId)
+          }
+        }
+
+        await addProjectToQueues(
+          `${ownerName}/${repoName}`,
+          giteaId,
+          repoDir,
+          gitDir,
+        )
+
+        dirWatchers[gitDir].queuing = false
       }
     }, 1000)
 
-    dirWatchers[gitDir] = {}
     dirWatchers[gitDir].add = chokidar.watch(gitDir).on('add', debouncedProcessRepo)
 
     // if the repo is moved or deleted we clean up the watcher

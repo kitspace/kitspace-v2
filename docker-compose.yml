@@ -43,6 +43,7 @@ services:
       - READONLY_PASS=${POSTGRES_READONLY_USER_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
 
   nginx:
     environment:

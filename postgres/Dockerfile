@@ -1,3 +1,4 @@
-FROM postgres:12.2
+FROM postgres:14
 
-COPY ./create_readonly_user.sh   /docker-entrypoint-initdb.d/10-create_readonly_user.sh
+COPY ./init_db.sh   /docker-entrypoint-initdb.d/10-init_db.sh
+COPY ./postgresql.conf /etc/postgresql/postgresql.conf

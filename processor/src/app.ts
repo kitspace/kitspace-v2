@@ -8,12 +8,12 @@ interface KitspaceProcessorApp extends express.Express {
   stop?: () => Promise<void>
 }
 
-export function createApp(repoDir, checkIsRepoReady) {
+export function createApp(repoDir, { giteaDB = null }) {
   const app: KitspaceProcessorApp = express()
 
   app.cleanup = []
 
-  createProjectsAPI(app, repoDir, checkIsRepoReady)
+  createProjectsAPI(app, repoDir, { giteaDB })
   createRemoteAPI(app)
 
   app.stop = async () => {

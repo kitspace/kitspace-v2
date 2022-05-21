@@ -32,7 +32,7 @@ describe('projects API', function () {
   beforeEach(async function () {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${repoDir}`)
-    this.app = createApp(repoDir, null)
+    this.app = createApp(repoDir, { giteaDB: null })
     this.supertest = supertest(this.app)
   })
 
