@@ -1,4 +1,4 @@
-import postgres from 'postgres'
+import postgres, { Row } from 'postgres'
 import { GITEA_DB_CONFIG } from './env'
 
 const sql = postgres(GITEA_DB_CONFIG)
@@ -26,26 +26,27 @@ export interface GiteaDB {
 }
 
 export const giteaDB: GiteaDB = {
+  /**
+   * Get repository info from the Gitea DB.
+   */
   async getRepoInfo(ownerName, repoName) {
     const rows = await sql<RepoInfo[]>`
       SELECT id, is_mirror, is_empty, owner_name, name
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
+
     return rows[0]
   },
 
+  /**
+   * Wait for a repository to have `is_empty` set to false in the Gitea DB.
+   */
   async waitForNonEmpty(repoId) {
-    const nonEmptyPromise = new Promise<void>(resolve => {
-      const sub = sql.subscribe(`repository=${repoId}`, row => {
-        if (!row.is_empty) {
-          sub.then(({ unsubscribe }) => unsubscribe())
-          resolve()
-        }
-      })
-    })
+    const nonEmptyPromise = once(`repository=${repoId}`, row => !row.is_empty)
 
     const rows =
       await sql`SELECT EXISTS (SELECT 1 FROM repository WHERE id=${repoId} AND is_empty=0)`
+
     if (rows[0]?.exists) {
       return
     }
@@ -53,27 +54,37 @@ export const giteaDB: GiteaDB = {
     return nonEmptyPromise
   },
 
+  /**
+   * Wait for a repository's migration to be marked as done in the Gitea DB.
+   */
   async waitForRepoMigration(repoId) {
-    const migrationPromise = new Promise<void>(resolve => {
-      const sub = sql.subscribe('update:task', row => {
-        if (
-          row.repo_id === repoId &&
-          row.type === TaskType.Migration &&
-          row.status === MigrationStatus.Done
-        ) {
-          sub.then(({ unsubscribe }) => unsubscribe())
-          resolve()
-        }
-      })
-    })
+    const migrationPromise = once(
+      'update:task',
+      row =>
+        row.repo_id === repoId &&
+        row.type === TaskType.Migration &&
+        row.status === MigrationStatus.Done,
+    )
 
     const rows =
       await sql`SELECT EXISTS (SELECT 1 FROM task WHERE repo_id=${repoId} AND
         type=${TaskType.Migration} AND status=${MigrationStatus.Done})`
+
     if (rows[0]?.exists) {
       return
     }
 
     return migrationPromise
   },
+}
+
+function once(event: string, testFunction: (row: Row) => boolean): Promise<void> {
+  return new Promise(resolve => {
+    const sub = sql.subscribe(event, row => {
+      if (testFunction(row)) {
+        sub.then(({ unsubscribe }) => unsubscribe())
+        resolve()
+      }
+    })
+  })
 }
