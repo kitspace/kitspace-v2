@@ -2,7 +2,7 @@ export const GITEA_URL = process.env.KITSPACE_GITEA_URL
 export const DATA_DIR = process.env.DATA_DIR || '/data'
 export const GITEA_DB_CONFIG = {
   host: process.env.GITEA_DB_HOST,
-  port: process.env.GITEA_DB_PORT,
+  port: parseInt(process.env.GITEA_DB_PORT, 10),
   user: process.env.GITEA_DB_USER,
   database: process.env.POSTGRES_DB,
   password: process.env.GITEA_DB_PASSWORD,

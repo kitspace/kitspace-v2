@@ -20,7 +20,7 @@ describe('remote API', function () {
   beforeEach(async function () {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${emptyRepoDir}`)
-    this.app = createApp(emptyRepoDir, null)
+    this.app = createApp(emptyRepoDir, { giteaDB: null })
     this.supertest = supertest(this.app)
   })
 
