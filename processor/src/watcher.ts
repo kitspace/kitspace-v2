@@ -57,13 +57,13 @@ function createQueues() {
     }
   }
 
-  async function addProjectToQueues(name, giteaId, repoDir, gitDir) {
-    const inputDir = path.join(DATA_DIR, 'checkout', name)
+  async function addProjectToQueues(repoFullName, giteaId, repoDir, gitDir) {
+    const inputDir = path.join(DATA_DIR, 'checkout', repoFullName)
 
     await sync(gitDir, inputDir)
 
     const hash = await getGitHash(inputDir)
-    const outputDir = path.join(DATA_DIR, 'files', name, hash)
+    const outputDir = path.join(DATA_DIR, 'files', repoFullName, hash)
 
     await exec(`mkdir -p ${outputDir}`)
 
@@ -76,16 +76,17 @@ function createQueues() {
     )
 
     if (kitspaceYaml.multi) {
-      for (const projectName of Object.keys(kitspaceYaml.multi)) {
-        const projectOutputDir = path.join(outputDir, projectName)
-        const projectKitspaceYaml = kitspaceYaml.multi[projectName]
-        const searchId = giteaId != null ? `${giteaId}-${projectName}` : null
+      for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
+        const projectOutputDir = path.join(outputDir, subprojectName)
+        const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
+        const searchId = giteaId != null ? `${giteaId}-${subprojectName}` : null
         createJobs({
+          subprojectName,
           searchId,
           inputDir,
           kitspaceYaml: projectKitspaceYaml,
           outputDir: projectOutputDir,
-          name: projectName,
+          repoFullName,
           hash,
         })
       }
@@ -95,7 +96,7 @@ function createQueues() {
         inputDir,
         kitspaceYaml,
         outputDir,
-        name,
+        repoFullName,
         hash,
       })
     }

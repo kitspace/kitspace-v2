@@ -12,7 +12,7 @@ const readFile = promisify(fs.readFile)
 
 async function processIBOM(
   job,
-  { inputDir, kitspaceYaml, outputDir, name }: Partial<JobData>,
+  { inputDir, kitspaceYaml, outputDir, repoFullName }: Partial<JobData>,
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
@@ -51,7 +51,9 @@ async function processIBOM(
   await exec(`mkdir -p ${ibomOutputFolder}`)
 
   const run_ibom = path.join(__dirname, 'run_ibom')
-  await exec(`${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`)
+  await exec(
+    `${run_ibom} '${pcbFile}' '${repoFullName}' '${summary}' '${ibomOutputPath}'`,
+  )
     .then(() => job.updateProgress({ status: 'done', file: ibomOutputPath }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: ibomOutputPath, error }),

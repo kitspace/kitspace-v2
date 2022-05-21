@@ -4,7 +4,7 @@ import { JobData } from '../jobData'
 
 export default async function processPCB(
   job,
-  { inputDir, kitspaceYaml, outputDir, hash, name }: JobData,
+  { inputDir, kitspaceYaml, outputDir, hash, repoFullName }: JobData,
 ) {
   const plottedGerbers = await processKicadPCB(job, {
     inputDir,
@@ -17,7 +17,7 @@ export default async function processPCB(
     kitspaceYaml,
     outputDir,
     zipVersion,
-    name,
+    repoFullName,
     plottedGerbers,
   })
 }

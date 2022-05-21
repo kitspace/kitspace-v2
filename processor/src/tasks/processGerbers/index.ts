@@ -27,12 +27,13 @@ export default async function processGerbers(
     kitspaceYaml,
     outputDir,
     zipVersion,
-    name,
+    repoFullName,
+    subprojectName,
     plottedGerbers,
   }: ProcessGerbersData & Partial<JobData>,
 ) {
-  const nameSplit = name.split('/')
-  const zipFileName = `${nameSplit[nameSplit.length - 1]}-${zipVersion}-gerbers.zip`
+  const repoName = repoFullName.split('/')[1]
+  const zipFileName = `${subprojectName ?? repoName}-${zipVersion}-gerbers.zip`
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')

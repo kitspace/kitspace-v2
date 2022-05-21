@@ -25,16 +25,17 @@ interface AddToSearchData {
 export default async function addToSearch(
   job,
   {
+    subprojectName,
     searchId,
     bom,
     kitspaceYaml,
-    name,
+    repoFullName,
     hash,
     readmeHTML,
   }: AddToSearchData & Partial<JobData>,
 ) {
   if (searchId == null) {
-    log.warn(`Not adding '${name}' to meilisearch due to missing searchId`)
+    log.warn(`Not adding '${repoFullName}' to meilisearch due to missing searchId`)
     return
   }
   let multiParentId = null
@@ -44,18 +45,24 @@ export default async function addToSearch(
 
   const readme = getReadmeAsText(readmeHTML)
 
+  const [ownerName, repoName] = repoFullName.split('/')
+
   const document = {
     id: searchId,
-    name,
+    name: subprojectName ?? repoName,
     summary: kitspaceYaml.summary || '',
     bom: {
       lines: bom.lines,
     },
     gitHash: hash,
     readme,
+    ownerName,
     multiParentId,
+    multiParentName: subprojectName ? repoName : null,
   }
-  log.debug(`meilisearch: adding/updating document id='${searchId}', name=${name}`)
+  log.debug(
+    `meilisearch: adding/updating document id='${searchId}' for repo ${repoFullName}`,
+  )
 
   await index.addDocuments([document])
 

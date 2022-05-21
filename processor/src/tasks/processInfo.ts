@@ -5,7 +5,7 @@ import { JobData } from '../jobData'
 
 export default async function processInfo(
   job,
-  { searchId, inputDir, kitspaceYaml, outputDir, name, hash }: JobData,
+  { searchId, inputDir, kitspaceYaml, outputDir, repoFullName, hash }: JobData,
 ) {
   const [bom, readmeHTML] = await Promise.all([
     processBOM(job, {
@@ -13,7 +13,19 @@ export default async function processInfo(
       kitspaceYaml,
       outputDir,
     }),
-    processReadme(job, { inputDir, kitspaceYaml, outputDir, name }),
+    processReadme(job, {
+      inputDir,
+      kitspaceYaml,
+      outputDir,
+      repoFullName,
+    }),
   ])
-  return addToSearch(job, { searchId, bom, name, kitspaceYaml, hash, readmeHTML })
+  return addToSearch(job, {
+    searchId,
+    bom,
+    repoFullName,
+    kitspaceYaml,
+    hash,
+    readmeHTML,
+  })
 }

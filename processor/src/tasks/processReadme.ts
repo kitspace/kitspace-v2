@@ -9,7 +9,7 @@ import { GITEA_URL } from '../env'
 
 async function processReadme(
   job,
-  { inputDir, kitspaceYaml, outputDir, name }: Partial<JobData>,
+  { inputDir, kitspaceYaml, outputDir, repoFullName }: Partial<JobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -40,7 +40,7 @@ async function processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
   const readmeAsHTML = await renderMarkdown(rawMarkdown)
 
-  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, name)
+  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, repoFullName)
 
   await writeFile(readmePath, processedReadmeHTML)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
