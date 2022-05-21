@@ -2,6 +2,8 @@ import { MeiliSearch } from 'meilisearch'
 import log from 'loglevel'
 import cheerio from 'cheerio'
 
+import { JobData } from '../jobData'
+
 const meili = new MeiliSearch({
   host: 'http://meilisearch:7700',
   apiKey: process.env.MEILI_MASTER_KEY,
@@ -11,9 +13,25 @@ index.updateSettings({
   filterableAttributes: ['id', 'multiParentId', 'gitHash'],
 })
 
+interface BOM {
+  lines: Array<object>
+}
+
+interface AddToSearchData {
+  bom: BOM
+  readmeHTML: string
+}
+
 export default async function addToSearch(
   job,
-  { searchId, bom, kitspaceYaml, name, hash, readmeHTML },
+  {
+    searchId,
+    bom,
+    kitspaceYaml,
+    name,
+    hash,
+    readmeHTML,
+  }: AddToSearchData & Partial<JobData>,
 ) {
   if (searchId == null) {
     log.warn(`Not adding '${name}' to meilisearch due to missing searchId`)

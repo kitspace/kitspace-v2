@@ -3,11 +3,15 @@ import * as cp from 'child_process'
 import { promisify } from 'util'
 import * as globule from 'globule'
 
+import { JobData } from '../../jobData'
 import { existsAll, findKicadPcbFile } from '../../utils'
 
 const exec = promisify(cp.exec)
 
-async function processKicadPCB(job, { inputDir, kitspaceYaml = {}, outputDir }) {
+async function processKicadPCB(
+  job,
+  { inputDir, kitspaceYaml = {}, outputDir }: Partial<JobData>,
+) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
   const filePaths = [layoutSvgPath]

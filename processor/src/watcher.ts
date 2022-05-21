@@ -4,8 +4,9 @@ import * as log from 'loglevel'
 import * as path from 'path'
 import * as jsYaml from 'js-yaml'
 import * as bullmq from 'bullmq'
-import { GiteaDB } from './giteatDB'
 
+import { GiteaDB } from './giteatDB'
+import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
@@ -49,7 +50,7 @@ function createQueues() {
   })
   projectQueues.push(processReadmeQueue)
 
-  function createJobs(jobData) {
+  function createJobs(jobData: JobData) {
     const jobId = jobData.outputDir
     for (const q of projectQueues) {
       q.add('projectAPI', jobData, { jobId })

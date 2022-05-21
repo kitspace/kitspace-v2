@@ -3,13 +3,13 @@ import * as path from 'path'
 import * as superagent from 'superagent'
 import * as cheerio from 'cheerio'
 
+import { JobData } from '../jobData'
 import { exists, readFile, writeFile } from '../utils'
 import { GITEA_URL } from '../env'
 
 async function processReadme(
   job,
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  { inputDir, kitspaceYaml = {}, outputDir, name }: any,
+  { inputDir, kitspaceYaml, outputDir, name }: Partial<JobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 

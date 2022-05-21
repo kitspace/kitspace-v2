@@ -11,7 +11,7 @@ import events from './events'
 
 const defaultConcurrency = 1
 
-type JobProgress = {
+interface JobProgress {
   status: string
   file: string
   error?: Error
