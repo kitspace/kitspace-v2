@@ -43,7 +43,7 @@ export const giteaDB: GiteaDB = {
    */
   async waitForNonEmpty(repoId) {
     const rows =
-      await sql`SELECT EXISTS (SELECT 1 FROM repository WHERE id=${repoId} AND is_empty=0)`
+      await sql`SELECT EXISTS (SELECT 1 FROM repository WHERE id=${repoId} AND is_empty=${false})`
 
     if (rows[0]?.exists) {
       return
