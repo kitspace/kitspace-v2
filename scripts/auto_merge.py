@@ -22,7 +22,8 @@ for pull in pulls:
         pull["author_association"] == "MEMBER"
         or pull["author_association"] == "CONTRIBUTOR"
     )
-    if is_allowed and not pull["draft"] and pull["head"] is not None:
+    base = pull["base"]["ref"]
+    if is_allowed and not pull["draft"] and pull["head"] is not None and base == "master":
         ref = pull["head"]["ref"]
         sha = pull["head"]["sha"]
         try:
