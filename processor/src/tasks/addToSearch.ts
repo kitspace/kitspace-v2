@@ -13,16 +13,7 @@ index.updateSettings({
 
 export default async function addToSearch(
   job,
-  {
-    searchId,
-    bom,
-    kitspaceYaml,
-    name,
-    ownerName,
-    multiParentName,
-    hash,
-    readmeHTML,
-  },
+  { searchId, bom, kitspaceYaml, name, hash, readmeHTML },
 ) {
   if (searchId == null) {
     log.warn(`Not adding '${name}' to meilisearch due to missing searchId`)
@@ -44,9 +35,7 @@ export default async function addToSearch(
     },
     gitHash: hash,
     readme,
-    ownerName,
     multiParentId,
-    multiParentName,
   }
   log.debug(`meilisearch: adding/updating document id='${searchId}', name=${name}`)
 
@@ -61,7 +50,7 @@ export default async function addToSearch(
     const previousMultis = await index.search('', {
       filter: `multiParentId = ${searchId}`,
     })
-    const docIds = previousMultis.hits.map(x => x.id)
+    const docIds = previousMultis.map(x => x.id)
     await index.deleteDocuments(docIds)
   } else {
     // if we are a multi project, clear any previous parent (if we went from
