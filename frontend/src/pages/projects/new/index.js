@@ -15,7 +15,7 @@ const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 const New = () => {
   const { csrf, user } = useContext(AuthContext)
   const [isBigScreen, setIsBigScreen] = useState(true)
-  const [userOp, setUserOP] = useState(NoOp)
+  const [userOp, setUserOp] = useState(NoOp)
 
   const handleResize = () =>
     setIsBigScreen(window.matchMedia('(min-width: 1200px)').matches)
@@ -28,13 +28,13 @@ const New = () => {
   }, [])
 
   return (
-    <Page title="Kitspace | New Project">
+    <Page title="Add a project - Kitspace">
       {isBigScreen ? (
         <Grid centered stackable className={styles.projectsNew} columns={2}>
           <Grid.Row>
             {userOp !== UploadOp && (
               <Grid.Column className={styles.optionColumn}>
-                <Sync csrf={csrf} setUserOp={setUserOP} user={user} />
+                <Sync csrf={csrf} setUserOp={setUserOp} user={user} />
               </Grid.Column>
             )}
             {userOp === NoOp && (
@@ -44,7 +44,7 @@ const New = () => {
             )}
             {userOp !== SyncOp && (
               <Grid.Column className={styles.optionColumn}>
-                <Upload csrf={csrf} setUserOp={setUserOP} user={user} />
+                <Upload csrf={csrf} setUserOp={setUserOp} user={user} />
               </Grid.Column>
             )}
           </Grid.Row>
@@ -54,7 +54,7 @@ const New = () => {
           <Grid.Column>
             {userOp !== UploadOp && (
               <Grid.Row style={rowStyle}>
-                <Sync csrf={csrf} user={user} />
+                <Sync csrf={csrf} setUserOp={setUserOp} user={user} />
               </Grid.Row>
             )}
             {userOp === NoOp && (
@@ -64,7 +64,7 @@ const New = () => {
             )}
             {userOp !== SyncOp && (
               <Grid.Row style={rowStyle}>
-                <Upload csrf={csrf} user={user} />
+                <Upload csrf={csrf} setUserOp={setUserOp} user={user} />
               </Grid.Row>
             )}
           </Grid.Column>
