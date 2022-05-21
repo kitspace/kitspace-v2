@@ -32,19 +32,18 @@ client.connect(e => {
  *      - it isn't empty,
  *      - the migration task is done.
  *
- * @param {string} lowerCaseOwnerName
- * @param {string} lowerCaseRepoName
+ * @param {string} gitDir
  * @returns
  */
-export async function checkIsRepoReady(lowerCaseOwnerName, lowerCaseRepoName) {
-  const { id, isEmpty, isMirror, repoName, ownerName } =
-    await queryGiteaRepoDetails(lowerCaseOwnerName, lowerCaseRepoName)
+export async function checkIsRepoReady(gitDir) {
+  const { repoName, ownerName } = parseRepoGitDir(gitDir)
+  const { id, isEmpty, isMirror } = await queryGiteaRepoDetails(ownerName, repoName)
 
   if (isEmpty) {
     log.debug(
       `Repo: ${ownerName}/${repoName} has no branches, it won't be processed!`,
     )
-    return { isReady: false, id, ownerName, repoName }
+    return { isReady: false, id }
   }
 
   if (isMirror) {
@@ -57,50 +56,61 @@ export async function checkIsRepoReady(lowerCaseOwnerName, lowerCaseRepoName) {
       log.debug(
         `Repo: ${ownerName}/${repoName} migration is done, the repo is processable.`,
       )
-      return { isReady: true, id, ownerName, repoName }
+      return { isReady: true, id }
     }
     log.debug(
       `Repo: ${ownerName}/${repoName} is ${status} not ${MigrationStatusIsDone}, the repo is unprocessable.`,
     )
-    return { isReady: false, id, ownerName, repoName }
+    return { isReady: false, id }
   }
 
   log.debug(`Repo: ${ownerName}/${repoName} is processable.`)
-  return { isReady: true, id, ownerName, repoName }
+  return { isReady: true, id }
+}
+
+/**
+ *
+ * @param {string} gitDir the file-system path for the git repo
+ * @returns {{ownerName: string, repoName: string}} repo details
+ */
+
+function parseRepoGitDir(gitDir) {
+  // path on filesystem is something like: /gitea-data/git/repositories/kaspar/ulx3s.git
+  const p = gitDir.split('/')
+  const ownerName = p[4]
+  const repoName = p[5].slice(0, -4)
+  if (ownerName == null || repoName == null) {
+    throw new Error(`Failed to parse gitDir: ${gitDir}`)
+  }
+  return { ownerName, repoName }
 }
 
 /**
  *
  * @param {string} ownerName
  * @param {string} repoName
- * @returns {Promise<{id: string, isEmpty: boolean, isMirror: boolean, ownerName: string, repoName: string}>}
+ * @returns {Promise<{id: string, isEmpty: boolean, isMirror: boolean}>}
  */
 async function queryGiteaRepoDetails(ownerName, repoName) {
   const repoQuery = {
     name: 'fetch-repository',
     text:
-      'SELECT id, is_mirror, is_empty, owner_name, name FROM repository' +
-      ' WHERE lower(owner_name)=$1 AND lower_name=$2',
+      'select id, is_mirror, is_empty from repository' +
+      ' where lower(owner_name)=$1 and lower_name=$2',
     values: [ownerName, repoName],
   }
 
-  const { id, is_empty, is_mirror, owner_name, name } =
-    await queryGiteaRepoWithBackoff(repoQuery)
+  const { id, isEmpty, isMirror } = await queryGiteaRepoWithBackoff(repoQuery)
 
-  return {
-    id,
-    isMirror: is_mirror,
-    isEmpty: is_empty,
-    ownerName: owner_name,
-    repoName: name,
-  }
+  return { id, isMirror, isEmpty }
 }
 
 /**
  * Query the migration task status for a gitea repo, with exponential backoff.
  */
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-async function queryGiteaRepoWithBackoff(repoQuery): Promise<any> {
+async function queryGiteaRepoWithBackoff(
+  repoQuery,
+): Promise<{ id: string; isEmpty: boolean; isMirror: boolean }> {
   const [ownerName, repoName] = repoQuery.values
 
   const onBackoff = async (num, delay, resolve) => {
@@ -110,8 +120,9 @@ async function queryGiteaRepoWithBackoff(repoQuery): Promise<any> {
     const repoQueryResult = await client.query(repoQuery)
 
     if (repoQueryResult.rows.length === 1) {
+      const { id, is_mirror, is_empty } = repoQueryResult.rows[0]
       log.debug(`Repo: ${ownerName}/${repoName} was found`)
-      return resolve(repoQueryResult.rows[0])
+      return resolve({ id, isEmpty: is_empty, isMirror: is_mirror })
     }
   }
 
@@ -196,7 +207,7 @@ async function asyncBackoff(
   onFail,
   maximumRetries,
   config = {},
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 ): Promise<any> {
   const backoffInstance = backOff({
     ...config,

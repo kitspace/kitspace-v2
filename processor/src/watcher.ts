@@ -55,7 +55,7 @@ function createQueues() {
     }
   }
 
-  async function addProjectToQueues(giteaId, repoDir, gitDir, ownerName, repoName) {
+  async function addProjectToQueues(giteaId, repoDir, gitDir) {
     // /repositories/user/project.git -> user/project
     const name = path.relative(repoDir, gitDir).slice(0, -4)
     const inputDir = path.join(DATA_DIR, 'checkout', name)
@@ -86,8 +86,6 @@ function createQueues() {
           kitspaceYaml: projectKitspaceYaml,
           outputDir: projectOutputDir,
           name: projectName,
-          multiParentName: repoName,
-          ownerName,
           hash,
         })
       }
@@ -97,10 +95,8 @@ function createQueues() {
         inputDir,
         kitspaceYaml,
         outputDir,
-        name: repoName,
-        ownerName,
+        name,
         hash,
-        multiParentName: null,
       })
     }
   }
@@ -132,17 +128,13 @@ export function watch(repoDir, checkIsRepoReady) {
     const debouncedProcessRepo = debounce(async () => {
       let isReady = true
       let giteaId = null
-      let { ownerName, repoName } = parseRepoGitDir(gitDir)
       if (checkIsRepoReady != null) {
-        const response = await checkIsRepoReady(ownerName, repoName)
+        const response = await checkIsRepoReady(gitDir)
         isReady = response.isReady
         giteaId = response.id
-        // use the case-correct names we got from the DB
-        ownerName = response.ownerName
-        repoName = response.repoName
       }
       if (isReady) {
-        addProjectToQueues(giteaId, repoDir, gitDir, ownerName, repoName)
+        addProjectToQueues(giteaId, repoDir, gitDir)
       }
     }, 1000)
 
@@ -232,21 +224,4 @@ async function sync(gitDir, checkoutDir) {
     await exec(`git clone ${gitDir} ${checkoutDir}`)
     log.debug('cloned into', checkoutDir)
   }
-}
-
-/**
- *
- * @param {string} gitDir the file-system path for the git repo
- * @returns {{ownerName: string, repoName: string}} repo details
- */
-
-function parseRepoGitDir(gitDir) {
-  // path on filesystem is something like: /gitea-data/git/repositories/kaspar/ulx3s.git
-  const p = gitDir.split('/')
-  const ownerName = p[4]
-  const repoName = p[5].slice(0, -4)
-  if (ownerName == null || repoName == null) {
-    throw new Error(`Failed to parse gitDir: ${gitDir}`)
-  }
-  return { ownerName, repoName }
 }
