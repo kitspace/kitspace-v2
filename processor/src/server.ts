@@ -1,7 +1,7 @@
 import * as log from 'loglevel'
+import prexit from 'prexit'
 import { createApp } from './app'
 import { checkIsRepoReady } from './checkIsRepoReady'
-import prexit from 'prexit'
 
 log.setDefaultLevel((process.env.LOG_LEVEL as log.LogLevelDesc) || log.levels.INFO)
 

@@ -28,6 +28,12 @@ export async function existsAll(paths) {
   return allDoExist
 }
 
+export function delay(ms: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
 export function findKicadPcbFile(inputDir, files, kitspaceYaml) {
   if (
     kitspaceYaml.eda &&
