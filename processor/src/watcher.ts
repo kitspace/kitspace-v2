@@ -135,7 +135,7 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
         dirWatchers[gitDir].queuing = true
 
         // '/repositories/user/project.git' -> ['user', 'project']
-        let [ownerName, repoName] = path
+        const [ownerName, repoName] = path
           .relative(repoDir, gitDir)
           .slice(0, -4)
           .split('/')
@@ -159,10 +159,6 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           if (giteaRepo.is_mirror) {
             await giteaDB.waitForRepoMigration(giteaId)
           }
-
-          // use the case-correct names from the DB
-          ownerName = giteaRepo.owner_name
-          repoName = giteaRepo.name
         }
 
         await addProjectToQueues(
