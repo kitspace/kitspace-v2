@@ -42,8 +42,6 @@ export const giteaDB: GiteaDB = {
    * Wait for a repository to have `is_empty` set to false in the Gitea DB.
    */
   async waitForNonEmpty(repoId) {
-    const nonEmptyPromise = once(`repository=${repoId}`, row => !row.is_empty)
-
     const rows =
       await sql`SELECT EXISTS (SELECT 1 FROM repository WHERE id=${repoId} AND is_empty=0)`
 
@@ -51,21 +49,13 @@ export const giteaDB: GiteaDB = {
       return
     }
 
-    return nonEmptyPromise
+    await once(`repository=${repoId}`, row => !row.is_empty)
   },
 
   /**
    * Wait for a repository's migration to be marked as done in the Gitea DB.
    */
   async waitForRepoMigration(repoId) {
-    const migrationPromise = once(
-      'update:task',
-      row =>
-        row.repo_id === repoId &&
-        row.type === TaskType.Migration &&
-        row.status === MigrationStatus.Done,
-    )
-
     const rows =
       await sql`SELECT EXISTS (SELECT 1 FROM task WHERE repo_id=${repoId} AND
         type=${TaskType.Migration} AND status=${MigrationStatus.Done})`
@@ -74,7 +64,13 @@ export const giteaDB: GiteaDB = {
       return
     }
 
-    return migrationPromise
+    await once(
+      'update:task',
+      row =>
+        row.repo_id === repoId &&
+        row.type === TaskType.Migration &&
+        row.status === MigrationStatus.Done,
+    )
   },
 }
 
