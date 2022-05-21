@@ -6,7 +6,7 @@ on:
   # works with dependabot pull requests. this is only the trigger to the
   # merge on all pull-requests. we still only merge in trusted pull-requests.
   pull_request_target:
-    branches: [master]
+    branches: master
     types:
       - opened
       - reopened
