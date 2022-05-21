@@ -92,7 +92,7 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 
 ## Running Integration Tests
 
-1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the `Set Up` steps. You can use one of the following options.
+1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the "Set Up" steps. You can use one of the following options.
 
 ### Run the tests in a docker container
 
@@ -100,7 +100,7 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 docker-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up e2e
 ```
 
-### w/o docker
+### Without docker
 
 ```console
 cd e2e
@@ -119,5 +119,5 @@ yarn gui
 ### Recording new visual tests:
 
 1. Make sure you have Chrome installed on your machine.
-2. Write the test in `cypress/integration/newTest.visual.spec.js`, See [IBOM.visual.spec.js](https://github.com/kitspace/kitspace-v2/blob/master/frontend/cypress/integration/IBOM.visual.spec.js) .
+2. Write the test in `cypress/integration/newTest.visual.spec.js`, See [IBOM.visual.spec.js](https://github.com/kitspace/kitspace-v2/blob/master/e2e/cypress/integration/IBOM.visual.spec.js) .
 3. Run `./scripts/record_visual_spec.sh cypress/integration/newTest.visual.spec.js`.
