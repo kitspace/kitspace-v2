@@ -79,10 +79,9 @@ function createQueues() {
       for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
         const projectOutputDir = path.join(outputDir, subprojectName)
         const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
-        const searchId = giteaId != null ? `${giteaId}-${subprojectName}` : null
         createJobs({
           subprojectName,
-          searchId,
+          giteaId,
           inputDir,
           kitspaceYaml: projectKitspaceYaml,
           outputDir: projectOutputDir,
@@ -92,7 +91,7 @@ function createQueues() {
       }
     } else {
       createJobs({
-        searchId: giteaId,
+        giteaId,
         inputDir,
         kitspaceYaml,
         outputDir,

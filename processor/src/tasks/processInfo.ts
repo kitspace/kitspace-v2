@@ -5,7 +5,7 @@ import { JobData } from '../jobData'
 
 export default async function processInfo(
   job,
-  { searchId, inputDir, kitspaceYaml, outputDir, repoFullName, hash }: JobData,
+  { giteaId, inputDir, kitspaceYaml, outputDir, repoFullName, hash }: JobData,
 ) {
   const [bom, readmeHTML] = await Promise.all([
     processBOM(job, {
@@ -21,7 +21,7 @@ export default async function processInfo(
     }),
   ])
   return addToSearch(job, {
-    searchId,
+    giteaId,
     bom,
     repoFullName,
     kitspaceYaml,

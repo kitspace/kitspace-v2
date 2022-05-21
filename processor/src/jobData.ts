@@ -1,5 +1,5 @@
 export interface JobData {
-  searchId: string | null
+  giteaId: string | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   kitspaceYaml: Record<string, any>
   repoFullName: string

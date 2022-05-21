@@ -26,7 +26,7 @@ export default async function addToSearch(
   job,
   {
     subprojectName,
-    searchId,
+    giteaId,
     bom,
     kitspaceYaml,
     repoFullName,
@@ -34,18 +34,15 @@ export default async function addToSearch(
     readmeHTML,
   }: AddToSearchData & Partial<JobData>,
 ) {
-  if (searchId == null) {
-    log.warn(`Not adding '${repoFullName}' to meilisearch due to missing searchId`)
+  if (giteaId == null) {
+    log.warn(`Not adding '${repoFullName}' to meilisearch due to missing giteaId`)
     return
   }
-  let multiParentId = null
-  if (searchId.split('-').length > 1) {
-    multiParentId = searchId.split('-')[0]
-  }
 
+  const searchId = subprojectName ? `${giteaId}-${subprojectName}` : giteaId
   const readme = getReadmeAsText(readmeHTML)
-
   const [ownerName, repoName] = repoFullName.split('/')
+  const multiParentId = subprojectName ? giteaId : null
 
   const document = {
     id: searchId,
@@ -73,7 +70,7 @@ export default async function addToSearch(
     // if we are not a multi project clear out any multi document that refer to
     // this id as parent (if we went from multi to single)
     const previousMultis = await index.search('', {
-      filter: `multiParentId = ${searchId}`,
+      filter: `multiParentId = ${giteaId}`,
     })
     const docIds = previousMultis.hits.map(x => x.id)
     await index.deleteDocuments(docIds)
