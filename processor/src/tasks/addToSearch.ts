@@ -50,7 +50,7 @@ export default async function addToSearch(
     const previousMultis = await index.search('', {
       filter: `multiParentId = ${searchId}`,
     })
-    const docIds = previousMultis.map(x => x.id)
+    const docIds = previousMultis.hits.map(x => x.id)
     await index.deleteDocuments(docIds)
   } else {
     // if we are a multi project, clear any previous parent (if we went from
