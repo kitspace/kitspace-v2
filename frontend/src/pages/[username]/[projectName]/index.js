@@ -1,4 +1,5 @@
 import React from 'react'
+import { MeiliSearch } from 'meilisearch'
 
 import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
@@ -7,7 +8,6 @@ import {
   getKitspaceYAMLJson,
   hasInteractiveBom,
   getIsProcessingDone,
-  getFlatProjects,
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
@@ -46,16 +46,15 @@ const SubProjectsGrid = ({ projects, parentProject }) => {
   )
 }
 
-ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
-  // `repoFullname` is resolved by matching its name against the `page` dir.
-  // Then it's used to access the repo by the Gitea API.
-  const asPathWithoutQuery = asPath.split('?')[0]
-  const [ignored, username, projectName] = asPathWithoutQuery.split('/')
+ProjectPage.getInitialProps = async ({ query, req, res }) => {
+  const { username, projectName } = query
 
   const repoFullname = `${username}/${projectName}`
+  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
+
+  const exists = await repoExists(repoFullname)
 
   if (await repoExists(repoFullname)) {
     const [
@@ -82,9 +81,16 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
     const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
 
     if (isMultiProject && finishedProcessing) {
-      const flattenedProjects = await getFlatProjects([repo])
+      const meili = new MeiliSearch({
+        host: process.env.KITSPACE_MEILISEARCH_URL,
+        apiKey: session.meiliApiKey,
+      })
+      const index = meili.index('projects')
+      const searchResult = await index.search('', {
+        filter: `multiParentId = ${repo.id}`,
+      })
       return {
-        subProjects: flattenedProjects,
+        subProjects: searchResult.hits,
         parentProject: projectName,
       }
     }
@@ -104,7 +110,8 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       boardSpecs: { width, height, layers },
       readme,
       isSynced: repo?.mirror,
-      // Whether the project were empty or not at the time of requesting the this page from the server.
+      // Whether the project was empty or not at the time of requesting the
+      // this page from the server.
       isEmpty: repo?.empty,
       username,
       projectName: projectName,
