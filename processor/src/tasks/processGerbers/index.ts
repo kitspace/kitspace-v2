@@ -16,7 +16,6 @@ interface PlottedGerbers {
 }
 
 interface ProcessGerbersData {
-  zipVersion: string
   plottedGerbers: PlottedGerbers
 }
 
@@ -26,12 +25,13 @@ export default async function processGerbers(
     inputDir,
     kitspaceYaml,
     outputDir,
-    zipVersion,
     repoFullName,
     subprojectName,
     plottedGerbers,
+    hash,
   }: ProcessGerbersData & Partial<JobData>,
 ) {
+  const zipVersion = hash.slice(0, 7)
   const repoName = repoFullName.split('/')[1]
   const zipFileName = `${subprojectName ?? repoName}-${zipVersion}-gerbers.zip`
   const zipPath = path.join(outputDir, zipFileName)
