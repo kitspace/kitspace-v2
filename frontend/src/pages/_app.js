@@ -50,7 +50,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
-    <AuthProvider initialCsrf={session?.csrf} initialUser={session?.user}>
+    <AuthProvider initialSession={session}>
       <SWRConfig value={{}}>
         <Head>
           {setStaticFallback}

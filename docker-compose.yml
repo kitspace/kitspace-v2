@@ -8,6 +8,7 @@ services:
       - KITSPACE_DOMAIN=${KITSPACE_DOMAIN}
       - MAX_FILE_SIZE=${MAX_FILE_SIZE}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
+      - KITSPACE_MEILISEARCH_URL=${KITSPACE_SCHEME}://meilisearch.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
     volumes:
       - frontend-next:/app/.next/
       - frontend-public:/app/public/

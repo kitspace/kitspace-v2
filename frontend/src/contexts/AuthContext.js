@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { node, string, object } from 'prop-types'
+import { node, object } from 'prop-types'
 
 import { logout, getSession } from '@utils/giteaInternalApi'
 
@@ -13,15 +13,18 @@ export const AuthContext = createContext({
   csrf: '',
 })
 
-const AuthProvider = ({ children, initialUser, initialCsrf }) => {
-  const [user, setUser] = useState(initialUser)
-  const [csrf, setCsrf] = useState(initialCsrf)
+const AuthProvider = ({ children, initialSession }) => {
+  const [user, setUser] = useState(initialSession.user)
+  const [csrf, setCsrf] = useState(initialSession.csrf)
 
   const { push } = useRouter()
 
   useEffect(() => {
-    sessionStorage.setItem('session', JSON.stringify({ user, csrf }))
-  }, [user, csrf])
+    sessionStorage.setItem(
+      'session',
+      JSON.stringify({ ...initialSession, user, csrf }),
+    )
+  }, [user, csrf, initialSession])
 
   const deAuthorize = async () => {
     setUser(null)
@@ -48,8 +51,7 @@ const AuthProvider = ({ children, initialUser, initialCsrf }) => {
 
 AuthProvider.propTypes = {
   children: node.isRequired,
-  initialUser: object,
-  initialCsrf: string.isRequired,
+  initialSession: object,
 }
 
 export default AuthProvider

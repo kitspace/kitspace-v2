@@ -9,11 +9,6 @@ const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev, conf })
 
-const meili = new MeiliSearch({
-  host: 'http://meilisearch:7700',
-  apiKey: process.env.MEILI_MASTER_KEY,
-})
-
 const nextHandler = app.getRequestHandler()
 
 main().catch(e => {
@@ -22,14 +17,26 @@ main().catch(e => {
 })
 
 async function main() {
+  const meiliMaster = new MeiliSearch({
+    host: 'http://meilisearch:7700',
+    apiKey: process.env.MEILI_MASTER_KEY,
+  })
+
   // get the api key which _only_ has the "search" capability
-  const meiliKeys = await meili.getKeys()
-  const meiliApiKey = meiliKeys.results.find(
+  const meiliKeys = await meiliMaster.getKeys()
+  const meiliSearchOnlyKey = meiliKeys.results.find(
     key => key.actions.length === 1 && key.actions[0] === 'search',
   )
-  if (meiliApiKey == null) {
+  if (meiliSearchOnlyKey == null) {
     throw Error('No meilisearch api key for frontend found.')
   }
+
+  const meiliSearchOnly = new MeiliSearch({
+    host: 'http://meilisearch:7700',
+    apiKey: meiliSearchOnlyKey.key,
+  })
+
+  const meiliIndex = meiliSearchOnly.index('projects')
 
   await app.prepare()
   const server = express()
@@ -44,7 +51,8 @@ async function main() {
     req.session = await fetch('http://gitea:3000/user/kitspace/session', {
       headers: { ...req.headers, accept: 'application/json' },
     }).then(r => r.json())
-    req.session.meiliApiKey = meiliApiKey
+    req.meiliIndex = meiliIndex
+    req.session.meiliApiKey = meiliSearchOnlyKey.key
     nextHandler(req, res, next)
   })
 
