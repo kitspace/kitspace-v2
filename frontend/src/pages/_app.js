@@ -4,7 +4,6 @@ import { bool, func, object, shape, string } from 'prop-types'
 
 import App from 'next/app'
 import Head from 'next/head'
-import { SWRConfig } from 'swr'
 import { Message } from 'semantic-ui-react'
 
 import 'semantic-ui-css/components/reset.min.css'
@@ -35,6 +34,15 @@ import 'semantic-ui-css/components/progress.min.css'
 import AuthProvider from '@contexts/AuthContext'
 import './_app.scss'
 
+if (typeof window !== 'undefined') {
+  window.plausible =
+    window.plausible ||
+    function () {
+      window.plausible.q = window.plausible.q || []
+      window.plausible.q.push(arguments)
+    }
+}
+
 function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   const setStaticFallback = isStaticFallback ? (
     <script
@@ -51,14 +59,7 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   }
   return (
     <AuthProvider initialSession={session}>
-      <Head>
-        {setStaticFallback}
-        <script>
-          {
-            'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }'
-          }
-        </script>
-      </Head>
+      <Head>{setStaticFallback}</Head>
       <Component {...pageProps} />
       {isStaticFallback ? <ErrorMessage /> : null}
     </AuthProvider>
