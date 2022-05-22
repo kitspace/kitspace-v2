@@ -94,3 +94,13 @@ function getReadmeAsText(readmeHTML) {
   const $ = cheerio.load(readmeHTML)
   return $.text()
 }
+
+export function continuallySyncDeletions(giteaDB) {
+  return giteaDB.subscribeToRepoDeletions(async row => {
+    const result = await index.search('', {
+      filter: `(id = ${row.id}) OR (multiParentId = ${row.id})`,
+    })
+    const docIds = result.hits.map(x => x.id)
+    await index.deleteDocuments(docIds)
+  })
+}

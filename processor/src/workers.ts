@@ -7,6 +7,7 @@ import processSchematics from './tasks/processSchematics'
 import processInfo from './tasks/processInfo'
 import processIBOM from './tasks/processIBOM'
 import processReadme from './tasks/processReadme'
+import * as search from './tasks/addToSearch'
 import events from './events'
 
 const defaultConcurrency = 1
@@ -17,7 +18,7 @@ interface JobProgress {
   error?: Error
 }
 
-export function createWorkers() {
+export function createWorkers({ giteaDB = null }) {
   const workers = [
     addWorker('writeKitspaceYaml', writeKitspaceYaml),
     addWorker('processKicadPCB', processKicadPCB),
@@ -27,7 +28,14 @@ export function createWorkers() {
     addWorker('processIBOM', processIBOM),
     addWorker('processReadme', processReadme),
   ]
-  const stop = () => Promise.all(workers.map(worker => worker.close()))
+  let dbSubscription
+  if (giteaDB) {
+    dbSubscription = search.continuallySyncDeletions(giteaDB)
+  }
+  const stop = async () => {
+    await Promise.all(workers.map(worker => worker.close()))
+    dbSubscription?.unsubscribe?.()
+  }
   return stop
 }
 

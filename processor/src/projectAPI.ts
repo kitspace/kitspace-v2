@@ -3,7 +3,6 @@ import log from 'loglevel'
 import * as path from 'path'
 
 import * as watcher from './watcher'
-import { createWorkers } from './workers'
 
 import { DATA_DIR } from './env'
 import events from './events'
@@ -33,12 +32,9 @@ export function createProjectsAPI(app, repoDir, { giteaDB }) {
     log.debug('failed', x, error)
   })
 
-  const stopWorkers = createWorkers()
   const unwatch = watcher.watch(repoDir, { giteaDB })
 
-  app.cleanup.push(async () => {
-    await Promise.all([unwatch(), stopWorkers()])
-  })
+  app.cleanup.push(unwatch)
 
   app.get('/status/*', (req, res) => {
     let x = path.relative('/status/', req.path)

@@ -2,6 +2,7 @@ import express from 'express'
 
 import { createProjectsAPI } from './projectAPI'
 import { createRemoteAPI } from './remoteAPI'
+import { createWorkers } from './workers'
 
 interface KitspaceProcessorApp extends express.Express {
   cleanup?: Array<() => Promise<void>>
@@ -15,6 +16,9 @@ export function createApp(repoDir, { giteaDB = null }) {
 
   createProjectsAPI(app, repoDir, { giteaDB })
   createRemoteAPI(app)
+
+  const stopWorkers = createWorkers({ giteaDB })
+  app.cleanup.push(stopWorkers)
 
   app.stop = async () => {
     await Promise.all(app.cleanup.map(cleanupFunction => cleanupFunction()))

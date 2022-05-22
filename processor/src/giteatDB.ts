@@ -1,4 +1,4 @@
-import postgres, { Row } from 'postgres'
+import postgres, { Row, ReplicationEvent, SubscriptionHandle } from 'postgres'
 import { GITEA_DB_CONFIG } from './env'
 
 const sql = postgres(GITEA_DB_CONFIG)
@@ -23,6 +23,9 @@ export interface GiteaDB {
   getRepoInfo(ownerName: string, repoName: string): Promise<RepoInfo | undefined>
   waitForNonEmpty(repoId: string): Promise<void>
   waitForRepoMigration(repoId: string): Promise<void>
+  subscribeToRepoDeletions(
+    callback: (row: Row | null, info: ReplicationEvent) => void,
+  ): Promise<SubscriptionHandle>
 }
 
 export const giteaDB: GiteaDB = {
@@ -71,6 +74,13 @@ export const giteaDB: GiteaDB = {
         row.type === TaskType.Migration &&
         row.status === MigrationStatus.Done,
     )
+  },
+
+  /**
+   * Subscribe to repository deletions.
+   */
+  async subscribeToRepoDeletions(callback) {
+    return sql.subscribe('delete:repository', callback)
   },
 }
 
