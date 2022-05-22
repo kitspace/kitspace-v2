@@ -51,18 +51,16 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
   }
   return (
     <AuthProvider initialSession={session}>
-      <SWRConfig value={{}}>
-        <Head>
-          {setStaticFallback}
-          <script>
-            {
-              'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }'
-            }
-          </script>
-        </Head>
-        <Component {...pageProps} />
-        {isStaticFallback ? <ErrorMessage /> : null}
-      </SWRConfig>
+      <Head>
+        {setStaticFallback}
+        <script>
+          {
+            'window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }'
+          }
+        </script>
+      </Head>
+      <Component {...pageProps} />
+      {isStaticFallback ? <ErrorMessage /> : null}
     </AuthProvider>
   )
 }

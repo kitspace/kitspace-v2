@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
 import { MeiliSearch } from 'meilisearch'
+import useSWR, { SWRConfig } from 'swr'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
@@ -10,42 +11,47 @@ import ProjectCard from '@components/ProjectCard'
 
 import styles from './index.module.scss'
 
-export const getServerSideProps = async ({ query, req }) => {
-  const { q } = query
+const fetcher = async (query, meiliApiKey) => {
+  const meili = new MeiliSearch({
+    host: process.env.KITSPACE_MEILISEARCH_URL,
+    apiKey: meiliApiKey,
+  })
+  const index = meili.index('projects')
+  const searchResult = await index.search(query)
+  return searchResult.hits
+}
 
-  const searchResult = await req.meiliIndex.search(q)
+export const getServerSideProps = async ({ query, req }) => {
+  const { q = '*' } = query
+
+  const hits = await fetcher(q, req.session.meiliApiKey)
 
   return {
     props: {
-      initialProjects: searchResult.hits,
-      initialQuery: q || '',
+      swrFallback: {
+        [q]: hits,
+      },
+      initialQuery: q,
     },
   }
 }
 
-const Search = ({ initialProjects, initialQuery }) => {
+const Search = ({ swrFallback, initialQuery }) => {
   return (
-    <Page initialQuery={initialQuery} title="Kitspace">
-      <CardsGrid initialProjects={initialProjects} />
-    </Page>
+    <SWRConfig value={{ fallback: swrFallback }}>
+      <Page initialQuery={initialQuery} title="Kitspace">
+        <CardsGrid />
+      </Page>
+    </SWRConfig>
   )
 }
 
-const CardsGrid = ({ initialProjects }) => {
-  const [projects, setProjects] = useState(initialProjects)
+const CardsGrid = () => {
   const { query } = useSearchQuery()
   const { meiliApiKey } = useContext(AuthContext)
-
-  useEffect(() => {
-    const meili = new MeiliSearch({
-      host: process.env.KITSPACE_MEILISEARCH_URL,
-      apiKey: meiliApiKey,
-    })
-    const index = meili.index('projects')
-    index.search(query).then(result => {
-      setProjects(result.hits)
-    })
-  }, [query, meiliApiKey])
+  const { data: projects } = useSWR(query || '*', query =>
+    fetcher(query, meiliApiKey),
+  )
 
   if (projects?.length === 0) {
     return (
@@ -68,12 +74,8 @@ const CardsGrid = ({ initialProjects }) => {
 }
 
 Search.propTypes = {
-  initialProjects: arrayOf(object).isRequired,
+  swrFallback: object.isRequired,
   initialQuery: string,
-}
-
-CardsGrid.propTypes = {
-  initialProjects: arrayOf(object).isRequired,
 }
 
 export default Search
