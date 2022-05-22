@@ -10,7 +10,7 @@ const meili = new MeiliSearch({
 })
 const index = meili.index('projects')
 index.updateSettings({
-  filterableAttributes: ['id', 'multiParentId', 'gitHash'],
+  filterableAttributes: ['id', 'multiParentId', 'gitHash', 'ownerName'],
   searchableAttributes: [
     'name',
     'summary',

@@ -5,11 +5,10 @@ import { arrayOf, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
-import { getFlatProjects } from '@utils/projectPage'
 import { useUserProjects } from '@hooks/Gitea'
 import styles from './username.module.scss'
 
-export const getServerSideProps = async ({ params }) => {
+export const getServerSideProps = async ({ params, req }) => {
   const userRepos = await getUserRepos(params.username)
 
   if (isEmpty(userRepos) && !(await userExists(params.username))) {
@@ -18,10 +17,13 @@ export const getServerSideProps = async ({ params }) => {
     }
   }
 
-  const flattenedUserProjects = await getFlatProjects(userRepos)
+  const searchResult = await req.meiliIndex.search('', {
+    filter: `ownerName = ${params.username}`,
+  })
+
   return {
     props: {
-      userProjects: flattenedUserProjects,
+      userProjects: searchResult.hits,
       username: params.username,
     },
   }
