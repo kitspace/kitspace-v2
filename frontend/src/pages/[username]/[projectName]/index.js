@@ -55,8 +55,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   const exists = await repoExists(repoFullname)
-
-  if (await repoExists(repoFullname)) {
+  if (exists) {
     const [
       repo,
       readme,
