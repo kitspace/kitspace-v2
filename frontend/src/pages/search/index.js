@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import Link from 'next/link'
-import { arrayOf, object, string } from 'prop-types'
+import { object, string } from 'prop-types'
 import { MeiliSearch } from 'meilisearch'
 import useSWR, { SWRConfig } from 'swr'
 
