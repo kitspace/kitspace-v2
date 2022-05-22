@@ -1,5 +1,5 @@
 import React from 'react'
-import { string, object } from 'prop-types'
+import { string } from 'prop-types'
 import { Card } from 'semantic-ui-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -47,7 +47,7 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
 ProjectCard.propTypes = {
   name: string.isRequired,
   summary: string.isRequired,
-  ownerName: object.isRequired,
+  ownerName: string.isRequired,
   multiParentName: string,
 }
 
