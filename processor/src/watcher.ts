@@ -34,7 +34,7 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
         dirWatchers[gitDir].queuing = true
 
         // '/repositories/user/project.git' -> ['user', 'project']
-        const [ownerName, repoName] = path
+        let [ownerName, repoName] = path
           .relative(repoDir, gitDir)
           .slice(0, -4)
           .split('/')
@@ -50,6 +50,10 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           }
 
           giteaId = giteaRepo.id
+
+          // use case-correct names from the DB
+          ownerName = giteaRepo.owner_name
+          repoName = giteaRepo.name
 
           if (giteaRepo.is_empty) {
             await giteaDB.waitForNonEmpty(giteaId)
