@@ -41,12 +41,6 @@ export function createQueues() {
   })
   projectQueues.push(processIBOMQueue)
 
-  const processReadmeQueue = new bullmq.Queue('processReadme', {
-    connection: redisConnection,
-    defaultJobOptions,
-  })
-  projectQueues.push(processReadmeQueue)
-
   function createJobs(jobData: JobData) {
     const jobId = jobData.outputDir
     for (const q of projectQueues) {

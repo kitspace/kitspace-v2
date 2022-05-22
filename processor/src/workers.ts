@@ -6,7 +6,6 @@ import processKicadPCB from './tasks/processKicadPCB'
 import processSchematics from './tasks/processSchematics'
 import processInfo from './tasks/processInfo'
 import processIBOM from './tasks/processIBOM'
-import processReadme from './tasks/processReadme'
 import * as search from './tasks/addToSearch'
 import events from './events'
 
@@ -26,7 +25,6 @@ export function createWorkers({ giteaDB = null }) {
     addWorker('processPCB', processPCB),
     addWorker('processInfo', processInfo),
     addWorker('processIBOM', processIBOM),
-    addWorker('processReadme', processReadme),
   ]
   let dbSubscription
   if (giteaDB) {
