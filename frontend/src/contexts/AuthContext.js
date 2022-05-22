@@ -11,6 +11,7 @@ export const AuthContext = createContext({
   setUser: () => {},
   setCsrf: () => {},
   csrf: '',
+  meiliApiKey: '',
 })
 
 const AuthProvider = ({ children, initialSession }) => {
@@ -42,6 +43,7 @@ const AuthProvider = ({ children, initialSession }) => {
         setUser,
         setCsrf,
         csrf,
+        meiliApiKey: initialSession.meiliApiKey,
       }}
     >
       {children}

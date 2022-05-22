@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import Link from 'next/link'
 import { arrayOf, object, string } from 'prop-types'
 import { MeiliSearch } from 'meilisearch'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
+import { AuthContext } from '@contexts/AuthContext'
 import ProjectCard from '@components/ProjectCard'
 
 import styles from './index.module.scss'
@@ -33,9 +34,9 @@ const Search = ({ initialProjects, initialQuery }) => {
 const CardsGrid = ({ initialProjects }) => {
   const [projects, setProjects] = useState(initialProjects)
   const { query } = useSearchQuery()
+  const { meiliApiKey } = useContext(AuthContext)
 
   useEffect(() => {
-    const { meiliApiKey } = JSON.parse(window?.sessionStorage.getItem('session'))
     const meili = new MeiliSearch({
       host: process.env.KITSPACE_MEILISEARCH_URL,
       apiKey: meiliApiKey,
@@ -44,7 +45,7 @@ const CardsGrid = ({ initialProjects }) => {
     index.search(query).then(result => {
       setProjects(result.hits)
     })
-  }, [query])
+  }, [query, meiliApiKey])
 
   if (projects?.length === 0) {
     return (
