@@ -11,6 +11,14 @@ const meili = new MeiliSearch({
 const index = meili.index('projects')
 index.updateSettings({
   filterableAttributes: ['id', 'multiParentId', 'gitHash'],
+  searchableAttributes: [
+    'name',
+    'summary',
+    'bom',
+    'readme',
+    'ownerName',
+    'multiParentName',
+  ],
 })
 
 interface BOM {
@@ -97,6 +105,10 @@ function getReadmeAsText(readmeHTML) {
   return $.text()
 }
 
+/*
+ * Subscribe to deletions on the repository table in the GiteaDB and delete
+ * search index documents accordingly.
+ */
 export function continuallySyncDeletions(giteaDB) {
   return giteaDB.subscribeToRepoDeletions(async row => {
     const result = await index.search('', {
