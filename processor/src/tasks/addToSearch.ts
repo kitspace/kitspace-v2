@@ -29,19 +29,21 @@ export default async function addToSearch(
     giteaId,
     bom,
     kitspaceYaml,
-    repoFullName,
+    ownerName,
+    repoName,
     hash,
     readmeHTML,
   }: AddToSearchData & Partial<JobData>,
 ) {
   if (giteaId == null) {
-    log.warn(`Not adding '${repoFullName}' to meilisearch due to missing giteaId`)
+    log.warn(
+      `Not adding '${ownerName}/${repoName}' to meilisearch due to missing giteaId`,
+    )
     return
   }
 
   const searchId = subprojectName ? `${giteaId}-${subprojectName}` : giteaId
   const readme = getReadmeAsText(readmeHTML)
-  const [ownerName, repoName] = repoFullName.split('/')
   const multiParentId = subprojectName ? giteaId : null
 
   const document = {
@@ -58,7 +60,7 @@ export default async function addToSearch(
     multiParentName: subprojectName ? repoName : null,
   }
   log.debug(
-    `meilisearch: adding/updating document id='${searchId}' for repo ${repoFullName}`,
+    `meilisearch: adding/updating document id='${searchId}' for repo ${ownerName}/${repoName}`,
   )
 
   await index.addDocuments([document])

@@ -54,13 +54,35 @@ export function createQueues() {
     }
   }
 
-  async function addProjectToQueues(repoFullName, giteaId, repoDir, gitDir) {
-    const inputDir = path.join(DATA_DIR, 'checkout', repoFullName)
+  interface AddProjectToQueueData {
+    ownerName: string
+    repoName: string
+    giteaId: string
+    gitDir: string
+  }
+  async function addProjectToQueues({
+    ownerName,
+    repoName,
+    giteaId,
+    gitDir,
+  }: AddProjectToQueueData) {
+    const inputDir = path.join(
+      DATA_DIR,
+      'checkout',
+      ownerName.toLowerCase(),
+      repoName.toLowerCase(),
+    )
 
     await sync(gitDir, inputDir)
 
     const hash = await getGitHash(inputDir)
-    const outputDir = path.join(DATA_DIR, 'files', repoFullName, hash)
+    const outputDir = path.join(
+      DATA_DIR,
+      'files',
+      ownerName.toLowerCase(),
+      repoName.toLowerCase(),
+      hash,
+    )
 
     await exec(`mkdir -p ${outputDir}`)
 
@@ -82,7 +104,8 @@ export function createQueues() {
           inputDir,
           kitspaceYaml: projectKitspaceYaml,
           outputDir: projectOutputDir,
-          repoFullName,
+          ownerName,
+          repoName,
           hash,
         })
       }
@@ -92,7 +115,8 @@ export function createQueues() {
         inputDir,
         kitspaceYaml,
         outputDir,
-        repoFullName,
+        ownerName,
+        repoName,
         hash,
       })
     }

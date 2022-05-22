@@ -3,29 +3,10 @@ import processReadme from './processReadme'
 import addToSearch from './addToSearch'
 import { JobData } from '../jobData'
 
-export default async function processInfo(
-  job,
-  { giteaId, inputDir, kitspaceYaml, outputDir, repoFullName, hash }: JobData,
-) {
+export default async function processInfo(job, jobData: JobData) {
   const [bom, readmeHTML] = await Promise.all([
-    processBOM(job, {
-      inputDir,
-      kitspaceYaml,
-      outputDir,
-    }),
-    processReadme(job, {
-      inputDir,
-      kitspaceYaml,
-      outputDir,
-      repoFullName,
-    }),
+    processBOM(job, jobData),
+    processReadme(job, jobData),
   ])
-  return addToSearch(job, {
-    giteaId,
-    bom,
-    repoFullName,
-    kitspaceYaml,
-    hash,
-    readmeHTML,
-  })
+  await addToSearch(job, { ...jobData, bom, readmeHTML })
 }

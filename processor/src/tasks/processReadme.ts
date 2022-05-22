@@ -9,7 +9,7 @@ import { GITEA_URL } from '../env'
 
 async function processReadme(
   job,
-  { inputDir, kitspaceYaml, outputDir, repoFullName }: Partial<JobData>,
+  { inputDir, kitspaceYaml, outputDir, ownerName, repoName }: Partial<JobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -40,7 +40,7 @@ async function processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
   const readmeAsHTML = await renderMarkdown(rawMarkdown)
 
-  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, repoFullName)
+  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, ownerName, repoName)
 
   await writeFile(readmePath, processedReadmeHTML)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
@@ -78,19 +78,16 @@ async function renderMarkdown(rawMarkdown) {
 
 /**
  * Make urls absolute not relative
- * @param {string} readmeAsHtml
- * @param {string} projectFullname
- * @returns {string}
  */
-function postProcessMarkdown(readmeAsHtml, projectFullname) {
+function postProcessMarkdown(readmeAsHtml, ownerName, repoName) {
   const $ = cheerio.load(readmeAsHtml)
   $('img').each((_, elem) => {
     const img = $(elem)
     const src = img.attr('src')
 
-    const isRelativeUri = !src.match(/https?:\/\//)
+    const isRelativeUri = !src.match(/^https?:\/\//)
     if (isRelativeUri) {
-      const rawUrl = `${GITEA_URL}/${projectFullname}/raw/${src}`
+      const rawUrl = `${GITEA_URL}/${ownerName}/${repoName}/raw/${src}`
       img.attr('src', rawUrl)
       img.attr('data-cy', 'relative-readme-img')
     }
@@ -103,7 +100,7 @@ function postProcessMarkdown(readmeAsHtml, projectFullname) {
     const a = $(elem)
     const href = a.attr('href')
     if (href.startsWith('/')) {
-      const rawUrl = `${GITEA_URL}/${projectFullname}/src${href}`
+      const rawUrl = `${GITEA_URL}/${ownerName}/${repoName}/src${href}`
       a.attr('href', rawUrl)
     }
   })

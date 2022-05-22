@@ -60,12 +60,12 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           }
         }
 
-        await addProjectToQueues(
-          `${ownerName}/${repoName}`,
+        await addProjectToQueues({
+          ownerName,
+          repoName,
           giteaId,
-          repoDir,
           gitDir,
-        )
+        })
 
         dirWatchers[gitDir].queuing = false
       }
