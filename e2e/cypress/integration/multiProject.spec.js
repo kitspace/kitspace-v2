@@ -128,9 +128,15 @@ describe('Render project cards', () => {
       'have.length',
       multiProjectsNames.length,
     )
-    // Go to the home page and click on a multiproject project card
     const multiProjectName = multiProjectsNames[0]
+
     cy.visit('/')
+
+    // Search for the project
+    cy.get('[data-cy=search-field] > input').type(username)
+    cy.get('[data-cy=search-form]').submit()
+
+    // Click on a subproject project card
     cy.get('[data-cy=project-card]').within(() => {
       cy.contains(username)
       cy.contains(multiProjectName).click({ force: true })
@@ -229,9 +235,13 @@ describe('Multi project page', () => {
       multiProjectsNames.length,
     )
 
-    // Go to the home page and click on a multiproject project card
     const multiProjectName = multiProjectsNames[0]
     cy.visit('/')
+    // Search for the project
+    cy.get('[data-cy=search-field] > input').type(username)
+    cy.get('[data-cy=search-form]').submit()
+
+    // Click on a multiproject project card
     cy.get('[data-cy=project-card]').within(() => {
       cy.contains(username)
       cy.contains(multiProjectName).click({ force: true })
