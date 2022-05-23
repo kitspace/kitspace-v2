@@ -5,7 +5,7 @@
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node src/server.js",
-    "fmt": "prettier --write *.js $(find . -name '*.js' | grep -v .next | grep -v node_modules)",
+    "fmt": "prettier --write '*.json' 'src/**/*.{ts,js,tsx,jsx}'",
     "lint": "eslint src/"
   },
   "license": "AGPL-3.0",
@@ -55,6 +55,7 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "3.4.0",
     "prettier": "^2.0.5",
-    "sass": "^1.49.6"
+    "sass": "^1.49.6",
+    "typescript": "~4.3.5"
   }
 }

@@ -1,22 +1,18 @@
 import React, { useContext } from 'react'
 import { isEmpty } from 'lodash'
 import { object, string } from 'prop-types'
-import { MeiliSearch } from 'meilisearch'
 import useSWR, { SWRConfig } from 'swr'
 
 import { AuthContext } from '@contexts/AuthContext'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
+import * as meili from '@utils/meili'
 import styles from './username.module.scss'
 
 const fetcher = async (username, meiliApiKey) => {
-  const meili = new MeiliSearch({
-    host: process.env.KITSPACE_MEILISEARCH_URL,
-    apiKey: meiliApiKey,
-  })
-  const index = meili.index('projects')
-  const searchResult = await index.search('*', {
+  const searchResult = await meili.search('*', {
+    meiliApiKey,
     filter: `ownerName = ${username}`,
   })
   return searchResult.hits

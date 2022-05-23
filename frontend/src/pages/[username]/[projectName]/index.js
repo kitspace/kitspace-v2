@@ -1,5 +1,4 @@
 import React from 'react'
-import { MeiliSearch } from 'meilisearch'
 
 import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
@@ -15,6 +14,7 @@ import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import Custom404 from '@pages/404'
+import * as meili from '@utils/meili'
 
 const ProjectPage = props => {
   if (props.notFound) {
@@ -80,12 +80,8 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
     const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
 
     if (isMultiProject && finishedProcessing) {
-      const meili = new MeiliSearch({
-        host: process.env.KITSPACE_MEILISEARCH_URL,
-        apiKey: session.meiliApiKey,
-      })
-      const index = meili.index('projects')
-      const searchResult = await index.search('', {
+      const searchResult = await meili.search('*', {
+        meiliApiKey: session.meiliApiKey,
         filter: `multiParentId = ${repo.id}`,
       })
       return {

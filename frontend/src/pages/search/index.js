@@ -1,23 +1,18 @@
 import React, { useContext } from 'react'
 import Link from 'next/link'
 import { object, string } from 'prop-types'
-import { MeiliSearch } from 'meilisearch'
 import useSWR, { SWRConfig } from 'swr'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
 import { AuthContext } from '@contexts/AuthContext'
 import ProjectCard from '@components/ProjectCard'
+import * as meili from '@utils/meili'
 
 import styles from './index.module.scss'
 
 const fetcher = async (query, meiliApiKey) => {
-  const meili = new MeiliSearch({
-    host: process.env.KITSPACE_MEILISEARCH_URL,
-    apiKey: meiliApiKey,
-  })
-  const index = meili.index('projects')
-  const searchResult = await index.search(query)
+  const searchResult = await meili.search(query, { meiliApiKey })
   return searchResult.hits
 }
 
