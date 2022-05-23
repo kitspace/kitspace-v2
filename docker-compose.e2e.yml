@@ -9,6 +9,7 @@ services:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - group=${group}
       - browser=${browser}
+      - BUILD_ID=${BUILD_ID}
       - COMMIT_INFO_MESSAGE=${COMMIT_INFO_MESSAGE}
       - COMMIT_INFO_EMAIL=${COMMIT_INFO_EMAIL}
       - COMMIT_INFO_AUTHOR=${COMMIT_INFO_AUTHOR}
