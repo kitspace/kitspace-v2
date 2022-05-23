@@ -38,8 +38,8 @@ const SubProjectsGrid = ({ projects, parentProject }) => {
     <Page title={parentProject}>
       <h1>{parentProject}</h1>
       <div>
-        {projects.map((project, i) => (
-          <ProjectCard {...project} key={i} />
+        {projects.map(project => (
+          <ProjectCard {...project} key={project.id} />
         ))}
       </div>
     </Page>
