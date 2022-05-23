@@ -1,12 +1,26 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { isEmpty } from 'lodash'
-import { arrayOf, object, string } from 'prop-types'
+import { object, string } from 'prop-types'
+import { MeiliSearch } from 'meilisearch'
+import useSWR, { SWRConfig } from 'swr'
 
+import { AuthContext } from '@contexts/AuthContext'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { getUserRepos, userExists } from '@utils/giteaApi'
-import { useUserProjects } from '@hooks/Gitea'
 import styles from './username.module.scss'
+
+const fetcher = async (username, meiliApiKey) => {
+  const meili = new MeiliSearch({
+    host: process.env.KITSPACE_MEILISEARCH_URL,
+    apiKey: meiliApiKey,
+  })
+  const index = meili.index('projects')
+  const searchResult = await index.search('*', {
+    filter: `ownerName = ${username}`,
+  })
+  return searchResult.hits
+}
 
 export const getServerSideProps = async ({ params, req }) => {
   const userRepos = await getUserRepos(params.username)
@@ -17,29 +31,42 @@ export const getServerSideProps = async ({ params, req }) => {
     }
   }
 
-  const searchResult = await req.meiliIndex.search('', {
-    filter: `ownerName = ${params.username}`,
-  })
+  const hits = await fetcher(params.username, req.session.meiliApiKey)
 
   return {
     props: {
-      userProjects: searchResult.hits,
+      swrFallback: {
+        [params.username]: hits,
+      },
       username: params.username,
     },
   }
 }
 
-const User = ({ userProjects, username }) => {
-  const { repos: projects } = useUserProjects(username, {
-    initialData: userProjects,
-  })
+const UserPage = ({ swrFallback, username }) => {
+  return (
+    <SWRConfig value={{ fallback: swrFallback }}>
+      <User username={username} />
+    </SWRConfig>
+  )
+}
 
+UserPage.propTypes = {
+  swrFallback: object,
+  username: string.isRequired,
+}
+
+const User = ({ username }) => {
+  const { meiliApiKey } = useContext(AuthContext)
+  const { data: userProjects } = useSWR(username, username =>
+    fetcher(username, meiliApiKey),
+  )
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
       <div className={styles}>
-        {projects?.map((project, i) => (
-          <ProjectCard {...project} key={i} />
+        {userProjects?.map(project => (
+          <ProjectCard {...project} key={project.id} />
         ))}
       </div>
     </Page>
@@ -47,8 +74,7 @@ const User = ({ userProjects, username }) => {
 }
 
 User.propTypes = {
-  userProjects: arrayOf(object),
   username: string.isRequired,
 }
 
-export default User
+export default UserPage
