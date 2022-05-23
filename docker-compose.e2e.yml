@@ -14,7 +14,7 @@ services:
       - COMMIT_INFO_AUTHOR=${COMMIT_INFO_AUTHOR}
       - COMMIT_INFO_SHA=${COMMIT_INFO_SHA}
       - COMMIT_INFO_TIMESTAMP=${COMMIT_INFO_TIMESTAMP}
-      - COMMIT_INFO_BRANCH=${GITHUB_REF}
+      - COMMIT_INFO_BRANCH=${COMMIT_INFO_BRANCH}
     depends_on:
       - nginx
     working_dir: /e2e
