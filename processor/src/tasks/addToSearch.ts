@@ -26,8 +26,8 @@ interface BOM {
 }
 
 interface AddToSearchData {
-  bom: BOM
-  readmeHTML: string
+  bom?: BOM
+  readmeHTML?: string
 }
 
 export default async function addToSearch(
@@ -59,7 +59,7 @@ export default async function addToSearch(
     name: subprojectName ?? repoName,
     summary: kitspaceYaml.summary || '',
     bom: {
-      lines: bom.lines,
+      lines: bom?.lines || [],
     },
     gitHash: hash,
     readme,
@@ -101,7 +101,7 @@ export default async function addToSearch(
 }
 
 function getReadmeAsText(readmeHTML) {
-  const $ = cheerio.load(readmeHTML)
+  const $ = cheerio.load(readmeHTML || '')
   return $.text()
 }
 
