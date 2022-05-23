@@ -22,6 +22,7 @@ const fetcher = async (query, meiliApiKey) => {
 }
 
 export const getServerSideProps = async ({ query, req }) => {
+  // '*' or '' means return everything but '' can't be used as a SWR cache key
   const { q = '*' } = query
 
   const hits = await fetcher(q, req.session.meiliApiKey)
@@ -49,8 +50,10 @@ const Search = ({ swrFallback, initialQuery }) => {
 const CardsGrid = () => {
   const { query } = useSearchQuery()
   const { meiliApiKey } = useContext(AuthContext)
-  const { data: projects } = useSWR(query || '*', query =>
-    fetcher(query, meiliApiKey),
+  const { data: projects } = useSWR(
+    query || '*',
+    query => fetcher(query, meiliApiKey),
+    { refreshInterval: 1000 },
   )
 
   if (projects?.length === 0) {

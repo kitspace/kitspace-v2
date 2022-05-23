@@ -58,8 +58,10 @@ UserPage.propTypes = {
 
 const User = ({ username }) => {
   const { meiliApiKey } = useContext(AuthContext)
-  const { data: userProjects } = useSWR(username, username =>
-    fetcher(username, meiliApiKey),
+  const { data: userProjects } = useSWR(
+    username,
+    username => fetcher(username, meiliApiKey),
+    { refreshInterval: 1000 },
   )
   return (
     <Page title={username}>
