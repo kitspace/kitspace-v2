@@ -9,6 +9,12 @@ services:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - group=${group}
       - browser=${browser}
+      - COMMIT_INFO_MESSAGE=${COMMIT_INFO_MESSAGE}
+      - COMMIT_INFO_EMAIL=${COMMIT_INFO_EMAIL}
+      - COMMIT_INFO_AUTHOR=${COMMIT_INFO_AUTHOR}
+      - COMMIT_INFO_SHA=${COMMIT_INFO_SHA}
+      - COMMIT_INFO_TIMESTAMP=${COMMIT_INFO_TIMESTAMP}
+      - COMMIT_INFO_BRANCH=${GITHUB_HEAD_REF}
     depends_on:
       - nginx
     working_dir: /e2e
