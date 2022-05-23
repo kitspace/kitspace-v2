@@ -50,10 +50,8 @@ const Search = ({ swrFallback, initialQuery }) => {
 const CardsGrid = () => {
   const { query } = useSearchQuery()
   const { meiliApiKey } = useContext(AuthContext)
-  const { data: projects } = useSWR(
-    query || '*',
-    query => fetcher(query, meiliApiKey),
-    { refreshInterval: 1000 },
+  const { data: projects } = useSWR(query || '*', query =>
+    fetcher(query, meiliApiKey),
   )
 
   if (projects?.length === 0) {
