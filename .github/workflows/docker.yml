@@ -270,13 +270,6 @@ jobs:
         run: |
           scripts/install_gitea.sh
 
-      - name: Generate build ID
-        id: uuid
-        # take the current commit + timestamp together
-        # the typical value would be something like
-        # "sha-5d3fe...35d3-time-1620841214"
-        run: echo "::set-output name=value::sha-$GITHUB_SHA-time-$(date +"%s")"
-
       - name: Pre e2e
         shell: bash
         run: scripts/pre_e2e.sh
@@ -293,7 +286,7 @@ jobs:
           GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
           browser: ${{ matrix.browser }}
           group: ${{ matrix.browser }}
-          BUILD_ID: ${{ steps.uuid.outputs.value }}
+          BUILD_ID: ${{ github.run_id }}-${{ github.run_attempt }}
           COMMIT_INFO_MESSAGE: ${{ github.event.head_commit.message }}
           COMMIT_INFO_EMAIL: ${{ github.event.head_commit.author.email }}
           COMMIT_INFO_AUTHOR: ${{ github.event.head_commit.author.name }}
