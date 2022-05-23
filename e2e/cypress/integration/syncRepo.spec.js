@@ -28,8 +28,8 @@ describe('Syncing a project behavior validation', () => {
     cy.get('button').contains('Sync').click()
     cy.get('[data-cy=sync-result-message]').should('have.class', 'green')
 
+    cy.forceVisit(`/${username}`)
     // assert the repo is on the user's project page
-    cy.visit(`/${username}`)
     cy.get('[data-cy=project-card]').contains(repoName)
   })
 
