@@ -1,12 +1,11 @@
 import React, { useContext } from 'react'
-import { isEmpty } from 'lodash'
 import { object, string } from 'prop-types'
 import useSWR, { SWRConfig } from 'swr'
 
 import { AuthContext } from '@contexts/AuthContext'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
-import { getUserRepos, userExists } from '@utils/giteaApi'
+import { userExists } from '@utils/giteaApi'
 import * as meili from '@utils/meili'
 import styles from './username.module.scss'
 
@@ -19,9 +18,7 @@ const fetcher = async (username, meiliApiKey) => {
 }
 
 export const getServerSideProps = async ({ params, req }) => {
-  const userRepos = await getUserRepos(params.username)
-
-  if (isEmpty(userRepos) && !(await userExists(params.username))) {
+  if (await userExists(params.username)) {
     return {
       notFound: true,
     }
