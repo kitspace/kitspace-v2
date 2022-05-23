@@ -32,7 +32,7 @@ describe('Syncing a project behavior validation', () => {
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
     cy.get('[data-cy=project-title]')
 
-    cy.forceVisit(`/${username}`)
+    cy.visit(`/${username}`)
     // assert the repo is on the user's project page
     cy.get('[data-cy=project-card]').contains(repoName)
   })
