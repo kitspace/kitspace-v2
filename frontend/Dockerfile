@@ -1,7 +1,5 @@
 FROM node:16-alpine
 
-ENV NODE_ENV=production
-
 # `git` is needed in the container to install `1-click-bom-minimal` in `package.json`.
 RUN apk --no-cache add git
 
@@ -10,7 +8,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
-RUN yarn --prune-lockfile
+RUN yarn --frozen-lockfile
 
 COPY . .
 
