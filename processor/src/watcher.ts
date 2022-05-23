@@ -30,7 +30,7 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
 
     // we debounce the file-system event to only invoke once per change in the repo
     const debouncedAddToQueues = debounce(async () => {
-      if (!dirWatchers[gitDir].queuing) {
+      if (dirWatchers[gitDir] != null && !dirWatchers[gitDir].queuing) {
         dirWatchers[gitDir].queuing = true
 
         // '/repositories/user/project.git' -> ['user', 'project']
@@ -71,7 +71,10 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           gitDir,
         })
 
-        dirWatchers[gitDir].queuing = false
+        // dirWatchers[gitDir] can be deleted from the unlinkDir callback below
+        if (dirWatchers[gitDir] != null) {
+          dirWatchers[gitDir].queuing = false
+        }
       }
     }, 1000)
 
