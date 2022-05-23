@@ -8,119 +8,116 @@ import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
 
-export function createQueues() {
-  const defaultJobOptions: bullmq.JobsOptions = {
-    removeOnComplete: true,
-    // remove our failed jobs while developing so they are retried.
-    // in production we don't want them to be retried since it would waste
-    // resources continually retrying them
-    removeOnFail: process.env.NODE_ENV !== 'production',
+const defaultJobOptions: bullmq.JobsOptions = {
+  removeOnComplete: true,
+  // remove our failed jobs while developing so they are retried.
+  // in production we don't want them to be retried since it would waste
+  // resources continually retrying them
+  removeOnFail: process.env.NODE_ENV !== 'production',
+}
+
+const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
+  connection: redisConnection,
+  defaultJobOptions,
+})
+
+const projectQueues = []
+const processPCBQueue = new bullmq.Queue('processPCB', {
+  connection: redisConnection,
+  defaultJobOptions,
+})
+projectQueues.push(processPCBQueue)
+
+const processInfoQueue = new bullmq.Queue('processInfo', {
+  connection: redisConnection,
+  defaultJobOptions,
+})
+projectQueues.push(processInfoQueue)
+
+const processIBOMQueue = new bullmq.Queue('processIBOM', {
+  connection: redisConnection,
+  defaultJobOptions,
+})
+projectQueues.push(processIBOMQueue)
+
+function createJobs(jobData: JobData) {
+  const jobId = jobData.outputDir
+  for (const q of projectQueues) {
+    q.add('projectAPI', jobData, { jobId })
   }
+}
 
-  const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
-    connection: redisConnection,
-    defaultJobOptions,
-  })
+export interface AddProjectToQueueData {
+  ownerName: string
+  repoName: string
+  giteaId: string
+  gitDir: string
+}
+export async function addProjectToQueues({
+  ownerName,
+  repoName,
+  giteaId,
+  gitDir,
+}: AddProjectToQueueData) {
+  const inputDir = path.join(
+    DATA_DIR,
+    'checkout',
+    ownerName.toLowerCase(),
+    repoName.toLowerCase(),
+  )
 
-  const projectQueues = []
-  const processPCBQueue = new bullmq.Queue('processPCB', {
-    connection: redisConnection,
-    defaultJobOptions,
-  })
-  projectQueues.push(processPCBQueue)
+  await sync(gitDir, inputDir)
 
-  const processInfoQueue = new bullmq.Queue('processInfo', {
-    connection: redisConnection,
-    defaultJobOptions,
-  })
-  projectQueues.push(processInfoQueue)
+  const hash = await getGitHash(inputDir)
+  const outputDir = path.join(
+    DATA_DIR,
+    'files',
+    ownerName.toLowerCase(),
+    repoName.toLowerCase(),
+    hash,
+  )
 
-  const processIBOMQueue = new bullmq.Queue('processIBOM', {
-    connection: redisConnection,
-    defaultJobOptions,
-  })
-  projectQueues.push(processIBOMQueue)
+  await exec(`mkdir -p ${outputDir}`)
 
-  function createJobs(jobData: JobData) {
-    const jobId = jobData.outputDir
-    for (const q of projectQueues) {
-      q.add('projectAPI', jobData, { jobId })
-    }
-  }
+  const kitspaceYaml = await getKitspaceYaml(inputDir)
 
-  interface AddProjectToQueueData {
-    ownerName: string
-    repoName: string
-    giteaId: string
-    gitDir: string
-  }
-  async function addProjectToQueues({
-    ownerName,
-    repoName,
-    giteaId,
-    gitDir,
-  }: AddProjectToQueueData) {
-    const inputDir = path.join(
-      DATA_DIR,
-      'checkout',
-      ownerName.toLowerCase(),
-      repoName.toLowerCase(),
-    )
+  writeKitspaceYamlQueue.add(
+    'projectAPI',
+    { kitspaceYaml, outputDir },
+    { jobId: outputDir },
+  )
 
-    await sync(gitDir, inputDir)
-
-    const hash = await getGitHash(inputDir)
-    const outputDir = path.join(
-      DATA_DIR,
-      'files',
-      ownerName.toLowerCase(),
-      repoName.toLowerCase(),
-      hash,
-    )
-
-    await exec(`mkdir -p ${outputDir}`)
-
-    const kitspaceYaml = await getKitspaceYaml(inputDir)
-
-    writeKitspaceYamlQueue.add(
-      'projectAPI',
-      { kitspaceYaml, outputDir },
-      { jobId: outputDir },
-    )
-
-    if (kitspaceYaml.multi) {
-      for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
-        const projectOutputDir = path.join(outputDir, subprojectName)
-        const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
-        createJobs({
-          subprojectName,
-          giteaId,
-          inputDir,
-          kitspaceYaml: projectKitspaceYaml,
-          outputDir: projectOutputDir,
-          ownerName,
-          repoName,
-          hash,
-        })
-      }
-    } else {
+  if (kitspaceYaml.multi) {
+    for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
+      const projectOutputDir = path.join(outputDir, subprojectName)
+      const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
       createJobs({
+        subprojectName,
         giteaId,
         inputDir,
-        kitspaceYaml,
-        outputDir,
+        kitspaceYaml: projectKitspaceYaml,
+        outputDir: projectOutputDir,
         ownerName,
         repoName,
         hash,
       })
     }
+  } else {
+    createJobs({
+      giteaId,
+      inputDir,
+      kitspaceYaml,
+      outputDir,
+      ownerName,
+      repoName,
+      hash,
+    })
   }
+}
 
-  async function stopQueues() {
-    const qs = projectQueues.concat([writeKitspaceYamlQueue])
-    await Promise.all(qs.map(q => q.obliterate({ force: true })))
-  }
-  return { addProjectToQueues, stopQueues }
+export async function stopQueues() {
+  const qs = projectQueues.concat([writeKitspaceYamlQueue])
+  await Promise.all(qs.map(q => q.obliterate({ force: true })))
 }
 
 async function getKitspaceYaml(inputDir) {
