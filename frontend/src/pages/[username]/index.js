@@ -64,7 +64,7 @@ const User = ({ username }) => {
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
-      <div className={styles}>
+      <div className={styles.projectsList}>
         {userProjects?.map(project => (
           <ProjectCard {...project} key={project.id} />
         ))}
