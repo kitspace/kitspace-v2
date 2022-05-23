@@ -18,7 +18,8 @@ const fetcher = async (username, meiliApiKey) => {
 }
 
 export const getServerSideProps = async ({ params, req }) => {
-  if (await userExists(params.username)) {
+  const exists = await userExists(params.username)
+  if (!exists) {
     return {
       notFound: true,
     }
