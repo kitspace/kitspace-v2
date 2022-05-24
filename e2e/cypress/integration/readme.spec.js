@@ -68,15 +68,19 @@ describe('Relative README images URLs normalization', () => {
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
 
-    cy.get('img', { timeout: 60_000 }).each(async $img => {
-      const src = await cy.wrap($img).should('have.attr', 'src')
-      const res = await fetch(src)
-      assert(res.ok, 'expected "ok" http response when requesting image')
-      const contentType = res.headers.get('content-type')
-      assert(
-        contentType === 'image/png',
-        `expected content-type '${contentType}' to be 'image/png'`,
-      )
+    cy.forceVisit(`/${username}/${repoName}/project_2`)
+
+    cy.get('[data-cy=readme]').within(() => {
+      cy.get('img').each($img => {
+        // checks for naturalWidth/naturalHeight are not working
+        // $img.error does not seem to be working
+        // so we use $img.bind
+        $img.bind('error', () => {
+          assert(false, `error with loading image: ${$img.attr('src')}`)
+        })
+        // `scrollIntoView` is not working so we use `click`
+        cy.wrap($img).click().should('be.visible')
+      })
     })
   })
 })
