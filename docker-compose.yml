@@ -13,6 +13,7 @@ services:
       - frontend-next:/app/.next/
       - frontend-public:/app/public/
     depends_on:
+      - meilisearch
       - gitea
 
   gitea:
@@ -57,6 +58,7 @@ services:
       - frontend
       - gitea
       - processor
+      - meilisearch
     ports:
       - '${KITSPACE_DEV_PORT}:80'
     volumes:
