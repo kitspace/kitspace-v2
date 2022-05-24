@@ -8,6 +8,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
+ENV NODE_ENV=production
 RUN yarn --frozen-lockfile
 
 COPY . .
