@@ -4,13 +4,16 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as globule from 'globule'
 
+import { JobData } from '../../jobData'
 import { exists } from '../../utils'
 
 const exec = promisify(child_process.exec)
 const readFile = promisify(fs.readFile)
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }: any) {
+async function processIBOM(
+  job,
+  { inputDir, kitspaceYaml, outputDir, repoName, subprojectName }: Partial<JobData>,
+) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
@@ -48,7 +51,11 @@ async function processIBOM(job, { inputDir, kitspaceYaml = {}, outputDir, name }
   await exec(`mkdir -p ${ibomOutputFolder}`)
 
   const run_ibom = path.join(__dirname, 'run_ibom')
-  await exec(`${run_ibom} '${pcbFile}' '${name}' '${summary}' '${ibomOutputPath}'`)
+  await exec(
+    `${run_ibom} '${pcbFile}' '${
+      subprojectName ?? repoName
+    }' '${summary}' '${ibomOutputPath}'`,
+  )
     .then(() => job.updateProgress({ status: 'done', file: ibomOutputPath }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: ibomOutputPath, error }),

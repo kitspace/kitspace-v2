@@ -97,7 +97,7 @@ function styleString(options) {
 }
 
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-export default function boardBuilder(layers, color, createElement?) : any {
+export default function boardBuilder(layers, color, createElement?): any {
   return new Promise((resolve, reject) => {
     pcbStackup(
       layers,

@@ -4,6 +4,7 @@ module.exports = {
   env: {
     KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
     KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
+    KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,
     MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
   },
   eslint: {

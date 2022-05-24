@@ -2,9 +2,13 @@ import * as path from 'path'
 import * as globule from 'globule'
 import log from 'loglevel'
 
+import { JobData } from '../../jobData'
 import { existsAll, exec, findKicadSchematic } from '../../utils'
 
-async function processSchematics(job, { inputDir, kitspaceYaml = {}, outputDir }) {
+async function processSchematics(
+  job,
+  { inputDir, kitspaceYaml = {}, outputDir }: Partial<JobData>,
+) {
   const schematicSvgPath = path.join(outputDir, 'images/schematic.svg')
 
   const filePaths = [schematicSvgPath]

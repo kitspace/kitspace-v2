@@ -18,7 +18,7 @@ services:
       - 443:443
     environment:
       - RUN_CERTBOT=${CERTBOT_ENABLED}
-      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN}
+      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN},meilisearch.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
     restart: always
     volumes:
@@ -26,4 +26,9 @@ services:
 
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
+    restart: always
+
+  meilisearch:
+    environment:
+      - MEILI_ENV=production
     restart: always

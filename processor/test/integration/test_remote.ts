@@ -5,6 +5,7 @@ import * as util from 'util'
 import * as path from 'path'
 
 import { createApp } from '../../src/app'
+import { delay } from '../../src/utils'
 
 const exec = util.promisify(child_process.exec)
 
@@ -19,7 +20,7 @@ describe('remote API', function () {
   beforeEach(async function () {
     await exec(`mkdir -p ${tmpDir}`)
     await exec(`mkdir -p ${emptyRepoDir}`)
-    this.app = createApp(emptyRepoDir, null)
+    this.app = createApp(emptyRepoDir, { giteaDB: null })
     this.supertest = supertest(this.app)
   })
 
@@ -62,6 +63,7 @@ describe('remote API', function () {
     r = await this.supertest.get(layoutSvgStatus)
     while (r.body.status === 'in_progress') {
       r = await this.supertest.get(layoutSvgStatus)
+      await delay(10)
     }
     assert(r.body.status === 'done')
     r = await this.supertest.get(layoutSvg).expect(200)

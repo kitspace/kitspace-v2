@@ -2,18 +2,37 @@ import globule from 'globule'
 import path from 'path'
 import Jszip from 'jszip'
 
+import { JobData } from '../../jobData'
 import { existsAll, writeFile, readFile, exec } from '../../utils'
 
 import findGerberFiles from './findGerberFiles'
 import boardBuilder from './board_builder'
 
+interface PlottedGerbers {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  gerbers: Array<any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  inputFiles: Record<string, any>
+}
+
+interface ProcessGerbersData {
+  plottedGerbers: PlottedGerbers
+}
+
 export default async function processGerbers(
   job,
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  { inputDir, kitspaceYaml = {}, outputDir, zipVersion, name, plottedGerbers }: any,
+  {
+    inputDir,
+    kitspaceYaml,
+    outputDir,
+    repoName,
+    subprojectName,
+    plottedGerbers,
+    hash,
+  }: ProcessGerbersData & Partial<JobData>,
 ) {
-  const nameSplit = name.split('/')
-  const zipFileName = `${nameSplit[nameSplit.length - 1]}-${zipVersion}-gerbers.zip`
+  const zipVersion = hash.slice(0, 7)
+  const zipFileName = `${subprojectName ?? repoName}-${zipVersion}-gerbers.zip`
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')

@@ -1,43 +1,66 @@
-import React from 'react'
-import { isEmpty } from 'lodash'
-import { arrayOf, object, string } from 'prop-types'
+import React, { useContext } from 'react'
+import { object, string } from 'prop-types'
+import useSWR, { SWRConfig } from 'swr'
 
+import { AuthContext } from '@contexts/AuthContext'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
-import { getUserRepos, userExists } from '@utils/giteaApi'
-import { getFlatProjects } from '@utils/projectPage'
-import { useUserProjects } from '@hooks/Gitea'
+import { userExists } from '@utils/giteaApi'
+import * as meili from '@utils/meili'
 import styles from './username.module.scss'
 
-export const getServerSideProps = async ({ params }) => {
-  const userRepos = await getUserRepos(params.username)
+const fetcher = async (username, meiliApiKey) => {
+  const searchResult = await meili.search('*', {
+    meiliApiKey,
+    filter: `ownerName = ${username}`,
+  })
+  return searchResult.hits
+}
 
-  if (isEmpty(userRepos) && !(await userExists(params.username))) {
+export const getServerSideProps = async ({ params, req }) => {
+  const exists = await userExists(params.username)
+  if (!exists) {
     return {
       notFound: true,
     }
   }
 
-  const flattenedUserProjects = await getFlatProjects(userRepos)
+  const hits = await fetcher(params.username, req.session.meiliApiKey)
+
   return {
     props: {
-      userProjects: flattenedUserProjects,
+      swrFallback: {
+        [params.username]: hits,
+      },
       username: params.username,
     },
   }
 }
 
-const User = ({ userProjects, username }) => {
-  const { repos: projects } = useUserProjects(username, {
-    initialData: userProjects,
-  })
+const UserPage = ({ swrFallback, username }) => {
+  return (
+    <SWRConfig value={{ fallback: swrFallback }}>
+      <User username={username} />
+    </SWRConfig>
+  )
+}
 
+UserPage.propTypes = {
+  swrFallback: object,
+  username: string.isRequired,
+}
+
+const User = ({ username }) => {
+  const { meiliApiKey } = useContext(AuthContext)
+  const { data: userProjects } = useSWR(username, username =>
+    fetcher(username, meiliApiKey),
+  )
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
-      <div className={styles}>
-        {projects?.map((project, i) => (
-          <ProjectCard {...project} key={i} />
+      <div className={styles.projectsList}>
+        {userProjects?.map(project => (
+          <ProjectCard {...project} key={project.id} />
         ))}
       </div>
     </Page>
@@ -45,8 +68,7 @@ const User = ({ userProjects, username }) => {
 }
 
 User.propTypes = {
-  userProjects: arrayOf(object),
   username: string.isRequired,
 }
 
-export default User
+export default UserPage

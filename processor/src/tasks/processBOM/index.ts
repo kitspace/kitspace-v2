@@ -3,11 +3,13 @@ import log from 'loglevel'
 import * as path from 'path'
 import getPartinfo from './get_partinfo'
 
+import { JobData } from '../../jobData'
 import { exists, existsAll, writeFile, readFile } from '../../utils'
 
-
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any) {
+async function processBOM(
+  job,
+  { inputDir, kitspaceYaml, outputDir }: Partial<JobData>,
+) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
 
@@ -21,7 +23,8 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
     for (const file of filePaths) {
       job.updateProgress({ status: 'done', file })
     }
-    return
+    const info = JSON.parse(await readFile(infoJsonPath, 'utf-8'))
+    return info.bom
   }
 
   try {
@@ -57,7 +60,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
           error: Error('No lines in BOM found'),
         })
       }
-      return
+      return {}
     }
     bom.tsv = oneClickBom.writeTSV(bom.lines)
 
@@ -76,6 +79,7 @@ async function processBOM(job, { inputDir, kitspaceYaml = {}, outputDir } : any)
           job.updateProgress({ status: 'failed', file: bomOutputPath, error }),
         ),
     ])
+    return info.bom
   } catch (error) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'failed', file, error })

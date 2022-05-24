@@ -93,3 +93,33 @@ server {
 
 }
 
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name meilisearch.@KITSPACE_DOMAIN;
+
+    location /robots.txt {
+        add_header Content-Type text/plain;
+        return 200 "@KITSPACE_ROBOTS_TXT";
+    }
+
+    location / {
+        proxy_intercept_errors on;
+        proxy_set_header    Host                            $http_host;
+        proxy_set_header    X-Real-IP                       $remote_addr;
+        proxy_set_header    X-Forwarded-For                 $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Forwarded-Proto               $scheme;
+        # In development mode Meilisearch sets these headers
+        # (Access-Control-Allow-Origin to "*", and Access-Control-Allow-Methods
+        # to all of GET, PUT, PATCH, DELETE... ). If we don't use `proxy_hide_header` 
+        # then they we get double headers in the HTTP responses.
+        proxy_hide_header   'Access-Control-Allow-Origin';
+        proxy_hide_header   'Access-Control-Allow-Methods';
+        add_header          'Access-Control-Allow-Origin'  '@KITSPACE_URL' always;
+        add_header          'Access-Control-Allow-Methods' 'GET, OPTIONS, POST';
+
+        proxy_pass http://meilisearch:7700;
+    }
+
+}

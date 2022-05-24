@@ -7,7 +7,6 @@ import {
   getKitspaceYAMLJson,
   hasInteractiveBom,
   getIsProcessingDone,
-  getFlatProjects,
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
@@ -15,6 +14,7 @@ import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import Custom404 from '@pages/404'
+import * as meili from '@utils/meili'
 
 const ProjectPage = props => {
   if (props.notFound) {
@@ -38,26 +38,24 @@ const SubProjectsGrid = ({ projects, parentProject }) => {
     <Page title={parentProject}>
       <h1>{parentProject}</h1>
       <div>
-        {projects.map((project, i) => (
-          <ProjectCard {...project} key={i} />
+        {projects.map(project => (
+          <ProjectCard {...project} key={project.id} />
         ))}
       </div>
     </Page>
   )
 }
 
-ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
-  // `repoFullname` is resolved by matching its name against the `page` dir.
-  // Then it's used to access the repo by the Gitea API.
-  const asPathWithoutQuery = asPath.split('?')[0]
-  const [ignored, username, projectName] = asPathWithoutQuery.split('/')
+ProjectPage.getInitialProps = async ({ query, req, res }) => {
+  const { username, projectName } = query
 
   const repoFullname = `${username}/${projectName}`
+  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
-  if (await repoExists(repoFullname)) {
+  const exists = await repoExists(repoFullname)
+  if (exists) {
     const [
       repo,
       readme,
@@ -82,9 +80,12 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
     const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
 
     if (isMultiProject && finishedProcessing) {
-      const flattenedProjects = await getFlatProjects([repo])
+      const searchResult = await meili.search('*', {
+        meiliApiKey: session.meiliApiKey,
+        filter: `multiParentId = ${repo.id}`,
+      })
       return {
-        subProjects: flattenedProjects,
+        subProjects: searchResult.hits,
         parentProject: projectName,
       }
     }
@@ -104,7 +105,8 @@ ProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       boardSpecs: { width, height, layers },
       readme,
       isSynced: repo?.mirror,
-      // Whether the project were empty or not at the time of requesting the this page from the server.
+      // Whether the project was empty or not at the time of requesting the
+      // this page from the server.
       isEmpty: repo?.empty,
       username,
       projectName: projectName,

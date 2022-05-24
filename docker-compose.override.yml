@@ -27,6 +27,10 @@ services:
     volumes:
       - ./gitea:/go/src/code.gitea.io/gitea
 
+  postgres:
+    ports:
+      - '5432:5432'
+
   nginx:
     build:
       context: nginx
@@ -49,6 +53,12 @@ services:
   redis:
     ports:
       - '6379:6379'
+
+  meilisearch:
+    ports:
+      - '7700:7700'
+    environment:
+      - MEILI_ENV=development
 
 volumes:
   frontend-node_modules:

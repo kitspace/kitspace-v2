@@ -3,13 +3,13 @@ import * as path from 'path'
 import * as superagent from 'superagent'
 import * as cheerio from 'cheerio'
 
+import { JobData } from '../jobData'
 import { exists, readFile, writeFile } from '../utils'
 import { GITEA_URL } from '../env'
 
 async function processReadme(
   job,
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  { inputDir, kitspaceYaml = {}, outputDir, name }: any,
+  { inputDir, kitspaceYaml, outputDir, ownerName, repoName }: Partial<JobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -17,7 +17,7 @@ async function processReadme(
 
   if (await exists(readmePath)) {
     job.updateProgress({ status: 'done', file: readmePath })
-    return
+    return readFile(readmePath, 'utf-8')
   }
 
   let readmeInputPath
@@ -32,7 +32,7 @@ async function processReadme(
         file: readmePath,
         error: Error("couldn't find readme file"),
       })
-      return
+      return ''
     }
     readmeInputPath = readmeFile
   }
@@ -40,13 +40,15 @@ async function processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
   const readmeAsHTML = await renderMarkdown(rawMarkdown)
 
-  const renderedReadme = postProcessMarkdown(readmeAsHTML, name)
+  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, ownerName, repoName)
 
-  await writeFile(readmePath, renderedReadme)
+  await writeFile(readmePath, processedReadmeHTML)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: readmePath, error }),
     )
+
+  return processedReadmeHTML
 }
 
 function findReadmeFile(inputDir) {
@@ -66,7 +68,8 @@ function findReadmeFile(inputDir) {
 async function renderMarkdown(rawMarkdown) {
   const giteaMarkdownEndpoint = 'http://gitea:3000/api/v1/markdown/raw'
 
-  const res = await superagent.post(giteaMarkdownEndpoint)
+  const res = await superagent
+    .post(giteaMarkdownEndpoint)
     .set('Content-Type', 'application/json')
     .send(rawMarkdown)
 
@@ -75,19 +78,16 @@ async function renderMarkdown(rawMarkdown) {
 
 /**
  * Make urls absolute not relative
- * @param {string} readmeAsHtml
- * @param {string} projectFullname
- * @returns {string}
  */
-function postProcessMarkdown(readmeAsHtml, projectFullname) {
+function postProcessMarkdown(readmeAsHtml, ownerName, repoName) {
   const $ = cheerio.load(readmeAsHtml)
   $('img').each((_, elem) => {
     const img = $(elem)
     const src = img.attr('src')
 
-    const isRelativeUri = !src.match(/https?:\/\//)
+    const isRelativeUri = !src.match(/^https?:\/\//)
     if (isRelativeUri) {
-      const rawUrl = `${GITEA_URL}/${projectFullname}/raw/${src}`
+      const rawUrl = `${GITEA_URL}/${ownerName}/${repoName}/raw/${src}`
       img.attr('src', rawUrl)
       img.attr('data-cy', 'relative-readme-img')
     }
@@ -100,7 +100,7 @@ function postProcessMarkdown(readmeAsHtml, projectFullname) {
     const a = $(elem)
     const href = a.attr('href')
     if (href.startsWith('/')) {
-      const rawUrl = `${GITEA_URL}/${projectFullname}/src${href}`
+      const rawUrl = `${GITEA_URL}/${ownerName}/${repoName}/src${href}`
       a.attr('href', rawUrl)
     }
   })

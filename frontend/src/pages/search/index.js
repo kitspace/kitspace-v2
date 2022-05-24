@@ -1,102 +1,53 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext } from 'react'
 import Link from 'next/link'
-import { arrayOf, object, string } from 'prop-types'
-import { isEqual } from 'lodash'
-import { backOff } from 'exponential-backoff'
-import { Loader } from 'semantic-ui-react'
+import { object, string } from 'prop-types'
+import useSWR, { SWRConfig } from 'swr'
 
 import Page from '@components/Page'
-import { useSearchRepos } from '@hooks/Gitea'
 import { useSearchQuery } from '@contexts/SearchContext'
-import { getAllRepos, searchRepos } from '@utils/giteaApi'
+import { AuthContext } from '@contexts/AuthContext'
 import ProjectCard from '@components/ProjectCard'
-import { getFlatProjects } from '@utils/projectPage'
+import * as meili from '@utils/meili'
 
 import styles from './index.module.scss'
 
-export const getServerSideProps = async ({ query }) => {
-  const { q } = query
-  if (q) {
-    return {
-      props: {
-        initialProjects: await backOff(
-          async () => getFlatProjects(await searchRepos(q)),
-          { retry },
-        ),
-        initialQuery: q,
-      },
-    }
-  }
+const fetcher = async (query, meiliApiKey) => {
+  const searchResult = await meili.search(query, { meiliApiKey })
+  return searchResult.hits
+}
+
+export const getServerSideProps = async ({ query, req }) => {
+  // '*' or '' means return everything but '' can't be used as a SWR cache key
+  const { q = '*' } = query
+
+  const hits = await fetcher(q, req.session.meiliApiKey)
 
   return {
     props: {
-      initialProjects: await backOff(
-        async () => getFlatProjects(await getAllRepos()),
-        { retry },
-      ),
+      swrFallback: {
+        [q]: hits,
+      },
+      initialQuery: q,
     },
   }
 }
-/**
- *
- * @param {*} e
- * @param {number} attempt the number of the current attempt
- * @returns {boolean} return `false` to stop retrying before exceeding the max retry limit
- */
-const retry = (e, attempt) => {
-  console.error(
-    new Error(`Failed to fetch homepage data: ${e} for the ${attempt} time`),
-  )
-  // Continue retrying if the max number of attempts (the default is 10) haven't been exceeded.
-  return true
-}
 
-const Search = ({ initialProjects, initialQuery }) => {
+const Search = ({ swrFallback, initialQuery }) => {
   return (
-    <Page initialQuery={initialQuery} title="Kitspace | Home">
-      <CardsGrid initialProjects={initialProjects} />
-    </Page>
+    <SWRConfig value={{ fallback: swrFallback }}>
+      <Page initialQuery={initialQuery} title="Kitspace">
+        <CardsGrid />
+      </Page>
+    </SWRConfig>
   )
 }
 
-const CardsGrid = ({ initialProjects }) => {
-  const [isLoading, setIsLoading] = useState(false)
+const CardsGrid = () => {
   const { query } = useSearchQuery()
-  const initialDataRef = useRef()
-
-  const { repos: projects, mutate } = useSearchRepos(query, {
-    initialData: initialDataRef.current ? initialDataRef.current : initialProjects,
-    revalidateOnMount: false,
-    revalidateOnFocus: false,
-  })
-
-  // Prevent flickering initial data while revalidating.
-  // see https://github.com/vercel/swr/issues/192#issuecomment-821848756.
-  if (projects !== undefined && initialDataRef) {
-    initialDataRef.current = projects
-  }
-
-  useEffect(() => {
-    const isSearchWithSwr = !isEqual(initialProjects, initialDataRef.current)
-    if (isSearchWithSwr) {
-      // Only show the loader if swr was used, i.e., don't show the loader for SSR mode.
-      setIsLoading(true)
-    }
-    // When the query changes, revalidate projects.
-    mutate().then(
-      /*
-      ! useSearchRepos().isLoading can't be used for the loading state;
-      ! using initialData make data always truthy so ` useSearchRepos().isLoading` is never true.
-      ! it's the same problem `initialDataRef` workaround is used to solve another consequence of it.
-      */
-      // When the revalidation is done set `isLoading=false`.
-      () => setIsLoading(false),
-    )
-  }, [query, mutate, initialProjects])
-
-  if (isLoading) {
-    return <Loader active>Searching...</Loader>
-  }
+  const { meiliApiKey } = useContext(AuthContext)
+  const { data: projects } = useSWR(query || '*', query =>
+    fetcher(query, meiliApiKey),
+  )
 
   if (projects?.length === 0) {
     return (
@@ -119,12 +70,8 @@ const CardsGrid = ({ initialProjects }) => {
 }
 
 Search.propTypes = {
-  initialProjects: arrayOf(object).isRequired,
+  swrFallback: object.isRequired,
   initialQuery: string,
-}
-
-CardsGrid.propTypes = {
-  initialProjects: arrayOf(object).isRequired,
 }
 
 export default Search
