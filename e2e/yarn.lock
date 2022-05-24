@@ -475,7 +475,7 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-cypress-fail-fast@^3.3.0:
+cypress-fail-fast@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/cypress-fail-fast/-/cypress-fail-fast-3.4.1.tgz#3c4e0647f374ac02fdd4cb8154a3047471ceaad6"
   integrity sha512-74UoLLRSNL9hbNqW4JVTEh7S1BKigrZmLmcxdntDmIDZrZFezb1A7BiSKSEXV8naLJ5xt8zK8YrEctpf0NZn3Q==
@@ -494,10 +494,10 @@ cypress-image-snapshot@^4.0.1:
     pkg-dir "^3.0.0"
     term-img "^4.0.0"
 
-cypress-terminal-report@^3.4.1:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/cypress-terminal-report/-/cypress-terminal-report-3.5.0.tgz#688fd75621ed9c8d4e747bc1d41f81a6729cbe6a"
-  integrity sha512-dfjsOwVm5cGXdxwsMTx/C/zi66n9+rfflRKyZEhDXyqZPC6ffYV9pmr7kazVJuwJ2ws2jt8La3zVrJMeRKnCFQ==
+cypress-terminal-report@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/cypress-terminal-report/-/cypress-terminal-report-3.5.2.tgz#fa4fbc6eca78d4f3db0a3dfc441fd1b98dcc110f"
+  integrity sha512-06y4xTOnztyUOIwk3B+YoAYrK5DSwgCMZhUieUdU3EDXjIb4BgRs/wqPYbfCrH/N5/Yb9aV2hjO95pjzEClwqQ==
   dependencies:
     chalk "^3.0.0"
     fs-extra "^9.0.1"
@@ -505,10 +505,10 @@ cypress-terminal-report@^3.4.1:
     semver "^7.3.5"
     tv4 "^1.3.0"
 
-cypress@^9.4.1:
-  version "9.5.3"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-9.5.3.tgz#7c56b50fc1f1aa69ef10b271d895aeb4a1d7999e"
-  integrity sha512-ItelIVmqMTnKYbo1JrErhsGgQGjWOxCpHT1TfMvwnIXKXN/OSlPjEK7rbCLYDZhejQL99PmUqul7XORI24Ik0A==
+cypress@^9.7.0:
+  version "9.7.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-9.7.0.tgz#bf55b2afd481f7a113ef5604aa8b693564b5e744"
+  integrity sha512-+1EE1nuuuwIt/N1KXRR2iWHU+OiIt7H28jJDyyI4tiUftId/DrXYEwoDa5+kH2pki1zxnA0r6HrUGHV5eLbF5Q==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
