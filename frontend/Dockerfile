@@ -10,7 +10,8 @@ COPY package.json yarn.lock ./
 
 ENV NODE_ENV=production
 RUN yarn --frozen-lockfile
-
 COPY . .
+RUN yarn build
 
-CMD sh -c "yarn build && yarn start"
+
+CMD sh -c "yarn start"
