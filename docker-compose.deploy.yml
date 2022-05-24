@@ -28,6 +28,8 @@ services:
 
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
+    environment:
+      - NODE_ENV=production
     restart: always
 
   redis:
