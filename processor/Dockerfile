@@ -25,7 +25,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install
 RUN pip3 install -r requirements.txt
+RUN yarn install
+RUN yarn tsc
+RUN yarn cp-assets
 
-CMD ["yarn", "start"]
+CMD ["node", "dist/src/server.js"]
