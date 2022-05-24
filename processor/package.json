@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon src/server.ts --watch src/",
-    "start": "ts-node src/server.ts",
+    "start": "node dist/src/server.js",
     "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration/**/*.ts -r ts-node/register --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
