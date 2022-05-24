@@ -40,14 +40,7 @@ async function processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
   const readmeAsHTML = await renderMarkdown(rawMarkdown)
 
-  const readmeFolder = path.relative(inputDir, readmeInputPath)
-
-  const processedReadmeHTML = postProcessMarkdown(
-    readmeAsHTML,
-    ownerName,
-    repoName,
-    readmeFolder,
-  )
+  const processedReadmeHTML = postProcessMarkdown(readmeAsHTML, ownerName, repoName)
 
   await writeFile(readmePath, processedReadmeHTML)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
@@ -86,19 +79,14 @@ async function renderMarkdown(rawMarkdown) {
 /**
  * Make urls absolute not relative
  */
-function postProcessMarkdown(readmeAsHtml, ownerName, repoName, readmeFolder) {
+function postProcessMarkdown(readmeAsHtml, ownerName, repoName) {
   const $ = cheerio.load(readmeAsHtml)
   $('img').each((_, elem) => {
     const img = $(elem)
-    let src = img.attr('src')
+    const src = img.attr('src')
 
     const isRelativeUri = !src.match(/^https?:\/\//)
     if (isRelativeUri) {
-      if (src.startsWith('/')) {
-        src = src.slice(1)
-      } else {
-        src = path.join(readmeFolder, src)
-      }
       const rawUrl = `${GITEA_URL}/${ownerName}/${repoName}/raw/${src}`
       img.attr('src', rawUrl)
       img.attr('data-cy', 'relative-readme-img')
