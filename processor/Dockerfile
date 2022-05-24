@@ -26,6 +26,7 @@ WORKDIR /app
 COPY . .
 
 RUN yarn install
+RUN yarn tsc
 RUN pip3 install -r requirements.txt
 
 CMD ["yarn", "start"]
