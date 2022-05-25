@@ -4,7 +4,8 @@ services:
   frontend:
     build:
       context: frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: base
     environment:
       - NODE_ENV=development
     ports:
