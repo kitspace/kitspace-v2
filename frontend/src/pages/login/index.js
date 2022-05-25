@@ -13,6 +13,7 @@ import {
   Tab,
 } from 'semantic-ui-react'
 import { isEmpty } from 'lodash'
+import getConfig from 'next/config'
 
 import Page from '@components/Page'
 import useForm from '@hooks/useForm'
@@ -23,6 +24,8 @@ import { AuthContext } from '@contexts/AuthContext'
 import OAuthButtons from '@components/OAuthButtons'
 import SignUpFormModel from '@models/SignUpForm'
 import styles from './index.module.scss'
+
+const { KITSPACE_GITEA_URL } = getConfig().publicRuntimeConfig
 
 const Login = () => {
   const [openPane, setOpenPane] = useState(0)
@@ -65,7 +68,7 @@ export const getServerSideProps = composeServerSideProps({
 })
 
 const SignInForm = () => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
+  const endpoint = `${KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
   const { push, query } = useRouter()
   const { setUser, setCsrf } = useContext(AuthContext)
@@ -166,7 +169,7 @@ const SignInForm = () => {
 }
 
 const SignUpForm = ({ openLoginPane }) => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
+  const endpoint = `${KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
   const { setUser, setCsrf } = useContext(AuthContext)
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(

@@ -1,5 +1,6 @@
 import { getFlatProjects } from '@utils/projectPage'
 import useSWR from 'swr'
+import getConfig from 'next/config'
 
 /**
  * @link {https://swr.vercel.app/docs/options}
@@ -25,7 +26,7 @@ import useSWR from 'swr'
  * @property {function(err, key, config, revalidate, revalidateOps)} [onErrorRetry(err, key, config, revalidate, revalidateOps)]: handler for error retry
  * @property {function(a, b)} [compare(a, b)]: comparison function used to detect when returned data has changed, to avoid spurious rerenders. By default, [dequal](https://github.com/lukeed/dequal) is used.
  * */
-const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
+const giteaApiUrl = `${getConfig().publicRuntimeConfig.KITSPACE_GITEA_URL}/api/v1`
 
 /**
  *

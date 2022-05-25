@@ -1,4 +1,5 @@
 import React from 'react'
+import getConfig from 'next/config'
 
 import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
@@ -15,6 +16,8 @@ import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import Custom404 from '@pages/404'
 import * as meili from '@utils/meili'
+
+const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
 const ProjectPage = props => {
   if (props.notFound) {
@@ -50,7 +53,6 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
   const { username, projectName } = query
 
   const repoFullname = `${username}/${projectName}`
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 

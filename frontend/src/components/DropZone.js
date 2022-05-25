@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useMemo } from 'react'
 import { object, func, bool } from 'prop-types'
 import dynamic from 'next/dynamic'
+import getConfig from 'next/config'
 
 // `FileWithPath is used in the `fileCustomValidator` function typing.
 // eslint-disable-next-line no-unused-vars
@@ -10,7 +11,7 @@ import { Button } from 'semantic-ui-react'
 
 import { MBytesToBytes } from '@utils/index'
 
-const maxFileSize = process.env.MAX_FILE_SIZE
+const { MAX_FILE_SIZE } = getConfig().publicRuntimeConfig
 
 /*
  * The notification won't be needed util a file is rejected, so defer importing it until needed,
@@ -87,7 +88,7 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
     onDropAccepted: _onDrop,
     noClick: true,
     getFilesFromEvent: fromEvent,
-    maxSize: MBytesToBytes(maxFileSize),
+    maxSize: MBytesToBytes(MAX_FILE_SIZE),
     minSize: 1,
     maxFiles,
     validator: fileCustomValidator,
@@ -149,7 +150,7 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
 
       largeFiles.forEach(rej => {
         toast.default.error(
-          `"${rej.file.name}" is too large! The maximum file size is ${maxFileSize}`,
+          `"${rej.file.name}" is too large! The maximum file size is ${MAX_FILE_SIZE}`,
         )
       })
 
