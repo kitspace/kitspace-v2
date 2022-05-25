@@ -9,6 +9,7 @@ COPY . .
 RUN yarn --frozen-lockfile
 ENV NODE_ENV=production
 RUN yarn build
+RUN rm -rf node_modules
 
 FROM base AS production
 COPY --from=build /build/.next /app/.next
@@ -18,4 +19,4 @@ COPY next.config.js .
 RUN mkdir src/
 COPY src/server.js src/server.js
 RUN yarn --frozen-lockfile --production
-CMD sh -c "yarn start"
+CMD yarn start
