@@ -23,6 +23,7 @@ COPY --from=build /build/.next .
 COPY --from=dependencies /deps/node_modules .
 COPY package.json .
 COPY next.config.js .
+COPY public .
 RUN mkdir src/
 COPY src/server.js src/server.js
 ENV NODE_ENV=production
