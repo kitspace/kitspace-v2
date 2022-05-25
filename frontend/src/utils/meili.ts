@@ -10,7 +10,7 @@ export function search(
   { meiliApiKey, ...options }: SearchOptions,
 ): Promise<SearchResponse> {
   const client = new MeiliSearch({
-    host: process.env.NEXT_PUBLIC_KITSPACE_MEILISEARCH_URL,
+    host: process.env.KITSPACE_MEILISEARCH_URL,
     apiKey: meiliApiKey,
   })
   const index = client.index('projects')

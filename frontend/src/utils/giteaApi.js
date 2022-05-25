@@ -1,7 +1,7 @@
 import slugify from 'slugify'
 import platformPath from 'path'
 
-const giteaApiUrl = `${process.env.NEXT_PUBLIC_KITSPACE_GITEA_URL}/api/v1`
+const giteaApiUrl = `${process.env.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
 const mode = 'cors'
 const headers = { 'Content-Type': 'application/json' }

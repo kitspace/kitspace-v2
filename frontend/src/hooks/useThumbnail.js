@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-const processorUrl = process.env.NEXT_PUBLIC_KITSPACE_PROCESSOR_URL
+const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 

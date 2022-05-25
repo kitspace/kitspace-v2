@@ -2,7 +2,7 @@ import yaml from 'js-yaml'
 import { updateFile, uploadFile } from '@utils/giteaApi'
 import { flatten } from 'lodash'
 
-const processorUrl = process.env.NEXT_PUBLIC_KITSPACE_PROCESSOR_URL
+const processorUrl = process.env.KITSPACE_PROCESSOR_URL
 
 /**
  * Given an array of kitspace repos return the an array of projects.
