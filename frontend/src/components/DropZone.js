@@ -10,7 +10,7 @@ import { Button } from 'semantic-ui-react'
 
 import { MBytesToBytes } from '@utils/index'
 
-const maxFileSize = process.env.MAX_FILE_SIZE
+const maxFileSize = process.env.NEXT_PUBLIC_MAX_FILE_SIZE
 
 /*
  * The notification won't be needed util a file is rejected, so defer importing it until needed,
@@ -127,7 +127,7 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
     const fileRejections = [...FilePickerRejections, ...FolderPickerRejections]
 
     const largeFiles = fileRejections.filter(
-      // if file size > `MAX_FILE_SIZE`
+      // if file size > `NEXT_PUBLIC_MAX_FILE_SIZE`
       rej => rej.errors[0].code === ErrorCode.FileTooLarge,
     )
 
@@ -141,7 +141,7 @@ const DropZone = ({ onDrop, overrideStyle, allowFolders, allowFiles }) => {
     )
 
     // The notification won't be needed unless of case of trying to upload files
-    // greater than the `MAX_FILE_SIZE` or empty, so defer importing it until needed
+    // greater than the `NEXT_PUBLIC_MAX_FILE_SIZE` or empty, so defer importing it until needed
     import('react-hot-toast').then(toast => {
       emptyFiles.forEach(rej => {
         toast.default.error(`"${rej.file.name}" is empty!`)

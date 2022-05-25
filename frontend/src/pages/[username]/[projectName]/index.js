@@ -50,7 +50,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
   const { username, projectName } = query
 
   const repoFullname = `${username}/${projectName}`
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+  const processorUrl = process.env.NEXT_PUBLIC_KITSPACE_PROCESSOR_URL
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 

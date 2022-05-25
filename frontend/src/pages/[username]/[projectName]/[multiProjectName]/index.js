@@ -17,7 +17,7 @@ const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+  const processorUrl = process.env.NEXT_PUBLIC_KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
   const asPathWithoutQuery = asPath.split('?')[0]

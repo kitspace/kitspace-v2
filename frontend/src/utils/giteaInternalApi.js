@@ -7,7 +7,7 @@
 import { b64toBlob, readFileContent } from '@utils/index'
 import { dirname } from 'path'
 
-const giteaURL = `${process.env.KITSPACE_GITEA_URL}`
+const giteaURL = `${process.env.NEXT_PUBLIC_KITSPACE_GITEA_URL}`
 
 /**
  * Upload a file to gitea server. Just upload, it doesn't commit the files.

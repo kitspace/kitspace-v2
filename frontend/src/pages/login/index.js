@@ -65,7 +65,7 @@ export const getServerSideProps = composeServerSideProps({
 })
 
 const SignInForm = () => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_in`
+  const endpoint = `${process.env.NEXT_PUBLIC_KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
   const { push, query } = useRouter()
   const { setUser, setCsrf } = useContext(AuthContext)
@@ -166,7 +166,7 @@ const SignInForm = () => {
 }
 
 const SignUpForm = ({ openLoginPane }) => {
-  const endpoint = `${process.env.KITSPACE_GITEA_URL}/user/kitspace/sign_up`
+  const endpoint = `${process.env.NEXT_PUBLIC_KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
   const { setUser, setCsrf } = useContext(AuthContext)
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(

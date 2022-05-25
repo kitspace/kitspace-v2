@@ -9,7 +9,7 @@ export const getServerSideProps = async ({ params }) => {
     'utf-8',
   )
 
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+  const processorUrl = process.env.NEXT_PUBLIC_KITSPACE_PROCESSOR_URL
   const projectFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
     `${processorUrl}/status/${projectFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,

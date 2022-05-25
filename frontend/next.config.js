@@ -1,12 +1,6 @@
 module.exports = {
   // we use nginx to compress so we turn off next.js gzip compression
   compress: false,
-  env: {
-    KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
-    KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
-    KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,
-    MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -28,8 +22,8 @@ module.exports = {
   images: {
     domains: [
       // TODO: use a wildcard when https://github.com/vercel/next.js/pull/27345 get merged
-      `gitea.${process.env.KITSPACE_DOMAIN}`,
-      `processor.${process.env.KITSPACE_DOMAIN}`,
+      `gitea.${process.env.NEXT_PUBLIC_KITSPACE_DOMAIN}`,
+      `processor.${process.env.NEXT_PUBLIC_KITSPACE_DOMAIN}`,
       'github.com',
       'raw.githubusercontent.com',
       'secure.gravatar.com',
