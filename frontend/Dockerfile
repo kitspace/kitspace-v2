@@ -18,11 +18,11 @@ COPY yarn.lock .
 RUN yarn --frozen-lockfile
 
 FROM base AS production
-COPY --from=build /build/.next .
-COPY --from=build /deps/node_modules .
+COPY --from=build /build/.next/ .next/
+COPY --from=build /deps/node_modules/ node_modules/
 COPY package.json .
 COPY next.config.js .
-COPY public .
+COPY public/ public/
 RUN mkdir src/
 COPY src/server.js src/server.js
 ENV NODE_ENV=production
