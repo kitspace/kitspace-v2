@@ -5,6 +5,10 @@ FROM base AS git-installed
 ## `git` is needed to install `1-click-bom-minimal` in `package.json`.
 RUN apk --no-cache add git
 
+# The build stage installs the development dependencies, runs the build and
+# then moves to another folder to install the production/non-dev dependencies.
+# The build folder (.next) and the production dependencies (/deps/node_modules)
+# are copied during the next stage resulting in a more minimal image.
 FROM git-installed AS build
 WORKDIR /build
 COPY . .
