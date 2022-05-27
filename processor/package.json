@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "wds --watch --supervise src/server.ts",
     "start": "node dist/src/server.js",
-    "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration/**/*.ts -r ts-node/register --timeout=120000 --exit",
+    "test": "wds --watch=false -- node_modules/.bin/mocha test/integration/**/*.ts --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
     "lint": "eslint src/ test/ --ext ts",
@@ -57,7 +57,6 @@
     "mocha": "^8.2.1",
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
-    "ts-node": "^10.8.0",
     "typescript": "^4.5.5",
     "wds": "^0.11.0"
   }
