@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsc-watch --onSuccess 'node ./dist/src/server.js'",
     "start": "node dist/src/server.js",
-    "test": "yarn tsc && mocha dist/test/integration/**/*.js --timeout=120000 --exit",
+    "test": "yarn tsc && LOG_LEVEL=debug DATA_DIR=/data/test mocha dist/test/integration/**/*.js --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
     "lint": "eslint src/ test/ --ext ts",
