@@ -40,8 +40,9 @@ describe('projects API', function () {
     assert(this.app != null)
   })
 
-  it('404s root', async function () {
-    await this.supertest.get('/').expect(404)
+  it('sends status on root', async function () {
+    const r = await this.supertest.get('/').expect(200)
+    assert(r.body.status, 'No status in response')
   })
 
   it('404s a file', async function () {
