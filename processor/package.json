@@ -6,7 +6,7 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon src/server.ts --watch src/",
+    "dev": "wds --watch --supervise src/server.ts",
     "start": "node dist/src/server.js",
     "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration/**/*.ts -r ts-node/register --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
@@ -61,9 +61,9 @@
     "eslint-plugin-mocha": "^10.0.3",
     "eslint-plugin-prettier": "^4.0.0",
     "mocha": "^8.2.1",
-    "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "wds": "^0.11.0"
   }
 }
