@@ -9,9 +9,6 @@ services:
       - MAX_FILE_SIZE=${MAX_FILE_SIZE}
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - KITSPACE_MEILISEARCH_URL=${KITSPACE_SCHEME}://meilisearch.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}
-    volumes:
-      - frontend-next:/app/.next/
-      - frontend-public:/app/public/
     depends_on:
       - meilisearch
       - gitea
@@ -61,9 +58,6 @@ services:
       - meilisearch
     ports:
       - '${KITSPACE_DEV_PORT}:80'
-    volumes:
-      - frontend-next:/srv/frontend/.next/
-      - frontend-public:/srv/frontend/public/
 
   processor:
     environment:
@@ -100,8 +94,6 @@ services:
       - meilisearch-data:/data.ms
 
 volumes:
-  frontend-next: null
-  frontend-public: null
   gitea-data: null
   postgres-data: null
   processor-data: null
