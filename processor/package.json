@@ -6,9 +6,9 @@
   "license": "AGPL-3.0",
   "private": true,
   "scripts": {
-    "dev": "wds --watch --supervise src/server.ts",
+    "dev": "tsc-watch --onSuccess 'node ./dist/src/server.js'",
     "start": "node dist/src/server.js",
-    "test": "wds --watch=false -- node_modules/.bin/mocha test/integration/**/*.ts --timeout=120000 --exit",
+    "test": "yarn tsc && mocha dist/test/integration/**/*.js --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
     "lint": "eslint src/ test/ --ext ts",
@@ -57,7 +57,7 @@
     "mocha": "^8.2.1",
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
-    "typescript": "^4.5.5",
-    "wds": "^0.11.0"
+    "tsc-watch": "^5.0.3",
+    "typescript": "^4.5.5"
   }
 }
