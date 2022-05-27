@@ -14,6 +14,10 @@ export function createApp(repoDir, { giteaDB = null }) {
 
   app.cleanup = []
 
+  app.get('/', (req, res) => {
+    res.send({ status: 'Kitspace processor is up' })
+  })
+
   createProjectsAPI(app, repoDir, { giteaDB })
   createRemoteAPI(app)
 
