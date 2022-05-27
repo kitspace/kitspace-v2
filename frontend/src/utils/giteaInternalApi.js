@@ -6,8 +6,9 @@
 
 import { b64toBlob, readFileContent } from '@utils/index'
 import { dirname } from 'path'
+import getConfig from 'next/config'
 
-const giteaURL = `${process.env.KITSPACE_GITEA_URL}`
+const giteaURL = getConfig().publicRuntimeConfig.KITSPACE_GITEA_URL
 
 /**
  * Upload a file to gitea server. Just upload, it doesn't commit the files.

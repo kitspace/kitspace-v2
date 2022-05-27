@@ -1,8 +1,9 @@
 import useSWR from 'swr'
+import getConfig from 'next/config'
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
-const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
 /**
  * A hook to get the kitspace-yaml.json

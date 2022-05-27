@@ -22,12 +22,15 @@ services:
       - RUN_CERTBOT=${CERTBOT_ENABLED}
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN},meilisearch.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
-    restart: always
     volumes:
       - /etc/letsencrypt
+    restart: always
 
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
+    restart: always
+
+  redis:
     restart: always
 
   meilisearch:

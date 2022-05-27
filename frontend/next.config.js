@@ -1,7 +1,7 @@
 module.exports = {
   // we use nginx to compress so we turn off next.js gzip compression
   compress: false,
-  env: {
+  publicRuntimeConfig: {
     KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
     KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
     KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,

@@ -1,5 +1,6 @@
 import React from 'react'
 import { bool } from 'prop-types'
+import getConfig from 'next/config'
 
 import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
@@ -13,11 +14,12 @@ import {
 import SharedProjectPage from '@components/SharedProjectPage'
 import Custom404 from '@pages/404'
 
+const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+
 const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
   const asPathWithoutQuery = asPath.split('?')[0]

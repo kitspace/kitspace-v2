@@ -1,6 +1,7 @@
 import useSWR from 'swr'
+import getConfig from 'next/config'
 
-const processorUrl = process.env.KITSPACE_PROCESSOR_URL
+const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 

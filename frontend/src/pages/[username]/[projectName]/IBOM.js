@@ -1,8 +1,11 @@
 import React from 'react'
 import { promises as fs } from 'fs'
 import path from 'path'
+import getConfig from 'next/config'
 
 import IBOM from '@components/Board/IBOM'
+
+const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(
@@ -10,7 +13,6 @@ export const getServerSideProps = async ({ params }) => {
     'utf-8',
   )
 
-  const processorUrl = process.env.KITSPACE_PROCESSOR_URL
   const projectFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
     `${processorUrl}/status/${projectFullname}/HEAD/interactive_bom.json`,
