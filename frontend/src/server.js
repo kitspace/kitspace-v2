@@ -2,12 +2,10 @@ const express = require('express')
 const morgan = require('morgan')
 const next = require('next')
 const fetch = require('node-fetch')
-const conf = require('../next.config.js')
-
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
-const app = next({ dev, conf })
 
+const app = next({ dev, port })
 const nextHandler = app.getRequestHandler()
 
 main().catch(e => {
