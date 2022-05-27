@@ -11,7 +11,6 @@ export const AuthContext = createContext({
   setUser: () => {},
   setCsrf: () => {},
   csrf: '',
-  meiliApiKey: '',
 })
 
 const AuthProvider = ({ children, initialSession }) => {
@@ -21,11 +20,8 @@ const AuthProvider = ({ children, initialSession }) => {
   const { push } = useRouter()
 
   useEffect(() => {
-    sessionStorage.setItem(
-      'session',
-      JSON.stringify({ ...initialSession, user, csrf }),
-    )
-  }, [user, csrf, initialSession])
+    sessionStorage.setItem('session', JSON.stringify({ user, csrf }))
+  }, [user, csrf])
 
   const deAuthorize = async () => {
     setUser(null)
@@ -43,7 +39,6 @@ const AuthProvider = ({ children, initialSession }) => {
         setUser,
         setCsrf,
         csrf,
-        meiliApiKey: initialSession.meiliApiKey,
       }}
     >
       {children}

@@ -1,23 +1,21 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { object, string } from 'prop-types'
 import useSWR, { SWRConfig } from 'swr'
 
-import { AuthContext } from '@contexts/AuthContext'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import { userExists } from '@utils/giteaApi'
-import * as meili from '@utils/meili'
+import { meiliIndex } from '@utils/meili'
 import styles from './username.module.scss'
 
-const fetcher = async (username, meiliApiKey) => {
-  const searchResult = await meili.search('*', {
-    meiliApiKey,
+const fetchUserProjects = async username => {
+  const searchResult = await meiliIndex.search('*', {
     filter: `ownerName = ${username}`,
   })
   return searchResult.hits
 }
 
-export const getServerSideProps = async ({ params, req }) => {
+export const getServerSideProps = async ({ params }) => {
   const exists = await userExists(params.username)
   if (!exists) {
     return {
@@ -25,7 +23,7 @@ export const getServerSideProps = async ({ params, req }) => {
     }
   }
 
-  const hits = await fetcher(params.username, req.session.meiliApiKey)
+  const hits = await fetchUserProjects(params.username)
 
   return {
     props: {
@@ -51,10 +49,7 @@ UserPage.propTypes = {
 }
 
 const User = ({ username }) => {
-  const { meiliApiKey } = useContext(AuthContext)
-  const { data: userProjects } = useSWR(username, username =>
-    fetcher(username, meiliApiKey),
-  )
+  const { data: userProjects } = useSWR(username, fetchUserProjects)
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>

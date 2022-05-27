@@ -1,26 +1,25 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { object, string } from 'prop-types'
 import useSWR, { SWRConfig } from 'swr'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
-import { AuthContext } from '@contexts/AuthContext'
 import ProjectCard from '@components/ProjectCard'
-import * as meili from '@utils/meili'
+import { meiliIndex } from '@utils/meili'
 
 import styles from './index.module.scss'
 
-const fetcher = async (query, meiliApiKey) => {
-  const searchResult = await meili.search(query, { meiliApiKey })
+const fetchSearch = async query => {
+  const searchResult = await meiliIndex.search(query)
   return searchResult.hits
 }
 
-export const getServerSideProps = async ({ query, req }) => {
+export const getServerSideProps = async ({ query }) => {
   // '*' or '' means return everything but '' can't be used as a SWR cache key
   const { q = '*' } = query
 
-  const hits = await fetcher(q, req.session.meiliApiKey)
+  const hits = await fetchSearch(q)
 
   return {
     props: {
@@ -44,10 +43,7 @@ const Search = ({ swrFallback, initialQuery }) => {
 
 const CardsGrid = () => {
   const { query } = useSearchQuery()
-  const { meiliApiKey } = useContext(AuthContext)
-  const { data: projects } = useSWR(query || '*', query =>
-    fetcher(query, meiliApiKey),
-  )
+  const { data: projects } = useSWR(query || '*', fetchSearch)
 
   if (projects?.length === 0) {
     return (
