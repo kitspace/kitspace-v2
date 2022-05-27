@@ -4,13 +4,16 @@ import log from 'loglevel'
 import * as path from 'path'
 
 import { GiteaDB } from './giteatDB'
-import { addProjectToQueues, stopQueues } from './queues'
+import { createQueues } from './queues'
 
 interface WatchOptions {
   giteaDB: GiteaDB | null
+  prefix?: string
 }
-export function watch(repoDir, { giteaDB }: WatchOptions) {
+export function watch(repoDir, { giteaDB, prefix }: WatchOptions) {
   let dirWatchers = {}
+
+  const { addProjectToQueues, stopQueues } = createQueues({ prefix })
 
   // watch repositories for file-system events and process the project
   const handleAddDir = gitDir => {

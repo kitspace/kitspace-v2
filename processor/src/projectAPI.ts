@@ -9,7 +9,7 @@ import events from './events'
 
 const filesDir = path.join(DATA_DIR, 'files')
 
-export function createProjectsAPI(app, repoDir, { giteaDB }) {
+export function createProjectsAPI(app, repoDir, { giteaDB, prefix }) {
   const fileStatus = {}
   const redirects = {}
 
@@ -32,7 +32,7 @@ export function createProjectsAPI(app, repoDir, { giteaDB }) {
     log.debug('failed', x, error)
   })
 
-  const unwatch = watcher.watch(repoDir, { giteaDB })
+  const unwatch = watcher.watch(repoDir, { giteaDB, prefix })
 
   app.cleanup.push(unwatch)
 

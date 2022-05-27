@@ -17,14 +17,14 @@ interface JobProgress {
   error?: Error
 }
 
-export function createWorkers({ giteaDB = null }) {
+export function createWorkers({ giteaDB = null, prefix }) {
   const workers = [
-    addWorker('writeKitspaceYaml', writeKitspaceYaml),
-    addWorker('processKicadPCB', processKicadPCB),
-    addWorker('processSchematics', processSchematics),
-    addWorker('processPCB', processPCB),
-    addWorker('processInfo', processInfo),
-    addWorker('processIBOM', processIBOM),
+    addWorker('writeKitspaceYaml', writeKitspaceYaml, { prefix }),
+    addWorker('processKicadPCB', processKicadPCB, { prefix }),
+    addWorker('processSchematics', processSchematics, { prefix }),
+    addWorker('processPCB', processPCB, { prefix }),
+    addWorker('processInfo', processInfo, { prefix }),
+    addWorker('processIBOM', processIBOM, { prefix }),
   ]
   let dbSubscription
   if (giteaDB) {

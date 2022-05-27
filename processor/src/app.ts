@@ -9,7 +9,7 @@ interface KitspaceProcessorApp extends express.Express {
   stop?: () => Promise<void>
 }
 
-export function createApp(repoDir, { giteaDB = null }) {
+export function createApp(repoDir, { giteaDB = null, prefix = null }) {
   const app: KitspaceProcessorApp = express()
 
   app.cleanup = []
@@ -18,10 +18,10 @@ export function createApp(repoDir, { giteaDB = null }) {
     res.send({ status: 'Kitspace processor is up' })
   })
 
-  createProjectsAPI(app, repoDir, { giteaDB })
+  createProjectsAPI(app, repoDir, { giteaDB, prefix })
   createRemoteAPI(app)
 
-  const stopWorkers = createWorkers({ giteaDB })
+  const stopWorkers = createWorkers({ giteaDB, prefix })
   app.cleanup.push(stopWorkers)
 
   app.stop = async () => {
