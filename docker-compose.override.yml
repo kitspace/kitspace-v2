@@ -15,6 +15,7 @@ services:
       - /etc/hosts:/etc/hosts:ro
       - ./frontend:/app
       - frontend-node_modules:/app/node_modules
+      - frontend-next:/app/.next
     command: /bin/sh --verbose -c 'yarn install && yarn dev'
 
   gitea:
@@ -63,4 +64,5 @@ services:
 
 volumes:
   frontend-node_modules:
+  frontend-next:
   processor-node_modules:

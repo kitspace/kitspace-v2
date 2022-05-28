@@ -1,20 +1,25 @@
-import { MeiliSearch } from 'meilisearch'
-import { SearchParams, SearchResponse } from 'meilisearch/src/types'
+import { MeiliSearch, Index } from 'meilisearch'
 import getConfig from 'next/config'
-const { KITSPACE_MEILISEARCH_URL } = getConfig().publicRuntimeConfig
 
-export type SearchOptions = {
-  meiliApiKey: string
-} & SearchParams
+const { KITSPACE_MEILISEARCH_URL, meiliApiKey } = getConfig().publicRuntimeConfig
 
-export function search(
-  query: string,
-  { meiliApiKey, ...options }: SearchOptions,
-): Promise<SearchResponse> {
+interface NoApiKeyIndex {
+  search: () => Promise<never>
+}
+let index: Index<any> | NoApiKeyIndex = {
+  async search() {
+    throw Error('Search performed but meiliApiKey was not set')
+  },
+}
+
+if (meiliApiKey) {
   const client = new MeiliSearch({
     host: KITSPACE_MEILISEARCH_URL,
     apiKey: meiliApiKey,
   })
-  const index = client.index('projects')
-  return index.search(query, options)
+  index = client.index('projects')
+} else {
+  console.warn('No meiliApiKey available.')
 }
+
+export const meiliIndex = index

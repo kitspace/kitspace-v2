@@ -15,7 +15,7 @@ import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import Custom404 from '@pages/404'
-import * as meili from '@utils/meili'
+import { meiliIndex } from '@utils/meili'
 
 const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
@@ -82,8 +82,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
     const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
 
     if (isMultiProject && finishedProcessing) {
-      const searchResult = await meili.search('*', {
-        meiliApiKey: session.meiliApiKey,
+      const searchResult = await meiliIndex.search('*', {
         filter: `multiParentId = ${repo.id}`,
       })
       return {
