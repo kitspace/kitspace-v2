@@ -3,7 +3,7 @@
 _work in progress_
 
 [![Docker workflow status badge](https://github.com/kitspace/kitspace-v2/actions/workflows/docker.yml/badge.svg?branch=master)](https://github.com/kitspace/kitspace-v2/actions/workflows/docker.yml?query=branch%3Amaster)
-[![kitspace-v2](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/d8hk55/master&style=plastic&logo=cypress)](https://dashboard.cypress.io/projects/d8hk55/runs)
+[![kitspace-v2](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/d8hk55&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/d8hk55/runs)
 
 Re-writing [Kitspace](https://github.com/kitspace/kitspace) to use [Gitea](https://github.com/go-gitea/gitea) as a Git and authentication service.
 
