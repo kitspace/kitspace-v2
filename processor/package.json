@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsc-watch --onSuccess 'node ./dist/src/server.js'",
     "start": "node dist/src/server.js",
-    "test": "yarn tsc && LOG_LEVEL=debug DATA_DIR=/data/test mocha dist/test/integration/**/*.js --timeout=120000 --exit",
+    "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration/**/*.ts -r jiti/register --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
     "lint": "eslint src/ test/ --ext ts",
@@ -54,6 +54,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-mocha": "^10.0.3",
     "eslint-plugin-prettier": "^4.0.0",
+    "jiti": "^1.13.0",
     "mocha": "^8.2.1",
     "prettier": "^2.5.1",
     "supertest": "^6.2.2",
