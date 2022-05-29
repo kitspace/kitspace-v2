@@ -9,16 +9,17 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/faker": "^5.1.0",
-    "cypress": "^9.4.1",
-    "cypress-fail-fast": "^3.3.0",
+    "cypress": "^9.7.0",
+    "cypress-fail-fast": "^3.4.1",
     "cypress-image-snapshot": "^4.0.1",
-    "cypress-terminal-report": "^3.4.1",
+    "cypress-terminal-report": "^3.5.2",
     "eslint": ">=7.0.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "3.4.0",
     "faker": "^5.1.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "wait-on": "^6.0.1"
   }
 }
