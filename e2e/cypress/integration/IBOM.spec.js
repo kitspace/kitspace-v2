@@ -59,7 +59,7 @@ describe('IBOM page', () => {
     )
   })
 
-  it('should redirect to the multi project page (normal project)', () => {
+  it('should redirect to the project page (normal project)', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -85,16 +85,41 @@ describe('IBOM page', () => {
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     // Go to IBOM page for a single (not multi) project
+    cy.get('[data-cy=ibom]').should('be.visible')
     cy.visit(`${username}/${normalRepoName}/IBOM`)
 
     // Click on the title
     cy.get('#title').click()
 
-    // It should redirect to the subproject page
+    // It should redirect to the project page
     cy.url({ timeout: 20_000 }).should(
       'eq',
       `${Cypress.config().baseUrl}/${username}/${normalRepoName}`,
     )
+  })
+
+  it('should not render `Assembly Guide` button for projects with `omit-ibom: true', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+    /* Migrate a repo with `omit-ibom` set to `true` */
+    cy.forceVisit('/projects/new')
+    const omittedIbomRepoURL =
+      'https://github.com/kitspace-forks/solarbird_shenzen_rdy/'
+    const repoName = 'solarbird_shenzen_rdy'
+    cy.get('[data-cy=sync-field]').type(omittedIbomRepoURL)
+    cy.get('button').contains('Sync').click()
+    // Wait for redirection for project page
+    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 100_000 }).should('be.visible')
+    // The ibom button shouldn't get rendered for this project.
+    cy.get('[data-cy=ibom]').should('not.exist')
   })
 })
 

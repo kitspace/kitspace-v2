@@ -15,6 +15,13 @@ async function processIBOM(
   { inputDir, kitspaceYaml, outputDir, repoName, subprojectName }: Partial<JobData>,
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
+
+  const userOmittedIBOM = kitspaceYaml["omit-ibom"] === true  // we need strong equality here ot minimize yaml surprises.
+  if (userOmittedIBOM) {
+    job.updateProgress({status: 'failed', file: ibomOutputPath, error: new Error('Omitted!')})
+    return
+  }
+
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
   if (await exists(ibomOutputPath)) {
