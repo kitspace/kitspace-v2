@@ -2,6 +2,6 @@
 cypress/videos
 cypress/screenshots
 cypress/fixtures/auto-gen
-
+cypress/snapshots/IBOM.visual.spec.js/__diff_output__/
 node_modules
 yarn-error.log

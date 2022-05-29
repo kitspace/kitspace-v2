@@ -2,7 +2,7 @@ import faker from 'faker'
 
 import { getFakeUsername } from '../support/getFakeUsername'
 
-describe.skip('Regression test for IBOM ', () => {
+describe('Regression test for IBOM ', () => {
   before(() => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
