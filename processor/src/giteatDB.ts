@@ -9,6 +9,7 @@ export interface RepoInfo {
   is_empty: boolean
   owner_name: string
   name: string
+  description: string
 }
 
 enum TaskType {
@@ -34,7 +35,7 @@ export const giteaDB: GiteaDB = {
    */
   async getRepoInfo(ownerName, repoName) {
     const rows = await sql<RepoInfo[]>`
-      SELECT id, is_mirror, is_empty, owner_name, name
+      SELECT id, is_mirror, is_empty, owner_name, name, description
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
 

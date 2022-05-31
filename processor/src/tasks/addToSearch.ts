@@ -3,6 +3,7 @@ import log from 'loglevel'
 import cheerio from 'cheerio'
 
 import { JobData } from '../jobData'
+import { giteaDB } from '../giteatDB'
 
 const meili = new MeiliSearch({
   host: 'http://meilisearch:7700',
@@ -57,7 +58,7 @@ export default async function addToSearch(
   const document = {
     id: searchId,
     name: subprojectName ?? repoName,
-    summary: kitspaceYaml.summary || '',
+    summary: kitspaceYaml.summary || await getRepoDescription(ownerName, repoName),
     bom: {
       lines: bom?.lines || [],
     },
@@ -105,11 +106,22 @@ function getReadmeAsText(readmeHTML) {
   return $.text()
 }
 
+async function getRepoDescription(ownerName: string, repoName: string) {
+  let description = ''
+  try {
+     const repo = await giteaDB.getRepoInfo(ownerName, repoName)
+     description = repo.description
+  } catch(e) {
+    log.warn("meilisearch: couldn't get repo description, falling back to empty string")
+  }
+  return description
+}
+
 /*
  * Subscribe to deletions on the repository table in the GiteaDB and delete
  * search index documents accordingly.
  */
-export function continuallySyncDeletions(giteaDB) {
+export function continuallySyncDeletions() {
   return giteaDB.subscribeToRepoDeletions(async row => {
     const result = await index.search('', {
       filter: `(id = ${row.id}) OR (multiParentId = ${row.id})`,

@@ -28,7 +28,7 @@ export function createWorkers({ giteaDB = null }) {
   ]
   let dbSubscription
   if (giteaDB) {
-    dbSubscription = search.continuallySyncDeletions(giteaDB)
+    dbSubscription = search.continuallySyncDeletions()
   }
   const stop = async () => {
     await Promise.all(workers.map(worker => worker.close()))
