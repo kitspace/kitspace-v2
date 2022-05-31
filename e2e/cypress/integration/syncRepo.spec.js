@@ -66,4 +66,31 @@ describe('Syncing a project behavior validation', () => {
         assert(href === syncedRepoUrl, 'The href value is the synced repo url'),
       )
   })
+
+  it('should fall back to repo description when there is no `summary` key in `kitspace.yaml`', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    const repoName = 'ArduTouch'
+    const syncedRepoUrl = 'https://github.com/kitspace-forks/ArduTouch'
+
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+
+    cy.forceVisit('/projects/new')
+
+    // Migrate the repo
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
+    cy.get('button').contains('Sync').click()
+
+    // Wait for redirection for project page
+    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+
+    // Assert it fallback to repo description
+    cy.get('[data-cy=project-description]').should('contain', 'ARDUTOUCH ')
+  })
 })
