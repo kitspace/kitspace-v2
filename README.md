@@ -15,6 +15,221 @@ Allow people to:
 2. Still import/sync external Git repositories
 3. Edit/make improvements and propose these changes to project creators
 
+## Adding your project
+
+### kitspace.yaml format
+
+Currently the `kitspace.yaml` makes use of the following fields:
+
+```yaml
+summary: A description for your project
+
+site: https://example.com # A site you would like to link to (include http:// or https://)
+
+color:
+  purple # for example
+  # The solder resist color of the preview rendering. If left undefined "green" is used. Can be one of:
+  # - green
+  # - red
+  # - blue
+  # - black
+  # - white
+  # - orange
+  # - purple
+  # - yellow
+
+bom:
+  my-bom.xlsx
+  # A path to your 1-click-bom in case it isn't `1-click-bom.tsv`. Supported extensions are:
+  # - .tsv
+  # - .csv
+  # - .ods
+  # - .xlsx
+  # Check out https://github.com/kitspace/1clickBOM#readme for more details
+
+gerbers: my/gerber/folder # A path to your folder of gerbers in case it isn't `gerbers/`.
+
+eda:
+  type: kicad # or eagle
+  pcb: path/to/your/file.kicad_pcb # your/eagle.brd
+
+readme: my/special/readme.md # A path to your README file in case it isn't in the repository root directory.
+
+pcb-services:
+  [aisler, pcbway, oshpark, jlcpcb]
+  # A list of the PCB services you would like to have included on your
+  # page. If left undefined all are included. Otherwise ust be a list of Kitspace
+  # sponsors, possible values are:
+  #      - aisler
+  #      - pcbway
+  #      - oshpark
+  #      - jlcpcb
+
+ibom-enabled: true # Enable InteractiveHtmlBom (https://github.com/openscopeproject/InteractiveHtmlBom)
+
+multi: # Identifier field only used if the repository contains multiple projects. See below for details.
+```
+
+Paths should be in UNIX style (i.e. use `/` not `\`) and relative to the root
+of your repository. The YAML format is pretty straight forward but if you need
+to know more check the example below and [the YAML website][6]. Use [this YAML
+validator][yamllint] to be extra sure that your `kitspace.yaml` is valid.
+
+### KiCad PCB
+
+If you you used KiCad for your design you can also specify a KiCad PCB file to use by adding an `eda` field.
+
+```yaml
+eda:
+  type: kicad
+  pcb: path/to/your/file.kicad_pcb
+```
+
+If your project has a KiCad PCB file, and interactive assembly guide
+for the board will be created using the [Interactive HTML BOM
+plugin](https://github.com/openscopeproject/InteractiveHtmlBom) from
+the [Open Scope Project](https://github.com/openscopeproject).
+
+If both `eda` and `gerbers` are present the Gerber files will be used.
+
+### Some examples
+
+Check out the repo links of the projects listed on
+[kitspace.org](https://kitspace.org) already. The minimum required file tree is
+something like :
+
+```
+.
+├── 1-click-bom.tsv
+└── gerbers
+    ├── example.cmp
+    ├── example.drd
+    ├── example.dri
+    ├── example.gko
+    ├── example.gpi
+    ├── example.gto
+    ├── example.plc
+    ├── example.sol
+    ├── example.stc
+    └── example.sts
+```
+
+A more advanced example could be something like:
+
+```
+.
+├── kitspace.yaml
+└── manufacture
+    ├── advanced-example-BOM.tsv
+    └── gerbers-and-drills
+        ├── advanced-example-B_Adhes.gba
+        ├── advanced-example-B_CrtYd.gbr
+        ├── advanced-example-B_Cu.gbl
+        ├── advanced-example-B_Fab.gbr
+        ├── advanced-example-B_Mask.gbs
+        ├── advanced-example-B_Paste.gbp
+        ├── advanced-example-B_SilkS.gbo
+        ├── advanced-example.drl
+        ├── advanced-example-Edge_Cuts.gbr
+        ├── advanced-example-F_Adhes.gta
+        ├── advanced-example-F_CrtYd.gbr
+        ├── advanced-example-F_Cu.gtl
+        ├── advanced-example-F_Fab.gbr
+        ├── advanced-example-F_Mask.gts
+        ├── advanced-example-F_Paste.gtp
+        └── advanced-example-F_SilkS.gto
+```
+
+with `kitspace.yaml` containing:
+
+```yaml
+summary: A more advanced example
+site: https://example.com
+color: red
+bom: manufacture/advanced-example-BOM.tsv
+gerbers: manufacture/gerbers-and-drills
+```
+
+#### The multi field
+
+Kitspace supports multiple projects in one repository with the `multi` field. When multiple projects exist, `multi` will always be the first field in the `kitspace.yaml`, with the paths to your projects folder nested underneath.
+
+```
+├── kitspace.yaml
+├── project_one
+│   ├── 1-click-bom.tsv
+│   ├── README.md
+│   └── gerbers
+│       ├── example.cmp
+│       ├── example.drd
+│       ├── example.dri
+│        ...
+│       ├── example.stc
+│       └── example.sts
+└── project_two
+    ├── 1-click-bom.tsv
+    ├── README.md
+    └── gerbers
+        ├── example.cmp
+        ├── example.drd
+        ├── example.dri
+         ...
+        ├── example.stc
+        └── example.sts
+
+```
+
+with `kitspace.yaml` containing:
+
+```yaml
+multi:
+  project_one:
+    summary: First project in a repository.
+    color: blue
+    site: https://example-one.com
+  project_two:
+    summary: Second project in a repository.
+    color: red
+    site: https://example-two.com
+```
+
+If you want to use custom paths for the `readme`, `bom`, or `gerbers` then note that these are from the root of the repository.
+
+E.g.
+
+```
+├── kitspace.yaml
+├── manufacturing_outputs
+│   └── project_one_gerbers
+│       ├── example.cmp
+│       ├── example.drd
+│       ├── example.dri
+│        ...
+│       ├── example.stc
+│       └── example.sts
+├── project_one
+│   ├── documentation
+│   │   └── README.md
+    └── BOM.csv
+└── project_two
+    ...
+```
+
+```yaml
+multi:
+  project_one:
+    readme: project_one/documentation/README.md
+    bom: project_one/BOM.csv
+    gerbers: manufacturing_outputs/project_one_gerbers
+  project_two: ...
+```
+
+### Terms and Conditions for Adding a Project
+
+1. We (Kitspace developers) do not claim any ownership over your work, it remains yours.
+2. By submitting your project you give us permission to host copies of your files for other people to download.
+3. If you change your mind, you can remove your project any time by removing the project.
+
 ## Development
 
 ### Set Up

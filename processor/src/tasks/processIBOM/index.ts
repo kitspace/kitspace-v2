@@ -15,6 +15,13 @@ async function processIBOM(
   { inputDir, kitspaceYaml, outputDir, repoName, subprojectName }: Partial<JobData>,
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
+
+  const disableIBOM = kitspaceYaml["ibom-enabled"] === false  // we need strong equality here ot minimize yaml surprises.
+  if (disableIBOM) {
+    job.updateProgress({status: 'failed', file: ibomOutputPath, error: new Error('Disabled!')})
+    return
+  }
+
   job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
   if (await exists(ibomOutputPath)) {

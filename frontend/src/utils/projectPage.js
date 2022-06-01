@@ -140,12 +140,8 @@ export const getIsProcessingDone = async assetsPath => {
     'images/bottom.svg',
     'images/top.svg',
     'images/top.png',
-    'images/top-large.png',
-    'images/top-meta.png',
-    'images/top-with-background.png',
     '1-click-BOM.tsv',
     'bom-info.json',
-    'interactive_bom.json',
     'readme.html',
   ]
 
