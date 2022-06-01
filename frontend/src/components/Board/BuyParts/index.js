@@ -112,28 +112,42 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
     }))
     return OneClickBom.writeTSV(linesMult)
   }
-
+  const hasPurchasableParts = retailerButtons.length !== 0
   return (
     <div className={styles.BuyParts} data-cy="buy-parts">
       <Header as="h3" attached="top" textAlign="center">
         <Icon className={styles.BuyPartsIcon} name="shopping basket" />
         Buy Parts
       </Header>
-      <InstallPrompt extensionPresence={extensionPresence} />
-      <AdjustQuantity
-        buyAddPercent={buyAddPercent}
-        buyMultiplier={buyMultiplier}
-        setBuyAddPercent={v => setBuyAddPercent(v)}
-        setBuyMultiplier={v => setBuyMultiplier(v)}
-      />
-      <Segment attached className={styles.buttonSegment}>
-        {retailerButtons}
-      </Segment>
-      <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
-      <DirectStores items={lines} multiplier={mult} />
+      {hasPurchasableParts ? (
+        <>
+          <InstallPrompt extensionPresence={extensionPresence} />
+          <AdjustQuantity
+            buyAddPercent={buyAddPercent}
+            buyMultiplier={buyMultiplier}
+            setBuyAddPercent={v => setBuyAddPercent(v)}
+            setBuyMultiplier={v => setBuyMultiplier(v)}
+          />
+          <Segment attached className={styles.buttonSegment}>
+            {retailerButtons}
+          </Segment>
+          <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
+          <DirectStores items={lines} multiplier={mult} />
+        </>
+      ) : (
+        <NoPurchasableParts />
+      )}
     </div>
   )
 }
+
+const NoPurchasableParts = () => (
+  <Segment attached disabled className={styles.buttonSegment}>
+    <p className={styles.NoPurchasablePartsText}>
+      No parts to buy have been specified in this project&apos;s BOM yet.
+    </p>
+  </Segment>
+)
 
 const AdjustQuantity = ({
   buyMultiplier,
