@@ -79,6 +79,27 @@ const urlToName = url => {
 }
 
 /**
+ * Get the git service from the url.
+ * The supported services in the api are `github`, `gitea`, `gitlab`, and `git`. See https://try.gitea.io/api/swagger#/repository/repoMigrate
+ * @param {string} url
+ * @returns {'github' | 'gitlab' | 'gitea' | 'git'} the service type.
+ */
+export const getGitServiceFromUrl = url => {
+  const hostName = new URL(url).hostname
+
+  switch (hostName) {
+    case 'github.com':
+      return 'github'
+    case 'gitlab.com':
+      return 'gitlab'
+    case 'try.gitea.io':
+      return 'gitea'
+    default:
+      return 'git'
+  }
+}
+
+/**
  * Mirror an existing remote git repo to a Gitea repo
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
@@ -87,6 +108,7 @@ const urlToName = url => {
  */
 export const mirrorRepo = async (remoteRepo, uid, csrf) => {
   const repoName = urlToName(remoteRepo)
+  const service = getGitServiceFromUrl(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate`
   const giteaOptions = {
     clone_addr: remoteRepo,
@@ -95,8 +117,10 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     mirror: true,
     wiki: false,
     private: false,
-    pull_requests: true,
+    pull_requests: false,
     releases: true,
+    issues: false,
+    service,
   }
 
   return fetch(endpoint, {

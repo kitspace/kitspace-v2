@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { Loader, Message } from 'semantic-ui-react'
 
 import Page from '@components/Page'
-import { useMigrationStatus, useRepo } from '@hooks/Gitea'
+import { useMigrationStatus } from '@hooks/Gitea'
 import PageElements from './elements'
 import useProcessingStatus from '@hooks/useProcessingStatus'
 import { bool, object, string } from 'prop-types'
@@ -11,9 +11,6 @@ import { bool, object, string } from 'prop-types'
 const SharedProjectPage = props => {
   const { reload } = useRouter()
   const title = `${props.projectName} on Kitspace`
-  const { repo: project } = useRepo(props.projectFullname, {
-    initialData: props.repo,
-  })
 
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
   // If the repo is migrating, poll for update every second, otherwise use default config.
@@ -86,7 +83,7 @@ const SharedProjectPage = props => {
       ) : null}
       <PageElements
         {...props}
-        description={project.description || props.description}
+        description={props.description}
         owner={props.username}
         previewOnly={props.isSynced}
       />
