@@ -156,7 +156,7 @@ export const getIsProcessingDone = async assetsPath => {
   }
 
   const kitspaceYAMLBody = await kitspaceYAML.json()
-  const isMultiProject = kitspaceYAMLBody.hasOwnProperty('multi')
+  const isMultiProject = kitspaceYAMLBody.multi != null
 
   if (isMultiProject) {
     const multiProjectsNames = Object.keys(kitspaceYAMLBody.multi)

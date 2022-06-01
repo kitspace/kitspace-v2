@@ -79,7 +79,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       canCommit(repoFullname, session?.user?.username),
     ])
 
-    const isMultiProject = kitspaceYAML.hasOwnProperty('multi')
+    const isMultiProject = kitspaceYAML.multi != null
 
     if (isMultiProject && finishedProcessing) {
       const searchResult = await meiliIndex.search('*', {
