@@ -98,7 +98,7 @@ describe('IBOM page', () => {
     )
   })
 
-  it('should not render `Assembly Guide` button for projects with `omit-ibom: true', () => {
+  it('should not render `Assembly Guide` button for projects with `ibom-enabled: false', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -107,10 +107,10 @@ describe('IBOM page', () => {
     cy.get('[data-cy=user-menu]')
     /* Migrate a repo with `omit-ibom` set to `true` */
     cy.forceVisit('/projects/new')
-    const omittedIbomRepoURL =
+    const IBOMDisabledRepoURL =
       'https://github.com/kitspace-forks/solarbird_shenzen_rdy/'
     const repoName = 'solarbird_shenzen_rdy'
-    cy.get('[data-cy=sync-field]').type(omittedIbomRepoURL)
+    cy.get('[data-cy=sync-field]').type(IBOMDisabledRepoURL)
     cy.get('button').contains('Sync').click()
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
