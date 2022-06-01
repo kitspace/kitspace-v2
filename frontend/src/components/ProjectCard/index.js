@@ -39,7 +39,9 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
             {name}
           </Card.Header>
           <Card.Meta className={styles.cardText}>{ownerName}</Card.Meta>
-          <Card.Description className={styles.cardText}>{summary}</Card.Description>
+          <Card.Description className={styles.cardDescription}>
+            {summary}
+          </Card.Description>
         </Card.Content>
       </Card>
     </Link>

@@ -16,3 +16,17 @@
   white-space:nowrap;
   text-overflow: ellipsis;
 }
+
+.cardDescription {
+  /*
+  `line-clamp` autoprefixing isn't supported yet, see https://github.com/postcss/autoprefixer/issues/1322.
+  */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  display: -webkit-box;
+  height: 96px;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
