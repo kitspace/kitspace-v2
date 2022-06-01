@@ -65,6 +65,8 @@ pcb-services:
   #      - oshpark
   #      - jlcpcb
 
+ibom-enabled: true # Enable InteractiveHtmlBom (https://github.com/openscopeproject/InteractiveHtmlBom)
+
 multi: # Identifier field only used if the repository contains multiple projects. See below for details.
 ```
 
