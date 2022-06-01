@@ -119,7 +119,7 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     private: false,
     pull_requests: false,
     releases: true,
-    issues: true,
+    issues: false,
     service,
   }
 
