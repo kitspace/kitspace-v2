@@ -105,7 +105,6 @@ function getReadmeAsText(readmeHTML) {
   return $.text()
 }
 
-
 /*
  * Subscribe to deletions on the repository table in the GiteaDB and delete
  * search index documents accordingly.

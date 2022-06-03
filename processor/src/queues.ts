@@ -7,7 +7,6 @@ import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
-import { GiteaDB } from './giteatDB'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: true,

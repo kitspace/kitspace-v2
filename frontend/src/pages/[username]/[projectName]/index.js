@@ -118,7 +118,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       kitspaceYAMLExists,
       boardShowcaseAssetsExist: gerberInfoExists,
       finishedProcessing,
-      description: kitspaceYAML?.summary || repo?.description,
+      description: kitspaceYAML.summary,
       originalUrl: repo?.original_url,
     }
   }
