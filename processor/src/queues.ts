@@ -7,6 +7,7 @@ import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
+import { GiteaDB } from './giteatDB'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: true,
@@ -50,12 +51,14 @@ function createJobs(jobData: JobData) {
 export interface AddProjectToQueueData {
   ownerName: string
   repoName: string
+  repoDescription: string,
   giteaId: string
   gitDir: string
 }
 export async function addProjectToQueues({
   ownerName,
   repoName,
+  repoDescription,
   giteaId,
   gitDir,
 }: AddProjectToQueueData) {
@@ -91,6 +94,9 @@ export async function addProjectToQueues({
     for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
       const projectOutputDir = path.join(outputDir, subprojectName)
       const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
+      // fall back to repo description if there's no summary.
+      projectKitspaceYaml.summary ||= repoDescription
+      
       createJobs({
         subprojectName,
         giteaId,
@@ -103,6 +109,8 @@ export async function addProjectToQueues({
       })
     }
   } else {
+    // fall back to repo description if there's no summary.
+    kitspaceYaml.summary ||= repoDescription
     createJobs({
       giteaId,
       inputDir,

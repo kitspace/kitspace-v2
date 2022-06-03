@@ -30,6 +30,7 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           .split('/')
 
         let giteaId = null
+        let repoDescription = ''
 
         if (giteaDB != null) {
           const giteaRepo = await giteaDB.getRepoInfo(ownerName, repoName)
@@ -38,6 +39,8 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
             dirWatchers[gitDir].queuing = false
             return
           }
+
+          repoDescription = giteaRepo.description
 
           giteaId = giteaRepo.id
 
@@ -57,6 +60,7 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
         await addProjectToQueues({
           ownerName,
           repoName,
+          repoDescription,
           giteaId,
           gitDir,
         })
