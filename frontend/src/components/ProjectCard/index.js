@@ -35,9 +35,13 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
           </div>
         </div>
         <Card.Content>
-          <Card.Header data-cy="project-card-name">{name}</Card.Header>
-          <Card.Meta>{ownerName}</Card.Meta>
-          <Card.Description>{summary}</Card.Description>
+          <Card.Header className={styles.cardText} data-cy="project-card-name">
+            {name}
+          </Card.Header>
+          <Card.Meta className={styles.cardText}>{ownerName}</Card.Meta>
+          <Card.Description className={styles.cardDescription}>
+            {summary}
+          </Card.Description>
         </Card.Content>
       </Card>
     </Link>
