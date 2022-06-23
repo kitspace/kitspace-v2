@@ -50,13 +50,22 @@ export default async function addToSearch(
     return
   }
 
-  const searchId = subprojectName ? `${giteaId}-${subprojectName}` : giteaId
+  const decodedSubProjectName = decodeURIComponent(subprojectName)
+  // https://docs.meilisearch.com/learn/core_concepts/primary_key.html#primary-field
+  const VALID_MEILISEARCH_CHARACTERS = RegExp(/[a-zA-Z0-9]|_|-/)
+  // Replace invalid character keys with `-`.
+  const subProjectSearchId = decodedSubProjectName
+    .split('')
+    .map(character => (VALID_MEILISEARCH_CHARACTERS.test(character) ? character : '-'))
+    .join('')
+  const searchId = subprojectName ? `${giteaId}-${subProjectSearchId}` : giteaId
+
   const readme = getReadmeAsText(readmeHTML)
   const multiParentId = subprojectName ? giteaId : null
 
   const document = {
     id: searchId,
-    name: subprojectName ?? repoName,
+    name: decodedSubProjectName ?? repoName,
     summary: kitspaceYaml.summary,
     bom: {
       lines: bom?.lines || [],
