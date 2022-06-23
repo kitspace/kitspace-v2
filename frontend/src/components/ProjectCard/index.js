@@ -10,7 +10,7 @@ import styles from './index.module.scss'
 const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
   const isMultiProject = multiParentName != null
   const repoName = isMultiProject ? multiParentName : name
-  const decodedName = decodeURIComponent(name)
+  const encodedName = encodeURIComponent(name)
   const { src, isLoading, isError } = useThumbnail(
     `${ownerName}/${repoName}`,
     multiParentName ? name : null,
@@ -19,7 +19,7 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
   return (
     <Link
       passHref
-      href={`/${ownerName}/${repoName}${isMultiProject ? '/' + name : ''}`}
+      href={`/${ownerName}/${repoName}${isMultiProject ? '/' + encodedName : ''}`}
     >
       <Card as="a" className={styles.card} data-cy="project-card">
         <div className={styles.thumbnail}>
@@ -38,7 +38,7 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
         </div>
         <Card.Content>
           <Card.Header className={styles.cardText} data-cy="project-card-name">
-            {decodedName}
+            {name}
           </Card.Header>
           <Card.Meta className={styles.cardText}>{ownerName}</Card.Meta>
           <Card.Description className={styles.cardDescription}>
