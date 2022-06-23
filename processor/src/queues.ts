@@ -91,13 +91,14 @@ export async function addProjectToQueues({
 
   if (kitspaceYaml.multi) {
     for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
-      const projectOutputDir = path.join(outputDir, subprojectName)
+      const URIEncodedSubprojectName = encodeURIComponent(subprojectName)
+      const projectOutputDir = path.join(outputDir, URIEncodedSubprojectName)
       const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
       // fall back to repo description if there's no summary.
       projectKitspaceYaml.summary ||= repoDescription
       
       createJobs({
-        subprojectName,
+        subprojectName: URIEncodedSubprojectName,
         giteaId,
         inputDir,
         kitspaceYaml: projectKitspaceYaml,

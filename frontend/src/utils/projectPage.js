@@ -163,7 +163,11 @@ export const getIsProcessingDone = async assetsPath => {
             // A multi project assets processing status
             await Promise.all(
               assetsNames.map(assetName =>
-                fetch(`${rootStatusPath}/${multiProjectsName}/${assetName}`),
+                fetch(
+                  `${rootStatusPath}/${encodeURIComponent(
+                    multiProjectsName,
+                  )}/${assetName}`,
+                ),
               ),
             ),
         ),

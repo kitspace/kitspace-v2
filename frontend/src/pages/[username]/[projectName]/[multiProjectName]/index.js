@@ -54,7 +54,8 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       canCommit(repoFullname, session?.user?.username),
     ])
 
-    const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
+    const decodedMultiProjectName = decodeURIComponent(multiProjectName)
+    const projectKitspaceYAML = kitspaceYAML.multi[decodedMultiProjectName]
 
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
@@ -80,7 +81,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       // Whether the project were empty or not at the time of requesting the this page from the server.
       isEmpty: repo?.empty,
       username,
-      projectName: multiProjectName,
+      projectName: decodedMultiProjectName,
       isNew: query.create === 'true',
       gerberInfoExists,
       bomInfoExists,
