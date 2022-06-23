@@ -52,7 +52,7 @@ export default async function addToSearch(
 
   const decodedSubProjectName = decodeURIComponent(subprojectName)
   // https://docs.meilisearch.com/learn/core_concepts/primary_key.html#primary-field
-  const VALID_MEILISEARCH_CHARACTERS = RegExp(/[a-zA-Z0-9]|_|-/)
+  const VALID_MEILISEARCH_CHARACTERS = /[a-zA-Z0-9]|_|-/
   // Replace invalid character keys with `-`.
   const subProjectSearchId = decodedSubProjectName
     .split('')
