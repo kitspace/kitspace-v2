@@ -13,7 +13,7 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
   const encodedName = encodeURIComponent(name)
   const { src, isLoading, isError } = useThumbnail(
     `${ownerName}/${repoName}`,
-    multiParentName ? name : null,
+    multiParentName ? encodedName : null,
   )
 
   return (
