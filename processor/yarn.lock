@@ -3648,6 +3648,11 @@ url-parse-lax@^3.0.0:
   dependencies:
     prepend-http "^2.0.0"
 
+url-slug@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/url-slug/-/url-slug-3.0.4.tgz#3278b556666389cd88d9210a12e7577dafac6d57"
+  integrity sha512-C880WJTo68O4J59i+w9Yp4P0iDUrMeCAVwNvHAYjSc59XsO4pkPfe8bsEHEyZrEfWWy8BDyxMQi6BPVHp/GEbg==
+
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"

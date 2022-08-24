@@ -1,7 +1,8 @@
-import * as jsYaml from 'js-yaml'
 import * as bullmq from 'bullmq'
-import log from 'loglevel'
+import * as jsYaml from 'js-yaml'
 import * as path from 'path'
+import log from 'loglevel'
+import slugify from 'url-slug'
 
 import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
@@ -95,7 +96,7 @@ export async function addProjectToQueues({
       const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
       // fall back to repo description if there's no summary.
       projectKitspaceYaml.summary ||= repoDescription
-      
+
       createJobs({
         subprojectName,
         giteaId,
@@ -137,7 +138,22 @@ async function getKitspaceYaml(inputDir) {
   const yamlFile = await Promise.all(filePaths.map(tryReadFile)).then(
     ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
   )
-  return jsYaml.safeLoad(yamlFile) || {}
+  const kitspaceYamlJson = jsYaml.safeLoad(yamlFile) || {}
+
+  if (kitspaceYamlJson.multi) {
+    // Slugify the subproject names.
+    Object.keys(kitspaceYamlJson.multi).forEach(subProjectName => {
+      const slugifiedName = slugify(subProjectName, { transformer: false })
+      if (slugifiedName !== subProjectName) {
+        // If the slugified name is different than the sub project name,
+        // replace the sub project name with the slugified version.
+        kitspaceYamlJson.multi[slugifiedName] = kitspaceYamlJson.multi[subProjectName]
+        delete kitspaceYamlJson.multi[subProjectName]
+      }
+    })
+  }
+
+  return kitspaceYamlJson
 }
 
 async function getGitHash(checkoutDir) {
