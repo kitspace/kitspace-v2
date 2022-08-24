@@ -148,6 +148,44 @@ describe('Render project cards', () => {
       `${username}/${multiProjectsRepoName}/${multiProjectName}`,
     )
   })
+
+  it('should handle subproject names with URL invalid characters', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+
+    cy.forceVisit('/projects/new')
+
+    const projectWithInvalidCharsURL =
+      'https://github.com/kitspace-test-repos/open-visual-stimulator'
+    const projectWithInvalidCharsName = 'open-visual-stimulator'
+    const numberOfSubProjects = 4
+
+    /* Migrate the multiproject repo */
+    cy.get('[data-cy=sync-field]').type(projectWithInvalidCharsURL)
+    cy.get('button').contains('Sync').click()
+
+    // Wait for redirection for project page
+    cy.url({ timeout: 60_000 }).should(
+      'contain',
+      `${username}/${projectWithInvalidCharsName}`,
+    )
+    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
+    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
+    // Wait for the repo to finish processing, by checking the visibility sub projects cards.
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
+      'have.length',
+      numberOfSubProjects,
+    )
+    // Visit the first sub project,
+    cy.get('[data-cy=project-card]').first().click({ force: true })
+    // Assert the processing is done successfully
+    cy.get('[data-cy=project-description]').should('be.visible')
+  })
 })
 
 describe('Multi project page', () => {
