@@ -31,9 +31,11 @@ const InfoBar = ({ name, originalUrl, site, description }) => {
           </div>
         </div>
         <div className={styles.infoBarTitle}>
-          <div className={styles.infoBarSummary} data-cy="project-description">
-            {description}
-          </div>
+          <div
+            className={styles.infoBarSummary}
+            dangerouslySetInnerHTML={{ __html: description }}
+            data-cy="project-description"
+          />
         </div>
       </div>
     </div>
