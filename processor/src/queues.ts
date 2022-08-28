@@ -1,6 +1,7 @@
 import * as bullmq from 'bullmq'
 import * as jsYaml from 'js-yaml'
 import * as path from 'path'
+import AsyncLock from 'async-lock'
 import log from 'loglevel'
 import slugify from 'url-slug'
 
@@ -8,6 +9,8 @@ import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
+import { execSync } from 'child_process'
+import { existsSync } from 'fs'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: true,
@@ -69,7 +72,12 @@ export async function addProjectToQueues({
     repoName.toLowerCase(),
   )
 
-  await sync(gitDir, inputDir)
+  try {
+    await sync(gitDir, inputDir)
+  } catch (e) {
+    console.log(e.stack)
+    throw e
+  }
 
   const hash = await getGitHash(inputDir)
   const outputDir = path.join(
@@ -172,7 +180,8 @@ function tryReadFile(filePath) {
 }
 
 async function sync(gitDir, checkoutDir) {
-  if (await exists(checkoutDir)) {
+  console.log("syncing")
+  if (existsSync(checkoutDir)) {
     await exec(`cd ${checkoutDir} && git pull`).catch(err => {
       // repos with no branches yet will create this error
       if (
@@ -185,7 +194,13 @@ async function sync(gitDir, checkoutDir) {
       throw err
     })
   } else {
-    await exec(`git clone ${gitDir} ${checkoutDir}`)
+    console.log("In this branch")
+    try {
+      console.log(execSync(`ls -lah ${checkoutDir}`))
+    } catch (e) {
+      console.log('ignore ls')
+    }
+    execSync(`git clone ${gitDir} ${checkoutDir}`)
     log.debug('cloned into', checkoutDir)
   }
 }
