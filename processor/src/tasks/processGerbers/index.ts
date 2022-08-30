@@ -68,7 +68,7 @@ export default async function processGerbers(
     const gerberDir = kitspaceYaml.gerbers || ''
     const color = kitspaceYaml.color || 'green'
 
-    await exec(`mkdir -p ${path.join(outputDir, 'images')}`)
+    await exec('mkdir', '-p', path.join(outputDir, 'images'))
 
     const files = globule.find(path.join(inputDir, '**'))
 

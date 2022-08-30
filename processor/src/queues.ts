@@ -5,7 +5,7 @@ import log from 'loglevel'
 import slugify from 'url-slug'
 
 import { JobData } from './jobData'
-import { exists, exec, readFile } from './utils'
+import { exists, exec, readFile, DoubleAmpersand } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
 
@@ -80,7 +80,7 @@ export async function addProjectToQueues({
     hash,
   )
 
-  await exec(`mkdir -p ${outputDir}`)
+  await exec('mkdir', '-p', outputDir)
 
   const kitspaceYaml = await getKitspaceYaml(inputDir)
 
@@ -157,7 +157,7 @@ async function getKitspaceYaml(inputDir) {
 }
 
 async function getGitHash(checkoutDir) {
-  const { stdout } = await exec(`cd '${checkoutDir}' && git rev-parse HEAD`)
+  const { stdout } = await exec('cd', checkoutDir, DoubleAmpersand, 'git', 'rev-parse', 'HEAD')
   return stdout.slice(0, -1)
 }
 
@@ -173,7 +173,7 @@ function tryReadFile(filePath) {
 
 async function sync(gitDir, checkoutDir) {
   if (await exists(checkoutDir)) {
-    await exec(`cd ${checkoutDir} && git pull`).catch(err => {
+    await exec('cd', checkoutDir, DoubleAmpersand, 'git', 'pull').catch(err => {
       // repos with no branches yet will create this error
       if (
         err.stderr ===
@@ -185,7 +185,7 @@ async function sync(gitDir, checkoutDir) {
       throw err
     })
   } else {
-    await exec(`git clone ${gitDir} ${checkoutDir}`)
+    await exec('git', 'clone', gitDir, checkoutDir)
     log.debug('cloned into', checkoutDir)
   }
 }

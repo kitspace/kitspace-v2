@@ -69,7 +69,7 @@ export function createRemoteAPI(app) {
       }
       const uploadPath = path.join(uploadFolder, upload.md5 + ext)
       const outputDir = path.join(remoteProcessOutputDir, upload.md5)
-      await exec(`mkdir -p ${uploadFolder}`)
+      await exec('mkdir', '-p', uploadFolder)
       await writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
           processKicadPCBQueue.add(
