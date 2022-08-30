@@ -3,7 +3,7 @@ import * as globule from 'globule'
 import log from 'loglevel'
 
 import { JobData } from '../../jobData'
-import { existsAll, exec, findKicadSchematic, DoubleAmpersand } from '../../utils'
+import { existsAll, exec, findKicadSchematic } from '../../utils'
 
 async function processSchematics(
   job,
@@ -53,18 +53,19 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
   // tempFolder needs to be in shared /data volume as we are using the outer
   // docker daemon for docker in docker
   const tempFolder = path.join('/data/temp/kitspace', outputFolder, 'schematics')
-  await exec('rm', '-rf', tempFolder, DoubleAmpersand, 'mkdir', '-p', tempFolder)
+  await exec(`rm -rf ${tempFolder} && mkdir -p ${tempFolder}`)
   const plot_kicad_sch_docker = path.join(__dirname, 'plot_kicad_sch_docker')
-  const r = await exec(plot_kicad_sch_docker, schematicPath, tempFolder)
-
+  const r = await exec(
+    `${plot_kicad_sch_docker} '${schematicPath}' '${tempFolder}'`,
+  )
   log.debug(r)
   const [tempSvg] = globule.find(path.join(tempFolder, '*.svg'))
   if (tempSvg == null) {
     throw Error('Could not process KiCad .sch file')
   }
-  await exec('mkdir', '-p', outputFolder)
-  await exec('mv', tempSvg, outputSvgPath)
-  await exec('rm', '-rf', tempFolder)
+  await exec(`mkdir -p ${outputFolder}`)
+  await exec(`mv ${tempSvg} ${outputSvgPath}`)
+  await exec(`rm -rf ${tempFolder}`)
 }
 
 export default processSchematics

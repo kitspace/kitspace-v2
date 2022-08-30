@@ -2,21 +2,12 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as util from 'util'
 import * as cp from 'child_process'
-import shellEscape from 'shell-escape'
 
 const accessPromise = util.promisify(fs.access)
+
+export const exec = util.promisify(cp.exec)
 export const { writeFile } = fs.promises
 export const readFile = util.promisify(fs.readFile)
-
-
-export const DoubleAmpersand = Symbol('&&')
-export function exec(...args: Array<string | typeof DoubleAmpersand>) {
-  const escapedArgs = args
-    .map(arg => arg === DoubleAmpersand ? '&&' : shellEscape([arg]))
-    .join(' ')
-
-  return util.promisify(cp.exec)(escapedArgs)
-}
 
 export function exists(file) {
   return accessPromise(file, fs.constants.F_OK)

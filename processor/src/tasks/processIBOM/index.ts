@@ -50,7 +50,7 @@ async function processIBOM(
   }
 
   const ibomOutputFolder = path.dirname(ibomOutputPath)
-  await exec('mkdir', '-p', ibomOutputFolder)
+  await exec(`mkdir -p ${ibomOutputFolder}`)
 
   // !note: we can't escape empty `summary` so we have to quote it manually.
   const summary = kitspaceYaml.summary ? shellEscape([kitspaceYaml.summary]) : "''"
