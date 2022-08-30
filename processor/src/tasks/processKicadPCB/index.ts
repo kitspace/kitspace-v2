@@ -1,12 +1,9 @@
 import * as path from 'path'
-import * as cp from 'child_process'
-import { promisify } from 'util'
 import * as globule from 'globule'
 
 import { JobData } from '../../jobData'
-import { existsAll, findKicadPcbFile } from '../../utils'
+import { existsAll, findKicadPcbFile, exec } from '../../utils'
 
-const exec = promisify(cp.exec)
 
 async function processKicadPCB(
   job,
