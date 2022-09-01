@@ -19,4 +19,4 @@ jobs:
 
       - name: Show container logs
         if: always()
-        run: docker-compose logs processor && exit 1
+        run: for container in $(docker container ls -a -q); do docker logs ${container}; done
