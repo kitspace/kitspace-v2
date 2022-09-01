@@ -9,8 +9,7 @@ import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
-import { execSync } from 'child_process'
-import { existsSync } from 'fs'
+
 
 const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: true,
@@ -72,12 +71,7 @@ export async function addProjectToQueues({
     repoName.toLowerCase(),
   )
 
-  try {
-    await sync(gitDir, inputDir)
-  } catch (e) {
-    console.log(e.stack)
-    throw e
-  }
+  await sync(gitDir, inputDir)
 
   const hash = await getGitHash(inputDir)
   const outputDir = path.join(
@@ -179,28 +173,33 @@ function tryReadFile(filePath) {
   })
 }
 
+const lock = new AsyncLock()
 async function sync(gitDir, checkoutDir) {
-  console.log("syncing")
-  if (existsSync(checkoutDir)) {
-    await exec(`cd ${checkoutDir} && git pull`).catch(err => {
-      // repos with no branches yet will create this error
-      if (
-        err.stderr ===
-        "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
-      ) {
-        log.warn('repo without any branches', checkoutDir)
-        return err
-      }
-      throw err
-    })
-  } else {
-    console.log("In this branch")
-    try {
-      console.log(execSync(`ls -lah ${checkoutDir}`))
-    } catch (e) {
-      console.log('ignore ls')
+  await lock.acquire(gitDir, async (done) => {
+    log.info("Acquired sync lock for ", gitDir)
+
+    if (await exists(checkoutDir)) {
+      log.debug('Pulling updates for', gitDir)
+      await exec(`cd ${checkoutDir} && git pull`).catch(err => {
+        // repos with no branches yet will create this error
+        if (
+          err.stderr ===
+          "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
+        ) {
+          log.warn('repo without any branches', checkoutDir)
+          done(null, err)
+        }
+        done(err)
+      })
+    } else {
+      log.debug("Cloning ", gitDir)
+      await exec(`git clone ${gitDir} ${checkoutDir}`).catch(err => {
+        if (err.stderr) {
+          done(err)
+        }
+      })
+      log.debug('Cloned into', checkoutDir)
     }
-    execSync(`git clone ${gitDir} ${checkoutDir}`)
-    log.debug('cloned into', checkoutDir)
-  }
+    done()
+  }).then(() => log.debug('Released sync lock for ', gitDir))
 }
