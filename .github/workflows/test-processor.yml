@@ -13,4 +13,10 @@ jobs:
         with:
           submodules: 'recursive'
       - run: cp .env.example .env
-      - run: scripts/clear_volumes_and_test_processor.sh
+      - name: Run tests
+        id: run_tests
+        run: scripts/clear_volumes_and_test_processor.sh
+
+      - name: Show container logs
+        if: always()
+        run: docker-compose logs processor && exit 1
