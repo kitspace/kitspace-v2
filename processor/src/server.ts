@@ -4,7 +4,6 @@ import { createApp } from './app'
 import { giteaDB } from './giteatDB'
 
 log.setDefaultLevel((process.env.LOG_LEVEL as log.LogLevelDesc) || log.levels.INFO)
-console.log({ level: (process.env.LOG_LEVEL as log.LogLevelDesc) || log.levels.INFO })
 
 const app = createApp('/gitea-data/git/repositories', { giteaDB })
 

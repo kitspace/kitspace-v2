@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts --watch src/",
     "start": "ts-node src/server.ts",
-    "test": "LOG_LEVEL=debug DATA_DIR=/data/test mocha test/integration/**/*.ts -r ts-node/register --timeout=120000 --exit",
+    "test": "mocha test/integration/**/*.ts -r ts-node/register --timeout=120000 --exit",
     "posttest": "rm -rf /data/test",
     "tsc": "tsc",
     "lint": "eslint src/ test/ --ext ts",
