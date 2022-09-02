@@ -17,6 +17,12 @@ jobs:
         id: run_tests
         run: scripts/clear_volumes_and_test_processor.sh
 
-      - name: Show container logs
+      - name: Show containers logs
         if: always()
-        run: for container in $(docker container ls -a -q); do docker logs ${container}; done
+        run: |
+          for container in $(docker container ls -a -q); do
+            echo ${container}
+            docker logs ${container}
+            python -c "print('-' * 80)";
+          done
+          docker-compose run processor sh -c "cat logs"

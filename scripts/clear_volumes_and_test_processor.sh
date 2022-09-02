@@ -20,4 +20,4 @@ docker-compose down -v
 
 # you can pass arguments to mocha e.g. `-g multi`
 args="$(concatenate_args "$@")"
-docker-compose run processor sh -c "yarn test ${args}"
+docker-compose run processor sh -c "nohup yarn start > logs & yarn test ${args}"
