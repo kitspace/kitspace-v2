@@ -1,6 +1,7 @@
 FROM cypress/included:9.6.1
 
 # Install testing dependencies
+RUN apt-get install --no-install-recommends -y python
 COPY package.json yarn.lock ./
 RUN yarn --prune-lockfile
 # Prevent firefox from hanging indefinetly
