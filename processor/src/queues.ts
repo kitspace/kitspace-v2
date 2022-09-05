@@ -1,6 +1,7 @@
 import * as bullmq from 'bullmq'
 import * as jsYaml from 'js-yaml'
 import * as path from 'path'
+import AsyncLock from 'async-lock'
 import log from 'loglevel'
 import slugify from 'url-slug'
 
@@ -8,6 +9,7 @@ import { JobData } from './jobData'
 import { exists, exec, readFile } from './utils'
 import { DATA_DIR } from './env'
 import redisConnection from './redisConnection'
+
 
 const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: true,
@@ -171,21 +173,33 @@ function tryReadFile(filePath) {
   })
 }
 
+const lock = new AsyncLock()
 async function sync(gitDir, checkoutDir) {
-  if (await exists(checkoutDir)) {
-    await exec(`cd ${checkoutDir} && git pull`).catch(err => {
-      // repos with no branches yet will create this error
-      if (
-        err.stderr ===
-        "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
-      ) {
-        log.warn('repo without any branches', checkoutDir)
-        return err
-      }
-      throw err
-    })
-  } else {
-    await exec(`git clone ${gitDir} ${checkoutDir}`)
-    log.debug('cloned into', checkoutDir)
-  }
+  await lock.acquire(gitDir, async (done) => {
+    log.info("Acquired sync lock for ", gitDir)
+
+    if (await exists(checkoutDir)) {
+      log.debug('Pulling updates for', gitDir)
+      await exec(`cd ${checkoutDir} && git pull`).catch(err => {
+        // repos with no branches yet will create this error
+        if (
+          err.stderr ===
+          "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
+        ) {
+          log.warn('repo without any branches', checkoutDir)
+          done()
+        }
+        done(err)
+      })
+    } else {
+      log.debug("Cloning ", gitDir)
+      await exec(`git clone ${gitDir} ${checkoutDir}`).catch(err => {
+        if (err.stderr) {
+          done(err)
+        }
+      })
+      log.debug('Cloned into', checkoutDir)
+    }
+    done()
+  }).then(() => log.debug('Released sync lock for ', gitDir))
 }
