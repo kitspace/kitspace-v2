@@ -24,7 +24,7 @@ describe('Homepage search bar', () => {
     const password = '123456'
 
     const repoName = 'CH330_Hardware'
-    const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
+    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -69,7 +69,7 @@ describe('Search', () => {
     const password = '123456'
 
     const repoName = 'HACK'
-    const syncedRepoUrl = 'https://github.com/kitspace-forks/HACK'
+    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/HACK'
 
     cy.createUser(username, email, password)
     cy.visit('/')

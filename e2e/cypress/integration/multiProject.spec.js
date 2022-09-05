@@ -3,8 +3,8 @@ import faker from 'faker'
 import { getFakeUsername } from '../support/getFakeUsername'
 
 const syncedRepoUrlMultiProjects =
-  'https://github.com/kitspace-forks/DIY_particle_detector'
-const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
+  'https://github.com/kitspace-test-repos/DIY_particle_detector'
+const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
 const multiProjectsNames = ['alpha-spectrometer', 'electron-detector']
 const multiProjectsRepoName = 'DIY_particle_detector'
 const normalRepoName = 'CH330_Hardware'
