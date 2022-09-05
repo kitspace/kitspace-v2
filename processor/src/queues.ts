@@ -187,7 +187,7 @@ async function sync(gitDir, checkoutDir) {
           "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
         ) {
           log.warn('repo without any branches', checkoutDir)
-          done(null, err)
+          done()
         }
         done(err)
       })
