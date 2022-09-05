@@ -61,7 +61,7 @@ describe('Syncing a project behavior validation', () => {
     // The info bar should include the original url
     cy.get('[data-cy=original-url] > a', { timeout: 60_000 })
       .should('have.attr', 'href')
-      .and('include', 'github.com/kitspace-forks')
+      .and('include', 'github.com/kitspace-test-repos')
       .then(href =>
         assert(href === syncedRepoUrl, 'The href value is the synced repo url'),
       )
@@ -101,7 +101,7 @@ describe('Syncing a project behavior validation', () => {
 
     const repoName = 'CH330_Hardware_without_summary'
     const syncedRepoUrl =
-      'https://github.com/kitspace-forks/CH330_Hardware_without_summary'
+      'https://github.com/kitspace-test-repos/CH330_Hardware_without_summary'
 
     cy.createUser(username, email, password)
     cy.visit('/')
