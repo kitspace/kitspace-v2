@@ -149,8 +149,9 @@ describe('Syncing a project behavior validation', () => {
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
+    cy.get('[data-cy=project-card]', { timeout: 60_000 })
+    // Go to the PCB stimulator sub-project
     cy.visit(`${username}/${repoName}/PCB-Stimulator`)
-    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     cy.get('[data-cy=project-description]').should(
       'contain',
