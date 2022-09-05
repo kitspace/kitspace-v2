@@ -17,7 +17,7 @@ describe('Relative README images URLs normalization', () => {
     const password = '123456'
 
     const repoName = 'CH330_Hardware'
-    const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
+    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
 
     cy.createUser(username, email, password)
     cy.visit('/')

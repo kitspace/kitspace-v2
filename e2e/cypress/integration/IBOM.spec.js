@@ -25,7 +25,7 @@ describe('IBOM page', () => {
     const multiProjectsNames = ['alpha-spectrometer', 'electron-detector']
     const multiProjectsRepoName = 'DIY_particle_detector'
     const syncedRepoUrlMultiProjects =
-      'https://github.com/kitspace-forks/DIY_particle_detector'
+      'https://github.com/kitspace-test-repos/DIY_particle_detector'
 
     /* Migrate the multiproject repo */
     cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
@@ -108,7 +108,7 @@ describe('IBOM page', () => {
     /* Migrate a repo with `omit-ibom` set to `true` */
     cy.forceVisit('/projects/new')
     const IBOMDisabledRepoURL =
-      'https://github.com/kitspace-forks/solarbird_shenzen_rdy/'
+      'https://github.com/kitspace-test-repos/solarbird_shenzen_rdy'
     const repoName = 'solarbird_shenzen_rdy'
     cy.get('[data-cy=sync-field]').type(IBOMDisabledRepoURL)
     cy.get('button').contains('Sync').click()
