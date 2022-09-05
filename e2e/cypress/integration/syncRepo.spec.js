@@ -119,12 +119,42 @@ describe('Syncing a project behavior validation', () => {
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     // Go to user projects page to limit the results to the project synced above
-    cy.visit('/')
+    cy.visit(`/${username}`)
 
     cy.get('[data-cy=project-card]').should('contain', username).and(
       'contain.text',
       // This is github repo description.
       'To test that meilisearch falls back to repo description',
+    )
+  })
+
+  it('should escape and render project description correctly', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    const repoName = 'LED-Zappelin'
+    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/LED-Zappelin'
+
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+
+    cy.forceVisit('/projects/new')
+
+    // Migrate the repo
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
+    cy.get('button').contains('Sync').click()
+
+    // Wait for redirection for project page
+    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
+    cy.visit(`${username}/${repoName}/PCB-Stimulator`)
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+
+    cy.get('[data-cy=project-description]').should(
+      'contain',
+      "A custom board to implement LED Zappelin', an opensource LED controller for 2-photon microscopy",
     )
   })
 })
