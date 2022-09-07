@@ -117,7 +117,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_PAT }}
 
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
