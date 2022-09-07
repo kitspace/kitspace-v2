@@ -1,8 +1,8 @@
 import { MeiliSearch } from 'meilisearch'
-import log from 'loglevel'
 import cheerio from 'cheerio'
+import log from 'loglevel'
 
-import { JobData } from '../jobData'
+import { JobData } from '../jobData.js'
 
 const meili = new MeiliSearch({
   host: 'http://meilisearch:7700',

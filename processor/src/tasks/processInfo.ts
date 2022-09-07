@@ -1,7 +1,7 @@
-import processBOM from './processBOM'
-import processReadme from './processReadme'
-import addToSearch from './addToSearch'
-import { JobData } from '../jobData'
+import { JobData } from '../jobData.js'
+import addToSearch from './addToSearch.js'
+import processBOM from './processBOM/index.js'
+import processReadme from './processReadme.js'
 
 export default async function processInfo(job, jobData: JobData) {
   const [bom, readmeHTML] = await Promise.all([

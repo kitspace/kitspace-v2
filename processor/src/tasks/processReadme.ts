@@ -1,11 +1,11 @@
-import * as globule from 'globule'
-import * as path from 'path'
-import * as superagent from 'superagent'
 import * as cheerio from 'cheerio'
+import path from 'node:path'
+import globule from 'globule'
+import superagent from 'superagent'
 
-import { JobData } from '../jobData'
-import { exists, readFile, writeFile } from '../utils'
-import { GITEA_URL } from '../env'
+import { JobData } from '../jobData.js'
+import { exists, readFile, writeFile } from '../utils.js'
+import { GITEA_URL } from '../env.js'
 
 async function processReadme(
   job,

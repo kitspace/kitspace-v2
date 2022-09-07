@@ -1,8 +1,8 @@
 import express from 'express'
 
-import { createProjectsAPI } from './projectAPI'
-import { createRemoteAPI } from './remoteAPI'
-import { createWorkers } from './workers'
+import { createProjectsAPI } from './projectAPI.js'
+import { createRemoteAPI } from './remoteAPI.js'
+import { createWorkers } from './workers.js'
 
 interface KitspaceProcessorApp extends express.Express {
   cleanup?: Array<() => Promise<void>>

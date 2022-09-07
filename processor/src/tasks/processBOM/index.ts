@@ -1,10 +1,10 @@
 import * as oneClickBom from '1-click-bom'
+import path from 'node:path'
 import log from 'loglevel'
-import * as path from 'path'
-import getPartinfo from './get_partinfo'
 
-import { JobData } from '../../jobData'
-import { exists, existsAll, writeFile, readFile } from '../../utils'
+import { exists, existsAll, writeFile, readFile } from '../../utils.js'
+import { JobData } from '../../jobData.js'
+import getPartinfo from './get_partinfo.js'
 
 async function processBOM(
   job,

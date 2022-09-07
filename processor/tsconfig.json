@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "esModuleInterop": true,
-    "allowJs": true
+    "module": "es2020",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": false,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "stripInternal": true
   },
   "include": ["src/**/*", "test/**/*"],
-  "exclude": ["node_modules", "src/tasks/processIBOM/InteractiveHtmlBom/"],
-  "ts-node": {
-    "transpileOnly": true,
-    "files": true
-  }
+  "exclude": ["node_modules", "src/tasks/processIBOM/InteractiveHtmlBom/"]
 }

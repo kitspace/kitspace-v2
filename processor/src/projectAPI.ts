@@ -1,11 +1,10 @@
-import * as express from 'express'
+import express from 'express'
 import log from 'loglevel'
-import * as path from 'path'
+import path from 'node:path'
 
-import * as watcher from './watcher'
-
-import { DATA_DIR } from './env'
-import events from './events'
+import { DATA_DIR } from './env.js'
+import * as watcher from './watcher.js'
+import events from './events.js'
 
 const filesDir = path.join(DATA_DIR, 'files')
 

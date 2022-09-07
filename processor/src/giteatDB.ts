@@ -1,5 +1,6 @@
 import postgres, { Row, ReplicationEvent, SubscriptionHandle } from 'postgres'
-import { GITEA_DB_CONFIG } from './env'
+
+import { GITEA_DB_CONFIG } from './env.js'
 
 const sql = postgres(GITEA_DB_CONFIG)
 

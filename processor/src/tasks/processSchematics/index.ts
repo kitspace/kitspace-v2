@@ -1,9 +1,10 @@
-import * as path from 'path'
-import * as globule from 'globule'
+import path from 'node:path'
+import globule from 'globule'
 import log from 'loglevel'
+import url from 'node:url'
 
-import { JobData } from '../../jobData'
-import { existsAll, exec, findKicadSchematic } from '../../utils'
+import { existsAll, exec, findKicadSchematic } from '../../utils.js'
+import { JobData } from '../../jobData.js'
 
 async function processSchematics(
   job,
@@ -54,6 +55,7 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
   // docker daemon for docker in docker
   const tempFolder = path.join('/data/temp/kitspace', outputFolder, 'schematics')
   await exec(`rm -rf ${tempFolder} && mkdir -p ${tempFolder}`)
+  const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const plot_kicad_sch_docker = path.join(__dirname, 'plot_kicad_sch_docker')
   const r = await exec(
     `${plot_kicad_sch_docker} '${schematicPath}' '${tempFolder}'`,
