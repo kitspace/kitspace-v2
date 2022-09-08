@@ -70,7 +70,7 @@ export default async function processGerbers(
 
     await exec(`mkdir -p ${path.join(outputDir, 'images')}`)
 
-    const files = globule.find(path.join(inputDir, '**'))
+    const files = globule.find(path.join(inputDir, '**'), { dot: true })
 
     const gerberTypes = findGerberFiles(files, path.join(inputDir, gerberDir))
     let gerbers = Object.keys(gerberTypes)

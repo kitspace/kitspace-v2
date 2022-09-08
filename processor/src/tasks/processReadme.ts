@@ -56,6 +56,7 @@ function findReadmeFile(inputDir) {
     path.join(inputDir, 'readme?(.markdown|.mdown|.mkdn|.md|.rst)'),
     {
       nocase: true,
+      dot: true
     },
   )
 

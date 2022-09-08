@@ -24,7 +24,7 @@ async function processSchematics(
   }
 
   try {
-    const files = globule.find(path.join(inputDir, '**'))
+    const files = globule.find(path.join(inputDir, '**'), { dot: true })
     const topLevelSchematic = findKicadSchematic(inputDir, files, kitspaceYaml)
     if (topLevelSchematic == null) {
       job.updateProgress({
@@ -59,7 +59,7 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
     `${plot_kicad_sch_docker} '${schematicPath}' '${tempFolder}'`,
   )
   log.debug(r)
-  const [tempSvg] = globule.find(path.join(tempFolder, '*.svg'))
+  const [tempSvg] = globule.find(path.join(tempFolder, '*.svg'), { dot: true })
   if (tempSvg == null) {
     throw Error('Could not process KiCad .sch file')
   }

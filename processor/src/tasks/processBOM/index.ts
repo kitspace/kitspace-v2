@@ -44,7 +44,8 @@ async function processBOM(
 
     if (bom.invalid != null) {
       bom.invalid.forEach(invalid => {
-        log.warn('invalid line:', invalid)
+        const { ownerName, repoName } = job.data
+        log.warn(`Invalid line in ${ownerName}/${repoName} bom file:`, invalid)
       })
     }
     if (bom.warnings != null) {

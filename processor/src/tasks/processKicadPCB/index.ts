@@ -26,7 +26,7 @@ async function processKicadPCB(
   }
 
   try {
-    const files = globule.find(path.join(inputDir, '**'))
+    const files = globule.find(path.join(inputDir, '**'), { dot: true })
     const kicadPcbFile = findKicadPcbFile(inputDir, files, kitspaceYaml)
     if (kicadPcbFile == null) {
       job.updateProgress({
