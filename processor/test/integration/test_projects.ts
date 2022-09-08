@@ -1,12 +1,11 @@
-import supertest from 'supertest'
 import assert from 'assert'
-import * as cp from 'child_process'
-import * as util from 'util'
-import * as path from 'path'
-import { describe, beforeEach, it } from 'mocha'
+import cp from 'node:child_process'
+import path from 'node:path'
+import supertest from 'supertest'
+import util from 'node:util'
 
-import { createApp } from '../../src/app'
-import { delay } from '../../src/utils'
+import { createApp } from '../../src/app.js'
+import { delay } from '../../src/utils.js'
 
 const exec = util.promisify(cp.exec)
 
