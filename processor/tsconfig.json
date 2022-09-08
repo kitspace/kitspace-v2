@@ -4,9 +4,10 @@
     "module": "es2020",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true,
     "resolveJsonModule": false,
     "skipLibCheck": true,
-    "noEmitOnError": true,
+    "sourceMap": true,
     "stripInternal": true
   },
   "include": ["src/**/*", "test/**/*"],
