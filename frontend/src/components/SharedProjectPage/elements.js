@@ -52,7 +52,7 @@ const PageElements = ({
   const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [loading, setLoading] = useState(false)
   const { push } = useRouter()
-  const { csrf } = useContext(AuthContext)
+  const { csrf, apiToken } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ProjectUpdateFormModel,
   )
@@ -66,6 +66,7 @@ const PageElements = ({
       projectFullname,
       { name: form.name, description: form.description },
       csrf,
+      apiToken,
     )
 
     // If the user changed the project name redirect to the new project page

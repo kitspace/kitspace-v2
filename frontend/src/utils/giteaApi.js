@@ -12,9 +12,10 @@ const headers = { 'Content-Type': 'application/json' }
  * @param name {string}
  * @param description {string}
  * @param csrf {string}
+ * @param apiToken {string}
  * @returns {Promise<string>}
  */
-export const createRepo = async (name, description, csrf) => {
+export const createRepo = async (name, description, csrf, apiToken) => {
   const endpoint = `${giteaApiUrl}/user/repos`
   const giteaOptions = {
     _csrf: csrf,
@@ -32,7 +33,11 @@ export const createRepo = async (name, description, csrf) => {
     method: 'POST',
     credentials,
     mode,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      'X-Csrf-Token': csrf,
+      Authorization: `token ${apiToken}`,
+    },
     body: JSON.stringify(giteaOptions),
   })
 
@@ -48,14 +53,18 @@ export const createRepo = async (name, description, csrf) => {
  * @param csrf{string}
  * @returns {Promise<boolean>}
  */
-export const updateRepo = async (repo, updateFields, csrf) => {
+export const updateRepo = async (repo, updateFields, csrf, apiToken) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}`
 
   const res = await fetch(endpoint, {
     method: 'PATCH',
     credentials,
     mode,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      'X-Csrf-Token': csrf,
+      Authorization: `token ${apiToken}`,
+    },
     body: JSON.stringify(updateFields),
   })
 
@@ -104,9 +113,10 @@ export const getGitServiceFromUrl = url => {
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
  * @param csrf {string}
+ * @param apiToken {string}
  * @returns {Promise<Response>}
  */
-export const mirrorRepo = async (remoteRepo, uid, csrf) => {
+export const mirrorRepo = async (remoteRepo, uid, csrf, apiToken) => {
   const repoName = urlToName(remoteRepo)
   const service = getGitServiceFromUrl(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate`
@@ -127,7 +137,11 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     method: 'POST',
     mode,
     credentials: 'include',
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      'X-Csrf-Token': csrf,
+      Authorization: `token ${apiToken}`,
+    },
     body: JSON.stringify(giteaOptions),
   })
 }
@@ -136,15 +150,20 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
  * Delete the corresponding gitea repo for a project.
  * @param repo {string}
  * @param csrf {string}
+ * @param apiToken {string}
  * @returns {Promise<boolean>}
  */
-export const deleteRepo = async (repo, csrf) => {
+export const deleteRepo = async (repo, csrf, apiToken) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}`
   const res = await fetch(endpoint, {
     method: 'DELETE',
     mode,
     credentials,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      'X-Csrf-Token': csrf,
+      Authorization: `token ${apiToken}`,
+    },
   })
 
   return res.ok
@@ -240,9 +259,10 @@ export const userExists = async username => {
  * @param {string} repo
  * @param {string} username
  * @param csrf{string}
+ * @param apiToken {string}
  * @returns {Promise<boolean>}
  */
-const isCollaborator = async (repo, username, csrf) => {
+const isCollaborator = async (repo, username, csrf, apiToken) => {
   if (username == null) {
     return false
   }
@@ -253,7 +273,11 @@ const isCollaborator = async (repo, username, csrf) => {
     method: 'GET',
     mode,
     credentials,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      'X-Csrf-Token': csrf,
+      Authorization: `auth ${apiToken}`,
+    },
   })
 
   if (res.ok) {
@@ -269,11 +293,12 @@ const isCollaborator = async (repo, username, csrf) => {
  * @param {string} repo
  * @param {string} username
  * @param csrf{string}
+ * @param apiToken {string}
  * @returns
  */
-export const canCommit = async (repo, username, csrf) => {
+export const canCommit = async (repo, username, csrf, apiToken) => {
   const repoOwner = repo.split('/')[0]
-  return repoOwner === username || isCollaborator(repo, username, csrf)
+  return repoOwner === username || isCollaborator(repo, username, csrf, apiToken)
 }
 
 export const searchRepos = async (q, sort = 'updated', order = 'desc') => {

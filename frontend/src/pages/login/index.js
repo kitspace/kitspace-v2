@@ -71,7 +71,7 @@ const SignInForm = () => {
   const endpoint = `${KITSPACE_GITEA_URL}/user/kitspace/sign_in`
 
   const { push, query } = useRouter()
-  const { setUser, setCsrf } = useContext(AuthContext)
+  const { setUser, setCsrf, setApiToken } = useContext(AuthContext)
 
   const { form, onChange, onBlur, isValid, formatErrorPrompt } = useForm(
     SignInFormModel,
@@ -98,6 +98,7 @@ const SignInForm = () => {
     if (response.ok && data.user) {
       setUser(data.user)
       const session = await getSession()
+      setApiToken(session.ApiToken)
       setCsrf(session.csrf)
       push(query.redirect || '/')
     } else {
@@ -171,7 +172,7 @@ const SignInForm = () => {
 const SignUpForm = ({ openLoginPane }) => {
   const endpoint = `${KITSPACE_GITEA_URL}/user/kitspace/sign_up`
 
-  const { setUser, setCsrf } = useContext(AuthContext)
+  const { setUser, setCsrf, setApiToken } = useContext(AuthContext)
   const { form, onChange, onBlur, isValid, errors, formatErrorPrompt } = useForm(
     SignUpFormModel,
     true,
@@ -191,6 +192,7 @@ const SignUpForm = ({ openLoginPane }) => {
     if (response.ok && data.user) {
       setUser(data.user)
       const session = await getSession()
+      setApiToken(session.ApiToken)
       setCsrf(session.csrf)
       push(query.redirect || '/')
     } else {

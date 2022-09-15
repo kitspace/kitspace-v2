@@ -6,7 +6,7 @@ import { deleteRepo } from '@utils/giteaApi'
 import { AuthContext } from '@contexts/AuthContext'
 
 const DeleteModal = ({ projectName, invalidateCache }) => {
-  const { csrf } = useContext(AuthContext)
+  const { csrf, apiToken } = useContext(AuthContext)
 
   return (
     <Modal
@@ -17,7 +17,7 @@ const DeleteModal = ({ projectName, invalidateCache }) => {
           content: 'Delete',
           negative: true,
           onClick: async () => {
-            await deleteRepo(projectName, csrf)
+            await deleteRepo(projectName, csrf, apiToken)
             // invalidate swr cache for `projects/mine` page.
             await invalidateCache()
           },

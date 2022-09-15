@@ -99,7 +99,7 @@ KitspaceApp.propTypes = {
   Component: func.isRequired,
   pageProps: object.isRequired,
   isStaticFallback: bool,
-  session: shape({ csrf: string.isRequired, user: object }),
+  session: shape({ csrf: string.isRequired, user: object, ApiToken: string }),
 }
 
 KitspaceApp.defaultProps = {
