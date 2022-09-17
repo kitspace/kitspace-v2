@@ -51,7 +51,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
       // The repo owner and collaborators can upload files.
-      canCommit(repoFullname, session?.user?.username),
+      canCommit(repoFullname, session.user?.username, session.apiToken),
     ])
 
     const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]

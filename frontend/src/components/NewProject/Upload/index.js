@@ -34,7 +34,7 @@ const Upload = ({ setUserOp }) => {
     setUserOp(UploadOp)
 
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
-    const repo = await createRepo(tempProjectName, '', csrf, apiToken)
+    const repo = await createRepo(tempProjectName, '', apiToken)
 
     setProjectName(tempProjectName)
     setOriginalProjectName(tempProjectName)
@@ -65,7 +65,7 @@ const Upload = ({ setUserOp }) => {
     // create repo with the new name and redirect to the update page which will have the loaded files
     const differentName = slugify(form.name)
     setProjectName(differentName)
-    await createRepo(differentName, '', csrf)
+    await createRepo(differentName, '', apiToken)
 
     // Close the conflict modal to show uploading progress.
     setConflictModalOpen(false)

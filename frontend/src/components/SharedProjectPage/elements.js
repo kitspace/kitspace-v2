@@ -65,7 +65,6 @@ const PageElements = ({
     const updatedSuccessfully = await updateRepo(
       projectFullname,
       { name: form.name, description: form.description },
-      csrf,
       apiToken,
     )
 

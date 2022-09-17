@@ -15,7 +15,7 @@ import useForm from '@hooks/useForm'
 
 const Sync = ({ setUserOp }) => {
   const { push } = useRouter()
-  const { user, csrf, apiToken } = useContext(AuthContext)
+  const { user, apiToken } = useContext(AuthContext)
   const { form, errors, onChange } = useForm(SyncRepoFromModel)
 
   const [loading, setLoading] = useState(false)
@@ -40,7 +40,7 @@ const Sync = ({ setUserOp }) => {
       const repoURL = form.url
       const repoName = urlToName(repoURL)
 
-      const res = await mirrorRepo(repoURL, uid, csrf, apiToken)
+      const res = await mirrorRepo(repoURL, uid, apiToken)
       const migrateSuccessfully = res.ok
       const alreadySynced = res.status === 409
 
