@@ -19,6 +19,7 @@ services:
       - USER_UID=1000
       - USER_GID=1000
       - SECRET_KEY=${GITEA_SECRET_KEY}
+      - GITEA__session__PROVIDER=db
       - GITEA__database__DB_TYPE=postgres
       - GITEA__database__HOST=postgres:5432
       - GITEA__database__NAME=gitea
