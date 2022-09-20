@@ -66,9 +66,9 @@ describe('Relative README images URLs normalization', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.get('[data-cy=project-card]', { timeout: 20_000 }).should('have.length', 2)
 
-    cy.forceVisit(`/${username}/${repoName}/project_2`)
-
+    cy.visit(`/${username}/${repoName}/project-2`)
     cy.get('[data-cy=readme]').within(() => {
       cy.get('img').each($img => {
         // checks for naturalWidth/naturalHeight are not working
@@ -79,6 +79,38 @@ describe('Relative README images URLs normalization', () => {
         })
         // `scrollIntoView` is not working so we use `click`
         cy.wrap($img).click().should('be.visible')
+      })
+    })
+  })
+
+  it('redirects relative urls to original git service', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    const repoName = 'readmes-in-folders'
+    const syncedRepoUrl =
+      'https://github.com/kitspace-test-repos/readmes-in-folders'
+
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+
+    cy.visit('/projects/new')
+
+    // Migrate the repo
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
+    cy.get('button').contains('Sync').click()
+
+    // Wait for redirection for project page
+    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.get('[data-cy=project-card]', { timeout: 20_000 }).should('have.length', 2)
+
+    cy.visit(`/${username}/${repoName}/project-1`)
+
+    cy.get('[data-cy=readme]').within(() => {
+      cy.get('a').each($a => {
+        cy.request($a[0].href).its('status').should('equal', 200)
       })
     })
   })
