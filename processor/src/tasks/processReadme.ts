@@ -114,6 +114,12 @@ function UrlRenderer(readmeFolder: string, originalUrl: string) {
   }
 }
 
+function HeadingRenderer() {
+  return (text: string, level: number, raw: string, slugger: marked.Slugger) => {
+    const id = slugger.slug(raw)
+    return `<a href="#${id}"><h${level} id="${id}">${text}</h${level}></a>\n`
+  }
+}
 
 async function renderMarkdown(
   rawMarkdown: string,
@@ -126,6 +132,7 @@ async function renderMarkdown(
 
   Renderer.image = ImageRenderer(baseUrl, readmeFolder)
   Renderer.link = UrlRenderer(readmeFolder, originalUrl)
+  Renderer.heading = HeadingRenderer()
 
   return marked(rawMarkdown, { renderer: Renderer })
 }
