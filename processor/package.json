@@ -34,6 +34,7 @@
     "lodash.debounce": "^4.0.8",
     "loglevel": "^1.7.1",
     "marked": "^4.1.0",
+    "marked-linkify-it": "^2.0.0",
     "meilisearch": "^0.25.1",
     "pcb-stackup": "^4.2.5",
     "postgres": "^3.2.2",

@@ -1986,7 +1986,7 @@ lie@~3.3.0:
   dependencies:
     immediate "~3.0.5"
 
-linkify-it@^4.0.1:
+linkify-it@^4.0.0, linkify-it@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-4.0.1.tgz#01f1d5e508190d06669982ba31a7d9f56a5751ec"
   integrity sha512-C7bfi1UZmoj8+PQx22XyeXCuBlokoyWQL5pWSP+EI6nzRylyThouddufc2c1NDIcP9k5agmN9fLpA7VNJfIiqw==
@@ -2087,6 +2087,13 @@ map-stream@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/map-stream/-/map-stream-0.1.0.tgz#e56aa94c4c8055a16404a0674b78f215f7c8e194"
   integrity sha1-5WqpTEyAVaFkBKBnS3jyFffI4ZQ=
+
+marked-linkify-it@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/marked-linkify-it/-/marked-linkify-it-2.0.0.tgz#22810b6986203bb49112ce594142a0eac4d6c57c"
+  integrity sha512-SdDCp4thOc7jfvztmMdMdSr68mCRwcMsd0AaFPfoptslbPe/ub2+Gh624fUhJNecl8VzFk0Rq2fx5OtTRdwuRA==
+  dependencies:
+    linkify-it "^4.0.0"
 
 marked@^4.1.0:
   version "4.1.0"

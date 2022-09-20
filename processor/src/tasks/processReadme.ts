@@ -1,4 +1,5 @@
 import { marked } from 'marked'
+import MarkedLinkify from 'marked-linkify-it'
 import path from 'node:path'
 import globule from 'globule'
 
@@ -22,6 +23,8 @@ const MARKED_OPTS: marked.MarkedOptions = {
   silent: true,
   smartLists: true,
 }
+marked.setOptions(MARKED_OPTS)
+marked.use(MarkedLinkify)
 
 async function processReadme(
   job,
@@ -128,7 +131,7 @@ async function renderMarkdown(
   readmeFolder: string,
   originalUrl: string) {
   const baseUrl = `${GITEA_URL}/${ownerName}/${repoName}/raw`
-  const Renderer = new marked.Renderer(MARKED_OPTS)
+  const Renderer = new marked.Renderer()
 
   Renderer.image = ImageRenderer(baseUrl, readmeFolder)
   Renderer.link = UrlRenderer(readmeFolder, originalUrl)
