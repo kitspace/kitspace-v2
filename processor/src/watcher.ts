@@ -29,8 +29,10 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           .slice(0, -4)
           .split('/')
 
+        let defaultBranch = ''
         let giteaId = null
         let repoDescription = ''
+        let originalUrl = ''
 
         if (giteaDB != null) {
           const giteaRepo = await giteaDB.getRepoInfo(ownerName, repoName)
@@ -39,11 +41,10 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
             dirWatchers[gitDir].queuing = false
             return
           }
-
+          defaultBranch = giteaRepo.default_branch
+          originalUrl = giteaRepo.original_url
           repoDescription = giteaRepo.description
-
           giteaId = giteaRepo.id
-
           // use case-correct names from the DB
           ownerName = giteaRepo.owner_name
           repoName = giteaRepo.name
@@ -58,6 +59,8 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
         }
 
         await addProjectToQueues({
+          defaultBranch,
+          originalUrl,
           ownerName,
           repoName,
           repoDescription,
