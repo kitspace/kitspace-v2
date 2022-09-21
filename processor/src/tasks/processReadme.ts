@@ -1,7 +1,7 @@
 import { marked } from 'marked'
+import globule from 'globule'
 import MarkedLinkify from 'marked-linkify-it'
 import path from 'node:path'
-import globule from 'globule'
 
 
 import { GITEA_URL } from '../env.js'
