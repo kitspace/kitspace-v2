@@ -115,3 +115,46 @@ describe('Relative README images URLs normalization', () => {
     })
   })
 })
+
+describe('Readme style', () => {
+  it('should auto link readme and summary links', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+
+    const repoName = 'readme-and-summary-auto-link'
+    const syncedRepoUrl =
+      'https://github.com/kitspace-test-repos/readme-and-summary-auto-link'
+
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+
+    cy.forceVisit('/projects/new')
+
+    // Migrate the repo
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
+    cy.get('button').contains('Sync').click()
+
+    // Wait for redirection for project page
+    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+
+    // Auto link summary urls
+    cy.get('[data-cy=project-description] a')
+      // the link in the project description is `github.com/kitspace-test-repos/readme-and-summary-auto-link`
+      .should('contain.text', syncedRepoUrl.slice(8))
+      .each($a => {
+        cy.request($a[0].href).its('status').should('equal', 200)
+      })
+
+    // Auto link readme urls
+    cy.get('[data-cy=readme] a')
+      // the link in the project description is `https://github.com/kitspace-test-repos/readme-and-summary-auto-link`
+      .should('contain.text', syncedRepoUrl)
+      .each($a => {
+        cy.request($a[0].href).its('status').should('equal', 200)
+      })
+  })
+})
