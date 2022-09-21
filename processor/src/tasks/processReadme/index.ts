@@ -1,7 +1,11 @@
 import { unified } from 'unified'
 import globule from 'globule'
 import path from 'node:path'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
+import rehypeShiftHeading from 'rehype-shift-heading'
+import rehypeSlug from 'rehype-slug'
 import rehypeStringify from 'rehype-stringify'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
@@ -25,10 +29,10 @@ async function processReadme(
 
   job.updateProgress({ status: 'in_progress', file: readmePath })
 
-  // if (await exists(readmePath)) {
-  //   job.updateProgress({ status: 'done', file: readmePath })
-  //   return readFile(readmePath, 'utf-8')
-  // }
+  if (await exists(readmePath)) {
+    job.updateProgress({ status: 'done', file: readmePath })
+    return readFile(readmePath, 'utf-8')
+  }
 
   let readmeInputPath: string
 
@@ -87,8 +91,12 @@ async function renderMarkdown2(rawMarkdown: string, ownerName: string, repoName:
   const Remarker = unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
     .use(urlTransformer, { readmeFolder, originalUrl, ownerName, repoName })
+    .use(rehypeSlug)
+    .use(rehypeAutolinkHeadings)
+    .use(rehypeShiftHeading, { shift: 1 })
     .use(rehypeSanitize)
     .use(rehypeStringify)
 
