@@ -1,5 +1,8 @@
 import { Plugin } from 'unified'
 import { visit } from 'unist-util-visit'
+import { defaultSchema } from 'rehype-sanitize'
+import type { Options as RehypeSanitizeOptions } from 'rehype-sanitize'
+
 
 import { GITEA_URL } from '../../env.js'
 import { isRelativeUrl, normalizeRelativeUrl, toGitHubRawUrl } from "../../utils.js"
@@ -65,5 +68,16 @@ function urlTransformer({ originalUrl, readmeFolder, ownerName, repoName, defaul
     }
 }
 
+export const rehypeSanitizeSchema: RehypeSanitizeOptions = {
+    ...defaultSchema,
+    attributes: {
+        ...defaultSchema.attributes,
+        img: [
+            ...(defaultSchema.attributes.img || []),
+            ['loading', 'lazy'],
+            ['data-cy'],
+        ]
+    }
+}
 
 export default urlTransformer as Plugin

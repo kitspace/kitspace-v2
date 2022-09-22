@@ -18,7 +18,7 @@ import {
   writeFile
 } from '../../utils.js'
 import { JobData } from '../../jobData.js'
-import urlTransformer from './urlTransformer.js'
+import urlTransformer, { rehypeSanitizeSchema } from './urlTransformer.js'
 
 
 async function processReadme(
@@ -96,9 +96,9 @@ async function renderMarkdown(rawMarkdown: string, ownerName: string, repoName: 
     .use(rehypeRaw)
     .use(urlTransformer, { readmeFolder, originalUrl, ownerName, repoName, defaultBranch })
     .use(rehypeSlug)
-    .use(rehypeAutolinkHeadings)
+    .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
     .use(rehypeShiftHeading, { shift: 1 })
-    .use(rehypeSanitize)
+    .use(rehypeSanitize, rehypeSanitizeSchema)
     .use(rehypeStringify)
 
   const processedMarkdown = await Remarker.process(rawMarkdown)
