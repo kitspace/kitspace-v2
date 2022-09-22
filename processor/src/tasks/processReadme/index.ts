@@ -23,7 +23,7 @@ import urlTransformer from './urlTransformer.js'
 
 async function processReadme(
   job,
-  { inputDir, kitspaceYaml, outputDir, ownerName, repoName, originalUrl }: Partial<JobData>,
+  { inputDir, kitspaceYaml, outputDir, ownerName, repoName, originalUrl, defaultBranch }: Partial<JobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -54,12 +54,13 @@ async function processReadme(
   const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
 
   const readmeFolder = path.dirname(path.relative(inputDir, readmeInputPath))
-  const processedReadmeHTML = await renderMarkdown2(
+  const processedReadmeHTML = await renderMarkdown(
     rawMarkdown,
     ownerName,
     repoName,
     readmeFolder,
-    originalUrl
+    originalUrl,
+    defaultBranch,
   )
 
   await writeFile(readmePath, processedReadmeHTML)
@@ -86,14 +87,14 @@ function findReadmeFile(inputDir: string) {
   return null
 }
 
-async function renderMarkdown2(rawMarkdown: string, ownerName: string, repoName: string,
-  readmeFolder: string, originalUrl: string) {
+async function renderMarkdown(rawMarkdown: string, ownerName: string, repoName: string,
+  readmeFolder: string, originalUrl: string, defaultBranch: string) {
   const Remarker = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
-    .use(urlTransformer, { readmeFolder, originalUrl, ownerName, repoName })
+    .use(urlTransformer, { readmeFolder, originalUrl, ownerName, repoName, defaultBranch })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings)
     .use(rehypeShiftHeading, { shift: 1 })

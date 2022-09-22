@@ -10,6 +10,7 @@ interface URLParserArgs {
     originalUrl?: string;
     ownerName?: string;
     repoName?: string;
+    defaultBranch?: string
 }
 
 function HrefModifier({ readmeFolder, originalUrl }: URLParserArgs) {
@@ -24,9 +25,9 @@ function HrefModifier({ readmeFolder, originalUrl }: URLParserArgs) {
     }
 }
 
-function SrcModifier({ readmeFolder, ownerName, repoName }: URLParserArgs) {
+function SrcModifier({ readmeFolder, ownerName, repoName, defaultBranch }: URLParserArgs) {
     return (href: string) => {
-        const baseUrl = `${GITEA_URL}/${ownerName}/${repoName}/raw`
+        const baseUrl = `${GITEA_URL}/${ownerName}/${repoName}/raw/branch/${defaultBranch}`
 
         if (isRelativeUrl(href)) {
             href = normalizeRelativeUrl(href, readmeFolder)
@@ -38,7 +39,7 @@ function SrcModifier({ readmeFolder, ownerName, repoName }: URLParserArgs) {
     }
 }
 
-function urlTransformer({ originalUrl, readmeFolder, ownerName, repoName }: URLParserArgs) {
+function urlTransformer({ originalUrl, readmeFolder, ownerName, repoName, defaultBranch }: URLParserArgs) {
     return function transform(tree) {
         visit(tree, 'element', node => {
             switch (node.tagName) {
@@ -48,7 +49,7 @@ function urlTransformer({ originalUrl, readmeFolder, ownerName, repoName }: URLP
                     node.properties.rel = 'noopener noreferrer'
                     break
                 case 'img':
-                    modifyUrl(node, 'src', SrcModifier({ readmeFolder, ownerName, repoName }))
+                    modifyUrl(node, 'src', SrcModifier({ readmeFolder, ownerName, repoName, defaultBranch }))
                     node.properties.loading = "lazy"
                     node.properties["data-cy"] = "relative-readme-img"
                     break
