@@ -76,6 +76,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - meilisearch
     volumes:
       - gitea-data:/gitea-data
       - processor-data:/data

@@ -1,6 +1,6 @@
-import processGerbers from './processGerbers'
-import processKicadPCB from './processKicadPCB'
-import { JobData } from '../jobData'
+import { JobData } from '../jobData.js'
+import processGerbers from './processGerbers/index.js'
+import processKicadPCB from './processKicadPCB/index.js'
 
 export default async function processPCB(job, jobData: JobData) {
   const plottedGerbers = await processKicadPCB(job, jobData)

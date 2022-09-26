@@ -1,9 +1,9 @@
 import escape from 'escape-html'
 import LinkifyIt from 'linkify-it'
-import path from 'path'
-import * as utils from '../utils'
-import { JobData } from '../jobData'
+import path from 'node:path'
 
+import { JobData } from '../jobData.js'
+import * as utils from '../utils.js'
 
 const linkify = new LinkifyIt()
 

@@ -1,20 +1,23 @@
-import supertest from 'supertest'
 import assert from 'assert'
-import * as child_process from 'child_process'
-import * as util from 'util'
-import * as path from 'path'
+import child_process from 'node:child_process'
+import path from 'node:path'
+import supertest from 'supertest'
+import url from 'node:url'
+import util from 'node:util'
 
-import { createApp } from '../../src/app'
-import { delay } from '../../src/utils'
+import { createApp } from '../../src/app.js'
+import { delay } from '../../src/utils.js'
 
 const exec = util.promisify(child_process.exec)
 
 const tmpDir = '/data/test/kitspace-processor-test-from-remote'
 const emptyRepoDir = '/data/test/kitspace-processor-test-empty-repo-dir'
 
-const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS.split(',')
+const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS
+  .split(',')
   .map(x => x.trim())
   .filter(x => x)[0]
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
 describe('remote API', function () {
   beforeEach(async function () {
@@ -47,7 +50,6 @@ describe('remote API', function () {
     await this.supertest
       .post('/process-file')
       .set('Authorization', `Bearer ${REMOTE_API_TOKEN}`)
-
       .expect(422)
   })
 

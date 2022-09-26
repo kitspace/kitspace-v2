@@ -1,14 +1,14 @@
-import * as bullmq from 'bullmq'
-import * as jsYaml from 'js-yaml'
-import * as path from 'path'
 import AsyncLock from 'async-lock'
+import bullmq from 'bullmq'
+import jsYaml from 'js-yaml'
 import log from 'loglevel'
+import path from 'node:path'
 import slugify from 'url-slug'
 
-import { JobData } from './jobData'
-import { exists, exec, readFile } from './utils'
-import { DATA_DIR } from './env'
-import redisConnection from './redisConnection'
+import { DATA_DIR } from './env.js'
+import { exists, exec, readFile } from './utils.js'
+import { JobData } from './jobData.js'
+import redisConnection from './redisConnection.js'
 
 
 const defaultJobOptions: bullmq.JobsOptions = {

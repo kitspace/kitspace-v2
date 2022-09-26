@@ -1,7 +1,7 @@
-import * as fs from 'fs'
-import * as path from 'path'
-import * as util from 'util'
-import * as cp from 'child_process'
+import fs from 'node:fs'
+import path from 'node:path'
+import util from 'node:util'
+import cp from 'node:child_process'
 
 const accessPromise = util.promisify(fs.access)
 

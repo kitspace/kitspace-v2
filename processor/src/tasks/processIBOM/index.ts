@@ -1,11 +1,11 @@
-import * as globule from 'globule'
-import * as loglevel from 'loglevel'
-import * as path from 'path'
+import globule from 'globule'
+import loglevel from 'loglevel'
+import path from 'node:path'
 import shellEscape from 'shell-escape'
+import url from 'node:url'
 
-import { JobData } from '../../jobData'
-import { exists, exec, readFile } from '../../utils'
-
+import { JobData } from '../../jobData.js'
+import { exists, exec, readFile } from '../../utils.js'
 
 async function processIBOM(
   job,
@@ -54,6 +54,7 @@ async function processIBOM(
 
   // !note: we can't escape empty `summary` so we have to quote it manually.
   const summary = kitspaceYaml.summary ? shellEscape([kitspaceYaml.summary]) : "''"
+  const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const run_ibom = path.join(__dirname, 'run_ibom')
   await exec(
     `${run_ibom} '${pcbFile}' '${subprojectName ?? repoName

@@ -1,7 +1,8 @@
-import * as log from 'loglevel'
+import log from 'loglevel'
 import prexit from 'prexit'
-import { createApp } from './app'
-import { giteaDB } from './giteatDB'
+
+import { createApp } from './app.js'
+import { giteaDB } from './giteatDB.js'
 
 log.setDefaultLevel((process.env.LOG_LEVEL as log.LogLevelDesc) || log.levels.INFO)
 

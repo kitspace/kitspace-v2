@@ -1,9 +1,9 @@
-import * as path from 'path'
-import * as globule from 'globule'
+import globule from 'globule'
+import path from 'node:path'
+import url from 'node:url'
 
-import { JobData } from '../../jobData'
-import { existsAll, findKicadPcbFile, exec } from '../../utils'
-
+import { existsAll, findKicadPcbFile, exec } from '../../utils.js'
+import { JobData } from '../../jobData.js'
 
 async function processKicadPCB(
   job,
@@ -58,7 +58,7 @@ async function processKicadPCB(
     return { inputFiles: {}, gerbers: [] }
   }
 }
-
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 async function plotKicadGerbers(outputDir, kicadPcbFile) {
   const tempGerberFolder = path.join('/tmp/kitspace', outputDir, 'gerbers')
   await exec(`rm -rf ${tempGerberFolder} && mkdir -p ${tempGerberFolder}`)

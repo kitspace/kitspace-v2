@@ -1,14 +1,13 @@
 import * as express from 'express'
-import log from 'loglevel'
-import * as path from 'path'
+import bullmq from 'bullmq'
 import fileUpload from 'express-fileupload'
-import * as bullmq from 'bullmq'
+import log from 'loglevel'
+import path from 'node:path'
 
-import { exec, writeFile } from './utils'
-import events from './events'
-import connection from './redisConnection'
-
-import { DATA_DIR, REMOTE_API_TOKENS } from './env'
+import { DATA_DIR, REMOTE_API_TOKENS } from './env.js'
+import { exec, writeFile } from './utils.js'
+import connection from './redisConnection.js'
+import events from './events.js'
 
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')

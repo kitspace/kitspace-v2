@@ -1,13 +1,14 @@
-import * as bullmq from 'bullmq'
-import connection from './redisConnection'
-import writeKitspaceYaml from './tasks/writeKitspaceYaml'
-import processPCB from './tasks/processPCB'
-import processKicadPCB from './tasks/processKicadPCB'
-import processSchematics from './tasks/processSchematics'
-import processInfo from './tasks/processInfo'
-import processIBOM from './tasks/processIBOM'
-import * as search from './tasks/addToSearch'
-import events from './events'
+import bullmq from 'bullmq'
+
+import * as search from './tasks/addToSearch.js'
+import connection from './redisConnection.js'
+import events from './events.js'
+import processIBOM from './tasks/processIBOM/index.js'
+import processInfo from './tasks/processInfo.js'
+import processKicadPCB from './tasks/processKicadPCB/index.js'
+import processPCB from './tasks/processPCB.js'
+import processSchematics from './tasks/processSchematics/index.js'
+import writeKitspaceYaml from './tasks/writeKitspaceYaml.js'
 
 const defaultConcurrency = 1
 

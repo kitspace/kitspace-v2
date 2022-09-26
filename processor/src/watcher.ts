@@ -1,10 +1,10 @@
 import * as chokidar from 'chokidar'
 import debounce from 'lodash.debounce'
 import log from 'loglevel'
-import * as path from 'path'
+import path from 'node:path'
 
-import { GiteaDB } from './giteatDB'
-import { addProjectToQueues, stopQueues } from './queues'
+import { addProjectToQueues, stopQueues } from './queues.js'
+import { GiteaDB } from './giteatDB.js'
 
 interface WatchOptions {
   giteaDB: GiteaDB | null

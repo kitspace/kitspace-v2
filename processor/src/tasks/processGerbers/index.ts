@@ -1,12 +1,11 @@
 import globule from 'globule'
-import path from 'path'
+import path from 'node:path'
 import Jszip from 'jszip'
 
-import { JobData } from '../../jobData'
-import { existsAll, writeFile, readFile, exec } from '../../utils'
-
-import findGerberFiles from './findGerberFiles'
-import boardBuilder from './board_builder'
+import { existsAll, writeFile, readFile, exec } from '../../utils.js'
+import { JobData } from '../../jobData.js'
+import boardBuilder from './board_builder.js'
+import findGerberFiles from './findGerberFiles.js'
 
 interface PlottedGerbers {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

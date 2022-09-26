@@ -1,5 +1,5 @@
 import whatsThatGerber from 'whats-that-gerber'
-import path from 'path'
+import path from 'node:path'
 
 export default function findGerberFiles(files, gerberPath) {
   if (gerberPath != null) {
