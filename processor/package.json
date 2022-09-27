@@ -40,6 +40,7 @@
     "prexit": "^1.0.0",
     "ramda": "^0.27.1",
     "rehype-autolink-headings": "^6.1.1",
+    "rehype-highlight": "^5.0.2",
     "rehype-raw": "^6.1.1",
     "rehype-sanitize": "^5.0.1",
     "rehype-shift-heading": "^1.0.2",

@@ -2,6 +2,7 @@ import { unified } from 'unified'
 import globule from 'globule'
 import path from 'node:path'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeHighlight from 'rehype-highlight'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeShiftHeading from 'rehype-shift-heading'
@@ -18,7 +19,7 @@ import {
   writeFile
 } from '../../utils.js'
 import { JobData } from '../../jobData.js'
-import urlTransformer, { rehypeSanitizeSchema } from './urlTransformer.js'
+import urlTransformer, { rehypeSanitizeOpts } from './urlTransformer.js'
 
 
 async function processReadme(
@@ -98,7 +99,8 @@ async function renderMarkdown(rawMarkdown: string, ownerName: string, repoName: 
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
     .use(rehypeShiftHeading, { shift: 1 })
-    .use(rehypeSanitize, rehypeSanitizeSchema)
+    .use(rehypeHighlight)
+    .use(rehypeSanitize, rehypeSanitizeOpts)
     .use(rehypeStringify)
 
   const processedMarkdown = await Remarker.process(rawMarkdown)

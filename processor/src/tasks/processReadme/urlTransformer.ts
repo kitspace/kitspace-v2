@@ -68,7 +68,7 @@ function urlTransformer({ originalUrl, readmeFolder, ownerName, repoName, defaul
     }
 }
 
-export const rehypeSanitizeSchema: RehypeSanitizeOptions = {
+export const rehypeSanitizeOpts: RehypeSanitizeOptions = {
     ...defaultSchema,
     attributes: {
         ...defaultSchema.attributes,
@@ -76,6 +76,14 @@ export const rehypeSanitizeSchema: RehypeSanitizeOptions = {
             ...(defaultSchema.attributes.img || []),
             ['loading', 'lazy'],
             ['data-cy'],
+        ],
+        span: [
+            ...(defaultSchema.attributes.span || []),
+            ['className']
+        ],
+        code: [
+            ...(defaultSchema.attributes.code || []),
+            ['className']
         ]
     }
 }
