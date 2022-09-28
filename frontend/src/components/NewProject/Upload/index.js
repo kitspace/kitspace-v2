@@ -1,21 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { bool, func, number, shape, string } from 'prop-types'
+import React, { useState, useEffect, useCallback, useContext } from 'react'
+import { bool, func, number } from 'prop-types'
 import { Input, Button, Modal, Form, Loader, Progress } from 'semantic-ui-react'
 
 import slugify from 'slugify'
 import { useRouter } from 'next/router'
 
-import DropZone from '@components/DropZone'
+import { AuthContext } from '@contexts/AuthContext'
 import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
-import useForm from '@hooks/useForm'
+import { UploadOp, NoOp } from '../Ops'
+import DropZone from '@components/DropZone'
 import ExistingProjectFromModel from '@models/ExistingProjectForm'
 import styles from './index.module.scss'
-import { UploadOp, NoOp } from '../Ops'
+import useForm from '@hooks/useForm'
 
-const Upload = ({ csrf, setUserOp, user }) => {
+const Upload = ({ setUserOp }) => {
   const { push } = useRouter()
+  const { user, csrf, apiToken } = useContext(AuthContext)
   const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
     ExistingProjectFromModel,
   )
@@ -32,7 +34,7 @@ const Upload = ({ csrf, setUserOp, user }) => {
     setUserOp(UploadOp)
 
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
-    const repo = await createRepo(tempProjectName, '', csrf)
+    const repo = await createRepo(tempProjectName, '', apiToken)
 
     setProjectName(tempProjectName)
     setOriginalProjectName(tempProjectName)
@@ -63,7 +65,7 @@ const Upload = ({ csrf, setUserOp, user }) => {
     // create repo with the new name and redirect to the update page which will have the loaded files
     const differentName = slugify(form.name)
     setProjectName(differentName)
-    await createRepo(differentName, '', csrf)
+    await createRepo(differentName, '', apiToken)
 
     // Close the conflict modal to show uploading progress.
     setConflictModalOpen(false)
@@ -225,8 +227,6 @@ const Uploader = ({ isNewProject, onDrop, totalNumberOfFiles, progressValue }) =
 }
 
 Upload.propTypes = {
-  user: shape({ username: string, id: number }),
-  csrf: string.isRequired,
   setUserOp: func.isRequired,
 }
 

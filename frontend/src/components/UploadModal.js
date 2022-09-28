@@ -29,7 +29,7 @@ const UploadModal = ({
   projectFullname,
   onDrop,
 }) => {
-  const { user, csrf } = useContext(AuthContext)
+  const { user, apiToken } = useContext(AuthContext)
   const { kitspaceYAML, mutate } = useKitspaceYAML(projectFullname, true, {
     initialData: kitspaceYAMLPreloaded,
   })
@@ -49,7 +49,7 @@ const UploadModal = ({
         assetName,
         projectFullname,
         user,
-        csrf,
+        apiToken,
         kitspaceYAMLExists,
       )
 
@@ -63,7 +63,7 @@ const UploadModal = ({
       default:
         return false
     }
-  }, [kitspaceYAML, kitspaceYAMLExists, selected, projectFullname, user, csrf])
+  }, [kitspaceYAML, kitspaceYAMLExists, selected, projectFullname, user, apiToken])
 
   const populateChecked = useCallback(() => {
     switch (activeTab()) {

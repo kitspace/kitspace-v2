@@ -1,19 +1,17 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { composeServerSideProps } from 'next-composition'
 import { Grid, Divider } from 'semantic-ui-react'
 
-import Page from '@components/Page'
-import Upload from '@components/NewProject/Upload'
-import Sync from '@components/NewProject/Sync'
 import { NoOp, SyncOp, UploadOp } from '@components/NewProject/Ops'
-import { AuthContext } from '@contexts/AuthContext'
 import { withRequireSignIn } from '@utils/authHandlers'
+import Page from '@components/Page'
+import Sync from '@components/NewProject/Sync'
+import Upload from '@components/NewProject/Upload'
 import styles from './index.module.scss'
 
 const rowStyle = { paddingBottom: '10%', paddingTop: '10%' }
 
 const New = () => {
-  const { csrf, user } = useContext(AuthContext)
   const [isBigScreen, setIsBigScreen] = useState(true)
   const [userOp, setUserOp] = useState(NoOp)
 
@@ -34,7 +32,7 @@ const New = () => {
           <Grid.Row>
             {userOp !== UploadOp && (
               <Grid.Column className={styles.optionColumn}>
-                <Sync csrf={csrf} setUserOp={setUserOp} user={user} />
+                <Sync setUserOp={setUserOp} />
               </Grid.Column>
             )}
             {userOp === NoOp && (
@@ -44,7 +42,7 @@ const New = () => {
             )}
             {userOp !== SyncOp && (
               <Grid.Column className={styles.optionColumn}>
-                <Upload csrf={csrf} setUserOp={setUserOp} user={user} />
+                <Upload setUserOp={setUserOp} />
               </Grid.Column>
             )}
           </Grid.Row>
@@ -54,7 +52,7 @@ const New = () => {
           <Grid.Column>
             {userOp !== UploadOp && (
               <Grid.Row style={rowStyle}>
-                <Sync csrf={csrf} setUserOp={setUserOp} user={user} />
+                <Sync setUserOp={setUserOp} />
               </Grid.Row>
             )}
             {userOp === NoOp && (
@@ -64,7 +62,7 @@ const New = () => {
             )}
             {userOp !== SyncOp && (
               <Grid.Row style={rowStyle}>
-                <Upload csrf={csrf} setUserOp={setUserOp} user={user} />
+                <Upload setUserOp={setUserOp} />
               </Grid.Row>
             )}
           </Grid.Column>

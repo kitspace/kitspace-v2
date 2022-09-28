@@ -223,7 +223,7 @@ export const hasInteractiveBom = async assetsPath => {
  * @param {'gerbers' | 'bom' | 'readme'} assetName
  * @param {string} projectFullname
  * @param {object} user
- * @param {string} csrf
+ * @param {string} apiToken
  * @param {boolean} kitspaceYAMLExists
  * @returns {Promise<boolean} : whether the update was successful or not.
  */
@@ -233,7 +233,7 @@ export const submitKitspaceYaml = async (
   assetName,
   projectFullname,
   user,
-  csrf,
+  apiToken,
   kitspaceYAMLExists,
 ) => {
   /**
@@ -248,9 +248,21 @@ export const submitKitspaceYaml = async (
   const newKitspaceYAML = yaml.dump(_kitspaceYAML)
 
   if (kitspaceYAMLExists) {
-    return updateFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
+    return updateFile(
+      projectFullname,
+      'kitspace.yaml',
+      newKitspaceYAML,
+      user,
+      apiToken,
+    )
   }
-  return uploadFile(projectFullname, 'kitspace.yaml', newKitspaceYAML, user, csrf)
+  return uploadFile(
+    projectFullname,
+    'kitspace.yaml',
+    newKitspaceYAML,
+    user,
+    apiToken,
+  )
 }
 
 /**

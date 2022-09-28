@@ -27,7 +27,8 @@ services:
       - '2222:22'
     volumes:
       - ./gitea:/go/src/code.gitea.io/gitea
-    command: /bin/bash --verbose -c 'make build && cp gitea /app/gitea/ && /usr/bin/entrypoint'
+    # => gitea/docker/root/usr/bin/kitspace_dev_entrypoint
+    entrypoint: ["/usr/bin/kitspace_dev_entrypoint"]
 
   postgres:
     ports:

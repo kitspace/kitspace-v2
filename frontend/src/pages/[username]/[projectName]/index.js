@@ -76,7 +76,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       getKitspaceYAMLJson(assetsPath),
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
-      canCommit(repoFullname, session?.user?.username),
+      canCommit(repoFullname, session.user?.username, session.apiToken),
     ])
 
     const isMultiProject = kitspaceYAML.multi != null

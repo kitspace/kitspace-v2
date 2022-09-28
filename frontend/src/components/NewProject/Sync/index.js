@@ -1,19 +1,21 @@
-import React, { useState } from 'react'
-import { func, number, shape, string } from 'prop-types'
+import React, { useContext, useState } from 'react'
+import { func } from 'prop-types'
 import { Input, Button, Form, Message } from 'semantic-ui-react'
 
 import { useRouter } from 'next/router'
 import { isEmpty } from 'lodash'
 
-import SyncRepoFromModel from '@models/SyncRepoForm'
-import useForm from '@hooks/useForm'
+import { AuthContext } from '@contexts/AuthContext'
 import { mirrorRepo } from '@utils/giteaApi'
+import { SyncOp, NoOp } from '../Ops'
 import { urlToName } from '@utils/index'
 import styles from './index.module.scss'
-import { SyncOp, NoOp } from '../Ops'
+import SyncRepoFromModel from '@models/SyncRepoForm'
+import useForm from '@hooks/useForm'
 
-const Sync = ({ csrf, setUserOp, user }) => {
+const Sync = ({ setUserOp }) => {
   const { push } = useRouter()
+  const { user, apiToken } = useContext(AuthContext)
   const { form, errors, onChange } = useForm(SyncRepoFromModel)
 
   const [loading, setLoading] = useState(false)
@@ -38,7 +40,7 @@ const Sync = ({ csrf, setUserOp, user }) => {
       const repoURL = form.url
       const repoName = urlToName(repoURL)
 
-      const res = await mirrorRepo(repoURL, uid, csrf)
+      const res = await mirrorRepo(repoURL, uid, apiToken)
       const migrateSuccessfully = res.ok
       const alreadySynced = res.status === 409
 
@@ -118,8 +120,6 @@ const Sync = ({ csrf, setUserOp, user }) => {
 }
 
 Sync.propTypes = {
-  user: shape({ username: string, id: number }),
-  csrf: string.isRequired,
   setUserOp: func.isRequired,
 }
 

@@ -11,13 +11,12 @@ const headers = { 'Content-Type': 'application/json' }
  * Create a new Gitea repo
  * @param name {string}
  * @param description {string}
- * @param csrf {string}
+ * @param apiToken {string}
  * @returns {Promise<string>}
  */
-export const createRepo = async (name, description, csrf) => {
+export const createRepo = async (name, description, apiToken) => {
   const endpoint = `${giteaApiUrl}/user/repos`
   const giteaOptions = {
-    _csrf: csrf,
     name: slugify(name),
     description,
     repo_template: '',
@@ -32,7 +31,10 @@ export const createRepo = async (name, description, csrf) => {
     method: 'POST',
     credentials,
     mode,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      Authorization: `token ${apiToken}`,
+    },
     body: JSON.stringify(giteaOptions),
   })
 
@@ -45,17 +47,20 @@ export const createRepo = async (name, description, csrf) => {
  * Update a repo with new fields
  * @param repo {string}
  * @param updateFields{Object}
- * @param csrf{string}
+ * @param apiToken {string}
  * @returns {Promise<boolean>}
  */
-export const updateRepo = async (repo, updateFields, csrf) => {
+export const updateRepo = async (repo, updateFields, apiToken) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}`
 
   const res = await fetch(endpoint, {
     method: 'PATCH',
     credentials,
     mode,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      Authorization: `token ${apiToken}`,
+    },
     body: JSON.stringify(updateFields),
   })
 
@@ -103,10 +108,10 @@ export const getGitServiceFromUrl = url => {
  * Mirror an existing remote git repo to a Gitea repo
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
- * @param csrf {string}
+ * @param apiToken {string}
  * @returns {Promise<Response>}
  */
-export const mirrorRepo = async (remoteRepo, uid, csrf) => {
+export const mirrorRepo = async (remoteRepo, uid, apiToken) => {
   const repoName = urlToName(remoteRepo)
   const service = getGitServiceFromUrl(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate`
@@ -127,7 +132,10 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
     method: 'POST',
     mode,
     credentials: 'include',
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      Authorization: `token ${apiToken}`,
+    },
     body: JSON.stringify(giteaOptions),
   })
 }
@@ -135,16 +143,19 @@ export const mirrorRepo = async (remoteRepo, uid, csrf) => {
 /**
  * Delete the corresponding gitea repo for a project.
  * @param repo {string}
- * @param csrf {string}
+ * @param apiToken {string}
  * @returns {Promise<boolean>}
  */
-export const deleteRepo = async (repo, csrf) => {
+export const deleteRepo = async (repo, apiToken) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}`
   const res = await fetch(endpoint, {
     method: 'DELETE',
     mode,
     credentials,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      Authorization: `token ${apiToken}`,
+    },
   })
 
   return res.ok
@@ -239,10 +250,10 @@ export const userExists = async username => {
  * Check if a user is a collaborator in a Gitea repo.
  * @param {string} repo
  * @param {string} username
- * @param csrf{string}
+ * @param apiToken {string}
  * @returns {Promise<boolean>}
  */
-const isCollaborator = async (repo, username, csrf) => {
+const isCollaborator = async (repo, username, apiToken) => {
   if (username == null) {
     return false
   }
@@ -253,7 +264,10 @@ const isCollaborator = async (repo, username, csrf) => {
     method: 'GET',
     mode,
     credentials,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: {
+      ...headers,
+      Authorization: `auth ${apiToken}`,
+    },
   })
 
   if (res.ok) {
@@ -268,12 +282,12 @@ const isCollaborator = async (repo, username, csrf) => {
  * Check if a user can commit to a Gitea repo.
  * @param {string} repo
  * @param {string} username
- * @param csrf{string}
+ * @param apiToken {string}
  * @returns
  */
-export const canCommit = async (repo, username, csrf) => {
+export const canCommit = async (repo, username, apiToken) => {
   const repoOwner = repo.split('/')[0]
-  return repoOwner === username || isCollaborator(repo, username, csrf)
+  return repoOwner === username || isCollaborator(repo, username, apiToken)
 }
 
 export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
@@ -366,10 +380,10 @@ export const getFile = async (repo, path) => {
  * @param path{string}
  * @param content{string}: must be Base64 encoded
  * @param user{object}
- * @param csrf{string}
+ * @param apiToken{string}
  * @returns {Promise<boolean>}
  */
-export const updateFile = async (repo, path, content, user, csrf) => {
+export const updateFile = async (repo, path, content, user, apiToken) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
 
   const { sha } = await getFile(repo, path)
@@ -391,7 +405,7 @@ export const updateFile = async (repo, path, content, user, csrf) => {
     method: 'PUT',
     credentials,
     mode,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: { ...headers, Authorization: `token ${apiToken}` },
     body: JSON.stringify(reqBody),
   })
 
@@ -417,10 +431,10 @@ export const renderMarkdown = async markdown => {
  * @param path{string}
  * @param content{string}: must be Base64 encoded
  * @param user{object}
- * @param csrf{string}
+ * @param apiToken{string}
  * @returns {Promise<boolean>}
  */
-export const uploadFile = async (repo, path, content, user, csrf) => {
+export const uploadFile = async (repo, path, content, user, apiToken) => {
   const endpoint = `${giteaApiUrl}/repos/${repo}/contents/${path}`
 
   const reqBody = {
@@ -440,7 +454,7 @@ export const uploadFile = async (repo, path, content, user, csrf) => {
     method: 'POST',
     credentials,
     mode,
-    headers: { ...headers, 'X-Csrf-Token': csrf },
+    headers: { ...headers, Authorization: `token ${apiToken}` },
     body: JSON.stringify(reqBody),
   })
 

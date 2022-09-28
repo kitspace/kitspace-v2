@@ -5,26 +5,30 @@ import { node, object } from 'prop-types'
 import { logout, getSession } from '@utils/giteaInternalApi'
 
 export const AuthContext = createContext({
-  isAuthenticated: false,
-  user: null,
-  logout: async () => false,
-  setUser: () => {},
-  setCsrf: () => {},
+  apiToken: null,
   csrf: '',
+  isAuthenticated: false,
+  logout: async () => false,
+  setApiToken: () => {},
+  setCsrf: () => {},
+  setUser: () => {},
+  user: null,
 })
 
 const AuthProvider = ({ children, initialSession }) => {
+  const [apiToken, setApiToken] = useState(initialSession.ApiToken)
   const [user, setUser] = useState(initialSession.user)
   const [csrf, setCsrf] = useState(initialSession.csrf)
 
   const { push } = useRouter()
 
   useEffect(() => {
-    sessionStorage.setItem('session', JSON.stringify({ user, csrf }))
-  }, [user, csrf])
+    sessionStorage.setItem('session', JSON.stringify({ user, csrf, apiToken }))
+  }, [user, csrf, apiToken])
 
   const deAuthorize = async () => {
     setUser(null)
+    setApiToken(null)
     await logout()
     const { csrf } = await getSession()
     setCsrf(csrf)
@@ -34,11 +38,13 @@ const AuthProvider = ({ children, initialSession }) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
-        logout: deAuthorize,
-        setUser,
-        setCsrf,
+        apiToken,
         csrf,
+        logout: deAuthorize,
+        setApiToken,
+        setCsrf,
+        setUser,
+        user,
       }}
     >
       {children}
