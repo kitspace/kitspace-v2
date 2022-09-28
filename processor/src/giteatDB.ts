@@ -9,6 +9,8 @@ export interface RepoInfo {
   is_mirror: boolean
   is_empty: boolean
   owner_name: string
+  default_branch: string
+  original_url: string
   name: string
   description: string
 }
@@ -36,7 +38,7 @@ export const giteaDB: GiteaDB = {
    */
   async getRepoInfo(ownerName, repoName) {
     const rows = await sql<RepoInfo[]>`
-      SELECT id, is_mirror, is_empty, owner_name, name, description
+      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
 

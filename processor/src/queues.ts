@@ -51,6 +51,8 @@ function createJobs(jobData: JobData) {
 }
 
 export interface AddProjectToQueueData {
+  defaultBranch: string
+  originalUrl: string
   ownerName: string
   repoName: string
   repoDescription: string,
@@ -58,6 +60,8 @@ export interface AddProjectToQueueData {
   gitDir: string
 }
 export async function addProjectToQueues({
+  defaultBranch,
+  originalUrl,
   ownerName,
   repoName,
   repoDescription,
@@ -100,11 +104,13 @@ export async function addProjectToQueues({
       projectKitspaceYaml.summary ||= repoDescription
 
       createJobs({
+        defaultBranch,
         subprojectName,
         giteaId,
         inputDir,
         kitspaceYaml: projectKitspaceYaml,
         outputDir: projectOutputDir,
+        originalUrl,
         ownerName,
         repoName,
         hash,
@@ -114,10 +120,12 @@ export async function addProjectToQueues({
     // fall back to repo description if there's no summary.
     kitspaceYaml.summary ||= repoDescription
     createJobs({
+      defaultBranch,
       giteaId,
       inputDir,
       kitspaceYaml,
       outputDir,
+      originalUrl,
       ownerName,
       repoName,
       hash,

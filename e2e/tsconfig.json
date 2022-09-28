@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "types": ["cypress"]
+  },
+  "include": ["cypress"],
+  "exclude": ["node_module/**"]
+}

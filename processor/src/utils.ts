@@ -59,3 +59,27 @@ export function findKicadSchematic(inputDir, files, kitspaceYaml) {
   }
   return files.find(file => file.endsWith('.sch'))
 }
+
+export function isRelativeUrl(uri: string) {
+  return !uri.match(/^https?:\/\//)
+}
+
+export function normalizeRelativeUrl(url: string, rootFolder: string) {
+  if (url.startsWith('/')) {
+    return url.slice(1)
+  }
+  return path.join(rootFolder, url)
+}
+
+export function toGitHubRawUrl(url: string) {
+  const parsedUrl = new URL(url)
+
+  if (parsedUrl.hostname === 'github.com') {
+    parsedUrl.hostname = 'raw.githubusercontent.com'
+    const urlPath = parsedUrl.pathname.split('/')
+    // Remove `/blob/` or '/raw/' from the path.
+    parsedUrl.pathname = urlPath.slice(0, 3).concat(urlPath.slice(4)).join('/')
+    url = parsedUrl.toString()
+  }
+  return url
+}

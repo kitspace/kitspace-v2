@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "file-loader": "^6.0.0",
     "file-selector": "^0.2.4",
+    "highlight.js": "^11.6.0",
     "joi": "^17.2.1",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",

@@ -41,9 +41,15 @@ function linkifyProjectSummary(kitspaceYaml) {
 
   if (matches) {
     for (const match of matches) {
+      // Use https by default
+      const url = new URL(match.url)
+      if (!match.schema) {
+        url.protocol = 'https:'
+      }
+
       escapedSummary = escapedSummary.replace(
         match.raw,
-        `<a href="${match.url}" rel="noopener noreferrer" target="_blank">${match.text}</a>`
+        `<a href="${url.toString()}" rel="noopener noreferrer" target="_blank">${match.text}</a>`
       )
     }
   }
