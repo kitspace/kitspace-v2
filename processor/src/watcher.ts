@@ -41,13 +41,8 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
             dirWatchers[gitDir].queuing = false
             return
           }
-          defaultBranch = giteaRepo.default_branch
-          originalUrl = giteaRepo.original_url
-          repoDescription = giteaRepo.description
+
           giteaId = giteaRepo.id
-          // use case-correct names from the DB
-          ownerName = giteaRepo.owner_name
-          repoName = giteaRepo.name
 
           if (giteaRepo.is_empty) {
             await giteaDB.waitForNonEmpty(giteaId)
@@ -56,6 +51,16 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
           if (giteaRepo.is_mirror) {
             await giteaDB.waitForRepoMigration(giteaId)
           }
+
+          // Get the repo info again after the migration is done.
+          // Some fields, (e.g., default_branch) only gets populated after migration
+          const finalGiteaRepoData = await giteaDB.getRepoInfo(ownerName, repoName)
+          originalUrl = finalGiteaRepoData.original_url
+          repoDescription = finalGiteaRepoData.description
+          defaultBranch = finalGiteaRepoData.default_branch
+          // use case-correct names from the DB
+          ownerName = finalGiteaRepoData.owner_name
+          repoName = finalGiteaRepoData.name
         }
 
         await addProjectToQueues({

@@ -76,7 +76,8 @@ export const giteaDB: GiteaDB = {
       row =>
         row.repo_id === repoId &&
         row.type === TaskType.Migration &&
-        row.status === MigrationStatus.Done,
+        row.status === MigrationStatus.Done &&
+        row.default_branch !== ''
     )
   },
 
