@@ -4,6 +4,7 @@ import { unified } from 'unified'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
+import remarkEmoji from 'remark-emoji'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
@@ -43,6 +44,7 @@ async function renderProjectSummary(kitspaceYaml) {
   const summary = kitspaceYaml.summary || ''
   const Remarker = unified()
     .use(remarkParse)
+    .use(remarkEmoji)
     .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypeHighlight)
