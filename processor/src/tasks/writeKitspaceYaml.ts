@@ -1,19 +1,24 @@
-import escape from 'escape-html'
-import LinkifyIt from 'linkify-it'
 import path from 'node:path'
+
+import { unified } from 'unified'
+import rehypeHighlight from 'rehype-highlight'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
 
 import { JobData } from '../jobData.js'
 import * as utils from '../utils.js'
 
-const linkify = new LinkifyIt()
 
-export default function writeKitspaceYaml(
+export default async function writeKitspaceYaml(
   job,
   { kitspaceYaml, outputDir }: Partial<JobData>,
 ) {
   const kitspaceYamlJson = path.join(outputDir, 'kitspace-yaml.json')
   job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson })
-  const KitspaceYamlJsonLinkified = linkifyKitspaceYaml(kitspaceYaml)
+  const KitspaceYamlJsonLinkified = await linkifyKitspaceYaml(kitspaceYaml)
 
   return utils
     .writeFile(kitspaceYamlJson, JSON.stringify(KitspaceYamlJsonLinkified, null, 2))
@@ -23,37 +28,28 @@ export default function writeKitspaceYaml(
     )
 }
 
-function linkifyKitspaceYaml(kitspaceYaml) {
+async function linkifyKitspaceYaml(kitspaceYaml) {
   if (kitspaceYaml.multi) {
     const linkifiedKitspaceYaml = kitspaceYaml
-    Object.keys(kitspaceYaml.multi).forEach(subProject => {
-      linkifiedKitspaceYaml.multi[subProject] = linkifyProjectSummary(kitspaceYaml.multi[subProject])
+    Object.keys(kitspaceYaml.multi).forEach(async subProject => {
+      linkifiedKitspaceYaml.multi[subProject] = await renderProjectSummary(kitspaceYaml.multi[subProject])
     })
     return linkifiedKitspaceYaml
   }
-
-  return linkifyProjectSummary(kitspaceYaml)
+  return renderProjectSummary(kitspaceYaml)
 }
 
-function linkifyProjectSummary(kitspaceYaml) {
-  let escapedSummary = escape(kitspaceYaml.summary || '')
-  const matches = linkify.match(escapedSummary)
+async function renderProjectSummary(kitspaceYaml) {
+  const summary = kitspaceYaml.summary || ''
+  const Remarker = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype)
+    .use(rehypeHighlight)
+    .use(rehypeSanitize)
+    .use(rehypeStringify)
 
-  if (matches) {
-    for (const match of matches) {
-      // Use https by default
-      const url = new URL(match.url)
-      if (!match.schema) {
-        url.protocol = 'https:'
-      }
-
-      escapedSummary = escapedSummary.replace(
-        match.raw,
-        `<a href="${url.toString()}" rel="noopener noreferrer" target="_blank">${match.text}</a>`
-      )
-    }
-  }
-
-  kitspaceYaml.summary = escapedSummary
+  const processedMarkdown = await Remarker.process(summary)
+  kitspaceYaml.summary = String(processedMarkdown)
   return kitspaceYaml
 }
