@@ -19,12 +19,13 @@ services:
       - USER_UID=1000
       - USER_GID=1000
       - SECRET_KEY=${GITEA_SECRET_KEY}
-      - GITEA__session__PROVIDER=db
       - GITEA__database__DB_TYPE=postgres
       - GITEA__database__HOST=postgres:5432
       - GITEA__database__NAME=gitea
-      - GITEA__database__USER=gitea
       - GITEA__database__PASSWD=${POSTGRES_PASSWORD}
+      - GITEA__database__USER=gitea
+      - GITEA__security__INTERNAL_TOKEN=${GITEA_INTERNAL_TOKEN}
+      - GITEA__session__PROVIDER=db
     volumes:
       - gitea-data:/data
       - /etc/timezone:/etc/timezone:ro
