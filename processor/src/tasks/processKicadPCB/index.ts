@@ -1,6 +1,8 @@
-import globule from 'globule'
 import path from 'node:path'
 import url from 'node:url'
+
+import globule from 'globule'
+import shellEscape from 'shell-escape'
 
 import { existsAll, findKicadPcbFile, exec } from '../../utils.js'
 import { JobData } from '../../jobData.js'
@@ -63,7 +65,7 @@ async function plotKicadGerbers(outputDir, kicadPcbFile) {
   const tempGerberFolder = path.join('/tmp/kitspace', outputDir, 'gerbers')
   await exec(`rm -rf ${tempGerberFolder} && mkdir -p ${tempGerberFolder}`)
   const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
-  const plotCommand = `${plot_kicad_pcb} gerber ${kicadPcbFile} ${tempGerberFolder}`
+  const plotCommand = shellEscape([plot_kicad_pcb, 'gerber', kicadPcbFile, tempGerberFolder])
   await exec(plotCommand)
   return globule.find(path.join(tempGerberFolder, '*'))
 }
@@ -72,7 +74,7 @@ async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
   const tempFolder = path.join('/tmp/kitspace', outputDir, 'svg')
   await exec(`rm -rf ${tempFolder} && mkdir -p ${tempFolder}`)
   const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
-  const plotCommand = `${plot_kicad_pcb} svg ${kicadPcbFile} ${tempFolder} ${layoutSvgPath}`
+  const plotCommand = shellEscape([plot_kicad_pcb, 'svg', kicadPcbFile, tempFolder, layoutSvgPath])
   return exec(plotCommand)
 }
 
