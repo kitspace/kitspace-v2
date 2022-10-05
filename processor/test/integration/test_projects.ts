@@ -294,6 +294,66 @@ describe('projects API', function () {
     }
   })
 
+  it('process projects with special characters in `gerbers` path', async function () {
+    // first we reset HEAD/master to an exact version of the repo
+    // so future changes of the repo don't affect this test
+    const hash = 'ee609be1f1de831ed235b38db9808190aaf5e463'
+    const tmpBare = path.join(tmpDir, 'spaces-in-kitspace-data-paths.git')
+    await exec(`git clone --bare https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths ${tmpBare}`)
+    await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
+    await exec(
+      `git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace-test-repos/spaces-in-kitspace-data-paths.git')}`,
+    )
+
+    const projectName = 'aux-ps-cs'
+    const files = [
+      `${projectName}/${projectName}-${hash.slice(0, 7)}-gerbers.zip`,
+      'kitspace-yaml.json',
+      'gerber-info.json'
+    ]
+
+    for (const f of files) {
+      // at first it may not be processing yet so we get a 404
+      let r = await this.supertest.get(
+        `/status/kitspace-test-repos/spaces-in-kitspace-data-paths/HEAD/${f}`,
+      )
+      while (r.status === 404) {
+        r = await this.supertest.get(
+          `/status/kitspace-test-repos/spaces-in-kitspace-data-paths/HEAD/${f}`,
+        )
+        await delay(10)
+      }
+
+      // after a while it should report something
+      assert(r.status === 200)
+      // but it's probably 'in_progress'
+      while (r.body.status === 'in_progress') {
+        r = await this.supertest.get(
+          `/status/kitspace-test-repos/spaces-in-kitspace-data-paths/HEAD/${f}`,
+        )
+        await delay(10)
+      }
+
+      // at some point it should notice it succeeded
+      assert(r.status === 200)
+      assert(
+        r.body.status === 'done',
+        `expecting body.status to be 'done' but got '${r.body.status}' for ${f}` +
+        `\n ${JSON.stringify(r.body, null, 2)}`,
+      )
+
+      // it serves up the file
+      r = await this.supertest
+        .get(`/files/kitspace-test-repos/spaces-in-kitspace-data-paths/HEAD/${f}`)
+        .redirects()
+      assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
+      assert(
+        r.req.path.includes(hash),
+        `expected '${r.req.path}' to include '${hash}'`,
+      )
+    }
+  })
+
   afterEach(async function () {
     await this.app.stop()
     await exec(`rm -rf ${tmpDir}`)
