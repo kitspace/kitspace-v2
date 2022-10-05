@@ -131,11 +131,13 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
           <Segment attached className={styles.buttonSegment}>
             {retailerButtons}
           </Segment>
-          <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
           <DirectStores items={lines} multiplier={mult} />
         </>
       ) : (
-        <NoPurchasableParts />
+        <>
+          <NoPurchasableParts />
+          <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
+        </>
       )}
     </div>
   )
