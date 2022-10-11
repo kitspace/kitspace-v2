@@ -238,10 +238,45 @@ describe('Multi project page', () => {
       'board-extra-menus',
       'order-pcb',
       'buy-parts',
+      'buy-parts-bom',
       'readme',
     ]
 
     pageComponents.forEach(c => {
+      cy.get(`[data-cy=${c}]`)
+    })
+  })
+
+  it('should render bom even if there is no purchasable parts', () => {
+    const username = getFakeUsername()
+    const email = faker.unique(faker.internet.email)
+    const password = '123456'
+    const syncedRepoUrlMultiProjects =
+      'https://github.com/kitspace-test-repos/glasgow'
+    const multiProjectsRepoName = 'glasgow'
+
+    cy.createUser(username, email, password)
+    cy.visit('/')
+    cy.get('[data-cy=user-menu]')
+
+    cy.forceVisit('/projects/new')
+
+    // Migrate the multiproject repo
+    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
+    cy.get('button').contains('Sync').click()
+
+    cy.url({ timeout: 60_000 }).should(
+      'contain',
+      `${username}/${multiProjectsRepoName}`,
+    )
+    // Wait for the repo to finish processing, by checking the visibility sub projects cards.
+    cy.get('[data-cy=project-card]', { timeout: 90_000 }).click({ force: true })
+    // wait for redirection
+    cy.get(['data-cy=sync-msg'], { timeout: 30_000 })
+
+    const buyPartsComponents = ['buy-parts-bom', 'buy-parts-no-purchasable-parts']
+
+    buyPartsComponents.forEach(c => {
       cy.get(`[data-cy=${c}]`)
     })
   })

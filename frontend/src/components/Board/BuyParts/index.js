@@ -134,17 +134,20 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
           <DirectStores items={lines} multiplier={mult} />
         </>
       ) : (
-        <>
-          <NoPurchasableParts />
-          <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
-        </>
+        <NoPurchasableParts />
       )}
+      <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
     </div>
   )
 }
 
 const NoPurchasableParts = () => (
-  <Segment attached disabled className={styles.buttonSegment}>
+  <Segment
+    attached
+    disabled
+    className={styles.buttonSegment}
+    data-cy="buy-parts-no-purchasable-parts"
+  >
     <p className={styles.NoPurchasablePartsText}>
       No parts to buy have been specified in this project&apos;s BOM yet.
     </p>
