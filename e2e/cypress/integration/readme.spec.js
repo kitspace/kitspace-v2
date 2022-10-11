@@ -68,7 +68,7 @@ describe('Relative README images URLs normalization', () => {
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
     cy.get('[data-cy=project-card]', { timeout: 20_000 }).should('have.length', 2)
 
-    cy.visit(`/${username}/${repoName}/project-2`)
+    cy.visit(`/${username}/${repoName}/project_2`)
     cy.get('[data-cy=readme]').within(() => {
       cy.get('img').each($img => {
         // checks for naturalWidth/naturalHeight are not working
@@ -106,7 +106,7 @@ describe('Relative README images URLs normalization', () => {
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
     cy.get('[data-cy=project-card]', { timeout: 20_000 }).should('have.length', 2)
 
-    cy.visit(`/${username}/${repoName}/project-1`)
+    cy.visit(`/${username}/${repoName}/project_1`)
 
     cy.get('[data-cy=readme]').within(() => {
       cy.get('a').each($a => {

@@ -3,8 +3,6 @@ import bullmq from 'bullmq'
 import jsYaml from 'js-yaml'
 import log from 'loglevel'
 import path from 'node:path'
-import slugify from 'url-slug'
-
 import { DATA_DIR } from './env.js'
 import { exists, exec, readFile } from './utils.js'
 import { JobData } from './jobData.js'
@@ -153,7 +151,7 @@ async function getKitspaceYaml(inputDir) {
   if (kitspaceYamlJson.multi) {
     // Slugify the subproject names.
     Object.keys(kitspaceYamlJson.multi).forEach(subProjectName => {
-      const slugifiedName = slugify(subProjectName, { transformer: false })
+      const slugifiedName = formatAsGiteaRepoName(subProjectName)
       if (slugifiedName !== subProjectName) {
         // If the slugified name is different than the sub project name,
         // replace the sub project name with the slugified version.
@@ -210,4 +208,14 @@ async function sync(gitDir, checkoutDir) {
     }
     done()
   }).then(() => log.debug('Released sync lock for ', gitDir))
+}
+
+/**
+ * format subproject name as a valid gitea repo name.
+ * This replaces any **non* (alphanumeric, -, _, and .) with a '-',
+ * see https://github.com/go-gitea/gitea/blob/b59b0cad0a550223f74add109ff13c0d2f4309f3/services/forms/repo_form.go#L35
+ * @param subProjectName
+ */
+function formatAsGiteaRepoName(subProjectName: string) {
+  return subProjectName.replace(/[^\w\d-_.]/g, '-').slice(0, 100)
 }
