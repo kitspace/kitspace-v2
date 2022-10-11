@@ -21,7 +21,7 @@ const Bom = ({ length, parts, tsv }) => {
   }, [length])
 
   return (
-    <div className={styles.Bom}>
+    <div className={styles.Bom} data-cy="buy-parts-bom">
       <DoubleScrollBar>
         <TsvTable collapsed={collapsed} parts={parts} tsv={tsv} />
       </DoubleScrollBar>
