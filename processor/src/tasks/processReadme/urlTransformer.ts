@@ -63,8 +63,10 @@ function urlTransformer({ originalUrl, readmeFolder, ownerName, repoName, defaul
     }
 
     function modifyUrl(node, prop: 'href' | 'src', modifier: ReturnType<typeof SrcModifier>) {
-        const newURL = modifier(node.properties[prop])
-        node.properties[prop] = newURL
+        if (node.properties[prop]) {
+            const newURL = modifier(node.properties[prop])
+            node.properties[prop] = newURL
+        }
     }
 }
 
