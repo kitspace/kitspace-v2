@@ -297,7 +297,7 @@ describe('projects API', function () {
   it('process projects with special characters in `gerbers` path', async function () {
     // first we reset HEAD/master to an exact version of the repo
     // so future changes of the repo don't affect this test
-    const hash = 'ee609be1f1de831ed235b38db9808190aaf5e463'
+    const hash = 'eacd4ccc160c4ff7cfa9ca5d0047c90ff3f95d42'
     const tmpBare = path.join(tmpDir, 'spaces-in-kitspace-data-paths.git')
     await exec(`git clone --bare https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths ${tmpBare}`)
     await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
@@ -309,7 +309,7 @@ describe('projects API', function () {
     const files = [
       `${projectName}/${projectName}-${hash.slice(0, 7)}-gerbers.zip`,
       'kitspace-yaml.json',
-      'gerber-info.json'
+      path.join(projectName, 'gerber-info.json')
     ]
 
     for (const f of files) {
