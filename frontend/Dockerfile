@@ -22,12 +22,14 @@ COPY yarn.lock .
 RUN yarn --frozen-lockfile
 
 FROM base AS production
-COPY --from=build /build/.next/ .next/
-COPY --from=build /deps/node_modules/ node_modules/
-COPY package.json .
-COPY next.config.js .
-COPY public/ public/
-RUN mkdir src/
-COPY src/server.js src/server.js
-ENV NODE_ENV=production
-CMD yarn start
+COPY --chown=node:node --from=build /build/.next/ .next/
+COPY --chown=node:node --from=build /deps/node_modules/ node_modules/
+COPY --chown=node:node package.json .
+COPY --chown=node:node next.config.js .
+COPY --chown=node:node public/ public/
+RUN mkdir src/ &&  chown -R node src
+COPY --chown=node:node src/server.js src/server.js
+ENV NODE_ENV=productionu
+USER node
+
+CMD ["node", "src/server.js"]
