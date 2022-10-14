@@ -40,6 +40,7 @@ services:
       dockerfile: Dockerfile
 
   processor:
+    user: root
     build:
       context: processor/
       dockerfile: Dockerfile
