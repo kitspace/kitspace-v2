@@ -36,4 +36,3 @@ RUN addgroup --gid 1000 node && \
 
 USER node
 CMD ["node", "dist/src/server.js"]
-
