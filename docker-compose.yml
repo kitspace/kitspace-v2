@@ -80,7 +80,7 @@ services:
       - redis
       - meilisearch
     volumes:
-      - gitea-data:/gitea-data
+      - gitea-data:/gitea-data:ro
       - processor-data:/data
       # share docker daemon when running docker inside docker
       - /var/run/docker.sock:/var/run/docker.sock
