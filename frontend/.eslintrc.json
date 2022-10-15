@@ -49,7 +49,7 @@
         "reservedFirst": true
       }
     ],
-    "react/jsx-filename-extension": [1, { "extensions": [".js"] }],
+    "react/jsx-filename-extension": [1, { "extensions": [".jsx"] }],
     "react-hooks/exhaustive-deps": "error"
   }
 }
