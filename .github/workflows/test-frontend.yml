@@ -10,7 +10,7 @@ defaults:
     working-directory: frontend
 
 jobs:
-  lint_processor:
+  test_frontend:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup Node 16
