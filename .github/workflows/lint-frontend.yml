@@ -10,7 +10,7 @@ defaults:
     working-directory: frontend
 
 jobs:
-  lint_frontend:
+  test_frontend:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup Node
