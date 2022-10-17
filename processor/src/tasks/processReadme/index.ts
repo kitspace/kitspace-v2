@@ -12,19 +12,21 @@ import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 
-
-import {
-  exists,
-  readFile,
-  writeFile
-} from '../../utils.js'
+import { exists, readFile, writeFile, exec } from '../../utils.js'
 import { JobData } from '../../jobData.js'
 import urlTransformer, { rehypeSanitizeOpts } from './urlTransformer.js'
 
-
 async function processReadme(
   job,
-  { inputDir, kitspaceYaml, outputDir, ownerName, repoName, originalUrl, defaultBranch }: Partial<JobData>,
+  {
+    inputDir,
+    kitspaceYaml,
+    outputDir,
+    ownerName,
+    repoName,
+    originalUrl,
+    defaultBranch,
+  }: Partial<JobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
@@ -64,6 +66,7 @@ async function processReadme(
     defaultBranch,
   )
 
+  await exec(`mkdir -p ${outputDir}`)
   await writeFile(readmePath, processedReadmeHTML)
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
     .catch(error =>
@@ -78,7 +81,7 @@ function findReadmeFile(inputDir: string) {
     path.join(inputDir, 'readme?(.markdown|.mdown|.mkdn|.md|.rst)'),
     {
       nocase: true,
-      dot: true
+      dot: true,
     },
   )
 
@@ -88,14 +91,26 @@ function findReadmeFile(inputDir: string) {
   return null
 }
 
-async function renderMarkdown(rawMarkdown: string, ownerName: string, repoName: string,
-  readmeFolder: string, originalUrl: string, defaultBranch: string) {
+async function renderMarkdown(
+  rawMarkdown: string,
+  ownerName: string,
+  repoName: string,
+  readmeFolder: string,
+  originalUrl: string,
+  defaultBranch: string,
+) {
   const Remarker = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
-    .use(urlTransformer, { readmeFolder, originalUrl, ownerName, repoName, defaultBranch })
+    .use(urlTransformer, {
+      readmeFolder,
+      originalUrl,
+      ownerName,
+      repoName,
+      defaultBranch,
+    })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
     .use(rehypeShiftHeading, { shift: 1 })
