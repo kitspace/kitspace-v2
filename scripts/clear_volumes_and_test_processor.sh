@@ -25,6 +25,7 @@ args="$(concatenate_args "$@")"
 # The `node` user doesn't have permission to do any of these tasks.
 docker-compose run \
     -u root \
+    --rm \
     -e LOG_LEVEL=debug \
     -e DATA_DIR=/data/test \
     processor sh -c "yarn install && yarn tsc && yarn cp-assets && yarn cp-test-assets && yarn test ${args}"
