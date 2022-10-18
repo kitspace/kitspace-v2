@@ -1,13 +1,10 @@
 import assert from 'assert'
-import cp from 'node:child_process'
 import path from 'node:path'
 import supertest from 'supertest'
-import util from 'node:util'
 
 import { createApp } from '../../src/app.js'
-import { delay } from '../../src/utils.js'
-
-const exec = util.promisify(cp.exec)
+import { delay, exec } from '../../src/utils.js'
+import generateImageHash from './generateImageHash.js'
 
 const tmpDir = '/data/test/temp/kitspace-processor-test-from-folder'
 const repoDir = path.join(tmpDir, 'repos')
@@ -372,6 +369,72 @@ describe('projects API', function () {
       assert(
         r.req.path.includes(hash),
         `expected '${r.req.path}' to include '${hash}'`,
+      )
+    }
+  })
+
+  it('generate images using gerbers if `eda` is specified', async function () {
+    // first we reset HEAD/master to an exact version of the repo
+    // so future changes of the repo don't affect this test
+    const hash = '4cb9f9a659b4b68e57fde0d5c2d2930157157c96'
+    const tmpBare = path.join(tmpDir, 'kitspace-test-repos/rover.git')
+    await exec(
+      `git clone --bare https://github.com/kitspace-test-repos/rover ${tmpBare}`,
+    )
+    await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
+    await exec(
+      `git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/rover.git',
+      )}`,
+    )
+
+    const projectName = 'open-source-rover-shield'
+    const files = ['images/top.svg', 'images/layout.svg'].map(f =>
+      path.join(projectName, f),
+    )
+
+    // Got these manually running md5sum on the files
+    const fileHashes = [
+      'fb281b13a0404ba5a1e1f016c85e9251',
+      '20c67554774b93489e068137765602e5',
+    ]
+
+    for (const [index, f] of files.entries()) {
+      // at first it may not be processing yet so we get a 404
+      let r = await this.supertest.get(
+        `/status/kitspace-test-repos/rover/HEAD/${f}`,
+      )
+      while (r.status === 404) {
+        r = await this.supertest.get(`/status/kitspace-test-repos/rover/HEAD/${f}`)
+        await delay(10)
+      }
+
+      // after a while it should report something
+      assert(r.status === 200)
+      // but it's probably 'in_progress'
+      while (r.body.status === 'in_progress') {
+        r = await this.supertest.get(`/status/kitspace-test-repos/rover/HEAD/${f}`)
+        await delay(10)
+      }
+
+      // at some point it should notice it succeeded
+      assert(r.status === 200)
+      assert(
+        r.body.status === 'done',
+        `expecting body.status to be 'done' but got '${r.body.status}' for ${f}` +
+          `\n ${JSON.stringify(r.body, null, 2)}`,
+      )
+
+      // it serves up the file
+      r = await this.supertest
+        .get(`/files/kitspace-test-repos/rover/HEAD/${f}`)
+        .redirects()
+
+      const imageHash = await generateImageHash(r.body)
+      assert(
+        imageHash === fileHashes[index],
+        `expected ${imageHash} to be ${fileHashes[index]} for ${f}`,
       )
     }
   })
