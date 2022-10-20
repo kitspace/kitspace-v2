@@ -2,7 +2,7 @@ import * as oneClickBom from '1-click-bom'
 import path from 'node:path'
 import log from 'loglevel'
 
-import { exists, existsAll, writeFile, readFile } from '../../utils.js'
+import { exists, existsAll, writeFile, readFile, exec } from '../../utils.js'
 import { JobData } from '../../jobData.js'
 import getPartinfo from './get_partinfo.js'
 
@@ -68,6 +68,7 @@ async function processBOM(
     bom.parts = await getPartinfo(bom.lines)
 
     const info = { bom, inputFile: path.relative(inputDir, bomInputPath) }
+    await exec(`mkdir -p ${outputDir}`)
     await Promise.all([
       writeFile(infoJsonPath, JSON.stringify(info))
         .then(() => job.updateProgress({ status: 'done', file: infoJsonPath }))
