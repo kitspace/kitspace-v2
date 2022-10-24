@@ -47,6 +47,12 @@ function addWorker(name, fn, options?) {
 
   worker.on('progress', (job: bullmq.Job, progress: JobProgress) => {
     events.emit(`${job.name}:${progress.status}`, progress.file, progress.error)
+    if (progress.status === 'failed') {
+      return job.moveToFailed(progress.error, job.id)
+    }
+    if (progress.status === 'done') {
+      return job.moveToCompleted(null, job.id)
+    }
   })
 
   return worker
