@@ -12,7 +12,7 @@ import redisConnection from './redisConnection.js'
 
 
 const defaultJobOptions: bullmq.JobsOptions = {
-  removeOnComplete: true,
+  removeOnComplete: false,
   // remove our failed jobs while developing so they are retried.
   // in production we don't want them to be retried since it would waste
   // resources continually retrying them
