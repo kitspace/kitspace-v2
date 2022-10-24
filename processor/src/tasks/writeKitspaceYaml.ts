@@ -7,7 +7,7 @@ import * as utils from '../utils.js'
 
 const linkify = new LinkifyIt()
 
-export default function writeKitspaceYaml(
+export default async function writeKitspaceYaml(
   job,
   { kitspaceYaml, outputDir }: Partial<JobData>,
 ) {
