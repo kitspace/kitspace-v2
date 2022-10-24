@@ -1,5 +1,5 @@
 import AsyncLock from 'async-lock'
-import bullmq from 'bullmq'
+import bullmq, { Queue } from 'bullmq'
 import jsYaml from 'js-yaml'
 import log from 'loglevel'
 import path from 'node:path'
@@ -24,7 +24,7 @@ const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
   defaultJobOptions,
 })
 
-const projectQueues = []
+const projectQueues: Array<Queue> = []
 const processPCBQueue = new bullmq.Queue('processPCB', {
   connection: redisConnection,
   defaultJobOptions,
@@ -46,7 +46,7 @@ projectQueues.push(processIBOMQueue)
 function createJobs(jobData: JobData) {
   const jobId = jobData.outputDir
   for (const q of projectQueues) {
-    q.add('projectAPI', jobData, { jobId })
+    q.add('projectAPI', jobData, { jobId: `${q.name}-${jobId}` })
   }
 }
 
@@ -55,7 +55,7 @@ export interface AddProjectToQueueData {
   originalUrl: string
   ownerName: string
   repoName: string
-  repoDescription: string,
+  repoDescription: string
   giteaId: string
   gitDir: string
 }
