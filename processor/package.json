@@ -54,7 +54,6 @@
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.1",
     "url-slug": "^3.0.4",
-    "uuid": "^9.0.0",
     "whats-that-gerber": "^4.2.2",
     "xml-element-string": "^1.0.0"
   },
