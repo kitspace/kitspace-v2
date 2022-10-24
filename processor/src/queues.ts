@@ -44,9 +44,8 @@ const processIBOMQueue = new bullmq.Queue('processIBOM', {
 projectQueues.push(processIBOMQueue)
 
 function createJobs(jobData: JobData) {
-  const jobId = jobData.outputDir
   for (const q of projectQueues) {
-    q.add('projectAPI', jobData, { jobId: `${q.name}-${jobId}` })
+    q.add('projectAPI', jobData)
   }
 }
 
