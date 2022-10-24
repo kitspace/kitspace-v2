@@ -4,6 +4,7 @@ import jsYaml from 'js-yaml'
 import log from 'loglevel'
 import path from 'node:path'
 import slugify from 'url-slug'
+import { v4 as uuidv4 } from 'uuid';
 
 import { DATA_DIR } from './env.js'
 import { exists, exec, readFile } from './utils.js'
@@ -44,9 +45,9 @@ const processIBOMQueue = new bullmq.Queue('processIBOM', {
 projectQueues.push(processIBOMQueue)
 
 function createJobs(jobData: JobData) {
-  const jobId = jobData.outputDir
+  const outputDir = jobData.outputDir
   for (const q of projectQueues) {
-    q.add('projectAPI', jobData, { jobId: `${q.name}-${jobId}` })
+    q.add('projectAPI', jobData, { jobId: `${q.name}-${outputDir}-${uuidv4()}` })
   }
 }
 
