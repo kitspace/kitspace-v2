@@ -15,12 +15,12 @@ async function processSchematics(
   const filePaths = [schematicSvgPath]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file })
+    await job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file })
+      await job.updateProgress({ status: 'done', file })
     }
   }
 
@@ -28,7 +28,7 @@ async function processSchematics(
     const files = globule.find(path.join(inputDir, '**'), { dot: true })
     const topLevelSchematic = findKicadSchematic(inputDir, files, kitspaceYaml)
     if (topLevelSchematic == null) {
-      job.updateProgress({
+      await job.updateProgress({
         status: 'failed',
         file: schematicSvgPath,
         error: Error('No .sch file found'),
@@ -44,7 +44,7 @@ async function processSchematics(
   } catch (error) {
     log.error(error)
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error })
+      await job.updateProgress({ status: 'failed', file, error })
     }
   }
 }

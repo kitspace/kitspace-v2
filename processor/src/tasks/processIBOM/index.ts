@@ -15,14 +15,14 @@ async function processIBOM(
 
   const disableIBOM = kitspaceYaml["ibom-enabled"] === false  // we need strong equality here ot minimize yaml surprises.
   if (disableIBOM) {
-    job.updateProgress({ status: 'failed', file: ibomOutputPath, error: new Error('Disabled!') })
+    await job.updateProgress({ status: 'failed', file: ibomOutputPath, error: new Error('Disabled!') })
     return
   }
 
-  job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
+  await job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
 
   if (await exists(ibomOutputPath)) {
-    job.updateProgress({ status: 'done', file: ibomOutputPath })
+    await job.updateProgress({ status: 'done', file: ibomOutputPath })
     return
   }
 
@@ -41,7 +41,7 @@ async function processIBOM(
   }
 
   if (pcbFile == null) {
-    job.updateProgress({
+    await job.updateProgress({
       status: 'failed',
       file: ibomOutputPath,
       error: Error('No PCB file found'),

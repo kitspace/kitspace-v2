@@ -16,12 +16,12 @@ async function processBOM(
   const filePaths = [bomOutputPath, infoJsonPath]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file })
+    await job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file })
+      await job.updateProgress({ status: 'done', file })
     }
     const info = JSON.parse(await readFile(infoJsonPath, 'utf-8'))
     return info.bom
@@ -55,7 +55,7 @@ async function processBOM(
     }
     if (!bom.lines || bom.lines.length === 0) {
       for (const file of filePaths) {
-        job.updateProgress({
+        await job.updateProgress({
           status: 'failed',
           file,
           error: Error('No lines in BOM found'),
@@ -83,7 +83,7 @@ async function processBOM(
     return info.bom
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error })
+      await job.updateProgress({ status: 'failed', file, error })
     }
   }
 }

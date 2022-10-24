@@ -28,10 +28,10 @@ async function processReadme(
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
-  job.updateProgress({ status: 'in_progress', file: readmePath })
+  await job.updateProgress({ status: 'in_progress', file: readmePath })
 
   if (await exists(readmePath)) {
-    job.updateProgress({ status: 'done', file: readmePath })
+    await job.updateProgress({ status: 'done', file: readmePath })
     return readFile(readmePath, 'utf-8')
   }
 
@@ -42,7 +42,7 @@ async function processReadme(
   } else {
     const readmeFile = findReadmeFile(inputDir)
     if (readmeFile === null) {
-      job.updateProgress({
+      await job.updateProgress({
         status: 'failed',
         file: readmePath,
         error: Error("couldn't find readme file"),

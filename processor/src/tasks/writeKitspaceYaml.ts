@@ -12,7 +12,7 @@ export default function writeKitspaceYaml(
   { kitspaceYaml, outputDir }: Partial<JobData>,
 ) {
   const kitspaceYamlJson = path.join(outputDir, 'kitspace-yaml.json')
-  job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson })
+  await job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson })
   const KitspaceYamlJsonLinkified = linkifyKitspaceYaml(kitspaceYaml)
 
   return utils

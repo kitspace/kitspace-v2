@@ -1,6 +1,7 @@
 import globule from 'globule'
 import path from 'node:path'
 import Jszip from 'jszip'
+import { Job } from 'bullmq'
 
 import { existsAll, writeFile, readFile, exec } from '../../utils.js'
 import { JobData } from '../../jobData.js'
@@ -53,12 +54,12 @@ export default async function processGerbers(
   ]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file })
+    await job.updateProgress({ status: 'in_progress', file })
   }
 
   if (await existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file })
+      await job.updateProgress({ status: 'done', file })
     }
     return
   }
@@ -136,33 +137,33 @@ export default async function processGerbers(
     // one at a time even though they don't depend on each other.
 
     await generateTopPng(topSvgPath, stackup, topPngPath)
-      .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
+      .then(() => await job.updateProgress({ status: 'done', file: topPngPath }))
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topPngPath, error }),
+        await job.updateProgress({ status: 'failed', file: topPngPath, error }),
       )
 
     await generateTopLargePng(topSvgPath, stackup, topLargePngPath)
-      .then(() => job.updateProgress({ status: 'done', file: topLargePngPath }))
+      .then(() => await job.updateProgress({ status: 'done', file: topLargePngPath }))
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
+        await job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
       )
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
-      .then(() => job.updateProgress({ status: 'done', file: topMetaPngPath }))
+      .then(() => await job.updateProgress({ status: 'done', file: topMetaPngPath }))
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topMetaPngPath, error }),
+        await job.updateProgress({ status: 'failed', file: topMetaPngPath, error }),
       )
 
     await generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
-      .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
+      .then(() => await job.updateProgress({ status: 'done', file: topWithBgndPath }))
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
+        await job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
       )
 
     await Promise.all(promises)
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error })
+      await job.updateProgress({ status: 'failed', file, error })
     }
   }
 }
