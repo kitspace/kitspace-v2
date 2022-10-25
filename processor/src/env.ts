@@ -17,3 +17,15 @@ export const REMOTE_API_TOKENS = (process.env.REMOTE_API_TOKENS || '')
   .map(x => x.trim())
   .filter(x => x)
   .map(x => `Bearer ${x}`)
+
+export const S3_CLIENT_CONFIG = {
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_KEY,
+  },
+  region: 'us-east-1',
+  endpoint: process.env.S3_ENDPOINT,
+  forcePathStyle: true,
+}
+
+export const S3_PROCESSOR_BUCKET_NAME = process.env.S3_PROCESSOR_BUCKET_NAME
