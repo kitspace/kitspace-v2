@@ -109,10 +109,11 @@ export const getGitServiceFromUrl = url => {
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
  * @param apiToken {string}
+ * @param repoName {string=}
  * @returns {Promise<Response>}
  */
-export const mirrorRepo = async (remoteRepo, uid, apiToken) => {
-  const repoName = urlToName(remoteRepo)
+export const mirrorRepo = async (remoteRepo, uid, apiToken, repoName) => {
+  repoName = repoName || urlToName(remoteRepo)
   const service = getGitServiceFromUrl(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate`
   const giteaOptions = {
