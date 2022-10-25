@@ -1,6 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/eslintrc.json",
-  "extends": ["next", "next/core-web-vitals", "prettier"],
+  "extends": [
+    "next",
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "settings": {
     "import/resolver": {
       "alias": {
@@ -19,6 +24,7 @@
     "browser": true,
     "es2021": true
   },
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -26,10 +32,14 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
     "no-console": ["error", { "allow": ["warn", "error"] }],
-    "no-unused-vars": ["error", { "varsIgnorePattern": "[iI]gnored" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "varsIgnorePattern": "[iI]gnored" }
+    ],
+    "@typescript-eslint/no-explicit-any": "off",
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "no-underscore-dangle": "off",
