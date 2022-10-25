@@ -24,7 +24,7 @@ it('should display bom', () => {
   expect(StoresButtons).toHaveLength(5)
 })
 
-it('even if there is no purchasable parts', () => {
+it('displays BOM if there are no purchasable parts', () => {
   render(
     <BuyParts
       lines={fixture.noPurchasableParts.lines}
