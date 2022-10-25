@@ -28,7 +28,7 @@ services:
     volumes:
       - ./gitea:/go/src/code.gitea.io/gitea
     # => gitea/docker/root/usr/bin/kitspace_dev_entrypoint
-    entrypoint: ["/usr/bin/kitspace_dev_entrypoint"]
+    entrypoint: ['/usr/bin/kitspace_dev_entrypoint']
 
   postgres:
     ports:
@@ -54,6 +54,18 @@ services:
       - processor-node_modules:/app/node_modules
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
 
+  minio:
+    image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
+    ports:
+      - '9000:9000'
+      - '9090:9090'
+    environment:
+      - MINIO_ROOT_USER=${S3_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${S3_SECRET_KEY}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9090"
+
   redis:
     ports:
       - '6379:6379'
@@ -68,3 +80,4 @@ volumes:
   frontend-node_modules:
   frontend-next:
   processor-node_modules:
+  minio-data:

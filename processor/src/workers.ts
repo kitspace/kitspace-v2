@@ -18,14 +18,14 @@ interface JobProgress {
   error?: Error
 }
 
-export function createWorkers({ giteaDB = null }) {
+export function createWorkers({ giteaDB = null, s3 = null }) {
   const workers = [
-    addWorker('writeKitspaceYaml', writeKitspaceYaml),
-    addWorker('processKicadPCB', processKicadPCB),
-    addWorker('processSchematics', processSchematics),
-    addWorker('processPCB', processPCB),
-    addWorker('processInfo', processInfo),
-    addWorker('processIBOM', processIBOM),
+    addWorker('writeKitspaceYaml', writeKitspaceYaml, s3),
+    addWorker('processKicadPCB', processKicadPCB, s3),
+    addWorker('processSchematics', processSchematics, s3),
+    addWorker('processPCB', processPCB, s3),
+    addWorker('processInfo', processInfo, s3),
+    addWorker('processIBOM', processIBOM, s3),
   ]
   let dbSubscription
   if (giteaDB) {
@@ -38,8 +38,8 @@ export function createWorkers({ giteaDB = null }) {
   return stop
 }
 
-function addWorker(name, fn, options?) {
-  const worker = new bullmq.Worker(name, job => fn(job, job.data), {
+function addWorker(name, fn, s3, options?) {
+  const worker = new bullmq.Worker(name, job => fn(job, job.data, s3), {
     connection,
     concurrency: defaultConcurrency,
     ...options,
