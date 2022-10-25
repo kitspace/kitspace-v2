@@ -1,6 +1,7 @@
 import {
   CreateBucketCommand,
   HeadBucketCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   PutObjectCommandOutput,
   S3Client,
@@ -15,6 +16,8 @@ export interface S3 {
     filename: string,
     contents: string | Uint8Array | Buffer,
   ): Promise<PutObjectCommandOutput>
+  exists(filepath: string): Promise<boolean>
+  existsAll(paths: Array<string>): Promise<boolean>
 }
 
 export async function createS3(): Promise<S3> {
@@ -39,6 +42,27 @@ export async function createS3(): Promise<S3> {
       const contents = await fs.readFile(filepath)
       const filename = path.relative(DATA_DIR, filepath)
       return this.uploadFileContents(filename, contents)
+    },
+    async exists(filepath) {
+      const filename = path.relative(DATA_DIR, filepath)
+      try {
+        await s3Client.send(
+          new HeadObjectCommand({ Bucket: bucketName, Key: filename }),
+        )
+        return true
+      } catch (err) {
+        if (err?.$metadata?.httpStatusCode === 404) {
+          return false
+        }
+        throw err
+      }
+    },
+    async existsAll(paths) {
+      let allDoExist = true
+      for (const p of paths) {
+        allDoExist = allDoExist && (await this.exists(p))
+      }
+      return allDoExist
     },
   }
 }
