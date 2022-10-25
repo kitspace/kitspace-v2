@@ -1,0 +1,3851 @@
+{
+  "noPurchasableParts": {
+    "lines": [
+      {
+        "reference": "C1 C19 C26 C27 C28 C80 C14 C76 C86 C53 C31 C83 C82",
+        "quantity": 13,
+        "description": "4u7 Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "LMK107BJ475KAHT",
+            "manufacturer": "Taiyo Yuden"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 1,
+        "fitted": true
+      },
+      {
+        "reference": "C11 C12",
+        "quantity": 2,
+        "description": "18p Capacitor_SMD:C_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "CC0402JRNPO8BN180",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 2,
+        "fitted": true
+      },
+      {
+        "reference": "C2 C3 C4 C5 C6 C7 C9 C13 C15 C17 C10 C20 C21 C23 C24 C25 C8 C77 C78 C79 C18 C81 C16 C33 C85 C30 C32 C46 C45 C60 C64 C61 C65 C62 C66 C63 C67 C68 C72 C69 C73 C70 C74 C71 C75 C29 C22 C55 C56 C57 C59 C34 C38 C35 C39 C36 C40 C37 C41 C42 C49 C43 C50 C47 C51 C48 C52 C54 C84",
+        "quantity": 69,
+        "description": "u1 Capacitor_SMD:C_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "TMK105BJ104KV-F",
+            "manufacturer": "Taiyo Yuden"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 3,
+        "fitted": true
+      },
+      {
+        "reference": "C44 C58",
+        "quantity": 2,
+        "description": "12n Capacitor_SMD:C_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "CC0402KRX7R8BB123",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 4,
+        "fitted": true
+      },
+      {
+        "reference": "C87",
+        "quantity": 1,
+        "description": "150u Capacitor_SMD:CP_Elec_5x3.9",
+        "partNumbers": [
+          {
+            "part": "APXF6R3ARA151ME40G",
+            "manufacturer": "United Chemi-Con"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 5,
+        "fitted": true
+      },
+      {
+        "reference": "D1 D2 D3 D14 D15",
+        "quantity": 5,
+        "description": "GRN LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "150060GS75000",
+            "manufacturer": "Wurth Electronics"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 6,
+        "fitted": true
+      },
+      {
+        "reference": "D11 D12 D13",
+        "quantity": 3,
+        "description": "ESD5Z5.0T1G Diode_SMD:D_SOD-523",
+        "partNumbers": [
+          {
+            "part": "ESD5Z5.0T1G",
+            "manufacturer": "On Semiconductor"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 7,
+        "fitted": true
+      },
+      {
+        "reference": "D4",
+        "quantity": 1,
+        "description": "YEL LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "150060YS75000",
+            "manufacturer": "Wurth Electronics"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 8,
+        "fitted": true
+      },
+      {
+        "reference": "D5",
+        "quantity": 1,
+        "description": "RED LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "150060RS75000",
+            "manufacturer": "Wurth Electronics"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 9,
+        "fitted": true
+      },
+      {
+        "reference": "D6 D10",
+        "quantity": 2,
+        "description": "BLU LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "150060BS75000",
+            "manufacturer": "Wurth Electronics"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 10,
+        "fitted": true
+      },
+      {
+        "reference": "D7 D9",
+        "quantity": 2,
+        "description": "PNK LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "OSK40603C1E",
+            "manufacturer": "Optosupply"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 11,
+        "fitted": true
+      },
+      {
+        "reference": "D8",
+        "quantity": 1,
+        "description": "WHT LED_SMD:LED_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+        "partNumbers": [
+          {
+            "part": "SMLEN3WBC8W1",
+            "manufacturer": "ROHM Semiconductor"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 12,
+        "fitted": true
+      },
+      {
+        "reference": "FB1",
+        "quantity": 1,
+        "description": "Ferrite_Bead Inductor_SMD:L_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "BLM15PX601SZ1D",
+            "manufacturer": "Murata Electronics"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 13,
+        "fitted": true
+      },
+      {
+        "reference": "J1",
+        "quantity": 1,
+        "description": "USB_B_Micro Connector_USB:USB_Micro-B_Molex_47346-0001",
+        "partNumbers": [
+          {
+            "part": "47346-0001",
+            "manufacturer": "Molex"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 14,
+        "fitted": true
+      },
+      {
+        "reference": "J3 J2",
+        "quantity": 2,
+        "description": "Conn_02x10_Odd_Even Connector_IDC:IDC-Header_2x10_P2.54mm_Vertical",
+        "partNumbers": [
+          {
+            "part": "87834-2019",
+            "manufacturer": "Molex"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 16,
+        "fitted": true
+      },
+      {
+        "reference": "J4",
+        "quantity": 1,
+        "description": "Conn_01x02 Glasgow:Molex_KK-254_1x02_P2.54mm_Horizontal",
+        "partNumbers": [
+          {
+            "part": "22-05-3021",
+            "manufacturer": "Molex"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 17,
+        "fitted": true
+      },
+      {
+        "reference": "J5",
+        "quantity": 1,
+        "description": "Conn_02x22_Odd_Even Connector_PinHeader_1.27mm:PinHeader_2x22_P1.27mm_Vertical_SMD",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 18,
+        "fitted": true
+      },
+      {
+        "reference": "MK1 MK2 MK3 MK4",
+        "quantity": 4,
+        "description": "Mounting_Hole_PAD Glasgow:MountingHole_3.5mm_Pad_Via_CrtYd",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 20,
+        "fitted": true
+      },
+      {
+        "reference": "R10 R41 R42",
+        "quantity": 3,
+        "description": "1k Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-131KL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 21,
+        "fitted": true
+      },
+      {
+        "reference": "R11 R23",
+        "quantity": 2,
+        "description": "4k7 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-134K7L",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 22,
+        "fitted": true
+      },
+      {
+        "reference": "R12 R13 R14 R46 R47",
+        "quantity": 5,
+        "description": "20k Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-1320KL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 23,
+        "fitted": true
+      },
+      {
+        "reference": "R2 R15 R1",
+        "quantity": 3,
+        "description": "2k2 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-132K2L",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 24,
+        "fitted": true
+      },
+      {
+        "reference": "R21",
+        "quantity": 1,
+        "description": "6k8 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-136K8L",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 25,
+        "fitted": true
+      },
+      {
+        "reference": "R27 R33",
+        "quantity": 2,
+        "description": "49k9 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-1349K9L",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 26,
+        "fitted": true
+      },
+      {
+        "reference": "R28 R34",
+        "quantity": 2,
+        "description": "59k Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-1359KL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 27,
+        "fitted": true
+      },
+      {
+        "reference": "R3 R7 R8 R4 R9 R17",
+        "quantity": 6,
+        "description": "100k Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-13100KL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 28,
+        "fitted": true
+      },
+      {
+        "reference": "R31 R32",
+        "quantity": 2,
+        "description": "100 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-13100RL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 29,
+        "fitted": true
+      },
+      {
+        "reference": "R38 R45 R43 R39",
+        "quantity": 4,
+        "description": "47 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-1347RL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 30,
+        "fitted": true
+      },
+      {
+        "reference": "R48 R49",
+        "quantity": 2,
+        "description": "0.68 Resistor_SMD:R_0603_1608Metric",
+        "partNumbers": [
+          {
+            "part": "CRL0603-JW-R680ELF",
+            "manufacturer": "Bourns"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 32,
+        "fitted": true
+      },
+      {
+        "reference": "R5 R29 R35",
+        "quantity": 3,
+        "description": "24k3 Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-1324K3L",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 33,
+        "fitted": true
+      },
+      {
+        "reference": "R6 R16 R19 R18 R22 R20 R44 R25 R26 R36 R24 R30 R37",
+        "quantity": 13,
+        "description": "10k Resistor_SMD:R_0402_1005Metric",
+        "partNumbers": [
+          {
+            "part": "RC0402FR-1310KL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 35,
+        "fitted": true
+      },
+      {
+        "reference": "RN2 RN6",
+        "quantity": 2,
+        "description": "10k Resistor_SMD:R_Array_Convex_8x0602",
+        "partNumbers": [
+          {
+            "part": "YC248-JR-0710K",
+            "manufacturer": ""
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 36,
+        "fitted": true
+      },
+      {
+        "reference": "RN4 RN3 RN5 RN1",
+        "quantity": 4,
+        "description": "33 Resistor_SMD:R_Array_Convex_8x0602",
+        "partNumbers": [
+          {
+            "part": "YC248-JR-0733RL",
+            "manufacturer": "Yageo"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 37,
+        "fitted": true
+      },
+      {
+        "reference": "TP1 TP8",
+        "quantity": 2,
+        "description": "5V TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 38,
+        "fitted": true
+      },
+      {
+        "reference": "TP12",
+        "quantity": 1,
+        "description": "GND TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 39,
+        "fitted": true
+      },
+      {
+        "reference": "TP13",
+        "quantity": 1,
+        "description": "VBUS TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 40,
+        "fitted": true
+      },
+      {
+        "reference": "TP14",
+        "quantity": 1,
+        "description": "USBGND TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 41,
+        "fitted": true
+      },
+      {
+        "reference": "TP15",
+        "quantity": 1,
+        "description": "USBDP TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 42,
+        "fitted": true
+      },
+      {
+        "reference": "TP16",
+        "quantity": 1,
+        "description": "USBDM TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 43,
+        "fitted": true
+      },
+      {
+        "reference": "TP18 TP19",
+        "quantity": 2,
+        "description": "VDAC TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 44,
+        "fitted": true
+      },
+      {
+        "reference": "TP2 TP17",
+        "quantity": 2,
+        "description": "1V2 TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 45,
+        "fitted": true
+      },
+      {
+        "reference": "TP4 TP10",
+        "quantity": 2,
+        "description": "SDA TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 46,
+        "fitted": true
+      },
+      {
+        "reference": "TP5 TP11",
+        "quantity": 2,
+        "description": "SCL TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 47,
+        "fitted": true
+      },
+      {
+        "reference": "TP6",
+        "quantity": 1,
+        "description": "CLKREF TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 48,
+        "fitted": true
+      },
+      {
+        "reference": "TP7 TP9 TP3",
+        "quantity": 3,
+        "description": "3V3 TestPoint:TestPoint_Pad_D1.0mm",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 49,
+        "fitted": true
+      },
+      {
+        "reference": "U1",
+        "quantity": 1,
+        "description": "CY7C68013A-56LTX Package_DFN_QFN:Cypress_QFN-56-1EP_8x8mm_P0.5mm_EP6.22x6.22mm_ThermalVias",
+        "partNumbers": [
+          {
+            "part": "CY7C68013A-56LTXC",
+            "manufacturer": "Cypress"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 50,
+        "fitted": true
+      },
+      {
+        "reference": "U12 U21",
+        "quantity": 2,
+        "description": "ADC081C021CIMM Package_SO:MSOP-8_3x3mm_P0.65mm",
+        "partNumbers": [
+          {
+            "part": "ADC081C021CIMM/NOPB",
+            "manufacturer": "Texas Instruments"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 51,
+        "fitted": true
+      },
+      {
+        "reference": "U13 U20",
+        "quantity": 2,
+        "description": "DAC081C081CIMK Package_TO_SOT_SMD:SOT-23-6",
+        "partNumbers": [
+          {
+            "part": "DAC081C081CIMK/NOPB",
+            "manufacturer": "Texas Instruments"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 52,
+        "fitted": true
+      },
+      {
+        "reference": "U14 U31",
+        "quantity": 2,
+        "description": "TPS73101DBV Package_TO_SOT_SMD:SOT-23-5",
+        "partNumbers": [
+          {
+            "part": "TPS73101DBVR",
+            "manufacturer": "Texas Instruments"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 53,
+        "fitted": true
+      },
+      {
+        "reference": "U15",
+        "quantity": 1,
+        "description": "TPD3S014 Package_TO_SOT_SMD:SOT-23-6",
+        "partNumbers": [
+          {
+            "part": "TPD3S014DBVR",
+            "manufacturer": "Texas Instruments"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 54,
+        "fitted": true
+      },
+      {
+        "reference": "U2",
+        "quantity": 1,
+        "description": "CAT24M01W Package_SO:SOIC-8_3.9x4.9mm_P1.27mm",
+        "partNumbers": [
+          {
+            "part": "CAT24M01WI-GT3",
+            "manufacturer": "ON Semiconductor"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 55,
+        "fitted": true
+      },
+      {
+        "reference": "U3",
+        "quantity": 1,
+        "description": "CAT24C256W Package_SO:SOIC-8_3.9x4.9mm_P1.27mm",
+        "partNumbers": [
+          {
+            "part": "CAT24C256WI-GT3",
+            "manufacturer": "ON Semiconductor"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 56,
+        "fitted": true
+      },
+      {
+        "reference": "U30",
+        "quantity": 1,
+        "description": "ICE40HX8K-BG121 Package_BGA:BGA-121_9.0x9.0mm_Layout11x11_P0.8mm_Ball0.4mm_Pad0.35mm_NSMD",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 57,
+        "fitted": true
+      },
+      {
+        "reference": "U32 U22 U23 U24 U25 U26 U27 U28 U29 U4 U6 U9 U10 U11 U16 U17 U18",
+        "quantity": 17,
+        "description": "SN74LVC1T45DRL Glasgow:SOT-563",
+        "partNumbers": [
+          {
+            "part": "SN74LVC1T45DRL",
+            "manufacturer": "Texas Instruments"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 58,
+        "fitted": true
+      },
+      {
+        "reference": "U33 U35",
+        "quantity": 2,
+        "description": "MG2040 Glasgow:UDFN-18-3EP_5.5x1.5mm_P0.5mm_EP0.5x0.5mm",
+        "partNumbers": [
+          {
+            "part": "MG2040",
+            "manufacturer": "ON Semiconductor"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 59,
+        "fitted": true
+      },
+      {
+        "reference": "U34",
+        "quantity": 1,
+        "description": "ATECC508A Package_DFN_QFN:WDFN-8-1EP_3x2mm_P0.5mm_EP1.3x1.4mm",
+        "partNumbers": [
+          {
+            "part": "ATECC508A",
+            "manufacturer": "Microchip"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 60,
+        "fitted": true
+      },
+      {
+        "reference": "U36",
+        "quantity": 1,
+        "description": "TLV73312PQDRVRQ1 Glasgow:DFN-6-1EP_2x2mm_P0.65mm_EP1x1.6mm_ThermalVias",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 61,
+        "fitted": true
+      },
+      {
+        "reference": "U5 U19",
+        "quantity": 2,
+        "description": "PCA6408APW Package_SO:TSSOP-16_4.4x5mm_P0.65mm",
+        "partNumbers": [
+          {
+            "part": "PCA6408APW",
+            "manufacturer": "NXP"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 62,
+        "fitted": true
+      },
+      {
+        "reference": "U7",
+        "quantity": 1,
+        "description": "LM3880MF-1AF Package_TO_SOT_SMD:SOT-23-6",
+        "partNumbers": [
+          {
+            "part": "LM3880MFX-1AF/NOPB",
+            "manufacturer": "Texas Instruments"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 63,
+        "fitted": true
+      },
+      {
+        "reference": "U8",
+        "quantity": 1,
+        "description": "TLV75533PDRVR Glasgow:DFN-6-1EP_2x2mm_P0.65mm_EP1x1.6mm_ThermalVias",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 64,
+        "fitted": true
+      },
+      {
+        "reference": "Y1",
+        "quantity": 1,
+        "description": "24M Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
+        "partNumbers": [
+          {
+            "part": "LFXTAL058124REEL",
+            "manufacturer": "IQD"
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 65,
+        "fitted": true
+      }
+    ],
+    "parts": [
+      {
+        "mpn": {
+          "manufacturer": "Taiyo Yuden",
+          "part": "LMK107BJ475KAHT"
+        },
+        "datasheet": "http://datasheet.octopart.com/LMK107BJ475KAHT-Taiyo-Yuden-datasheet-41194858.pdf",
+        "description": "0603 4.7 uF 10 V ±10% Tolerance X5R SMT Multilayer Ceramic Capacitor",
+        "image": {
+          "url": "https://sigma.octopart.com/18074989/image/Taiyo-Yuden-LMK107BJ475KAHT.jpg",
+          "credit_string": "Newark",
+          "credit_url": "http://www.newark.com"
+        },
+        "specs": [
+          {
+            "key": "capacitance",
+            "name": "Capacitance",
+            "value": "4.70 µF"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0603"
+          },
+          {
+            "key": "dielectric_characteristic",
+            "name": "Dielectric Characteristic",
+            "value": "X5R"
+          },
+          {
+            "key": "capacitance_tolerance",
+            "name": "Capacitance Tolerance",
+            "value": "±10%"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "10.0 V"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Halogen Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "CC0402JRNPO8BN180"
+        },
+        "datasheet": "http://datasheet.octopart.com/CC0402JRNPO8BN180-Yageo-datasheet-137875056.pdf",
+        "description": "Surface Mount Ceramic Multilayer Capacitor 18pF 5% C0G 25V 0402 Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Taiyo Yuden",
+          "part": "TMK105BJ104KV-F"
+        },
+        "datasheet": "http://datasheet.octopart.com/TMK105BJ104KV-F-Taiyo-Yuden-datasheet-156880150.pdf",
+        "description": "CAP CER 0.1UF 25V X5R 0402 / High Value Multilayer Ceramic Capacitors (High dielectric type)",
+        "image": {
+          "url": "https://sigma.octopart.com/18074989/image/Taiyo-Yuden-TMK105BJ104KV-F.jpg",
+          "credit_string": "Newark",
+          "credit_url": "http://www.newark.com"
+        },
+        "specs": [
+          {
+            "key": "capacitance",
+            "name": "Capacitance",
+            "value": "100 nF"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "dielectric_characteristic",
+            "name": "Dielectric Characteristic",
+            "value": "X5R"
+          },
+          {
+            "key": "capacitance_tolerance",
+            "name": "Capacitance Tolerance",
+            "value": "±10%"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "25.0 V"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "2"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT), Tape & Reel (TR)"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "1.00 mm"
+          },
+          {
+            "key": "size_height",
+            "name": "Size-Height",
+            "value": "500 µm"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "size_width",
+            "name": "Size-Width",
+            "value": "500 µm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-55.0 °C to 85.0 °C"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Halogen Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "CC0402KRX7R8BB123"
+        },
+        "datasheet": "http://datasheet.octopart.com/CC0402KRX7R8BB123-Yageo-datasheet-10883670.pdf",
+        "description": "Ceramic Capacitor, Multilayer, Ceramic, 25V, 10% +Tol, 10% -Tol, X7R, 15% TC, 0.012uF, Surface Mount, 0402",
+        "image": {
+          "url": "https://sigma.octopart.com/108690742/image/Yageo-CC0402KRX7R8BB123.jpg",
+          "credit_string": "Smith & Associates",
+          "credit_url": "http://www.smithweb.com/"
+        },
+        "specs": [
+          {
+            "key": "capacitance",
+            "name": "Capacitance",
+            "value": "12.0 nF"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "dielectric_characteristic",
+            "name": "Dielectric Characteristic",
+            "value": "X7R"
+          },
+          {
+            "key": "capacitance_tolerance",
+            "name": "Capacitance Tolerance",
+            "value": "±10%"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "25.0 V"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Halogen Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "United Chemi-Con",
+          "part": "APXF6R3ARA151ME40G"
+        },
+        "datasheet": "http://datasheet.octopart.com/APXF6R3ARA151ME40G-United-Chemi-Con-datasheet-150823780.pdf",
+        "description": "Cap Aluminum Polymer 150uF 6.3VDC 20% (5 X 3.9mm) SMD 0.02 Ohm 2700mA 3000h 105C T/R",
+        "image": null,
+        "specs": []
+      },
+      {
+        "mpn": {
+          "manufacturer": "Wurth Elektronik",
+          "part": "150060GS75000"
+        },
+        "datasheet": "http://datasheet.octopart.com/150060GS75000-W%C3%BCrth-Elektronik-datasheet-15976794.pdf",
+        "description": "Led, Green, 520 Nm, 3.2 V, 30 Ma, 430 Mcd Rohs Compliant: Yes",
+        "image": {
+          "url": "https://sigma.octopart.com/67754043/image/W%C3%BCrth-Elektronik-150060GS75000.jpg",
+          "credit_string": "Newark",
+          "credit_url": "http://www.newark.com"
+        },
+        "specs": [
+          {
+            "key": "color",
+            "name": "Color",
+            "value": "Green"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0603"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel (TR)"
+          },
+          {
+            "key": "forward_voltage",
+            "name": "Forward Voltage",
+            "value": "3.20 V"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "viewing_angle",
+            "name": "Viewing Angle",
+            "value": "140 °"
+          },
+          {
+            "key": "luminous_intensity",
+            "name": "Luminous Intensity",
+            "value": "430 mcd"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "onsemi",
+          "part": "ESD5Z5.0T1G"
+        },
+        "datasheet": "http://datasheet.octopart.com/ESD5Z5.0T1G-ON-Semiconductor-datasheet-8374493.pdf",
+        "description": "ESD5Z Series 6.2 V 80 pF 5 Vrwm TVS and ESD Protection Diodes - SOD-523",
+        "image": {
+          "url": "https://sigma.octopart.com/18372193/image/ON-Semiconductor-ESD5Z5.0T1G.jpg",
+          "credit_string": "element14",
+          "credit_url": "http://www.element-14.com"
+        },
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "SOD-523-2"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "2"
+          },
+          {
+            "key": "operating_voltage",
+            "name": "Operating Voltage",
+            "value": "5.00 V"
+          },
+          {
+            "key": "breakdown_voltage",
+            "name": "Breakdown Voltage",
+            "value": "6.20 V"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT), Tape & Reel (TR)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Halogen Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Wurth Elektronik",
+          "part": "150060YS75000"
+        },
+        "datasheet": "http://datasheet.octopart.com/150060YS75000-W%C3%BCrth-Elektronik-datasheet-15976795.pdf",
+        "description": "Led, Yellow, 590 Nm, 2 V, 30 Ma, 120 Mcd Rohs Compliant: Yes",
+        "image": {
+          "url": "https://sigma.octopart.com/21486387/image/W%C3%BCrth-Elektronik-150060YS75000.jpg",
+          "credit_string": "Farnell",
+          "credit_url": "http://www.farnell.com/"
+        },
+        "specs": [
+          {
+            "key": "color",
+            "name": "Color",
+            "value": "Yellow"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0603"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel (TR)"
+          },
+          {
+            "key": "forward_voltage",
+            "name": "Forward Voltage",
+            "value": "2.00 V"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "viewing_angle",
+            "name": "Viewing Angle",
+            "value": "140 °"
+          },
+          {
+            "key": "luminous_intensity",
+            "name": "Luminous Intensity",
+            "value": "120 mcd"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Wurth Elektronik",
+          "part": "150060RS75000"
+        },
+        "datasheet": "http://datasheet.octopart.com/150060RS75000-W%C3%BCrth-Elektronik-datasheet-15983787.pdf",
+        "description": "LED Low-Power Uni-Color Red 630nm 2V 2-Pin Chip 0603(1608Metric) T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/67754057/image/W%C3%BCrth-Elektronik-150060RS75000.jpg",
+          "credit_string": "Newark",
+          "credit_url": "http://www.newark.com"
+        },
+        "specs": [
+          {
+            "key": "color",
+            "name": "Color",
+            "value": "Red"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0603"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "forward_voltage",
+            "name": "Forward Voltage",
+            "value": "2.00 V"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "viewing_angle",
+            "name": "Viewing Angle",
+            "value": "140 °"
+          },
+          {
+            "key": "luminous_intensity",
+            "name": "Luminous Intensity",
+            "value": "250 mcd"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Würth Elektronik",
+          "part": "150060BS75000"
+        },
+        "datasheet": "http://datasheet.octopart.com/150060BS75000-W%C3%BCrth-Elektronik-datasheet-15983786.pdf",
+        "description": "Led, Blue, 470 Nm, 3.2 V, 30 Ma, 145 Mcd Rohs Compliant: Yes",
+        "image": {
+          "url": "https://sigma.octopart.com/21486387/image/W%C3%BCrth-Elektronik-150060BS75000.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": [
+          {
+            "key": "color",
+            "name": "Color",
+            "value": "Blue"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0603"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "forward_voltage",
+            "name": "Forward Voltage",
+            "value": "3.20 V"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "viewing_angle",
+            "name": "Viewing Angle",
+            "value": "140 °"
+          },
+          {
+            "key": "luminous_intensity",
+            "name": "Luminous Intensity",
+            "value": "145 mcd"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "OptoSupply",
+          "part": "OSK40603C1E"
+        },
+        "datasheet": "http://datasheet.octopart.com/OSK40603C1E-OptoSupply-datasheet-43510087.pdf",
+        "description": null,
+        "image": {
+          "url": "https://sigma.octopart.com/96918561/image/OptoSupply-OSK40603C1E.jpg",
+          "credit_string": "TME",
+          "credit_url": "http://www.tme.eu/en/"
+        },
+        "specs": [
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "ROHM",
+          "part": "SMLEN3WBC8W1"
+        },
+        "datasheet": "http://datasheet.octopart.com/SMLEN3WBC8W1-ROHM-datasheet-158587670.pdf",
+        "description": "LED Uni-Color White 2-Pin Chip 0603(1608Metric) T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/82964481/image/Rohm-SMLEN3WBC8W1.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": []
+      },
+      {
+        "mpn": {
+          "manufacturer": "Murata",
+          "part": "BLM15PX601SZ1D"
+        },
+        "datasheet": "http://datasheet.octopart.com/BLM15PX601SZ1D-Murata-datasheet-138706733.pdf",
+        "description": "Ferrite Beads Multi-Layer Power 600Ohm 25% 100MHz 0.9A 0.23Ohm DCR 0402 Automotive T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/155824042/image/Murata-BLM15PX601SZ1D.jpg",
+          "credit_string": "RS Components",
+          "credit_url": "http://www.rs-components.com"
+        },
+        "specs": []
+      },
+      {
+        "mpn": {
+          "manufacturer": "Molex",
+          "part": "47346-0001"
+        },
+        "datasheet": "http://datasheet.octopart.com/473460001-Molex-datasheet-8350473.pdf",
+        "description": "Micro-USB B Receptacle with Flange, Bottom Mount, Surface Mount, Lead-Free",
+        "image": {
+          "url": "https://sigma.octopart.com/19000413/image/Molex-47346-0001..jpg",
+          "credit_string": "Farnell",
+          "credit_url": "http://www.farnell.com/"
+        },
+        "specs": [
+          {
+            "key": "gender",
+            "name": "Gender",
+            "value": "Female"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "voltage_rating_ac",
+            "name": "Voltage Rating (AC)",
+            "value": "100 V"
+          },
+          {
+            "key": "current_rating",
+            "name": "Current Rating",
+            "value": "1.80 A"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT), Reel, Tape & Reel (TR)"
+          },
+          {
+            "key": "number_of_contacts",
+            "name": "Number of Contacts",
+            "value": "5"
+          },
+          {
+            "key": "contact_material",
+            "name": "Contact Material",
+            "value": "Copper Alloy"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "number_of_rows",
+            "name": "Number of Rows",
+            "value": "1"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "orientation",
+            "name": "Orientation",
+            "value": "Right Angle"
+          },
+          {
+            "key": "glow_wire_compliant",
+            "name": "Glow Wire Compliant",
+            "value": "Non-Compliant"
+          },
+          {
+            "key": "contact_plating",
+            "name": "Contact Plating",
+            "value": "Gold"
+          },
+          {
+            "key": "pin_pitch",
+            "name": "Pin Pitch",
+            "value": "650 µm"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-20.0 °C (min)"
+          },
+          {
+            "key": "number_of_positions",
+            "name": "Number of Positions",
+            "value": "5"
+          },
+          {
+            "key": "contact_resistance",
+            "name": "Contact Resistance",
+            "value": "40.0 mΩ"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Low Halogen"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount, Solder, PCB"
+          },
+          {
+            "key": "number_of_circuits",
+            "name": "Number of Circuits",
+            "value": "2, 5"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Molex",
+          "part": "87834-2019"
+        },
+        "datasheet": "http://sigma.octopart.com/12583488/technical_drawing/Molex-87834-2019.pdf",
+        "description": "Conn Shrouded Header HDR 20 POS 2.54mm Solder ST Thru-Hole Tray",
+        "image": {
+          "url": "https://sigma.octopart.com/155136730/image/Molex-878342019.jpg",
+          "credit_string": "RS Components",
+          "credit_url": "http://www.rs-components.com"
+        },
+        "specs": [
+          {
+            "key": "gender",
+            "name": "Gender",
+            "value": "Male"
+          },
+          {
+            "key": "current_rating",
+            "name": "Current Rating",
+            "value": "2.50 A"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tray"
+          },
+          {
+            "key": "material",
+            "name": "Material",
+            "value": "Polyester"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "number_of_rows",
+            "name": "Number of Rows",
+            "value": "2"
+          },
+          {
+            "key": "elv_compliant",
+            "name": "ELV Compliant",
+            "value": "Compliant"
+          },
+          {
+            "key": "flammability_rating",
+            "name": "Flammability Rating",
+            "value": "UL 94 V-0"
+          },
+          {
+            "key": "orientation",
+            "name": "Orientation",
+            "value": "Vertical"
+          },
+          {
+            "key": "glow_wire_compliant",
+            "name": "Glow Wire Compliant",
+            "value": "Non-Compliant"
+          },
+          {
+            "key": "contact_plating",
+            "name": "Contact Plating",
+            "value": "Tin, Gold"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-55.0 °C to 120 °C"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Not Low Halogen"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Solder"
+          },
+          {
+            "key": "number_of_circuits",
+            "name": "Number of Circuits",
+            "value": "20"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Molex",
+          "part": "22-05-3021"
+        },
+        "datasheet": "http://datasheet.octopart.com/022053021-Molex-datasheet-8346700.pdf",
+        "description": "KK 254 Solid Header, Right-Angle, with Friction Lock, 2 Circuits, Tin (Sn) Plating",
+        "image": {
+          "url": "https://sigma.octopart.com/158837167/image/Molex-22053021.jpg",
+          "credit_string": "Conrad",
+          "credit_url": "http://conrad.com"
+        },
+        "specs": [
+          {
+            "key": "color",
+            "name": "Color",
+            "value": "White"
+          },
+          {
+            "key": "housing_color",
+            "name": "Housing Color",
+            "value": "White"
+          },
+          {
+            "key": "gender",
+            "name": "Gender",
+            "value": "Male"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "current_rating",
+            "name": "Current Rating",
+            "value": "4.00 A"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Bulk"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "5.08 mm"
+          },
+          {
+            "key": "number_of_contacts",
+            "name": "Number of Contacts",
+            "value": "2"
+          },
+          {
+            "key": "size_height",
+            "name": "Size-Height",
+            "value": "6.35 mm"
+          },
+          {
+            "key": "contact_material",
+            "name": "Contact Material",
+            "value": "Brass"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "size_width",
+            "name": "Size-Width",
+            "value": "8.18 mm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "housing_material",
+            "name": "Housing Material",
+            "value": "Nylon"
+          },
+          {
+            "key": "number_of_rows",
+            "name": "Number of Rows",
+            "value": "1"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "orientation",
+            "name": "Orientation",
+            "value": "Right Angle"
+          },
+          {
+            "key": "glow_wire_compliant",
+            "name": "Glow Wire Compliant",
+            "value": "Non-Compliant"
+          },
+          {
+            "key": "contact_plating",
+            "name": "Contact Plating",
+            "value": "Tin"
+          },
+          {
+            "key": "pin_pitch",
+            "name": "Pin Pitch",
+            "value": "2.54 mm"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "75.0 °C (max)"
+          },
+          {
+            "key": "number_of_positions",
+            "name": "Number of Positions",
+            "value": "2"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Low Halogen"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Through Hole"
+          },
+          {
+            "key": "number_of_circuits",
+            "name": "Number of Circuits",
+            "value": "2, 28"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-131KL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-131KL-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 1K Ohm 1% 0.063W(1/16W) ±100ppm/C Pad SMD T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/160442985/image/Yageo-RC0402FR-131KL.jpg",
+          "credit_string": "Distrelec",
+          "credit_url": "http://www.distrelec.com"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "1.00 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Contains Lead"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-134K7L"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-134K7L-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 4.7K Ohm 1% 1/16W ±100ppm/°C Molded SMD SMD Paper T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/160442985/image/Yageo-RC0402FR-134K7L.jpg",
+          "credit_string": "Distrelec",
+          "credit_url": "http://www.distrelec.com"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "4.70 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-1320KL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-1320KL-Yageo-datasheet-73766026.pdf",
+        "description": "Res Thick Film 0402 20K Ohm 1% 1/16W ±100ppm/°C Molded SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "20.0 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-132K2L"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-132K2L-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 2.2K Ohm 1% 1/16W ±100ppm/°C Molded SMD SMD Paper T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/45217074/image/Yageo-RC0402FR-132K2L.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "2.20 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-136K8L"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-136K8L-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 6.8K Ohm 1% 1/16W ±100ppm/°C Molded SMD SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "6.80 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-1349K9L"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-1349K9L-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 49.9K Ohm 1% 1/16W ±100ppm/°C Molded SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "49.9 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-1359KL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-1359KL-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 59K Ohm 1% 1/16W ±100ppm/°C Molded SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "59.0 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-13100KL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-13100KL-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 100K Ohm 1% 0.063W(1/16W) ±100ppm/C Pad SMD T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/21477248/image/Yageo-RC0402FR-13100KL.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "100 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "power_rating",
+            "name": "Power Rating",
+            "value": "62.5 mW"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "50.0 V"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "1.00 mm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "temperature_coefficient",
+            "name": "Temperature Coefficient",
+            "value": "-100 ppm/°C to 100 ppm/°C"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-13100RL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-13100RL-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 100 Ohm 1% 1/16W ±100ppm/°C Molded SMD Paper T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/21477248/image/Yageo-RC0402FR-13100RL.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "100 Ω"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "power_rating",
+            "name": "Power Rating",
+            "value": "62.5 mW"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "50.0 V"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "1.00 mm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "temperature_coefficient",
+            "name": "Temperature Coefficient",
+            "value": "-100 ppm/°C to 100 ppm/°C"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-1347RL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-1347RL-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 47 Ohm 1% 1/16W ±100ppm/°C Molded SMD SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "47.0 Ω"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Bourns",
+          "part": "CRL0603-JW-R680ELF"
+        },
+        "datasheet": "http://datasheet.octopart.com/CRL0603-JW-R680ELF-Bourns-datasheet-68302002.pdf",
+        "description": "Res Thick Film 0603 0.68 Ohm 5% 1/10W ±200ppm/°C Molded SMD SMD Paper Tape on Plastic Reel",
+        "image": null,
+        "specs": [
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Reel"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-1324K3L"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-1324K3L-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 24.3K Ohm 1% 1/16W ±100ppm/°C Molded SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "24.3 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "RC0402FR-1310KL"
+        },
+        "datasheet": "http://datasheet.octopart.com/RC0402FR-1310KL-Yageo-datasheet-10408619.pdf",
+        "description": "Res Thick Film 0402 10K Ohm 1% 0.063W(1/16W) ±100ppm/°C Pad SMD T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/21477248/image/Yageo-RC0402FR-1310KL.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "10.0 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0402"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±1%"
+          },
+          {
+            "key": "power_rating",
+            "name": "Power Rating",
+            "value": "62.5 mW"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "50.0 V"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "2"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "1.00 mm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "temperature_coefficient",
+            "name": "Temperature Coefficient",
+            "value": "-100 ppm/°C to 100 ppm/°C"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "YC248JR0710K"
+        },
+        "datasheet": "http://datasheet.octopart.com/YC248-JR-0710K-Yageo-datasheet-10911670.pdf",
+        "description": "Res Thick Film Array 10K Ohm 5% ?200ppm/C ISOL Molded 16-Pin 1606(8 X 0602) Convex SMD Paper T/R",
+        "image": null,
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "10.0 kΩ"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0616"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±5%"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "number_of_circuits",
+            "name": "Number of Circuits",
+            "value": "8"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Yageo",
+          "part": "YC248-JR-0733RL"
+        },
+        "datasheet": "http://datasheet.octopart.com/YC248-JR-0733RL-Yageo-datasheet-8330706.pdf",
+        "description": "Res Thick Film Array 33 Ohm 5% 200ppm/ C ISOL Molded 16-Pin 1606(8 X 0602) Convex SMD Paper T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/102307928/image/Yageo-YC248-JR-0733RL.jpg",
+          "credit_string": "element14 APAC",
+          "credit_url": "http://www.element14.com/"
+        },
+        "specs": [
+          {
+            "key": "resistance",
+            "name": "Resistance",
+            "value": "33.0 Ω"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0616"
+          },
+          {
+            "key": "resistance_tolerance",
+            "name": "Resistance Tolerance",
+            "value": "±5%"
+          },
+          {
+            "key": "power_rating",
+            "name": "Power Rating",
+            "value": "62.5 mW"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "50.0 V"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "16"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "4.00 mm"
+          },
+          {
+            "key": "number_of_contacts",
+            "name": "Number of Contacts",
+            "value": "16"
+          },
+          {
+            "key": "size_height",
+            "name": "Size-Height",
+            "value": "450 µm"
+          },
+          {
+            "key": "size_width",
+            "name": "Size-Width",
+            "value": "1.60 mm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "temperature_coefficient",
+            "name": "Temperature Coefficient",
+            "value": "-200 ppm/°C to 200 ppm/°C"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "155 °C (max)"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "number_of_circuits",
+            "name": "Number of Circuits",
+            "value": "8"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Cypress Semiconductor",
+          "part": "CY7C68013A-56LTXC"
+        },
+        "datasheet": "http://datasheet.octopart.com/CY7C68013A-56LTXC-Cypress-Semiconductor-datasheet-11630189.pdf",
+        "description": "Full Speed/High Speed USB Peripheral Controller USB 1.1/USB 2.0 3.3V Tray 56-Pin QFN EP",
+        "image": {
+          "url": "https://sigma.octopart.com/145806138/image/Cypress-Semiconductor-CY7C68013A-56LTXC.jpg",
+          "credit_string": "RS Components",
+          "credit_url": "http://www.rs-components.com"
+        },
+        "specs": [
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "56"
+          },
+          {
+            "key": "clock_speed",
+            "name": "Clock Speed",
+            "value": "48.0 MHz"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "0.00 °C (min)"
+          },
+          {
+            "key": "ram_bytes",
+            "name": "RAM Memory Size",
+            "value": "16384 B"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "supply_voltage_dc",
+            "name": "Supply Voltage (DC)",
+            "value": "3.60 V (max), 3.00 V (min)"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Texas Instruments",
+          "part": "ADC081C021CIMM/NOPB"
+        },
+        "datasheet": "https://octopart.com/click/track?ai=8078&ct=datasheets&sig=0ab5a7b&at=physicalpart&sid=370&ppid=24811728&hlid=31967761",
+        "description": "Single Channel Single ADC SAR 188.9ksps 8-bit Serial 8-Pin VSSOP T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/50474310/image/Texas-Instruments-ADC081C021CIMM-NOPB.jpg",
+          "credit_string": "Newark",
+          "credit_url": "http://www.newark.com"
+        },
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "VSSOP"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "8"
+          },
+          {
+            "key": "power_consumption",
+            "name": "Power Consumption",
+            "value": "260 µW"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel (TR)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "supply_voltage_dc",
+            "name": "Supply Voltage (DC)",
+            "value": "5.50 V (max), 2.70 V (min)"
+          },
+          {
+            "key": "sample_rate",
+            "name": "Sample Rate",
+            "value": "189 kHz"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C (min)"
+          },
+          {
+            "key": "number_of_bits",
+            "name": "Number of Bits",
+            "value": "8"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Texas Instruments",
+          "part": "DAC081C081CIMK/NOPB"
+        },
+        "datasheet": "https://octopart.com/click/track?ai=8078&ct=datasheets&sig=09c4568&at=physicalpart&sid=370&ppid=24811912&hlid=32002205",
+        "description": "DAC 1-CH Resistor-String 8-bit 6-Pin TSOT-23 T/R / 8-Bit Micro Power Digital-to-Analog Converter",
+        "image": {
+          "url": "https://sigma.octopart.com/18094013/image/National-Semiconductor-DAC081C081CIMK-NOPB.jpg",
+          "credit_string": "element14",
+          "credit_url": "http://www.element-14.com"
+        },
+        "specs": [
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "6"
+          },
+          {
+            "key": "power_consumption",
+            "name": "Power Consumption",
+            "value": "380 µW"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "number_of_channels",
+            "name": "Number of Channels",
+            "value": "1"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "supply_current",
+            "name": "Supply Current",
+            "value": "132 µA"
+          },
+          {
+            "key": "sample_rate",
+            "name": "Sample Rate",
+            "value": "180 µHz"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C (min)"
+          },
+          {
+            "key": "number_of_bits",
+            "name": "Number of Bits",
+            "value": "8"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Texas Instruments",
+          "part": "TPS73101DBVR"
+        },
+        "datasheet": "https://octopart.com/click/track?ai=8078&ct=datasheets&sig=0a8eafc&at=physicalpart&sid=370&ppid=2359235&hlid=32282604",
+        "description": "IC REG LDO ADJ 0.15A SOT23-5 / LDO Regulator Pos 1.2V to 5.5V 0.15A 5-Pin SOT-23 T/R",
+        "image": {
+          "url": "https://sigma.octopart.com/17990700/image/Texas-Instruments-TPS73101DBVR.jpg",
+          "credit_string": "Farnell",
+          "credit_url": "http://www.farnell.com/"
+        },
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "SOT-23"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "5"
+          },
+          {
+            "key": "output_voltage",
+            "name": "Output Voltage",
+            "value": "5.50 V (max), 1.20 V (min)"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "output_capacitor_type",
+            "name": "Output Capacitor Type",
+            "value": "Ceramic"
+          },
+          {
+            "key": "quiescent_current",
+            "name": "Quiescent Current",
+            "value": "400 µA"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C (min)"
+          },
+          {
+            "key": "output_current",
+            "name": "Output Current",
+            "value": "150 mA"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "number_of_regulated_outputs",
+            "name": "Number of Regulated Outputs",
+            "value": "1"
+          },
+          {
+            "key": "dropout_voltage",
+            "name": "Dropout Voltage",
+            "value": "30.0 mV"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Texas Instruments",
+          "part": "TPD3S014DBVR"
+        },
+        "datasheet": "https://octopart.com/click/track?ai=8078&ct=datasheets&sig=06d455d&at=physicalpart&sid=370&ppid=51761753&hlid=32243758",
+        "description": "Current-limit switch and D+/D– ESD protection for USB Host ports 6-SOT-23 -40 to 85",
+        "image": {
+          "url": "https://sigma.octopart.com/147047959/image/Texas-Instruments-TPD3S014DBVR.jpg",
+          "credit_string": "RS Components",
+          "credit_url": "http://www.rs-components.com"
+        },
+        "specs": [
+          {
+            "key": "capacitance",
+            "name": "Capacitance",
+            "value": "1.40 pF"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "SOT-23"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "6"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel (TR)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Pre-Release"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "supply_voltage_dc",
+            "name": "Supply Voltage (DC)",
+            "value": "4.50 V (min), 5.50 V (max)"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C (min)"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "onsemi",
+          "part": "CAT24M01WI-GT3"
+        },
+        "datasheet": "http://datasheet.octopart.com/CAT24M01WI-GT3-ON-Semiconductor-datasheet-12544991.pdf",
+        "description": "CAT24M01 Series 1024 kb (128k x 8) 1.7 - 5.5 V I2C CMOS Serial EEPROM - SOIC-8",
+        "image": {
+          "url": "https://sigma.octopart.com/159830011/image/onsemi-CAT24M01WI-GT3.jpg",
+          "credit_string": "Distrelec",
+          "credit_url": "http://www.distrelec.com"
+        },
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "SOIC"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "8"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel (TR)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "supply_voltage_dc",
+            "name": "Supply Voltage (DC)",
+            "value": "1.80 V (min), 5.50 V (max)"
+          },
+          {
+            "key": "clock_speed",
+            "name": "Clock Speed",
+            "value": "400 kHz (max), 1.00 MHz"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C (min)"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Halogen Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "memory_size",
+            "name": "Memory Size",
+            "value": "125000 B"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "onsemi",
+          "part": "CAT24C256WI-GT3"
+        },
+        "datasheet": "http://datasheet.octopart.com/CAT24C256WI-GT3-ON-Semiconductor-datasheet-10669354.pdf",
+        "description": "CAT24C256WI-GT3 Serial EEPROM Memory; 256kbit; 50ns; 1.8 to 5.5 V 8-Pin SOIC",
+        "image": {
+          "url": "https://sigma.octopart.com/145604150/image/ON-Semiconductor-CAT24C256WI-GT3.jpg",
+          "credit_string": "RS Components",
+          "credit_url": "http://www.rs-components.com"
+        },
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "SOIC"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "8"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "supply_voltage_dc",
+            "name": "Supply Voltage (DC)",
+            "value": "1.80 V (min), 5.50 V (max)"
+          },
+          {
+            "key": "clock_speed",
+            "name": "Clock Speed",
+            "value": "400 kHz"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C to 85.0 °C"
+          },
+          {
+            "key": "halogen_free_status",
+            "name": "Halogen Free Status",
+            "value": "Halogen Free"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          },
+          {
+            "key": "frequency",
+            "name": "Frequency",
+            "value": "400 kHz"
+          },
+          {
+            "key": "memory_size",
+            "name": "Memory Size",
+            "value": "32000 B"
+          }
+        ]
+      },
+      null,
+      null,
+      {
+        "mpn": {
+          "manufacturer": "Atmel",
+          "part": "ATECC508A"
+        },
+        "datasheet": null,
+        "description": null,
+        "image": null,
+        "specs": []
+      },
+      null,
+      {
+        "mpn": {
+          "manufacturer": "Texas Instruments",
+          "part": "LM3880MFX-1AF/NOPB"
+        },
+        "datasheet": "https://octopart.com/click/track?ai=8078&ct=datasheets&sig=030f400&at=physicalpart&sid=370&ppid=24846870&hlid=32044384",
+        "description": "3 Rail Simple Power Sequencer with Fixed Time Delay 6-SOT-23 -40 to 125",
+        "image": {
+          "url": "https://sigma.octopart.com/158910966/image/Texas-Instruments-LM3880MFX-1AF-NOPB.png",
+          "credit_string": "Texas Instruments",
+          "credit_url": "http://ti.com"
+        },
+        "specs": [
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "SOT-23"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "6"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Tape & Reel (TR)"
+          },
+          {
+            "key": "lifecycle_status",
+            "name": "Lifecycle Status",
+            "value": "Active"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "quiescent_current",
+            "name": "Quiescent Current",
+            "value": "25.0 µA"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "-40.0 °C to 125 °C"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "IQD Frequency Products",
+          "part": "LFXTAL058124REEL"
+        },
+        "datasheet": null,
+        "description": "Crystal 24MHz ±20ppm (Tol) ±30ppm (Stability) 18pF FUND 50Ohm 4-Pin CSMD T/R",
+        "image": null,
+        "specs": []
+      }
+    ]
+  },
+  "purchasableParts": {
+    "projectFullName": "tester/CH330_Hardware",
+    "lines": [
+      {
+        "reference": "C1,C2",
+        "quantity": 2,
+        "description": "0.1ÂµF 0603 50V",
+        "partNumbers": [
+          {
+            "part": "06035G104ZAT2A",
+            "manufacturer": "AVX"
+          }
+        ],
+        "retailers": {
+          "Digikey": "311-1344-1-ND",
+          "Mouser": "603CC603KRX7R9BB104",
+          "RS": "1358345",
+          "Newark": "96M1293",
+          "Farnell": "1288255",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 1,
+        "fitted": true
+      },
+      {
+        "reference": "D1,D2",
+        "quantity": 2,
+        "description": "LED 0603",
+        "partNumbers": [
+          {
+            "part": "19-217/BHC-ZL1M2RY/3T",
+            "manufacturer": "Everlight"
+          }
+        ],
+        "retailers": {
+          "Digikey": "160-1183-1-ND",
+          "Mouser": "859LTSTC190GKT",
+          "RS": "6910451",
+          "Newark": "68Y1165",
+          "Farnell": "1652108",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 2,
+        "fitted": true
+      },
+      {
+        "reference": "J1",
+        "quantity": 1,
+        "description": "Micro USB",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "A97800CT-ND",
+          "Mouser": "57119815681",
+          "RS": "6694645",
+          "Newark": "73M8666",
+          "Farnell": "2751670",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 3,
+        "fitted": true
+      },
+      {
+        "reference": "J2",
+        "quantity": 1,
+        "description": "PinHeader 4 pin",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "WM2746-ND",
+          "Mouser": "53822292041",
+          "RS": "6701333",
+          "Newark": "26H2000",
+          "Farnell": "1360132",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 4,
+        "fitted": true
+      },
+      {
+        "reference": "R1,R2",
+        "quantity": 2,
+        "description": "220R 0603 0.25W",
+        "partNumbers": [],
+        "retailers": {
+          "Digikey": "P220BYDKR-ND",
+          "Mouser": "",
+          "RS": "8626833",
+          "Newark": "85Y6302",
+          "Farnell": "2335874",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 5,
+        "fitted": true
+      },
+      {
+        "reference": "U1",
+        "quantity": 1,
+        "description": "CH330 SOIC-8",
+        "partNumbers": [
+          {
+            "part": "https://lcsc.com/product-detail/USB_CH330N_C108996.html",
+            "manufacturer": ""
+          }
+        ],
+        "retailers": {
+          "Digikey": "",
+          "Mouser": "",
+          "RS": "",
+          "Newark": "",
+          "Farnell": "",
+          "LCSC": "",
+          "JLC Assembly": ""
+        },
+        "row": 6,
+        "fitted": true
+      }
+    ],
+    "parts": [
+      {
+        "mpn": {
+          "manufacturer": "KYOCERA AVX",
+          "part": "06035G104ZAT2A"
+        },
+        "datasheet": "http://datasheet.octopart.com/06035G104ZAT2A-AVX-datasheet-8445862.pdf",
+        "description": "Capacitor; Ceramic; Cap 0.1uF; Tol -20; +80%; Vol-Rtg 50 VDC; SMT; 0603; Y5V; Tape&Reel",
+        "image": {
+          "url": "https://sigma.octopart.com/145596980/image/AVX-06035G104ZAT2A.jpg",
+          "credit_string": "RS Components",
+          "credit_url": "http://www.rs-components.com"
+        },
+        "specs": [
+          {
+            "key": "capacitance",
+            "name": "Capacitance",
+            "value": "100 nF"
+          },
+          {
+            "key": "case_package",
+            "name": "Case/Package",
+            "value": "0603"
+          },
+          {
+            "key": "dielectric_characteristic",
+            "name": "Dielectric Characteristic",
+            "value": "Y5V"
+          },
+          {
+            "key": "capacitance_tolerance",
+            "name": "Capacitance Tolerance",
+            "value": "+80/-20%"
+          },
+          {
+            "key": "voltage_rating_dc",
+            "name": "Voltage Rating (DC)",
+            "value": "50.0 V"
+          },
+          {
+            "key": "pin_count",
+            "name": "Number of Pins",
+            "value": "2"
+          },
+          {
+            "key": "case_package_si",
+            "name": "Case/Package (SI)",
+            "value": "1608"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "packaging",
+            "name": "Packaging",
+            "value": "Cut Tape (CT)"
+          },
+          {
+            "key": "size_length",
+            "name": "Size-Length",
+            "value": "1.60 mm"
+          },
+          {
+            "key": "size_height",
+            "name": "Size-Height",
+            "value": "860 µm"
+          },
+          {
+            "key": "size_width",
+            "name": "Size-Width",
+            "value": "810 µm"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          },
+          {
+            "key": "reach_svhc_compliance",
+            "name": "REACH SVHC Compliance",
+            "value": "No SVHC"
+          },
+          {
+            "key": "operating_temperature",
+            "name": "Operating Temperature",
+            "value": "85.0 °C (max)"
+          },
+          {
+            "key": "mounting_style",
+            "name": "Mounting Style",
+            "value": "Surface Mount"
+          }
+        ]
+      },
+      {
+        "mpn": {
+          "manufacturer": "Everlight",
+          "part": "19-217/BHC-ZL1M2RY/3T"
+        },
+        "datasheet": "http://datasheet.octopart.com/19-217-BHC-ZL1M2RY-3T-Everlight-datasheet-65806754.pdf",
+        "description": "LED SMD Top View Uni-Color Blue 468nm 0603 Pkg Ã¸7\"T/R 3k",
+        "image": null,
+        "specs": [
+          {
+            "key": "color",
+            "name": "Color",
+            "value": "Blue"
+          },
+          {
+            "key": "lead_free_status",
+            "name": "Lead-Free Status",
+            "value": "Lead Free"
+          },
+          {
+            "key": "rohs_status",
+            "name": "RoHS",
+            "value": "Compliant"
+          }
+        ]
+      },
+      null
+    ]
+  }
+}
