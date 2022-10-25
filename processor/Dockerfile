@@ -19,14 +19,19 @@ RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
     python3-pip \
     git
 
-RUN mkdir /app
 WORKDIR /app
-
 COPY . .
-
 RUN pip3 install -r requirements.txt
 RUN yarn install
 RUN yarn tsc
 RUN yarn cp-assets
 
+RUN addgroup --gid 1000 node && \
+    adduser -u 1000 --gid 1000 node --shell /bin/bash --home /home/node && \
+    mkdir /data /gitea-data && \
+    chown -R node /data /gitea-data && \
+    git config --global user.name "processor" && \
+    git config --global user.email "processor@kitspace.org"
+
+USER node
 CMD ["node", "dist/src/server.js"]
