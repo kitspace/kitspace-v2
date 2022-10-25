@@ -1,6 +1,7 @@
 import slugify from 'slugify'
 import platformPath from 'path'
 import getConfig from 'next/config'
+import { formatAsGiteaRepoName } from './index'
 
 const giteaApiUrl = `${getConfig().publicRuntimeConfig.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
@@ -228,6 +229,22 @@ export const repoExists = async fullname => {
   const repo = await getRepo(fullname)
 
   return repo != null
+}
+/**
+ *
+ * @param {string} username
+ * @param {string} repoName
+ * @param {boolean} isValidProjectName
+ * @returns
+ */
+export const isUsableProjectName = async (
+  username,
+  repoName,
+  isValidProjectName,
+) => {
+  // Check if the new name will also cause a conflict.
+  const repoFullName = `${username}/${formatAsGiteaRepoName(repoName)}`
+  return isValidProjectName && !(await repoExists(repoFullName))
 }
 
 /**

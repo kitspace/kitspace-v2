@@ -1,24 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { func } from 'prop-types'
-import { Input, Button, Form, Message, Modal } from 'semantic-ui-react'
+import { Input, Button, Form, Message } from 'semantic-ui-react'
 
 import { useRouter } from 'next/router'
 import isEmpty from 'lodash/isEmpty'
 
 import { AuthContext } from '@contexts/AuthContext'
-import { deleteRepo, mirrorRepo, repoExists } from '@utils/giteaApi'
-import { SyncOp, NoOp } from '../Ops'
-import { urlToName, waitFor, formatAsGiteaRepoName } from '@utils/index'
-import styles from './index.module.scss'
+import { deleteRepo, mirrorRepo } from '@utils/giteaApi'
+import { urlToName } from '@utils/index'
 import SyncRepoFromModel from '@models/SyncRepoForm'
-import ExistingProjectFromModel from '@models/ExistingProjectForm'
 import useForm from '@hooks/useForm'
-
-const validateProjectName = async (username, repoName, isValidProjectName) => {
-  // Check if the new name will also cause a conflict.
-  const repoFullName = `${username}/${formatAsGiteaRepoName(repoName)}`
-  return isValidProjectName && !(await repoExists(repoFullName))
-}
+import { SyncOp, NoOp } from '../Ops'
+import { SyncConflictModal } from '../CondlictModals'
+import styles from './index.module.scss'
 
 const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'
 
@@ -26,28 +20,12 @@ const Sync = ({ setUserOp }) => {
   const { push } = useRouter()
   const { user, apiToken } = useContext(AuthContext)
   const { form, errors, onChange, clear } = useForm(SyncRepoFromModel)
-  const {
-    form: form2,
-    onChange: onChange2,
-    populate: populate2,
-    isValid: isValid2,
-  } = useForm(ExistingProjectFromModel)
 
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({})
   const [conflictModalOpen, setConflictModalOpen] = useState(false)
-  const [isValidProjectName, setIsValidProjectName] = useState(false)
   const projectName = urlToName(form.url)
 
-  useEffect(() => {
-    if (form2.name) {
-      validateProjectName(user.username, form2.name, isValid2).then(
-        setIsValidProjectName,
-      )
-    }
-  }, [form2.name, isValid2, user.username])
-
-  const didChangeName = projectName !== form2.name
   const uid = user?.id
   const username = user?.username
 
@@ -92,7 +70,6 @@ const Sync = ({ setUserOp }) => {
 
         setLoading(false)
         if (alreadySynced) {
-          populate2({ name: repoName }, true)
           setConflictModalOpen(true)
         } else {
           setMessage({
@@ -109,7 +86,7 @@ const Sync = ({ setUserOp }) => {
     }
   }
 
-  const onDifferentName = async () => {
+  const onDifferentName = async repoName => {
     // Syncing can be instantaneous, avoid flickering by delaying setting the user operation.
     const delayedSyncOp = setTimeout(() => setUserOp(SyncOp), 500)
 
@@ -121,7 +98,6 @@ const Sync = ({ setUserOp }) => {
     })
 
     const repoURL = form.url
-    const repoName = formatAsGiteaRepoName(form2.name)
 
     const res = await mirrorRepo(repoURL, uid, apiToken, repoName)
     const migrateSuccessfully = res.ok
@@ -162,7 +138,7 @@ const Sync = ({ setUserOp }) => {
     const deletedRepoSuccessfully = await deleteRepo(
       `${user.username}/${projectName}`,
       apiToken,
-    ).then(res => res.ok)
+    )
 
     if (deletedRepoSuccessfully) {
       const res = await mirrorRepo(repoURL, uid, apiToken)
@@ -193,7 +169,7 @@ const Sync = ({ setUserOp }) => {
 
       setLoading(false)
       setMessage({
-        content: `couldn't delete the existing project "${projectName}"`,
+        content: `Couldn't overwrite "${projectName}"`,
         color: 'red',
       })
     }
@@ -242,56 +218,20 @@ const Sync = ({ setUserOp }) => {
           </Message>
         ) : null}
       </div>
-      <Modal
-        closeIcon
-        data-cy="collision-modal"
-        open={conflictModalOpen}
+      <SyncConflictModal
+        conflictModalOpen={conflictModalOpen}
+        projectName={projectName}
         onClose={() => {
           setUserOp(NoOp)
           // Close the modal
           setConflictModalOpen(false)
-          // Clear the form
+          // Clear input and error message.
           clear()
           setMessage({})
         }}
-      >
-        <Modal.Header>Heads up!</Modal.Header>
-        <Modal.Content>
-          <p>
-            You have an imported a project with the same name. You can either
-            overwrite the existing project or choose a different name.
-          </p>
-          <Form>
-            <Form.Field
-              fluid
-              control={Input}
-              // error={}
-              label={didChangeName ? 'New project name' : 'Project name'}
-              name="name"
-              value={form2.name || ''}
-              onChange={onChange2}
-            />
-          </Form>
-        </Modal.Content>
-        <Modal.Actions>
-          {didChangeName ? (
-            <Button
-              color="green"
-              content="OK"
-              data-cy="collision-different-name"
-              disabled={!isValidProjectName}
-              onClick={onDifferentName}
-            />
-          ) : (
-            <Button
-              color="orange"
-              content="Overwrite"
-              data-cy="collision-update"
-              onClick={onOverwrite}
-            />
-          )}
-        </Modal.Actions>
-      </Modal>
+        onDifferentName={onDifferentName}
+        onOverwrite={onOverwrite}
+      />
     </>
   )
 }
