@@ -10,9 +10,10 @@ import { exists, exec, readFile } from './utils.js'
 import { JobData } from './jobData.js'
 import redisConnection from './redisConnection.js'
 
-
 const defaultJobOptions: bullmq.JobsOptions = {
-  removeOnComplete: true,
+  // we'd actually like to remove on completed but encountered "missing key"
+  // errors when enabled
+  removeOnComplete: false,
   // remove our failed jobs while developing so they are retried.
   // in production we don't want them to be retried since it would waste
   // resources continually retrying them
