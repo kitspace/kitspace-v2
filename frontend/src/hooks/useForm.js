@@ -89,6 +89,7 @@ export default function UseForm(schema, validateOnBlur) {
     errors: formValidationErrors,
     formatErrorPrompt,
     onBlur,
+    clear: () => setForm({}),
   }
 }
 
