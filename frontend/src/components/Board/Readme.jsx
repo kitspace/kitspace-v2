@@ -38,6 +38,31 @@ const Readme = ({ renderedReadme }) => (
       #readme input[type='checkbox'] {
         margin-right: 5px;
       }
+
+      #readme table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        display: block;
+        max-width: 100%;
+        overflow: auto;
+        width: 100%;
+        width: max-content;
+      }
+
+      #readme table tr {
+        background-color: #ffffff;
+        border-top: 1px solid hsla(210, 18%, 91%, 1);
+      }
+
+      #readme table th,
+      #readme table td {
+        padding: 6px 13px;
+        border: 1px solid #d0d7de;
+      }
+
+      #readme table tr:nth-child(2n) {
+        background-color: #f6f8fa;
+      }
     `}</style>
   </div>
 )
