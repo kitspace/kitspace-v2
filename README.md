@@ -26,9 +26,9 @@ summary: A description for your project
 
 site: https://example.com # A site you would like to link to (include http:// or https://)
 
-color:
-  purple # for example
-  # The solder resist color of the preview rendering. If left undefined "green" is used. Can be one of:
+# The solder resist color of the preview rendering. 
+color: purple 
+  # If omitted "green" is used. Can be one of:
   # - green
   # - red
   # - blue
@@ -38,22 +38,24 @@ color:
   # - purple
   # - yellow
 
-bom:
-  my-bom.xlsx
-  # A path to your 1-click-bom in case it isn't `1-click-bom.tsv`. Supported extensions are:
+# A path to your 1-click-bom in case it isn't `1-click-bom.tsv`. 
+bom: my-bom.xlsx
+  # Supported extensions are:
   # - .tsv
   # - .csv
   # - .ods
   # - .xlsx
   # Check out https://github.com/kitspace/1clickBOM#readme for more details
 
-gerbers: my/gerber/folder # A path to your folder of gerbers in case it isn't `gerbers/`.
+# A path to your folder of gerbers in case it isn't `gerbers/`.
+gerbers: my/gerber/folder 
 
 eda:
   type: kicad # or eagle
   pcb: path/to/your/file.kicad_pcb # your/eagle.brd
 
-readme: my/special/readme.md # A path to your README file in case it isn't in the repository root directory.
+# A path to your README file in case it isn't in the repository root directory.
+readme: my/special/readme.md 
 
 pcb-services:
   [aisler, pcbway, oshpark, jlcpcb]
@@ -65,9 +67,11 @@ pcb-services:
   #      - oshpark
   #      - jlcpcb
 
-ibom-enabled: true # Enable InteractiveHtmlBom (https://github.com/openscopeproject/InteractiveHtmlBom)
+# Disable InteractiveHtmlBom generation, enabled by default. (https://github.com/openscopeproject/InteractiveHtmlBom) 
+ibom-enabled: false 
 
-multi: # Identifier field only used if the repository contains multiple projects. See below for details.
+# Identifier field only used if the repository contains multiple projects. See below for details.
+multi: 
 ```
 
 Paths should be in UNIX style (i.e. use `/` not `\`) and relative to the root
@@ -85,18 +89,15 @@ eda:
   pcb: path/to/your/file.kicad_pcb
 ```
 
-If your project has a KiCad PCB file, and interactive assembly guide
-for the board will be created using the [Interactive HTML BOM
-plugin](https://github.com/openscopeproject/InteractiveHtmlBom) from
-the [Open Scope Project](https://github.com/openscopeproject).
+If your project has a KiCad PCB or Eagle, an interactive assembly guide for the board will be created using the [Interactive HTML BOM plugin](https://github.com/openscopeproject/InteractiveHtmlBom) from the [Open Scope Project](https://github.com/openscopeproject).
 
-If both `eda` and `gerbers` are present the Gerber files will be used.
+If both `eda` and `gerbers` are present the Gerber files will be used directly everywhere except for the Interactive HTML BOM. 
 
 ### Some examples
 
 Check out the repo links of the projects listed on
 [kitspace.org](https://kitspace.org) already. The minimum required file tree is
-something like :
+something like:
 
 ```
 .
@@ -224,7 +225,7 @@ multi:
   project_two: ...
 ```
 
-### Terms and Conditions for Adding a Project
+### Terms and conditions for adding a project
 
 1. We (Kitspace developers) do not claim any ownership over your work, it remains yours.
 2. By submitting your project you give us permission to host copies of your files for other people to download.
