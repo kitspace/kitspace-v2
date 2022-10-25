@@ -1,11 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import util from 'node:util'
-import cp from 'node:child_process'
+import cp, { ProcessEnvOptions } from 'node:child_process'
+import shellEscape from 'shell-escape'
 
 const accessPromise = util.promisify(fs.access)
 
 export const exec = util.promisify(cp.exec)
+export const execEscaped = (args: string[], options?: ProcessEnvOptions) =>
+  util.promisify(cp.exec)(shellEscape(args), options)
 export const { writeFile } = fs.promises
 export const readFile = util.promisify(fs.readFile)
 
