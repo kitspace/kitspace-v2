@@ -24,7 +24,8 @@ Currently the `kitspace.yaml` makes use of the following fields:
 ```yaml
 summary: A description for your project
 
-site: https://example.com # A site you would like to link to (include http:// or https://)
+# A site you would like to link to (include http:// or https://)
+site: https://example.com 
 
 # The solder resist color of the preview rendering. 
 color: purple 
