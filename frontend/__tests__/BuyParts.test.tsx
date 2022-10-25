@@ -12,7 +12,7 @@ beforeEach(() => {
   )
 })
 
-it('should display bom', () => {
+it('displays BOM', () => {
   render(
     <BuyParts
       lines={fixture.purchasableParts.lines}
