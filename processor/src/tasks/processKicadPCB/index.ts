@@ -97,7 +97,7 @@ async function plotKicadLayoutSvg(
   ]
   await execEscaped(plotCommand)
   if (s3 != null) {
-    await s3.uploadFile(layoutSvgPath)
+    await s3.uploadFile(layoutSvgPath, 'image/svg+xml')
   }
 }
 
