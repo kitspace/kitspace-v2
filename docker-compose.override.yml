@@ -35,6 +35,8 @@ services:
       - '5432:5432'
 
   nginx:
+    environment:
+      - 'USE_LOCAL_MINIO=true'
     build:
       context: nginx
       dockerfile: Dockerfile
@@ -53,6 +55,8 @@ services:
       - ./processor:/app
       - processor-node_modules:/app/node_modules
     command: /bin/bash --verbose -c 'yarn install && yarn dev'
+    depends_on:
+      - minio
 
   minio:
     image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
