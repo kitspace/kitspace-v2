@@ -12,10 +12,11 @@ import path from 'node:path'
 import { DATA_DIR, S3_CLIENT_CONFIG, S3_PROCESSOR_BUCKET_NAME } from './env.js'
 
 export interface S3 {
-  uploadFile(filepath: string): Promise<PutObjectCommandOutput>
+  uploadFile(filepath: string, contentType: string): Promise<PutObjectCommandOutput>
   uploadFileContents(
     filename: string,
     contents: string | Uint8Array | Buffer,
+    contentType: string,
   ): Promise<PutObjectCommandOutput>
   exists(filepath: string): Promise<boolean>
   existsAll(paths: Array<string>): Promise<boolean>
@@ -55,19 +56,20 @@ export async function createS3(): Promise<S3> {
   }
 
   return {
-    uploadFileContents(filename, contents) {
+    uploadFileContents(filename, contents, contentType) {
       return s3Client.send(
         new PutObjectCommand({
           Bucket: bucketName,
           Key: filename,
           Body: contents,
+          ContentType: contentType,
         }),
       )
     },
-    async uploadFile(filepath) {
+    async uploadFile(filepath, contentType) {
       const contents = await fs.readFile(filepath)
       const filename = path.relative(DATA_DIR, filepath)
-      return this.uploadFileContents(filename, contents)
+      return this.uploadFileContents(filename, contents, contentType)
     },
     async exists(filepath) {
       const filename = path.relative(DATA_DIR, filepath)
