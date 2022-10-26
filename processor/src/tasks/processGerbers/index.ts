@@ -2,7 +2,7 @@ import globule from 'globule'
 import path from 'node:path'
 import Jszip from 'jszip'
 
-import { existsAll, writeFile, readFile, exec } from '../../utils.js'
+import { existsAll, writeFile, readFile, execEscaped, exec } from '../../utils.js'
 import { JobData } from '../../jobData.js'
 import boardBuilder from './board_builder.js'
 import findGerberFiles from './findGerberFiles.js'
@@ -67,7 +67,7 @@ export default async function processGerbers(
     const gerberDir = kitspaceYaml.gerbers || ''
     const color = kitspaceYaml.color || 'green'
 
-    await exec(`mkdir -p ${path.join(outputDir, 'images')}`)
+    await execEscaped(['mkdir', '-p', path.join(outputDir, 'images')])
 
     const files = globule.find(path.join(inputDir, '**'), { dot: true })
 
