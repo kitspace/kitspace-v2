@@ -158,7 +158,7 @@ describe('Readme style', () => {
       })
   })
 
-  it('should render :emoji: in readme and project description', () => {
+  it('renders :emoji: in readme and project description', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -186,7 +186,7 @@ describe('Readme style', () => {
     cy.get('[data-cy=readme]').should('contain.text', '🤓')
   })
 
-  it('should not modify the urls for GitHub Actions badges', () => {
+  it('preserves URLs for GitHub Actions badges', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'

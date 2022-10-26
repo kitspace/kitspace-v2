@@ -80,7 +80,7 @@ export function toGitHubRawUrl(url: string) {
   if (parsedUrl.hostname === 'github.com') {
     parsedUrl.hostname = 'raw.githubusercontent.com'
     const urlPath = parsedUrl.pathname.split('/')
-    // Avoid using  modifying github actions status badges.
+    // Avoid modifying github actions status badges.
     const isWorkflowPath = ['workflows', 'actions'].includes(urlPath?.[3])
 
     if (!isWorkflowPath) {
