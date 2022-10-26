@@ -4,6 +4,7 @@ import {
   HeadObjectCommand,
   PutObjectCommand,
   PutObjectCommandOutput,
+  PutBucketPolicyCommand,
   S3Client,
 } from '@aws-sdk/client-s3'
 import { promises as fs } from 'node:fs'
@@ -30,12 +31,37 @@ export async function createS3(): Promise<S3> {
   } catch (err) {
     // if it doesn't exist create it
     await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
+
+    const publicReadPolicy = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Sid: 'AddPerm',
+          Effect: 'Allow',
+          Principal: {
+            AWS: ['*'],
+          },
+          Action: ['s3:GetObject'],
+          Resource: [`arn:aws:s3:::${bucketName}/*`],
+        },
+      ],
+    }
+    await s3Client.send(
+      new PutBucketPolicyCommand({
+        Bucket: bucketName,
+        Policy: JSON.stringify(publicReadPolicy),
+      }),
+    )
   }
 
   return {
     uploadFileContents(filename, contents) {
       return s3Client.send(
-        new PutObjectCommand({ Bucket: bucketName, Key: filename, Body: contents }),
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Key: filename,
+          Body: contents,
+        }),
       )
     },
     async uploadFile(filepath) {
