@@ -14,9 +14,9 @@ sed \
    /opt/kitspace.template > /etc/nginx/conf.d/default.conf
 
 if [ "${USE_LOCAL_MINIO:-}" == "true" ]; then
-   sed -e "s/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g" /opt/minio.template > /etc/nginx/conf.d/minio.conf
+   cp /opt/kitspace-minio.test.conf /etc/nginx/conf.d/
 else
-   rm -f /etc/nginx/conf.d/minio.conf
+   rm -f /etc/nginx/conf.d/kitspace-minio.test.conf
 fi
 
 nginx -g "daemon off;" &
