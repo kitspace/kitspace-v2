@@ -22,6 +22,7 @@ services:
       - RUN_CERTBOT=${CERTBOT_ENABLED}
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN},meilisearch.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+      - 'USE_LOCAL_MINIO=false'
     volumes:
       - /etc/letsencrypt
     restart: always

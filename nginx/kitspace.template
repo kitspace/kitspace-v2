@@ -108,7 +108,7 @@ server {
         # In development mode Meilisearch sets these headers
         # (Access-Control-Allow-Origin to "*", and Access-Control-Allow-Methods
         # to all of GET, PUT, PATCH, DELETE... ). If we don't use `proxy_hide_header`
-        # then they we get double headers in the HTTP responses.
+        # then we get double headers in the HTTP responses.
         proxy_hide_header   'Access-Control-Allow-Origin';
         proxy_hide_header   'Access-Control-Allow-Methods';
         add_header          'Access-Control-Allow-Origin'  '@KITSPACE_URL' always;
