@@ -1,16 +1,14 @@
+import globule from 'globule'
 import path from 'node:path'
 import url from 'node:url'
-
-import globule from 'globule'
-
-import { S3 } from '../../s3.js'
-import { existsAll, findKicadPcbFile, execEscaped } from '../../utils.js'
 import { JobData } from '../../jobData.js'
+import { S3 } from '../../s3.js'
+import { execEscaped, findKicadPcbFile } from '../../utils.js'
 
 async function processKicadPCB(
   job,
   { inputDir, kitspaceYaml = {}, outputDir }: Partial<JobData>,
-  s3: S3 | null,
+  s3: S3,
 ) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
@@ -20,7 +18,7 @@ async function processKicadPCB(
     job.updateProgress({ status: 'in_progress', file })
   }
 
-  if (await existsAll(filePaths)) {
+  if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'done', file })
     }
@@ -96,9 +94,7 @@ async function plotKicadLayoutSvg(
     layoutSvgPath,
   ]
   await execEscaped(plotCommand)
-  if (s3 != null) {
-    await s3.uploadFile(layoutSvgPath, 'image/svg+xml')
-  }
+  await s3.uploadFile(layoutSvgPath, 'image/svg+xml')
 }
 
 export default processKicadPCB

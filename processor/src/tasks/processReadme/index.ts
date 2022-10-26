@@ -1,7 +1,6 @@
-import path from 'node:path'
-
-import { unified } from 'unified'
 import globule from 'globule'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeRaw from 'rehype-raw'
@@ -13,9 +12,9 @@ import remarkEmoji from 'remark-emoji'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
-
-import { exists, readFile, writeFile, exec } from '../../utils.js'
+import { unified } from 'unified'
 import { JobData } from '../../jobData.js'
+import { S3 } from '../../s3.js'
 import urlTransformer, { rehypeSanitizeOpts } from './urlTransformer.js'
 
 async function processReadme(
@@ -29,14 +28,15 @@ async function processReadme(
     originalUrl,
     defaultBranch,
   }: Partial<JobData>,
+  s3: S3,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
   job.updateProgress({ status: 'in_progress', file: readmePath })
 
-  if (await exists(readmePath)) {
+  if (await s3.exists(readmePath)) {
     job.updateProgress({ status: 'done', file: readmePath })
-    return readFile(readmePath, 'utf-8')
+    return s3.getFileContents(readmePath)
   }
 
   let readmeInputPath: string
@@ -56,7 +56,7 @@ async function processReadme(
     readmeInputPath = readmeFile
   }
 
-  const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
+  const rawMarkdown = await fs.readFile(readmeInputPath, { encoding: 'utf8' })
 
   const readmeFolder = path.dirname(path.relative(inputDir, readmeInputPath))
   const processedReadmeHTML = await renderMarkdown(
@@ -68,8 +68,7 @@ async function processReadme(
     defaultBranch,
   )
 
-  await exec(`mkdir -p ${outputDir}`)
-  await writeFile(readmePath, processedReadmeHTML)
+  s3.uploadFileContents(readmePath, processedReadmeHTML, 'text/html')
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: readmePath, error }),

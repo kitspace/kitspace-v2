@@ -1,10 +1,8 @@
-import express from 'express'
 import log from 'loglevel'
 import path from 'node:path'
-
-import { DATA_DIR } from './env.js'
-import * as watcher from './watcher.js'
+import { DATA_DIR, S3_CLIENT_CONFIG, S3_PROCESSOR_BUCKET_NAME } from './env.js'
 import events from './events.js'
+import * as watcher from './watcher.js'
 
 const filesDir = path.join(DATA_DIR, 'files')
 
@@ -47,8 +45,6 @@ export function createProjectsAPI(app, repoDir, { giteaDB }) {
     return res.sendStatus(404)
   })
 
-  const staticFiles = express.static(DATA_DIR)
-
   app.get('/files/*', (req, res, next) => {
     let x = path.relative('/files/', req.path)
     x = lowerCaseProject(x)
@@ -62,7 +58,10 @@ export function createProjectsAPI(app, repoDir, { giteaDB }) {
         return res.sendStatus(202)
       }
       if (fileStatus[x].status === 'done') {
-        return staticFiles(req, res, next)
+        return res.redirect(
+          302,
+          `${S3_CLIENT_CONFIG.endpoint}/${S3_PROCESSOR_BUCKET_NAME}${req.path}`,
+        )
       }
       if (fileStatus[x].status === 'failed') {
         // send a 424, "Failed Dependency" error when the asset processing failed
