@@ -8,13 +8,13 @@ import { exists, execEscaped, readFile } from './utils.js'
 import { JobData } from './jobData.js'
 import redisConnection from './redisConnection.js'
 
-
 const defaultJobOptions: bullmq.JobsOptions = {
-  removeOnComplete: true,
-  // remove our failed jobs while developing so they are retried.
-  // in production we don't want them to be retried since it would waste
-  // resources continually retrying them
-  removeOnFail: process.env.NODE_ENV !== 'production',
+  // keep completed jobs for an hour
+  // we update progress on jobs asynchonously when the task promise may have already been
+  // completed so we should never remove completed jobs right away as it will cause errors
+  removeOnComplete: { age: 3600 },
+  // keep the last 5000 failed jobs
+  removeOnFail: { count: 5000 },
 }
 
 const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
