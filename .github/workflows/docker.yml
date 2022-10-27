@@ -186,6 +186,13 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
         continue-on-error: true
 
+      - name: 'Set S3 env variables depending on branch name'
+        if: ${{ github.ref == 'refs/heads/kaspar-dev' }}
+        run: |
+          echo 'S3_ACCESS_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_ACCESS_KEY }}' >> $GITHUB_ENV
+          echo 'S3_SECRET_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_SECRET_KEY }}' >> $GITHUB_ENV
+          echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev' >> $GITHUB_ENV
+
       - name: Deploy to ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
         id: deploy_to_staging
         uses: kitspace/docker-remote-deployment-action@master
@@ -220,13 +227,6 @@ jobs:
           ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
           stack_file_name: docker-compose.yml,docker-compose.deploy.yml
           args: up -d
-
-      - name: 'Set S3 env variables depending on branch name'
-        if: ${{ github.ref == 'refs/heads/kaspar-dev' }}
-        run: |
-          echo 'S3_ACCESS_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_ACCESS_KEY }}' >> $GITHUB_ENV
-          echo 'S3_SECRET_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_SECRET_KEY }}' >> $GITHUB_ENV
-          echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev' >> $GITHUB_ENV
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
