@@ -1,13 +1,16 @@
-import * as express from 'express'
 import bullmq from 'bullmq'
 import fileUpload from 'express-fileupload'
 import log from 'loglevel'
 import path from 'node:path'
-
-import { DATA_DIR, REMOTE_API_TOKENS } from './env.js'
-import { execEscaped, writeFile } from './utils.js'
-import connection from './redisConnection.js'
+import {
+  DATA_DIR,
+  REMOTE_API_TOKENS,
+  S3_CLIENT_CONFIG,
+  S3_PROCESSOR_BUCKET_NAME,
+} from './env.js'
 import events from './events.js'
+import connection from './redisConnection.js'
+import { execEscaped, writeFile } from './utils.js'
 
 const remoteProcessOutputDir = path.join(DATA_DIR, 'remote-process-public')
 const remoteProcessInputDir = path.join(DATA_DIR, 'remote-process-input-files')
@@ -16,10 +19,6 @@ const defaultJobOptions = { removeOnComplete: true }
 
 export function createRemoteAPI(app) {
   const processKicadPCBQueue = new bullmq.Queue('processKicadPCB', {
-    connection,
-    defaultJobOptions,
-  })
-  const processSchematicsQueue = new bullmq.Queue('processSchematics', {
     connection,
     defaultJobOptions,
   })
@@ -63,7 +62,7 @@ export function createRemoteAPI(app) {
       }
       const uploadFolder = path.join(remoteProcessInputDir, upload.md5)
       const ext = path.extname(upload.name)
-      if (!['.kicad_pcb', '.sch'].includes(ext)) {
+      if (!['.kicad_pcb'].includes(ext)) {
         return res.status(422).send('Only accepting .kicad_pcb and .sch files')
       }
       const uploadPath = path.join(uploadFolder, upload.md5 + ext)
@@ -72,15 +71,6 @@ export function createRemoteAPI(app) {
       await writeFile(uploadPath, upload.data).then(() => {
         if (ext === '.kicad_pcb') {
           processKicadPCBQueue.add(
-            'remoteAPI',
-            {
-              inputDir: uploadFolder,
-              outputDir,
-            },
-            { jobId: outputDir },
-          )
-        } else if (ext === '.sch') {
-          processSchematicsQueue.add(
             'remoteAPI',
             {
               inputDir: uploadFolder,
@@ -107,8 +97,6 @@ export function createRemoteAPI(app) {
     return res.sendStatus(404)
   })
 
-  const processStaticFiles = express.static(remoteProcessOutputDir)
-
   app.get('/processed/files/*', (req, res, next) => {
     const x = path.relative('/processed/files/', req.url)
 
@@ -118,8 +106,10 @@ export function createRemoteAPI(app) {
         return res.sendStatus(202)
       }
       if (processFileStatus[x].status === 'done') {
-        req.url = x
-        return processStaticFiles(req, res, next)
+        return res.redirect(
+          302,
+          `${S3_CLIENT_CONFIG.endpoint}/${S3_PROCESSOR_BUCKET_NAME}/remote-process-public${req.path}`,
+        )
       }
       if (processFileStatus[x].status === 'failed') {
         // send a 424, "Failed Dependency" error when the asset processing failed
@@ -131,10 +121,7 @@ export function createRemoteAPI(app) {
   })
 
   app.cleanup.push(async () => {
-    await Promise.all([
-      processKicadPCBQueue.obliterate({ force: true }),
-      processSchematicsQueue.obliterate({ force: true }),
-    ])
+    await Promise.all([processKicadPCBQueue.obliterate({ force: true })])
   })
 
   return app

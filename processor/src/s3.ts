@@ -29,7 +29,7 @@ export async function createS3(): Promise<S3> {
   const bucketName = S3_PROCESSOR_BUCKET_NAME
 
   try {
-    // check if it exists aleady
+    // check if it exists already
     await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
   } catch (err) {
     // if it doesn't exist create it
@@ -39,7 +39,6 @@ export async function createS3(): Promise<S3> {
       Version: '2012-10-17',
       Statement: [
         {
-          Sid: 'AddPerm',
           Effect: 'Allow',
           Principal: {
             AWS: ['*'],
