@@ -7,24 +7,29 @@ import { isUsableProjectName, repoExists } from '@utils/giteaApi'
 import { formatAsGiteaRepoName } from '@utils/index'
 import { AuthContext } from '@contexts/AuthContext'
 
-export const SyncConflictModal = ({
+const ConflictModal = ({
   conflictModalOpen,
   onClose,
-  projectName,
+  originalProjectName,
+  message,
   onDifferentName,
+  onDifferentNameButtonContent,
   onOverwrite,
-}: SyncConflictModalProps) => {
+  onOverwriteButtonContent,
+}: BaseConflictModalProps) => {
   const { user } = useContext(AuthContext)
-  const { form, onChange, isValid, populate } = UseForm(ExistingProjectFromModel)
+  const { form, onChange, isValid, populate, formatErrorPrompt } = UseForm(
+    ExistingProjectFromModel,
+  )
 
   const [isValidProjectName, setIsValidProjectName] = React.useState(false)
 
-  const didChangeName = projectName !== form.name
-  const repoName = formatAsGiteaRepoName(form.name || '')
+  const didChangeName = originalProjectName !== form.name
+  const projectName = formatAsGiteaRepoName(form.name || '')
 
   useEffect(() => {
-    populate({ name: projectName })
-  }, [projectName, populate])
+    populate({ name: originalProjectName })
+  }, [originalProjectName, populate])
 
   useEffect(() => {
     if (form.name) {
@@ -43,15 +48,17 @@ export const SyncConflictModal = ({
     >
       <Modal.Header>Heads up!</Modal.Header>
       <Modal.Content>
-        <p>
-          You have an imported a project with the same name. You can either
-          overwrite the existing project or choose a different name.
-        </p>
+        <p>{message}</p>
         <Form>
           <Form.Field
             fluid
             control={Input}
-            // error={}
+            error={formatProjectNameError(
+              isValidProjectName,
+              didChangeName,
+              projectName,
+              formatErrorPrompt('name'),
+            )}
             label={didChangeName ? 'New project name' : 'Project name'}
             name="name"
             value={form.name || ''}
@@ -63,15 +70,15 @@ export const SyncConflictModal = ({
         {didChangeName ? (
           <Button
             color="green"
-            content="OK"
+            content={onDifferentNameButtonContent}
             data-cy="collision-different-name"
             disabled={!isValidProjectName}
-            onClick={() => onDifferentName(repoName)}
+            onClick={() => onDifferentName(projectName)}
           />
         ) : (
           <Button
             color="orange"
-            content="Overwrite"
+            content={onOverwriteButtonContent}
             data-cy="collision-update"
             onClick={onOverwrite}
           />
@@ -81,10 +88,79 @@ export const SyncConflictModal = ({
   )
 }
 
+export const SyncConflictModal = ({
+  conflictModalOpen,
+  onClose,
+  originalProjectName,
+  onDifferentName,
+  onOverwrite,
+}: SyncConflictModalProps) => (
+  <ConflictModal
+    {...{
+      conflictModalOpen,
+      onClose,
+      originalProjectName,
+      onDifferentName,
+      onOverwrite,
+    }}
+    message="You have an imported a project with the same name. You can either overwrite the existing project or choose a different name."
+    onDifferentNameButtonContent="OK"
+    onOverwriteButtonContent="Overwrite"
+  />
+)
+
+export const UploadConflictModal = ({
+  conflictModalOpen,
+  onClose,
+  onDifferentName,
+  onOverwrite,
+  originalProjectName,
+}: SyncConflictModalProps) => (
+  <ConflictModal
+    {...{
+      conflictModalOpen,
+      onClose,
+      originalProjectName,
+      onDifferentName,
+      onOverwrite,
+    }}
+    message="You have an existing project with the same name. You can either choose a different name or update this file in the existing project."
+    onDifferentNameButtonContent="Choose a different name"
+    onOverwriteButtonContent="Update existing project"
+  />
+)
+
+/**
+ * Disjoint form validation errors, e.g, maximum length, not empty, etc, with conflicting project name errors
+ * @returns
+ */
+const formatProjectNameError = (
+  isValidProjectName: boolean,
+  didChangeName: boolean,
+  projectName: string,
+  formErrors?: { content: any; pointing: string },
+) => {
+  if (formErrors) {
+    return formErrors
+  }
+  return !isValidProjectName && didChangeName
+    ? {
+        content: `A project named "${projectName}" already exists!`,
+        pointing: 'below',
+      }
+    : null
+}
+
 interface SyncConflictModalProps {
   conflictModalOpen: boolean
   onClose: () => void
-  projectName: string
   onDifferentName: (name: string) => void
   onOverwrite: () => void
+  originalProjectName: string
+}
+
+interface BaseConflictModalProps extends SyncConflictModalProps {
+  message: string
+  onDifferentNameButtonContent: string
+  onOverwriteButtonContent: string
 }

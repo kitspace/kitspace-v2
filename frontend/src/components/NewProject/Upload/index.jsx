@@ -1,32 +1,26 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react'
 import { bool, func, number } from 'prop-types'
-import { Input, Button, Modal, Form, Loader, Progress } from 'semantic-ui-react'
+import { Loader, Progress } from 'semantic-ui-react'
 
-import slugify from 'slugify'
 import { useRouter } from 'next/router'
 
 import { AuthContext } from '@contexts/AuthContext'
 import { commitInitialFiles } from '@utils/giteaInternalApi'
 import { createRepo, repoExists } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
-import { UploadOp, NoOp } from '../Ops'
 import DropZone from '@components/DropZone'
-import ExistingProjectFromModel from '@models/ExistingProjectForm'
+import { UploadOp, NoOp } from '../Ops'
+import { UploadConflictModal } from '../CondlictModals'
 import styles from './index.module.scss'
-import useForm from '@hooks/useForm'
 
 const Upload = ({ setUserOp }) => {
   const { push } = useRouter()
   const { user, csrf, apiToken } = useContext(AuthContext)
-  const { form, onChange, populate, isValid, formatErrorPrompt } = useForm(
-    ExistingProjectFromModel,
-  )
 
   const [conflictModalOpen, setConflictModalOpen] = useState(false)
   const [droppedFiles, setDroppedFiles] = useState([])
   const [projectName, setProjectName] = useState('')
   const [originalProjectName, setOriginalProjectName] = useState('')
-  const [isValidProjectName, setIsValidProjectName] = useState(false)
   const [isNewProject, setIsNewProject] = useState(true)
   const [progress, setProgress] = useState(0)
 
@@ -34,6 +28,7 @@ const Upload = ({ setUserOp }) => {
     setUserOp(UploadOp)
 
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
+    console.log({ tempProjectName })
     const repo = await createRepo(tempProjectName, '', apiToken)
 
     setProjectName(tempProjectName)
@@ -61,22 +56,20 @@ const Upload = ({ setUserOp }) => {
     }
   }
 
-  const onDifferentName = async () => {
-    // create repo with the new name and redirect to the update page which will have the loaded files
-    const differentName = slugify(form.name)
-    setProjectName(differentName)
-    await createRepo(differentName, '', apiToken)
+  const onDifferentName = async projectName => {
+    setProjectName(projectName)
+    await createRepo(projectName, '', apiToken)
 
     // Close the conflict modal to show uploading progress.
     setConflictModalOpen(false)
 
     await commitInitialFiles({
       files: droppedFiles,
-      repo: `${user.username}/${differentName}`,
+      repo: `${user.username}/${projectName}`,
       csrf,
       onProgress: setProgress,
     })
-    await push(`/${user.username}/${differentName}`)
+    await push(`/${user.username}/${projectName}`)
   }
 
   const onUpdateToExisting = async () => {
@@ -93,44 +86,6 @@ const Upload = ({ setUserOp }) => {
     await push(`/${user.username}/${projectName}`)
   }
 
-  const validateProjectName = useCallback(async () => {
-    // Check if the new name will also cause a conflict.
-    const repoFullname = `${user.username}/${form.name}`
-
-    if (!(await repoExists(repoFullname))) {
-      setIsValidProjectName(isValid)
-    } else {
-      setIsValidProjectName(false)
-    }
-  }, [user, form, isValid])
-
-  const formatProjectNameError = () => {
-    // disjoint form validation errors, e.g, maximum length, not empty, etc, with conflicting project name errors
-    const formErrors = formatErrorPrompt('name')
-
-    if (formErrors) {
-      return formErrors
-    }
-    return !isValidProjectName
-      ? {
-          content: `A project named "${form.name}" already exists!`,
-          pointing: 'below',
-        }
-      : null
-  }
-
-  useEffect(() => {
-    populate({ name: projectName }, true)
-  }, [projectName, populate])
-
-  useEffect(() => {
-    if (form.name) {
-      validateProjectName()
-    }
-  }, [form.name, validateProjectName])
-
-  const didChangeName = originalProjectName !== form.name
-
   return (
     <>
       <Uploader
@@ -139,10 +94,8 @@ const Upload = ({ setUserOp }) => {
         totalNumberOfFiles={droppedFiles.length}
         onDrop={onDrop}
       />
-      <Modal
-        closeIcon
-        data-cy="collision-modal"
-        open={conflictModalOpen}
+      <UploadConflictModal
+        conflictModalOpen={conflictModalOpen}
         onClose={() => {
           setUserOp(NoOp)
           // Close the modal
@@ -150,44 +103,10 @@ const Upload = ({ setUserOp }) => {
           // reset the state as if the user didn't drop anything
           setDroppedFiles([])
         }}
-      >
-        <Modal.Header>Heads up!</Modal.Header>
-        <Modal.Content>
-          <p>
-            You have an existing project with the same name. You can either choose a
-            different name or update this file in the existing project.
-          </p>
-          <Form>
-            <Form.Field
-              fluid
-              control={Input}
-              error={formatProjectNameError()}
-              label={didChangeName ? 'New project name' : 'Project name'}
-              name="name"
-              value={form.name || ''}
-              onChange={onChange}
-            />
-          </Form>
-        </Modal.Content>
-        <Modal.Actions>
-          {didChangeName ? (
-            <Button
-              color="green"
-              content="OK"
-              data-cy="collision-different-name"
-              disabled={!isValidProjectName}
-              onClick={onDifferentName}
-            />
-          ) : (
-            <Button
-              color="orange"
-              content={`Add files to "${originalProjectName}"`}
-              data-cy="collision-update"
-              onClick={onUpdateToExisting}
-            />
-          )}
-        </Modal.Actions>
-      </Modal>
+        originalProjectName={originalProjectName}
+        onDifferentName={onDifferentName}
+        onOverwrite={onUpdateToExisting}
+      />
     </>
   )
 }

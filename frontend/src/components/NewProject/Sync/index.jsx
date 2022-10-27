@@ -220,7 +220,7 @@ const Sync = ({ setUserOp }) => {
       </div>
       <SyncConflictModal
         conflictModalOpen={conflictModalOpen}
-        projectName={projectName}
+        originalProjectName={projectName}
         onClose={() => {
           setUserOp(NoOp)
           // Close the modal
