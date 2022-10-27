@@ -23,7 +23,7 @@ export const S3_CLIENT_CONFIG = {
     accessKeyId: process.env.S3_ACCESS_KEY,
     secretAccessKey: process.env.S3_SECRET_KEY,
   },
-  region: 'us-east-1',
+  region: 'eu-west-2',
   endpoint: process.env.S3_ENDPOINT,
   forcePathStyle: true,
 }
