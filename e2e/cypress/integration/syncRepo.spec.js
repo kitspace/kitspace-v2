@@ -67,7 +67,7 @@ describe('Syncing a project behavior validation', () => {
       )
   })
 
-  it('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
+  it.skip('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -94,7 +94,7 @@ describe('Syncing a project behavior validation', () => {
     cy.get('[data-cy=project-description]').should('contain', 'ARDUTOUCH ')
   })
 
-  it('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
+  it.skip('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
@@ -128,7 +128,7 @@ describe('Syncing a project behavior validation', () => {
     )
   })
 
-  it('should escape and render project description correctly', () => {
+  it.skip('should escape and render project description correctly', () => {
     const username = getFakeUsername()
     const email = faker.unique(faker.internet.email)
     const password = '123456'
