@@ -224,9 +224,9 @@ jobs:
       - name: 'Set S3 env variables depending on branch name'
         if: ${{ github.ref == 'refs/heads/kaspar-dev' }}
         run: |
-          echo 'S3_ACCESS_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_ACCESS_KEY }}'
-          echo 'S3_SECRET_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_SECRET_KEY }}'
-          echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev'
+          echo 'S3_ACCESS_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_ACCESS_KEY }}' >> $GITHUB_ENV
+          echo 'S3_SECRET_KEY=${{ secrets.STAGING_KASPAR_DEV_S3_SECRET_KEY }}' >> $GITHUB_ENV
+          echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev' >> $GITHUB_ENV
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
