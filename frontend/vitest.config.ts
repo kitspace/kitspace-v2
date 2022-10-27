@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), viteTsConfigPaths()],
   test: {
     environment: 'jsdom',
+    dir: 'test',
     setupFiles: ['./vitest.setup.ts'],
   },
 })
