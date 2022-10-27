@@ -1,4 +1,3 @@
-import slugify from 'slugify'
 import platformPath from 'path'
 import getConfig from 'next/config'
 import { formatAsGiteaRepoName } from './index'
@@ -18,7 +17,7 @@ const headers = { 'Content-Type': 'application/json' }
 export const createRepo = async (name, description, apiToken) => {
   const endpoint = `${giteaApiUrl}/user/repos`
   const giteaOptions = {
-    name: slugify(name),
+    name: formatAsGiteaRepoName(name),
     description,
     repo_template: '',
     issue_labels: '',

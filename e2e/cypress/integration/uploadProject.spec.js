@@ -28,7 +28,7 @@ describe('Upload project', () => {
     })
 
     cy.get('[data-cy=creating-project-loader]')
-    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example`)
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example.png`)
 
     // TODO FIXME, when writing test for project page
     // cy.get('[data-cy=file-name]', { timeout: 15000 }).contains('example.png')
@@ -61,7 +61,7 @@ describe('User projects name collision', () => {
     })
 
     cy.get('[data-cy=creating-project-loader]')
-    cy.url().should('include', `${username}/example`)
+    cy.url().should('include', `${username}/example.png`)
   })
 
   beforeEach(() => {
@@ -103,7 +103,7 @@ describe('User projects name collision', () => {
     cy.get('[data-cy=collision-update]').click()
 
     // redirect to the upload page
-    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example`)
+    cy.url().should('eq', `${Cypress.config().baseUrl}/${username}/example.png`)
 
     // TODO FIXME, when writing test for project page
     // The new file is committed and on the update page
