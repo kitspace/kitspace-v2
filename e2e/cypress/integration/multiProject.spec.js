@@ -238,6 +238,7 @@ describe('Multi project page', () => {
       'board-extra-menus',
       'order-pcb',
       'buy-parts',
+      'buy-parts-bom',
       'readme',
     ]
 
