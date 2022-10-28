@@ -18,6 +18,6 @@
   become: true
   ansible.builtin.cron:
     name: prune docker system and volumes
-    special_time: daily
+    special_time: hourly
     user: root
     job: "docker system prune --all --volumes --force"
