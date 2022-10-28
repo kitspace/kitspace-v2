@@ -156,10 +156,6 @@ export default async function processGerbers(
       )
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath, s3)
-      .then(() => job.updateProgress({ status: 'done', file: topMetaPngPath }))
-      .catch(error =>
-        job.updateProgress({ status: 'failed', file: topMetaPngPath, error }),
-      )
 
     await generateTopWithBgnd(topMetaPngPath, topWithBgndPath, s3)
       .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
@@ -199,7 +195,7 @@ async function generateTopPng(topSvgPath, stackup, topPngPath, s3: S3) {
   return s3.uploadFile(topPngPath, 'image/png')
 }
 
-async function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath, s3: S3) {
+function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath, s3: S3) {
   let cmd_meta = `inkscape --without-gui '${topSvgPath}'`
   cmd_meta += ` --export-png='${topMetaPngPath}'`
   const width = 900
@@ -215,8 +211,7 @@ async function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath, s3: S3) {
   } else {
     cmd_meta += ` --export-width=${width}`
   }
-  await exec(cmd_meta)
-  return s3.uploadFile(topMetaPngPath, 'image/png')
+  return exec(cmd_meta)
 }
 
 async function generateTopWithBgnd(topMetaPngPath, topWithBgndPath, s3: S3) {
