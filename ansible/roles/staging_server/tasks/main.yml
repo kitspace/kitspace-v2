@@ -1,4 +1,4 @@
 ---
-- include: unattended_upgrades.yml
-- include: docker.yml
-- include: deploy_user.yml
+- include_tasks: unattended_upgrades.yml
+- include_tasks: docker.yml
+- include_tasks: deploy_user.yml
