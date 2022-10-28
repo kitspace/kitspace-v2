@@ -29,6 +29,9 @@ services:
 
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
+    environment:
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_PROCESSOR_BUCKET_NAME=${S3_PROCESSOR_BUCKET_NAME}
     restart: always
 
   redis:
