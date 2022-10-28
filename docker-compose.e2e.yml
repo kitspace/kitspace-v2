@@ -27,6 +27,10 @@ services:
     environment:
       - 'USE_LOCAL_MINIO=true'
 
+  processor:
+    environment:
+      - 'USE_LOCAL_MINIO=true'
+
   minio:
     image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
     environment:

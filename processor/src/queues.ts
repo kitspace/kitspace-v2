@@ -69,8 +69,8 @@ export async function addProjectToQueues({
   const inputDir = path.join(
     DATA_DIR,
     'checkout',
-    ownerName.toLowerCase(),
-    repoName.toLowerCase(),
+    ownerName,
+    repoName,
   )
 
   await sync(gitDir, inputDir)
@@ -79,8 +79,8 @@ export async function addProjectToQueues({
   const outputDir = path.join(
     DATA_DIR,
     'files',
-    ownerName.toLowerCase(),
-    repoName.toLowerCase(),
+    ownerName,
+    repoName,
     hash,
   )
 

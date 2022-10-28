@@ -25,6 +25,7 @@ module.exports = async phase => {
     publicRuntimeConfig: {
       KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
       KITSPACE_PROCESSOR_URL: process.env.KITSPACE_PROCESSOR_URL,
+      KITSPACE_ASSET_URL: process.env.KITSPACE_ASSET_URL,
       KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,
       MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
       meiliApiKey: meiliSearchOnlyKey.key,
@@ -52,6 +53,7 @@ module.exports = async phase => {
         // TODO: use a wildcard when https://github.com/vercel/next.js/pull/27345 get merged
         `gitea.${process.env.KITSPACE_DOMAIN}`,
         `processor.${process.env.KITSPACE_DOMAIN}`,
+        new URL(process.env.KITSPACE_ASSET_URL).hostname,
         'github.com',
         'raw.githubusercontent.com',
         'secure.gravatar.com',

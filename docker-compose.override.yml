@@ -8,7 +8,7 @@ services:
       target: git-installed
     environment:
       - NODE_ENV=development
-      - 'KITSPACE_ASSET_URL=https://processor-bucket.kitspace-minio.test:3000'
+      - 'KITSPACE_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000'
     ports:
       - '1234:3000'
       - '9229:9229'
@@ -49,6 +49,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=development
+      - 'USE_LOCAL_MINIO=true'
       - S3_ENDPOINT=http://kitspace-minio.test:3000
       - S3_PROCESSOR_BUCKET_NAME=processor-bucket
     ports:

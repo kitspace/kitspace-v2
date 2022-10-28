@@ -3,6 +3,7 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  PutBucketCorsCommand,
   PutBucketPolicyCommand,
   PutObjectCommand,
   PutObjectCommandOutput,
@@ -10,15 +11,20 @@ import {
 } from '@aws-sdk/client-s3'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
-import { DATA_DIR, S3_CLIENT_CONFIG, S3_PROCESSOR_BUCKET_NAME } from './env.js'
+import {
+  DATA_DIR,
+  S3_CLIENT_CONFIG,
+  S3_PROCESSOR_BUCKET_NAME,
+  USE_LOCAL_MINIO,
+} from './env.js'
 
 export interface S3 {
-  uploadFile(filepath: string, contentType: string): Promise<PutObjectCommandOutput>
+  uploadFile(filepath: string, contentType: string): Promise<void>
   uploadFileContents(
     filename: string,
     contents: string | Uint8Array | Buffer,
     contentType: string,
-  ): Promise<PutObjectCommandOutput>
+  ): Promise<void>
   getFileContents(filpath: string, encoding?: BufferEncoding): Promise<string>
   exists(filepath: string): Promise<boolean>
   existsAll(paths: Array<string>): Promise<boolean>
@@ -54,19 +60,49 @@ export async function createS3(): Promise<S3> {
         Policy: JSON.stringify(publicReadPolicy),
       }),
     )
+    // we need cors on all assets, minio doesn't support this command so for
+    // development it's handled in nginx instead
+    if (!USE_LOCAL_MINIO) {
+      await s3Client.send(
+        new PutBucketCorsCommand({
+          Bucket: bucketName,
+          CORSConfiguration: {
+            CORSRules: [
+              {
+                AllowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+                AllowedHeaders: ['*'],
+                AllowedOrigins: ['*'],
+              },
+            ],
+          },
+        }),
+      )
+    }
   }
 
   return {
-    uploadFileContents(filepath, contents, contentType) {
+    async uploadFileContents(filepath, contents, contentType) {
       const filename = path.relative(DATA_DIR, filepath)
-      return s3Client.send(
-        new PutObjectCommand({
-          Bucket: bucketName,
-          Key: filename,
-          Body: contents,
-          ContentType: contentType,
-        }),
-      )
+      await Promise.all([
+        s3Client.send(
+          new PutObjectCommand({
+            Bucket: bucketName,
+            Key: filename,
+            Body: contents,
+            ContentType: contentType,
+          }),
+        ),
+        // make a copy that you can access with user/project/HEAD instead of
+        // the exact hash
+        s3Client.send(
+          new PutObjectCommand({
+            Bucket: bucketName,
+            Key: getHeadPath(filename),
+            Body: contents,
+            ContentType: contentType,
+          }),
+        ),
+      ])
     },
     async uploadFile(filepath, contentType) {
       const contents = await fs.readFile(filepath)
@@ -101,6 +137,13 @@ export async function createS3(): Promise<S3> {
       return allDoExist
     },
   }
+}
+
+function getHeadPath(x) {
+  // path is: files/user/project/${hash}/file so we replace the hash with "HEAD"
+  const p = x.split('/')
+  p[3] = 'HEAD'
+  return p.join('/')
 }
 
 function streamToString(stream, encoding: BufferEncoding): Promise<string> {

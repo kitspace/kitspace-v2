@@ -1,21 +1,21 @@
 import useSWR from 'swr'
 import getConfig from 'next/config'
 
-const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
-const fetcher = (...args) => fetch(...args).then(r => r.json())
+const fetcher = (...args) =>
+  fetch(...args, { method: 'HEAD', mode: 'cors' }).then(r => r.ok)
 
 const useThumbnail = (fullName, multiProjectName) => {
-  const img = `/${fullName}/HEAD/${
-    multiProjectName != null ? multiProjectName : ''
-  }/images/top.png`
-  const statusUrl = `${processorUrl}/status/${img}`
-  const { data, error } = useSWR(statusUrl, fetcher)
-  const isError = error || data?.status === 'failed'
+  const img = `${fullName}/HEAD/${
+    multiProjectName != null ? `${multiProjectName}/` : ''
+  }images/top.png`
+  const src = `${assetUrl}/files/${img}`
+  const { data, error } = useSWR(src, fetcher)
   return {
-    src: `${processorUrl}/files/${img}`,
-    isLoading: !isError && data?.status !== 'done',
-    isError,
+    src,
+    isLoading: !error && !data,
+    isError: error,
   }
 }
 
