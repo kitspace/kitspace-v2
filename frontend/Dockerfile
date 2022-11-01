@@ -22,12 +22,20 @@ COPY yarn.lock .
 RUN yarn --frozen-lockfile
 
 FROM base AS production
-COPY --from=build /build/.next/ .next/
-COPY --from=build /deps/node_modules/ node_modules/
-COPY package.json .
-COPY next.config.js .
-COPY public/ public/
-RUN mkdir src/
-COPY src/server.js src/server.js
+
 ENV NODE_ENV=production
-CMD yarn start
+# allow the node user to read files and nothing else
+ARG PERMISSION=004
+COPY --chmod=${PERMISSION} --from=build /deps/node_modules/ node_modules/
+COPY --chmod=${PERMISSION} package.json .
+COPY --chmod=${PERMISSION} next.config.js .
+COPY --chmod=${PERMISSION} public/ public/
+COPY --chmod=${PERMISSION} src/server.js server.js
+
+# The `.next` directory is used by `next/image` to cache optimized images.
+# So it needs to be owned by the `node` user.
+COPY --chown=node:node --from=build /build/.next/ .next/
+
+USER node
+
+CMD ["node", "server.js"]
