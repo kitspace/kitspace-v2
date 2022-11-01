@@ -12,7 +12,7 @@ beforeEach(() => {
   )
 })
 
-it('displays BOM', () => {
+it('displays BuyParts', () => {
   render(
     <BuyParts
       lines={fixture.purchasableParts.lines}
@@ -24,7 +24,7 @@ it('displays BOM', () => {
   expect(StoresButtons).toHaveLength(5)
 })
 
-it('displays BOM if there are no purchasable parts', () => {
+it('still displays BuyParts if there are no purchasable parts', () => {
   render(
     <BuyParts
       lines={fixture.noPurchasableParts.lines}
