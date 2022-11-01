@@ -1,6 +1,7 @@
+import path from 'node:path'
+
 import { unified } from 'unified'
 import globule from 'globule'
-import path from 'node:path'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeRaw from 'rehype-raw'
@@ -8,6 +9,7 @@ import rehypeSanitize from 'rehype-sanitize'
 import rehypeShiftHeading from 'rehype-shift-heading'
 import rehypeSlug from 'rehype-slug'
 import rehypeStringify from 'rehype-stringify'
+import remarkEmoji from 'remark-emoji'
 import remarkGfm from 'remark-gfm'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
@@ -101,6 +103,7 @@ async function renderMarkdown(
 ) {
   const Remarker = unified()
     .use(remarkParse)
+    .use(remarkEmoji)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)

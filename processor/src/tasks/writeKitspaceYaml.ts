@@ -1,59 +1,57 @@
-import escape from 'escape-html'
-import LinkifyIt from 'linkify-it'
 import path from 'node:path'
+
+import { unified } from 'unified'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+import remarkEmoji from 'remark-emoji'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
 
 import { JobData } from '../jobData.js'
 import * as utils from '../utils.js'
 
-const linkify = new LinkifyIt()
-
-export default function writeKitspaceYaml(
+export default async function writeKitspaceYaml(
   job,
   { kitspaceYaml, outputDir }: Partial<JobData>,
 ) {
   const kitspaceYamlJson = path.join(outputDir, 'kitspace-yaml.json')
   job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson })
-  const KitspaceYamlJsonLinkified = linkifyKitspaceYaml(kitspaceYaml)
+
+  const rendered = await renderKitspaceYamlSummaries(kitspaceYaml)
 
   return utils
-    .writeFile(kitspaceYamlJson, JSON.stringify(KitspaceYamlJsonLinkified, null, 2))
+    .writeFile(kitspaceYamlJson, JSON.stringify(rendered, null, 2))
     .then(() => job.updateProgress({ status: 'done', file: kitspaceYamlJson }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: kitspaceYamlJson, error }),
     )
 }
 
-function linkifyKitspaceYaml(kitspaceYaml) {
+async function renderKitspaceYamlSummaries(kitspaceYaml) {
   if (kitspaceYaml.multi) {
-    const linkifiedKitspaceYaml = kitspaceYaml
-    Object.keys(kitspaceYaml.multi).forEach(subProject => {
-      linkifiedKitspaceYaml.multi[subProject] = linkifyProjectSummary(kitspaceYaml.multi[subProject])
-    })
-    return linkifiedKitspaceYaml
+    const rendered = { multi: {} }
+    for (const key of Object.keys(kitspaceYaml.multi)) {
+      const subProject = kitspaceYaml.multi[key]
+      rendered.multi[key] = {
+        ...subProject,
+        summary: await renderSummary(subProject.summary),
+      }
+    }
+    return rendered
   }
-
-  return linkifyProjectSummary(kitspaceYaml)
+  return { ...kitspaceYaml, summary: await renderSummary(kitspaceYaml.summary) }
 }
 
-function linkifyProjectSummary(kitspaceYaml) {
-  let escapedSummary = escape(kitspaceYaml.summary || '')
-  const matches = linkify.match(escapedSummary)
+const Remarker = unified()
+  .use(remarkParse)
+  .use(remarkEmoji)
+  .use(remarkGfm)
+  .use(remarkRehype)
+  .use(rehypeSanitize)
+  .use(rehypeStringify)
 
-  if (matches) {
-    for (const match of matches) {
-      // Use https by default
-      const url = new URL(match.url)
-      if (!match.schema) {
-        url.protocol = 'https:'
-      }
-
-      escapedSummary = escapedSummary.replace(
-        match.raw,
-        `<a href="${url.toString()}" rel="noopener noreferrer" target="_blank">${match.text}</a>`
-      )
-    }
-  }
-
-  kitspaceYaml.summary = escapedSummary
-  return kitspaceYaml
+async function renderSummary(summary = ''): Promise<string> {
+  const rendered = await Remarker.process(summary)
+  return String(rendered)
 }
