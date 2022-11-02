@@ -40,6 +40,7 @@
       { "varsIgnorePattern": "[iI]gnored" }
     ],
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-empty-function": "off",
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "no-underscore-dangle": "off",
