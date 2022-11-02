@@ -3,7 +3,7 @@ import { Button, Form, Input, Modal } from 'semantic-ui-react'
 
 import UseForm from '@hooks/useForm'
 import ExistingProjectFromModel from '@models/ExistingProjectForm'
-import { isUsableProjectName, repoExists } from '@utils/giteaApi'
+import { isUsableProjectName } from '@utils/giteaApi'
 import { formatAsGiteaRepoName } from '@utils/index'
 import { AuthContext } from '@contexts/AuthContext'
 
