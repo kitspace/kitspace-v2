@@ -16,7 +16,8 @@
     "test": "mocha --require source-map-support/register dist/test/integration/**/*.js --timeout=120000 --exit",
     "posttest": "rm -rf /data/test /app/dist",
     "lint": "eslint src/ test/ --ext ts",
-    "fmt": "prettier '*.json' src/ test/ --write"
+    "prettier": "prettier '*.json' src/ test/",
+    "fmt": "yarn prettier --write"
   },
   "dependencies": {
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#master",

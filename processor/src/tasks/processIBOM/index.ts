@@ -12,9 +12,14 @@ async function processIBOM(
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
 
-  const disableIBOM = kitspaceYaml["ibom-enabled"] === false  // we need strong equality here ot minimize yaml surprises.
+  // we want this to be `true` by default so we use strict equality
+  const disableIBOM = kitspaceYaml['ibom-enabled'] === false
   if (disableIBOM) {
-    job.updateProgress({ status: 'failed', file: ibomOutputPath, error: new Error('Disabled!') })
+    job.updateProgress({
+      status: 'failed',
+      file: ibomOutputPath,
+      error: new Error('IBOM is disabled.'),
+    })
     return
   }
 
@@ -55,14 +60,18 @@ async function processIBOM(
   const summary = kitspaceYaml.summary || "''"
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const run_ibom = path.join(__dirname, 'run_ibom')
-  await execEscaped([run_ibom, pcbFile, subprojectName ?? repoName, summary, ibomOutputPath]
-  )
+  await execEscaped([
+    run_ibom,
+    pcbFile,
+    subprojectName ?? repoName,
+    summary,
+    ibomOutputPath,
+  ])
     .then(() => job.updateProgress({ status: 'done', file: ibomOutputPath }))
     .catch(error => {
       loglevel.debug(error.stack)
       return job.updateProgress({ status: 'failed', file: ibomOutputPath, error })
-    }
-    )
+    })
 }
 
 async function findBoardFile(folderPath, ext, check?) {

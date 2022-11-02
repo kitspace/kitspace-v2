@@ -72,10 +72,16 @@ async function plotKicadGerbers(outputDir, kicadPcbFile) {
 
 async function plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile) {
   const tempFolder = path.join('/tmp/kitspace', outputDir, 'svg')
-  await execEscaped(['rm', '-rf', tempFolder,])
+  await execEscaped(['rm', '-rf', tempFolder])
   await execEscaped(['mkdir', '-p', tempFolder])
   const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
-  const plotCommand = [plot_kicad_pcb, 'svg', kicadPcbFile, tempFolder, layoutSvgPath]
+  const plotCommand = [
+    plot_kicad_pcb,
+    'svg',
+    kicadPcbFile,
+    tempFolder,
+    layoutSvgPath,
+  ]
   return execEscaped(plotCommand)
 }
 

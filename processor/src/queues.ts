@@ -53,7 +53,7 @@ export interface AddProjectToQueueData {
   originalUrl: string
   ownerName: string
   repoName: string
-  repoDescription: string,
+  repoDescription: string
   giteaId: string
   gitDir: string
 }
@@ -155,7 +155,8 @@ async function getKitspaceYaml(inputDir) {
       if (slugifiedName !== subProjectName) {
         // If the slugified name is different than the sub project name,
         // replace the sub project name with the slugified version.
-        kitspaceYamlJson.multi[slugifiedName] = kitspaceYamlJson.multi[subProjectName]
+        kitspaceYamlJson.multi[slugifiedName] =
+          kitspaceYamlJson.multi[subProjectName]
         delete kitspaceYamlJson.multi[subProjectName]
       }
     })
@@ -165,7 +166,9 @@ async function getKitspaceYaml(inputDir) {
 }
 
 async function getGitHash(checkoutDir) {
-  const { stdout } = await execEscaped(['git', 'rev-parse', 'HEAD'], { cwd: checkoutDir })
+  const { stdout } = await execEscaped(['git', 'rev-parse', 'HEAD'], {
+    cwd: checkoutDir,
+  })
   return stdout.slice(0, -1)
 }
 
@@ -181,33 +184,35 @@ function tryReadFile(filePath) {
 
 const lock = new AsyncLock()
 async function sync(gitDir, checkoutDir) {
-  await lock.acquire(gitDir, async (done) => {
-    log.info("Acquired sync lock for ", gitDir)
+  await lock
+    .acquire(gitDir, async done => {
+      log.info('Acquired sync lock for ', gitDir)
 
-    if (await exists(checkoutDir)) {
-      log.debug('Pulling updates for', gitDir)
-      await execEscaped(['git', 'pull'], { cwd: checkoutDir }).catch(err => {
-        // repos with no branches yet will create this error
-        if (
-          err.stderr ===
-          "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
-        ) {
-          log.warn('repo without any branches', checkoutDir)
-          done()
-        }
-        done(err)
-      })
-    } else {
-      log.debug("Cloning ", gitDir)
-      await execEscaped(['git', 'clone', gitDir, checkoutDir]).catch(err => {
-        if (err.stderr) {
+      if (await exists(checkoutDir)) {
+        log.debug('Pulling updates for', gitDir)
+        await execEscaped(['git', 'pull'], { cwd: checkoutDir }).catch(err => {
+          // repos with no branches yet will create this error
+          if (
+            err.stderr ===
+            "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
+          ) {
+            log.warn('repo without any branches', checkoutDir)
+            done()
+          }
           done(err)
-        }
-      })
-      log.debug('Cloned into', checkoutDir)
-    }
-    done()
-  }).then(() => log.debug('Released sync lock for ', gitDir))
+        })
+      } else {
+        log.debug('Cloning ', gitDir)
+        await execEscaped(['git', 'clone', gitDir, checkoutDir]).catch(err => {
+          if (err.stderr) {
+            done(err)
+          }
+        })
+        log.debug('Cloned into', checkoutDir)
+      }
+      done()
+    })
+    .then(() => log.debug('Released sync lock for ', gitDir))
 }
 
 /**
