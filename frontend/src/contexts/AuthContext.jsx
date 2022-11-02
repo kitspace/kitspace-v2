@@ -15,7 +15,7 @@ export const AuthContext = createContext({
   user: null,
 })
 
-const AuthProvider = ({ children, initialSession }) => {
+export const AuthProvider = ({ children, initialSession }) => {
   const [apiToken, setApiToken] = useState(initialSession.ApiToken)
   const [user, setUser] = useState(initialSession.user)
   const [csrf, setCsrf] = useState(initialSession.csrf)
