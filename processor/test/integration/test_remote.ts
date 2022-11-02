@@ -13,8 +13,7 @@ const exec = util.promisify(child_process.exec)
 const tmpDir = '/data/test/kitspace-processor-test-from-remote'
 const emptyRepoDir = '/data/test/kitspace-processor-test-empty-repo-dir'
 
-const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS
-  .split(',')
+const REMOTE_API_TOKEN = process.env.REMOTE_API_TOKENS.split(',')
   .map(x => x.trim())
   .filter(x => x)[0]
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))

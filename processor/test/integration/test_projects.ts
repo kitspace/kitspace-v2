@@ -129,7 +129,8 @@ describe('projects API', function () {
         assert(r.status === 200)
         assert(
           r.body.status === 'done',
-          `expecting body.status to be 'done' but got '${r.body.status
+          `expecting body.status to be 'done' but got '${
+            r.body.status
           }' for ${f}\n${JSON.stringify(r.body, null, 2)}`,
         )
 
@@ -210,7 +211,7 @@ describe('projects API', function () {
         assert(
           r.body.status === 'done',
           `expecting body.status to be 'done' but got '${r.body.status}' for ${f}` +
-          `\n ${JSON.stringify(r.body, null, 2)}`,
+            `\n ${JSON.stringify(r.body, null, 2)}`,
         )
 
         // getting the file from HEAD should re-direct to the exact hash
@@ -243,10 +244,15 @@ describe('projects API', function () {
     // so future changes of the repo don't affect this test
     const hash = '3f945920eb3d161d0f6d43a286d1f6ff2a7174d4'
     const tmpBare = path.join(tmpDir, 'tinyogx360.git')
-    await exec(`git clone --bare https://github.com/kitspace-test-repos/tinyogx360 ${tmpBare}`)
+    await exec(
+      `git clone --bare https://github.com/kitspace-test-repos/tinyogx360 ${tmpBare}`,
+    )
     await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
     await exec(
-      `git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace-test-repos/tinyogx360.git')}`,
+      `git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/tinyogx360.git',
+      )}`,
     )
 
     const files = [
@@ -258,9 +264,13 @@ describe('projects API', function () {
 
     for (const f of files) {
       // at first it may not be processing yet so we get a 404
-      let r = await this.supertest.get(`/status/kitspace-test-repos/tinyogx360/HEAD/${f}`)
+      let r = await this.supertest.get(
+        `/status/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+      )
       while (r.status === 404) {
-        r = await this.supertest.get(`/status/kitspace-test-repos/tinyogx360/HEAD/${f}`)
+        r = await this.supertest.get(
+          `/status/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+        )
         await delay(10)
       }
 
@@ -268,7 +278,9 @@ describe('projects API', function () {
       assert(r.status === 200)
       // but it's probably 'in_progress'
       while (r.body.status === 'in_progress') {
-        r = await this.supertest.get(`/status/kitspace-test-repos/tinyogx360/HEAD/${f}`)
+        r = await this.supertest.get(
+          `/status/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+        )
         await delay(10)
       }
 
@@ -276,16 +288,21 @@ describe('projects API', function () {
       assert(r.status === 200)
       assert(
         r.body.status === 'done',
-        `expecting body.status to be 'done' but got '${r.body.status
+        `expecting body.status to be 'done' but got '${
+          r.body.status
         }' for ${f}\n${JSON.stringify(r.body, null, 2)}`,
       )
 
       // getting the file from HEAD should re-direct to the exact hash
-      r = await this.supertest.get(`/files/kitspace-test-repos/tinyogx360/HEAD/${f}`)
+      r = await this.supertest.get(
+        `/files/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+      )
       assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
 
       // it serves up the file
-      r = await this.supertest.get(`/files/kitspace-test-repos/tinyogx360/HEAD/${f}`).redirects()
+      r = await this.supertest
+        .get(`/files/kitspace-test-repos/tinyogx360/HEAD/${f}`)
+        .redirects()
       assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
       assert(
         r.req.path.includes(hash),
@@ -299,17 +316,22 @@ describe('projects API', function () {
     // so future changes of the repo don't affect this test
     const hash = 'eacd4ccc160c4ff7cfa9ca5d0047c90ff3f95d42'
     const tmpBare = path.join(tmpDir, 'spaces-in-kitspace-data-paths.git')
-    await exec(`git clone --bare https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths ${tmpBare}`)
+    await exec(
+      `git clone --bare https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths ${tmpBare}`,
+    )
     await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
     await exec(
-      `git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace-test-repos/spaces-in-kitspace-data-paths.git')}`,
+      `git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/spaces-in-kitspace-data-paths.git',
+      )}`,
     )
 
     const projectName = 'aux-ps-cs'
     const files = [
       `${projectName}/${projectName}-${hash.slice(0, 7)}-gerbers.zip`,
       'kitspace-yaml.json',
-      path.join(projectName, 'gerber-info.json')
+      path.join(projectName, 'gerber-info.json'),
     ]
 
     for (const f of files) {
@@ -339,7 +361,7 @@ describe('projects API', function () {
       assert(
         r.body.status === 'done',
         `expecting body.status to be 'done' but got '${r.body.status}' for ${f}` +
-        `\n ${JSON.stringify(r.body, null, 2)}`,
+          `\n ${JSON.stringify(r.body, null, 2)}`,
       )
 
       // it serves up the file

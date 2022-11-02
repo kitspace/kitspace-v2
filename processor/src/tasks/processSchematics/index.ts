@@ -58,9 +58,7 @@ async function plotKicadSchematic(outputSvgPath, schematicPath) {
   await execEscaped(['mkdir', '-p', tempFolder])
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const plot_kicad_sch_docker = path.join(__dirname, 'plot_kicad_sch_docker')
-  const r = await execEscaped(
-    [plot_kicad_sch_docker, schematicPath, tempFolder]
-  )
+  const r = await execEscaped([plot_kicad_sch_docker, schematicPath, tempFolder])
   log.debug(r)
   const [tempSvg] = globule.find(path.join(tempFolder, '*.svg'), { dot: true })
   if (tempSvg == null) {
