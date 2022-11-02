@@ -42,11 +42,11 @@ describe('projects API', function () {
   })
 
   it('404s a file', async function () {
-    await this.supertest.get('/files/user/project/HEAD/top.png').expect(404)
+    await this.supertest.get('/files/user/project/HEAD/_/top.png').expect(404)
   })
 
   it('404s status', async function () {
-    await this.supertest.get('/files/user/project/HEAD/top.png').expect(404)
+    await this.supertest.get('/files/user/project/HEAD/_/top.png').expect(404)
   })
 
   it('reports status of failed processing', async function () {
@@ -60,9 +60,9 @@ describe('projects API', function () {
       `git clone --bare ${sourceRepo} ${path.join(repoDir, 'user/project.git')}`,
     )
     // at first it may not be processing yet so we get a 404
-    let r = await this.supertest.get('/status/user/project/HEAD/images/top.png')
+    let r = await this.supertest.get('/status/user/project/HEAD/_/images/top.png')
     while (r.status === 404) {
-      r = await this.supertest.get('/status/user/project/HEAD/images/top.png')
+      r = await this.supertest.get('/status/user/project/HEAD/_/images/top.png')
       await delay(10)
     }
 
@@ -70,7 +70,7 @@ describe('projects API', function () {
     assert(r.status === 200)
     // but it's probably 'in_progress'
     while (r.body.status === 'in_progress') {
-      r = await this.supertest.get('/status/user/project/HEAD/images/top.png')
+      r = await this.supertest.get('/status/user/project/HEAD/_/images/top.png')
       await delay(10)
     }
 
@@ -79,12 +79,12 @@ describe('projects API', function () {
     assert(r.body.status === 'failed')
 
     // getting the file from HEAD should re-direct to the exact hash
-    r = await this.supertest.get('/files/user/project/HEAD/images/top.png')
+    r = await this.supertest.get('/files/user/project/HEAD/_/images/top.png')
     assert(r.status === 302, `expected 302 but got ${r.status}`)
 
     // the file should report a 424 http error
     r = await this.supertest
-      .get('/files/user/project/HEAD/images/top.png')
+      .get('/files/user/project/HEAD/_/images/top.png')
       .redirects()
     assert(r.status === 424, `expected 424 but got ${r.status}`)
   })
@@ -102,15 +102,14 @@ describe('projects API', function () {
 
       const files = [
         `ruler-${hash.slice(0, 7)}-gerbers.zip`,
-        'kitspace-yaml.json',
         ...standardProjectFiles,
       ]
 
       for (const f of files) {
         // at first it may not be processing yet so we get a 404
-        let r = await this.supertest.get(`/status/kitspace/ruler/HEAD/${f}`)
+        let r = await this.supertest.get(`/status/kitspace/ruler/HEAD/_/${f}`)
         while (r.status === 404) {
-          r = await this.supertest.get(`/status/kitspace/ruler/HEAD/${f}`)
+          r = await this.supertest.get(`/status/kitspace/ruler/HEAD/_/${f}`)
           await delay(10)
         }
 
@@ -118,7 +117,7 @@ describe('projects API', function () {
         assert(r.status === 200)
         // but it's probably 'in_progress'
         while (r.body.status === 'in_progress') {
-          r = await this.supertest.get(`/status/kitspace/ruler/HEAD/${f}`)
+          r = await this.supertest.get(`/status/kitspace/ruler/HEAD/_/${f}`)
           await delay(10)
         }
 
@@ -132,11 +131,13 @@ describe('projects API', function () {
         )
 
         // getting the file from HEAD should re-direct to the exact hash
-        r = await this.supertest.get(`/files/kitspace/ruler/HEAD/${f}`)
+        r = await this.supertest.get(`/files/kitspace/ruler/HEAD/_/${f}`)
         assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
 
         // it serves up the file
-        r = await this.supertest.get(`/files/kitspace/ruler/HEAD/${f}`).redirects()
+        r = await this.supertest
+          .get(`/files/kitspace/ruler/HEAD/_/${f}`)
+          .redirects()
         assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
         assert(
           r.req.path.includes(hash),
@@ -144,7 +145,9 @@ describe('projects API', function () {
         )
 
         // uppercase user and project name shouldn't matter
-        r = await this.supertest.get(`/files/KITSPACE/RULER/HEAD/${f}`).redirects()
+        r = await this.supertest
+          .get(`/files/KITSPACE/RULER/HEAD/_/${f}`)
+          .redirects()
         assert(
           r.status === 200,
           `expected 200 but got ${r.status} for KITSPACE/RULER/${f}`,
@@ -254,7 +257,6 @@ describe('projects API', function () {
 
     const files = [
       `tinyogx360-${hash.slice(0, 7)}-gerbers.zip`,
-      'kitspace-yaml.json',
       // We don't plot eagle files
       ...standardProjectFiles.filter(asset => asset === 'images/top.svg'),
     ]
@@ -262,11 +264,11 @@ describe('projects API', function () {
     for (const f of files) {
       // at first it may not be processing yet so we get a 404
       let r = await this.supertest.get(
-        `/status/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+        `/status/kitspace-test-repos/tinyogx360/HEAD/_/${f}`,
       )
       while (r.status === 404) {
         r = await this.supertest.get(
-          `/status/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+          `/status/kitspace-test-repos/tinyogx360/HEAD/_/${f}`,
         )
         await delay(10)
       }
@@ -276,7 +278,7 @@ describe('projects API', function () {
       // but it's probably 'in_progress'
       while (r.body.status === 'in_progress') {
         r = await this.supertest.get(
-          `/status/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+          `/status/kitspace-test-repos/tinyogx360/HEAD/_/${f}`,
         )
         await delay(10)
       }
@@ -292,13 +294,13 @@ describe('projects API', function () {
 
       // getting the file from HEAD should re-direct to the exact hash
       r = await this.supertest.get(
-        `/files/kitspace-test-repos/tinyogx360/HEAD/${f}`,
+        `/files/kitspace-test-repos/tinyogx360/HEAD/_/${f}`,
       )
       assert(r.status === 302, `expected 302 but got ${r.status} for ${f}`)
 
       // it serves up the file
       r = await this.supertest
-        .get(`/files/kitspace-test-repos/tinyogx360/HEAD/${f}`)
+        .get(`/files/kitspace-test-repos/tinyogx360/HEAD/_/${f}`)
         .redirects()
       assert(r.status === 200, `expected 200 but got ${r.status} for ${f}`)
       assert(

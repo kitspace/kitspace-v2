@@ -1,12 +1,12 @@
 import AsyncLock from 'async-lock'
 import bullmq from 'bullmq'
-import jsYaml from 'js-yaml'
 import log from 'loglevel'
 import path from 'node:path'
 import { DATA_DIR } from './env.js'
-import { exists, execEscaped, readFile } from './utils.js'
+import { exists, execEscaped } from './utils.js'
 import { JobData } from './jobData.js'
 import redisConnection from './redisConnection.js'
+import { getKitspaceYaml } from './kitspaceYaml.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
@@ -86,43 +86,26 @@ export async function addProjectToQueues({
 
   await execEscaped(['mkdir', '-p', outputDir])
 
-  const kitspaceYaml = await getKitspaceYaml(inputDir)
+  const kitspaceYamlArray = await getKitspaceYaml(inputDir)
 
   writeKitspaceYamlQueue.add(
     'projectAPI',
-    { kitspaceYaml, outputDir },
+    { kitspaceYamlArray, outputDir },
     { jobId: outputDir },
   )
 
-  if (kitspaceYaml.multi) {
-    for (const subprojectName of Object.keys(kitspaceYaml.multi)) {
-      const projectOutputDir = path.join(outputDir, subprojectName)
-      const projectKitspaceYaml = kitspaceYaml.multi[subprojectName]
-      // fall back to repo description if there's no summary.
-      projectKitspaceYaml.summary ||= repoDescription
-
-      createJobs({
-        defaultBranch,
-        subprojectName,
-        giteaId,
-        inputDir,
-        kitspaceYaml: projectKitspaceYaml,
-        outputDir: projectOutputDir,
-        originalUrl,
-        ownerName,
-        repoName,
-        hash,
-      })
-    }
-  } else {
+  for (const kitspaceYaml of kitspaceYamlArray) {
+    const projectOutputDir = path.join(outputDir, kitspaceYaml.name)
     // fall back to repo description if there's no summary.
     kitspaceYaml.summary ||= repoDescription
+
     createJobs({
       defaultBranch,
+      subprojectName: kitspaceYaml.name,
       giteaId,
       inputDir,
-      kitspaceYaml,
-      outputDir,
+      kitspaceYaml: kitspaceYaml,
+      outputDir: projectOutputDir,
       originalUrl,
       ownerName,
       repoName,
@@ -136,50 +119,11 @@ export async function stopQueues() {
   await Promise.all(qs.map(q => q.obliterate({ force: true })))
 }
 
-async function getKitspaceYaml(inputDir) {
-  const filePaths = [
-    'kitspace.yaml',
-    'kitspace.yml',
-    'kitnic.yaml',
-    'kitnic.yml',
-  ].map(p => path.join(inputDir, p))
-  const yamlFile = await Promise.all(filePaths.map(tryReadFile)).then(
-    ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
-  )
-  const kitspaceYamlJson = jsYaml.safeLoad(yamlFile) || {}
-
-  if (kitspaceYamlJson.multi) {
-    // Slugify the subproject names.
-    Object.keys(kitspaceYamlJson.multi).forEach(subProjectName => {
-      const slugifiedName = formatAsGiteaRepoName(subProjectName)
-      if (slugifiedName !== subProjectName) {
-        // If the slugified name is different than the sub project name,
-        // replace the sub project name with the slugified version.
-        kitspaceYamlJson.multi[slugifiedName] =
-          kitspaceYamlJson.multi[subProjectName]
-        delete kitspaceYamlJson.multi[subProjectName]
-      }
-    })
-  }
-
-  return kitspaceYamlJson
-}
-
 async function getGitHash(checkoutDir) {
   const { stdout } = await execEscaped(['git', 'rev-parse', 'HEAD'], {
     cwd: checkoutDir,
   })
   return stdout.slice(0, -1)
-}
-
-function tryReadFile(filePath) {
-  return readFile(filePath).catch(err => {
-    // just return an empty string if the file doesn't exist
-    if (err.code === 'ENOENT') {
-      return ''
-    }
-    throw err
-  })
 }
 
 const lock = new AsyncLock()
@@ -213,14 +157,4 @@ async function sync(gitDir, checkoutDir) {
       done()
     })
     .then(() => log.debug('Released sync lock for ', gitDir))
-}
-
-/**
- * format subproject name as a valid gitea repo name.
- * This replaces any **non* (alphanumeric, -, _, and .) with a '-',
- * see https://github.com/go-gitea/gitea/blob/b59b0cad0a550223f74add109ff13c0d2f4309f3/services/forms/repo_form.go#L35
- * @param subProjectName
- */
-function formatAsGiteaRepoName(subProjectName: string) {
-  return subProjectName.replace(/[^\w\d-_.]/g, '-').slice(0, 100)
 }
