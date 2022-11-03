@@ -37,8 +37,6 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -73,8 +71,6 @@ describe('Render project cards', () => {
       'contain',
       `${username}/${multiProjectsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -88,10 +84,8 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
-    // Wait for the repo to finish processing, by checking the visibility of info-bar.
-    cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
+    // Wait for the repo to finish processing, by checking the visibility of the project-card
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit(`/${username}`)
     // There should be 3 thumbnails = 2 form multiprojects + 1 normal project
@@ -121,8 +115,6 @@ describe('Render project cards', () => {
       'contain',
       `${username}/${multiProjectsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -174,8 +166,6 @@ describe('Render project cards', () => {
       'contain',
       `${username}/${projectWithInvalidCharsName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -184,7 +174,9 @@ describe('Render project cards', () => {
     // Visit the first sub project,
     cy.get('[data-cy=project-card]').first().click({ force: true })
     // Assert the processing is done successfully
-    cy.get('[data-cy=project-description]').should('be.visible')
+    cy.get('[data-cy=project-description]', { timeout: 60_000 }).should(
+      'be.visible',
+    )
   })
 })
 
@@ -213,8 +205,6 @@ describe('Multi project page', () => {
       'contain',
       `${username}/${multiProjectsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).as('projectCards')
 
@@ -266,8 +256,6 @@ describe('Multi project page', () => {
       'contain',
       `${username}/${multiProjectsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
