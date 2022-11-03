@@ -36,10 +36,8 @@ describe('IBOM page', () => {
       'contain',
       `${username}/${multiProjectsRepoName}`,
     )
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card]', { timeout: 60_000 }).as('projectCards')
+    cy.get('[data-cy=project-card]', { timeout: 120_000 }).as('projectCards')
 
     cy.get('@projectCards').should('have.length', multiProjectsNames.length)
 
@@ -79,8 +77,6 @@ describe('IBOM page', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
@@ -114,8 +110,6 @@ describe('IBOM page', () => {
     cy.get('button').contains('Sync').click()
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
-    // Wait for the repo to finish migration, by checking the visibility of processing-loader.
-    cy.get('[data-cy=processing-loader]', { timeout: 60_000 })
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 100_000 }).should('be.visible')
     // The ibom button shouldn't get rendered for this project.
