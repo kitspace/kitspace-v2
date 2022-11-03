@@ -58,7 +58,9 @@ MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
 
     if (!kitspaceYAML) {
       // If there is not multiproject as specified in the url `{username}/{projectName}/{multiProjectName}`
-      res.statusCode = 404
+      if (res != null) {
+        res.statusCode = 404
+      }
       return { notFound: true }
     }
 
@@ -90,7 +92,9 @@ MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
     }
   }
 
-  res.statusCode = 404
+  if (res != null) {
+    res.statusCode = 404
+  }
   return { notFound: true }
 }
 

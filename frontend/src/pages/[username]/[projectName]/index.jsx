@@ -59,7 +59,14 @@ ProjectPage.getInitialProps = async args => {
 
   const exists = await repoExists(repoFullname)
   if (exists) {
-    const [ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
+    let [ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
+
+    // TODO: get rid of this while loop by using SWR
+    while (kitspaceYamlArray.length === 0) {
+      ;[ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
+      console.log({ignored, kitspaceYamlArray})
+    }
+
     const isSingleProject =
       kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
 
