@@ -63,8 +63,8 @@ ProjectPage.getInitialProps = async args => {
 
     // TODO: get rid of this while loop by using SWR
     while (kitspaceYamlArray.length === 0) {
+      await new Promise(resolve => setTimeout(resolve, 100))
       ;[ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
-      console.log({ignored, kitspaceYamlArray})
     }
 
     const isSingleProject =
