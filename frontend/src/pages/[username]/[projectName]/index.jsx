@@ -5,11 +5,16 @@ import { getRepo, repoExists } from '@utils/giteaApi'
 import { meiliIndex } from '@utils/meili'
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import getConfig from 'next/config'
-import { arrayOf, object, string } from 'prop-types'
 import React from 'react'
+import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 import MultiProjectPage from './[multiProjectName]'
 
 const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+
+const fetchSearch = async (...args) => {
+  const searchResult = await meiliIndex.search(...args)
+  return searchResult.hits
+}
 
 const ProjectPage = props => {
   if (props.notFound) {
@@ -17,20 +22,29 @@ const ProjectPage = props => {
   }
 
   if (props.projectGridProps) {
-    return <SubProjectsGrid {...props.projectGridProps} />
+    const { swrFallback, initialProps } = props.projectGridProps
+    return (
+      <SWRConfig value={{ fallback: swrFallback }}>
+        <SubProjectsGrid {...initialProps} />
+      </SWRConfig>
+    )
   }
 
   return <MultiProjectPage {...props.projectProps} />
 }
 
-const SubProjectsGrid = ({ projects, parentProject }) => {
+const SubProjectsGrid = ({ parentProject, searchArgs }) => {
+  const { data: projects } = useSWR(searchArgs, fetchSearch, {
+    refreshInterval: 1000,
+  })
+  const isProcessing = projects.length === 0
   return (
     <Page title={parentProject}>
       <h1>{parentProject}</h1>
       <div>
-        {projects.map(project => (
-          <ProjectCard {...project} key={project.id} />
-        ))}
+        {isProcessing
+          ? 'Processing repo...'
+          : projects.map(project => <ProjectCard {...project} key={project.id} />)}
       </div>
     </Page>
   )
@@ -56,13 +70,17 @@ ProjectPage.getInitialProps = async args => {
     }
 
     const repo = await getRepo(repoFullname)
-    const searchResult = await meiliIndex.search('*', {
-      filter: `multiParentId = ${repo.id}`,
-    })
+    const searchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
+    const hits = await fetchSearch(...searchArgs)
     return {
       projectGridProps: {
-        projects: searchResult.hits,
-        parentProject: projectName,
+        swrFallback: {
+          [unstable_serialize(searchArgs)]: hits,
+        },
+        initialProps: {
+          searchArgs: searchArgs,
+          parentProject: projectName,
+        },
       },
     }
   }
@@ -71,11 +89,6 @@ ProjectPage.getInitialProps = async args => {
     res.statusCode = 404
   }
   return { notFound: true }
-}
-
-SubProjectsGrid.propTypes = {
-  projects: arrayOf(object).isRequired,
-  parentProject: string.isRequired,
 }
 
 export default ProjectPage
