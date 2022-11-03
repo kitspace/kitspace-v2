@@ -43,7 +43,9 @@ const Search = ({ swrFallback, initialQuery }) => {
 
 const CardsGrid = () => {
   const { query } = useSearchQuery()
-  const { data: projects } = useSWR(query || '*', fetchSearch)
+  const { data: projects } = useSWR(query || '*', fetchSearch, {
+    refreshInterval: 1000,
+  })
 
   if (projects?.length === 0) {
     return (
