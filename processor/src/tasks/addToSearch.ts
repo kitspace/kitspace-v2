@@ -56,7 +56,7 @@ export default async function addToSearch(
 
   const document = {
     id: searchId,
-    name: subprojectName === '_' ? repoName : subprojectName,
+    name: subprojectName,
     summary: kitspaceYaml.summary,
     bom: {
       lines: bom?.lines || [],
