@@ -31,7 +31,9 @@ export default async function processGerbers(
   }: ProcessGerbersData & Partial<JobData>,
 ) {
   const zipVersion = hash.slice(0, 7)
-  const zipFileName = `${subprojectName ?? repoName}-${zipVersion}-gerbers.zip`
+  const zipFileName = `${
+    subprojectName === '_' ? repoName : subprojectName
+  }-${zipVersion}-gerbers.zip`
   const zipPath = path.join(outputDir, zipFileName)
   const topSvgPath = path.join(outputDir, 'images/top.svg')
   const bottomSvgPath = path.join(outputDir, 'images/bottom.svg')
