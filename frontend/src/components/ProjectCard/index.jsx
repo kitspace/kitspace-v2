@@ -8,7 +8,7 @@ import useThumbnail from '@hooks/useThumbnail'
 import styles from './index.module.scss'
 
 const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
-  const isSingleProject = name == '_'
+  const isSingleProject = name === '_'
   const nameOnCard = isSingleProject ? multiParentName : name
   const repoName = multiParentName
   const { src, isLoading, isError } = useThumbnail(`${ownerName}/${repoName}`, name)
