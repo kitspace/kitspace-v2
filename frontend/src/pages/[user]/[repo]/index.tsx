@@ -3,6 +3,7 @@ import ProjectCard from '@components/ProjectCard'
 import ErrorPage from '@pages/_error'
 import { getRepo, repoExists } from '@utils/giteaApi'
 import { meiliIndex } from '@utils/meili'
+import { SearchParams } from 'meilisearch'
 import { waitFor } from '@utils/index'
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import getConfig from 'next/config'
@@ -12,18 +13,28 @@ import ProjectPage from './[project]'
 
 const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
-const fetchSearch = async (...args) => {
+type SearchArgs = [string, SearchParams]
+
+const fetchSearch = async (...args: SearchArgs) => {
   const searchResult = await meiliIndex.search(...args)
   return searchResult.hits
 }
 
-const RepoPage = props => {
+interface RepoPageProps {
+  errorCode?: number
+  projectGrid: {
+    swrFallback: Record<string, Array<unknown>>
+    initialProps: ProjectGridProps
+  }
+  singleProject: object
+}
+const RepoPage = (props: RepoPageProps) => {
   if (props.errorCode) {
     return <ErrorPage statusCode={props.errorCode} />
   }
 
-  if (props.projectGridProps) {
-    const { swrFallback, initialProps } = props.projectGridProps
+  if (props.projectGrid) {
+    const { swrFallback, initialProps } = props.projectGrid
     return (
       <SWRConfig value={{ fallback: swrFallback }}>
         <ProjectGrid {...initialProps} />
@@ -31,10 +42,15 @@ const RepoPage = props => {
     )
   }
 
-  return <ProjectPage {...props.projectProps} />
+  return <ProjectPage {...props.singleProject} />
 }
 
-const ProjectGrid = ({ parentProject, searchArgs }) => {
+interface ProjectGridProps {
+  parentProject: string
+  searchArgs: SearchArgs
+}
+
+const ProjectGrid = ({ parentProject, searchArgs }: ProjectGridProps) => {
   const { data: projects } = useSWR(searchArgs, fetchSearch, {
     refreshInterval: 1000,
   })
@@ -67,7 +83,7 @@ RepoPage.getInitialProps = async args => {
   }
 
   const getYaml = async () => (await getKitspaceYamlArray(rootAssetsPath))[1]
-  const kitspaceYamlArray = waitFor(getYaml, { timeout: 60_000 })
+  const kitspaceYamlArray = await waitFor(getYaml, { timeout: 60_000 })
   if (!kitspaceYamlArray) {
     if (res != null) {
       res.statusCode = 502
@@ -86,7 +102,7 @@ RepoPage.getInitialProps = async args => {
   }
 
   const repo = await getRepo(repoFullName)
-  const searchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
+  const searchArgs: SearchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
   const hits = await fetchSearch(...searchArgs)
   return {
     projectGridProps: {
