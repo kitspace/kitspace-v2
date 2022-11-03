@@ -26,13 +26,12 @@ export const singleKitspaceYaml = z.object({
 
 export type SingleKitspaceYaml = z.infer<typeof singleKitspaceYaml>
 
+const multiKey = z
+  .string()
+  .refine(key => key !== '_', { message: 'Cannot use "_" as project name.' })
+
 export const multiKitspaceYaml = z.object({
-  multi: z.record(
-    z
-      .string()
-      .refine(key => key !== '_', { message: 'Cannot use "_" as project name.' }),
-    singleKitspaceYaml,
-  ),
+  multi: z.record(multiKey, singleKitspaceYaml),
 })
 
 export type MultiKitspaceYaml = z.infer<typeof multiKitspaceYaml>
@@ -64,18 +63,16 @@ export async function getKitspaceYaml(
     return [kitspaceYaml.parse({ name: '_' })]
   }
 
-  const arr: Array<KitspaceYaml> = []
-
   const parsedData = result.data
 
-  if (parsedData.multi) {
-    for (const key of Object.keys(parsedData.multi)) {
-      arr.push({ ...parsedData.multi[key], name: formatAsGiteaRepoName(key) })
-    }
-  } else {
-    arr.push({ ...parsedData, name: '_' } as KitspaceYaml)
+  if (!parsedData.multi) {
+    return [{ ...parsedData, name: '_' } as KitspaceYaml]
   }
 
+  const arr: Array<KitspaceYaml> = []
+  for (const key of Object.keys(parsedData.multi)) {
+    arr.push({ ...parsedData.multi[key], name: formatAsGiteaRepoName(key) })
+  }
   return arr
 }
 
