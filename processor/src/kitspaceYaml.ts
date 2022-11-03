@@ -7,8 +7,8 @@ import log from 'loglevel'
 const eda = z.object({ type: z.enum(['kicad', 'eagle']), pcb: z.string() })
 
 export const singleKitspaceYaml = z.object({
-  summary: z.string().optional(),
-  site: z.string().url().optional(),
+  summary: z.string().default(''),
+  site: z.string().url().or(z.literal('')).default(''),
   color: z
     .enum(['green', 'red', 'blue', 'black', 'white', 'orange', 'purple', 'yellow'])
     .default('green'),
@@ -37,7 +37,7 @@ export const multiKitspaceYaml = z.object({
 
 export type MultiKitspaceYaml = z.infer<typeof multiKitspaceYaml>
 
-export const kitspaceYamlInput = z.union([multiKitspaceYaml, singleKitspaceYaml])
+export const kitspaceYamlInput = multiKitspaceYaml.or(singleKitspaceYaml)
 
 export type KitspaceYamlInput = z.infer<typeof kitspaceYamlInput>
 
