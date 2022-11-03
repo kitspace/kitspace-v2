@@ -57,6 +57,23 @@ module.exports = async phase => {
         'secure.gravatar.com',
       ],
     },
+    async redirects() {
+      // we use "_" as the project name when there is only one project in the repo
+      // i.e. no `multi` in the kitspace.yaml, we shouldn't use the /_ links
+      // anywhere but they are technically reachable by crawlers, hence we re-direct them
+      return [
+        {
+          source: '/:user/:project/_',
+          destination: '/:user/:project',
+          permanent: true,
+        },
+        {
+          source: '/:user/:project/_/:slug*',
+          destination: '/:user/:project/:slug*',
+          permanent: true,
+        },
+      ]
+    },
     webpack(config) {
       config.module.rules.push({
         test: /\.(png|svg)$/,

@@ -6,7 +6,7 @@ import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
-  getKitspaceYAMLJson,
+  getKitspaceYamlArray,
   hasInteractiveBom,
   getIsProcessingDone,
   getReadme,
@@ -38,7 +38,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       readme,
       [bomInfoExists, bomInfo],
       [gerberInfoExists, gerberInfo],
-      [kitspaceYAMLExists, kitspaceYAML],
+      [kitspaceYAMLExists, kitspaceYamlArray],
       finishedProcessing,
       hasIBOM,
       hasUploadPermission,
@@ -47,19 +47,19 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       getReadme(assetsPath),
       getBoardBomInfo(assetsPath),
       getBoardGerberInfo(assetsPath),
-      getKitspaceYAMLJson(kitspaceYAMLPath),
+      getKitspaceYamlArray(kitspaceYAMLPath),
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
       // The repo owner and collaborators can upload files.
       canCommit(repoFullname, session.user?.username, session.apiToken),
     ])
 
-    const projectKitspaceYAML = kitspaceYAML.multi[multiProjectName]
+    const kitspaceYAML = kitspaceYamlArray.find(p => p.name === multiProjectName)
 
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
-    if (!projectKitspaceYAML) {
+    if (!kitspaceYAML) {
       // If there is not multiproject as specified in the url `{username}/{projectName}/{multiProjectName}`
       res.statusCode = 404
       return { notFound: true }
@@ -71,7 +71,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       projectFullname: repoFullname,
       hasUploadPermission,
       hasIBOM,
-      kitspaceYAML: projectKitspaceYAML,
+      kitspaceYAML,
       zipUrl,
       bomInfo,
       boardSpecs: { width, height, layers },
@@ -80,7 +80,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       // Whether the project were empty or not at the time of requesting the this page from the server.
       isEmpty: repo?.empty,
       username,
-      projectName: multiProjectName,
+      projectName: multiProjectName === '_' ? projectName : multiProjectName,
       isNew: query.create === 'true',
       gerberInfoExists,
       bomInfoExists,
@@ -88,7 +88,7 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
       kitspaceYAMLExists,
       boardShowcaseAssetsExist: gerberInfoExists,
       finishedProcessing,
-      description: projectKitspaceYAML.summary,
+      description: kitspaceYAML.summary,
       originalUrl: repo?.original_url,
     }
   }

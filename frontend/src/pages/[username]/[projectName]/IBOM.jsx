@@ -15,14 +15,14 @@ export const getServerSideProps = async ({ params }) => {
 
   const projectFullname = `${params.username}/${params.projectName}`
   const interactiveBOMStatus = await fetch(
-    `${processorUrl}/status/${projectFullname}/HEAD/interactive_bom.json`,
+    `${processorUrl}/status/${projectFullname}/HEAD/_/interactive_bom.json`,
   )
     .then(r => r.json().then(body => body.status))
     .catch(() => 'fail')
 
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
-      `${processorUrl}/files/${projectFullname}/HEAD/interactive_bom.json`,
+      `${processorUrl}/files/${projectFullname}/HEAD/_/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
 
     return {
