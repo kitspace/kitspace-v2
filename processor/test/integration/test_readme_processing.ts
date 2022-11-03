@@ -44,7 +44,7 @@ describe('readme processing', function () {
       )}`,
     )
 
-    const files = ['kitspace-yaml.json', 'readme.html']
+    const files = ['kitspace-yaml.json', '_/readme.html']
 
     for (const f of files) {
       // at first it may not be processing yet so we get a 404
