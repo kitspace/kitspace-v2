@@ -84,10 +84,10 @@ describe('Render project cards', () => {
 
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
-    // Wait for the repo to finish processing, by checking the visibility of the project-card
-    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should('be.visible')
 
     cy.visit(`/${username}`)
+    // Wait for the repo to finish processing, by checking the visibility of the project-card
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should('be.visible')
     // There should be 3 thumbnails = 2 form multiprojects + 1 normal project
     cy.get('[data-cy=project-card-thumbnail]').should(
       'have.length',
@@ -162,7 +162,7 @@ describe('Render project cards', () => {
     cy.get('button').contains('Sync').click()
 
     // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should(
+    cy.url({ timeout: 120_000 }).should(
       'contain',
       `${username}/${projectWithInvalidCharsName}`,
     )
