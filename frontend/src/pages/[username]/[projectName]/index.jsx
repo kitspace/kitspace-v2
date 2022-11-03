@@ -1,21 +1,13 @@
-import React from 'react'
-import getConfig from 'next/config'
-
-import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
-import {
-  getBoardBomInfo,
-  getBoardGerberInfo,
-  getKitspaceYamlArray,
-  hasInteractiveBom,
-  getIsProcessingDone,
-  getReadme,
-} from '@utils/projectPage'
-import MultiProjectPage from './[multiProjectName]'
-import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
 import Custom404 from '@pages/404'
+import { getRepo, repoExists } from '@utils/giteaApi'
 import { meiliIndex } from '@utils/meili'
+import { getKitspaceYamlArray } from '@utils/projectPage'
+import getConfig from 'next/config'
+import { arrayOf, object, string } from 'prop-types'
+import React from 'react'
+import MultiProjectPage from './[multiProjectName]'
 
 const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
@@ -58,6 +50,7 @@ ProjectPage.getInitialProps = async args => {
       kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
 
     if (isSingleProject) {
+      args.query = { ...query, multiProjectName: '_' }
       const projectProps = await MultiProjectPage.getInitialProps(args)
       return { projectProps }
     }

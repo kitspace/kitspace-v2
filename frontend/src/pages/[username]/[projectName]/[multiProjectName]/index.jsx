@@ -19,16 +19,8 @@ const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
-MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
-  // `repoFullname` is resolved by matching its name against the `page` dir.
-  // Then it's used to access the repo by the Gitea API.
-  const asPathWithoutQuery = asPath.split('?')[0]
-  let [ignored, username, projectName, multiProjectName] =
-    asPathWithoutQuery.split('/')
-
-  if (multiProjectName == null) {
-    multiProjectName = '_'
-  }
+MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
+  const { username, projectName, multiProjectName } = query
 
   const repoFullname = `${username}/${projectName}`
 
