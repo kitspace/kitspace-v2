@@ -50,13 +50,13 @@ export default async function addToSearch(
     return
   }
 
-  const searchId = subprojectName ? `${giteaId}-${subprojectName}` : giteaId
+  const searchId = `${giteaId}-${subprojectName}`
   const readme = getReadmeAsText(readmeHTML)
   const multiParentId = subprojectName ? giteaId : null
 
   const document = {
     id: searchId,
-    name: subprojectName ?? repoName,
+    name: subprojectName === '_' ? repoName : subprojectName,
     summary: kitspaceYaml.summary,
     bom: {
       lines: bom?.lines || [],
@@ -73,29 +73,13 @@ export default async function addToSearch(
 
   await index.addDocuments([document])
 
-  // multi names can change in kitspace.yaml, the project can also go from a
-  // multi to a single project or vice versa. we need to clear out any
-  // documents that could be left over due to id changes.
-  if (multiParentId == null) {
-    // if we are not a multi project clear out any multi document that refer to
-    // this id as parent (if we went from multi to single)
-    const previousMultis = await index.search('', {
-      filter: `multiParentId = ${giteaId}`,
-    })
-    const docIds = previousMultis.hits.map(x => x.id)
-    await index.deleteDocuments(docIds)
-  } else {
-    // if we are a multi project, clear any previous parent (if we went from
-    // single to multi). also clear any documents with the same multiParentId
-    // that are not from this latest git commit hash (if a multi project was
-    // renamed)
-    const [parent, renamedMultis] = await Promise.all([
-      index.search('', { filter: `id = ${multiParentId}` }),
-      index.search('', {
-        filter: `(multiParentId = ${multiParentId}) AND (gitHash != ${hash})`,
-      }),
-    ])
-    const docIds = parent.hits.concat(renamedMultis.hits).map(x => x.id)
+  // if there are any lingering docs with an old gitHash then the multi project
+  // was renamed (thus they were not over-written above), so we delete them.
+  const renamedMultis = await index.search('', {
+    filter: `(multiParentId = ${multiParentId}) AND (gitHash != ${hash})`,
+  })
+  if (renamedMultis.hits.length > 0) {
+    const docIds = renamedMultis.hits.map(x => x.id)
     await index.deleteDocuments(docIds)
   }
 }
