@@ -57,7 +57,7 @@ export async function getKitspaceYaml(
   const yamlFile = await Promise.all(filePaths.map(tryReadFile)).then(
     ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
   )
-  let result = kitspaceYamlInput.safeParse(jsYaml.safeLoad(yamlFile) || {})
+  const result = kitspaceYamlInput.safeParse(jsYaml.safeLoad(yamlFile) || {})
 
   if (result.success === false) {
     log.warn('Could not parse kitspace YAML file:', result.error)

@@ -104,7 +104,7 @@ export async function addProjectToQueues({
       subprojectName: kitspaceYaml.name,
       giteaId,
       inputDir,
-      kitspaceYaml: kitspaceYaml,
+      kitspaceYaml,
       outputDir: projectOutputDir,
       originalUrl,
       ownerName,
