@@ -59,13 +59,8 @@ async function processIBOM(
   const summary = kitspaceYaml.summary || "''"
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const run_ibom = path.join(__dirname, 'run_ibom')
-  await execEscaped([
-    run_ibom,
-    pcbFile,
-    subprojectName ?? repoName,
-    summary,
-    ibomOutputPath,
-  ])
+  const ibomName = subprojectName === '_' ? repoName : subprojectName
+  await execEscaped([run_ibom, pcbFile, ibomName, summary, ibomOutputPath])
     .then(() => job.updateProgress({ status: 'done', file: ibomOutputPath }))
     .catch(error => {
       loglevel.debug(error.stack)
