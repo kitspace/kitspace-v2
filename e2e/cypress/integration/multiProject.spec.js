@@ -252,12 +252,12 @@ describe('Multi project page', () => {
     cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
     cy.get('button').contains('Sync').click()
 
-    cy.url({ timeout: 60_000 }).should(
+    cy.url({ timeout: 10_000 }).should(
       'contain',
       `${username}/${multiProjectsRepoName}`,
     )
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
-    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
+    cy.get('[data-cy=project-card]', { timeout: 120_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
