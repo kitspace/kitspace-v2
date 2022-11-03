@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render } from '@testing-library/react'
 
 import Sync from '@components/NewProject/Sync'
@@ -9,8 +9,6 @@ import GetRepo from './fixtures/GetRepoRes.json'
 const SESSION = { user: { username: 'tester' } }
 
 beforeAll(() => {
-  const GITEA_URL = 'https://gitea.kitspace.test'
-
   vi.mock('next/config', () => ({
     default: () => ({
       publicRuntimeConfig: {
@@ -20,13 +18,18 @@ beforeAll(() => {
   }))
 
   vi.mock('next/router', () => require('next-router-mock'))
+})
 
+beforeEach(() => {
+  const GITEA_URL = 'https://gitea.kitspace.test'
   fetchMock.mockResponse(req => {
     switch (req.url) {
       case `${GITEA_URL}/api/v1/repos/tester/test_repo`:
         return JSON.stringify(GetRepo)
       case `${GITEA_URL}/api/v1/repos/migrate`:
         return { status: 409 }
+      case `${GITEA_URL}/api/v1/repos/tester/new_test_repo`:
+        return { status: 404 }
       default:
         throw new Error(`Unhandled request: ${req.url}`)
     }
@@ -59,6 +62,35 @@ it('opens conflict modal if the project name conflict with existing project', as
   expect(conflictModalInput.value).toBe('test_repo')
   // The button should say overwrite because we haven't changed the project name yet.
   expect(screen.getByText('Overwrite')).toBeTruthy()
+})
+
+it('changes the overwrite button to OK if the new project name does not cause conflict', async () => {
+  const setUserOp = vi.fn()
+
+  const screen = render(
+    <AuthProvider initialSession={SESSION}>
+      <Sync setUserOp={setUserOp} />
+    </AuthProvider>,
+  )
+  // Write the url in the input
+  const input = screen.getAllByRole('textbox')
+  fireEvent.change(input[0], {
+    target: { value: 'https://github.com/kitspace-test-repos/test_repo' },
+  })
+
+  // Click the Sync button
+  fireEvent.click(screen.getByText('Sync'))
+  // Wait the modal to appear.
+  await screen.findByText('Heads up!')
+
+  const conflictModalInput = screen.getAllByRole('textbox')[1] as HTMLInputElement
+  // Change the project name.
+  fireEvent.change(conflictModalInput, {
+    target: { value: 'new_test_repo' },
+  })
+
+  // The button should say OK because we have changed the project name.
+  expect(screen.getByText('OK')).toBeTruthy()
 })
 
 afterEach(() => {
