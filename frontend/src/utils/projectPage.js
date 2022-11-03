@@ -108,20 +108,9 @@ export const getReadme = async assetsPath => {
  * @param {string} assetsPath
  * @returns {Promise<[boolean, object]>}
  */
-export const getKitspaceYAMLJson = async assetsPath => {
-  const kitspaceYAMLFields = {
-    summary: '',
-    site: '',
-    color: '',
-    bom: '',
-    gerbers: '',
-    eda: { type: '', pcb: '' },
-    readme: '',
-    multi: {},
-  }
-
+export const getKitspaceYamlArray = async assetsPath => {
   const res = await fetch(`${assetsPath}/kitspace-yaml.json`)
-  return [res.ok, res.ok ? await res.json() : kitspaceYAMLFields]
+  return [res.ok, res.ok ? await res.json() : []]
 }
 
 /**
@@ -145,58 +134,38 @@ export const getIsProcessingDone = async assetsPath => {
     'readme.html',
   ]
 
-  const kitspaceYAML = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
+  const res = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
 
-  if (!kitspaceYAML?.ok) {
+  if (!res.ok) {
     return false
   }
 
-  const kitspaceYAMLBody = await kitspaceYAML.json()
-  const isMultiProject = kitspaceYAMLBody.multi != null
+  const kitspaceYamlArray = await res.json()
 
-  if (isMultiProject) {
-    const multiProjectsNames = Object.keys(kitspaceYAMLBody.multi)
-    const allMultiProjectsAssetsStatus = flatten(
-      await Promise.all(
-        multiProjectsNames.map(
-          async multiProjectsName =>
-            // A multi project assets processing status
-            await Promise.all(
-              assetsNames.map(assetName =>
-                fetch(`${rootStatusPath}/${multiProjectsName}/${assetName}`),
-              ),
+  const statuses = flatten(
+    await Promise.all(
+      kitspaceYamlArray.map(
+        async project =>
+          // A multi project assets processing status
+          await Promise.all(
+            assetsNames.map(assetName =>
+              fetch(`${rootStatusPath}/${project.name}/${assetName}`),
             ),
-        ),
+          ),
       ),
-    )
+    ),
+  )
 
-    // If any request failed
-    if (allMultiProjectsAssetsStatus.some(r => !r.ok)) {
-      return false
-    }
-
-    // If any asset is still in progress
-    return allMultiProjectsAssetsStatus.every(async r => {
-      const { status } = await r.json()
-      return status !== 'in_progress'
-    })
-  } else {
-    // If it's a normal project
-    const allAssetsStatus = await Promise.all(
-      assetsNames.map(assetName => fetch(`${rootStatusPath}/${assetName}`)),
-    )
-
-    // If any request failed
-    if (allAssetsStatus.some(r => !r.ok)) {
-      return false
-    }
-
-    // If any asset is still in progress
-    return allAssetsStatus.every(async r => {
-      const { status } = await r.json()
-      return status !== 'in_progress'
-    })
+  // If any request failed
+  if (statuses.some(r => !r.ok)) {
+    return false
   }
+
+  // If any asset is still in progress
+  return statuses.every(async r => {
+    const { status } = await r.json()
+    return status !== 'in_progress'
+  })
 }
 
 /**

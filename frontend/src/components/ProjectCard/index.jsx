@@ -8,16 +8,14 @@ import useThumbnail from '@hooks/useThumbnail'
 import styles from './index.module.scss'
 
 const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
-  const isMultiProject = multiParentName != null
-  const repoName = isMultiProject ? multiParentName : name
-  const { src, isLoading, isError } = useThumbnail(
-    `${ownerName}/${repoName}`,
-    multiParentName ? name : null,
-  )
+  const isSingleProject = name == '_'
+  const nameOnCard = isSingleProject ? multiParentName : name
+  const repoName = multiParentName
+  const { src, isLoading, isError } = useThumbnail(`${ownerName}/${repoName}`, name)
   return (
     <Link
       passHref
-      href={`/${ownerName}/${repoName}${isMultiProject ? '/' + name : ''}`}
+      href={`/${ownerName}/${repoName}${isSingleProject ? '' : '/' + name}`}
     >
       <Card as="a" className={styles.card} data-cy="project-card">
         <div className={styles.thumbnail}>
@@ -36,7 +34,7 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
         </div>
         <Card.Content>
           <Card.Header className={styles.cardText} data-cy="project-card-name">
-            {name}
+            {nameOnCard}
           </Card.Header>
           <Card.Meta className={styles.cardText}>{ownerName}</Card.Meta>
           <Card.Description className={styles.cardDescription}>

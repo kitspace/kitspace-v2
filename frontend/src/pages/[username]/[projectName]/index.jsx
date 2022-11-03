@@ -5,7 +5,7 @@ import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
-  getKitspaceYAMLJson,
+  getKitspaceYamlArray,
   hasInteractiveBom,
   getIsProcessingDone,
   getReadme,
@@ -53,7 +53,8 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
   const { username, projectName } = query
 
   const repoFullname = `${username}/${projectName}`
-  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+  const rootAssetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+  const assetsPath = `${rootAssetsPath}/_`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   const exists = await repoExists(repoFullname)
@@ -63,7 +64,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       readme,
       [bomInfoExists, bomInfo],
       [gerberInfoExists, gerberInfo],
-      [kitspaceYAMLExists, kitspaceYAML],
+      [kitspaceYamlExists, kitspaceYamlArray],
       finishedProcessing,
       hasIBOM,
       // The repo owner and collaborators can upload files.
@@ -73,15 +74,16 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       getReadme(assetsPath),
       getBoardBomInfo(assetsPath),
       getBoardGerberInfo(assetsPath),
-      getKitspaceYAMLJson(assetsPath),
+      getKitspaceYamlArray(rootAssetsPath),
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
       canCommit(repoFullname, session.user?.username, session.apiToken),
     ])
 
-    const isMultiProject = kitspaceYAML.multi != null
+    const isSingleProject =
+      kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
 
-    if (isMultiProject && finishedProcessing) {
+    if (!isSingleProject && finishedProcessing) {
       const searchResult = await meiliIndex.search('*', {
         filter: `multiParentId = ${repo.id}`,
       })
@@ -100,7 +102,7 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       projectFullname: repoFullname,
       hasUploadPermission,
       hasIBOM,
-      kitspaceYAML,
+      kitspaceYAML: kitspaceYamlArray[0],
       zipUrl,
       bomInfo,
       boardSpecs: { width, height, layers },
@@ -115,10 +117,10 @@ ProjectPage.getInitialProps = async ({ query, req, res }) => {
       gerberInfoExists,
       bomInfoExists,
       readmeExists: readme !== null,
-      kitspaceYAMLExists,
+      kitspaceYAMLExists: kitspaceYamlExists,
       boardShowcaseAssetsExist: gerberInfoExists,
       finishedProcessing,
-      description: kitspaceYAML.summary,
+      description: kitspaceYamlArray.summary,
       originalUrl: repo?.original_url,
     }
   }
