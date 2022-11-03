@@ -142,7 +142,7 @@ export const getIsProcessingDone = async assetsPath => {
 
   const kitspaceYamlArray = await res.json()
 
-  const statuses = flatten(
+  let statuses = flatten(
     await Promise.all(
       kitspaceYamlArray.map(
         async project =>
@@ -161,11 +161,15 @@ export const getIsProcessingDone = async assetsPath => {
     return false
   }
 
+  try {
+    statuses = await Promise.all(statuses.map(r => r.json()))
+  } catch (e) {
+    console.warn(e)
+    return false
+  }
+
   // If any asset is still in progress
-  return statuses.every(async r => {
-    const { status } = await r.json()
-    return status !== 'in_progress'
-  })
+  return statuses.every(status => status !== 'in_progress')
 }
 
 /**
