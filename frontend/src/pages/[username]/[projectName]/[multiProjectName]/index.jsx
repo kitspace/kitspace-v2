@@ -23,8 +23,12 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
   // `repoFullname` is resolved by matching its name against the `page` dir.
   // Then it's used to access the repo by the Gitea API.
   const asPathWithoutQuery = asPath.split('?')[0]
-  const [ignored, username, projectName, multiProjectName] =
+  let [ignored, username, projectName, multiProjectName] =
     asPathWithoutQuery.split('/')
+
+  if (multiProjectName == null) {
+    multiProjectName = '_'
+  }
 
   const repoFullname = `${username}/${projectName}`
 
@@ -32,7 +36,8 @@ MultiProjectPage.getInitialProps = async ({ asPath, query, req, res }) => {
   const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
-  if (await repoExists(repoFullname)) {
+  const exists = await repoExists(repoFullname)
+  if (exists) {
     const [
       repo,
       readme,

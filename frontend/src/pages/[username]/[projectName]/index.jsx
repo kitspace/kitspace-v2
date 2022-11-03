@@ -10,7 +10,7 @@ import {
   getIsProcessingDone,
   getReadme,
 } from '@utils/projectPage'
-import SharedProjectPage from '@components/SharedProjectPage'
+import MultiProjectPage from './[multiProjectName]'
 import { arrayOf, bool, object, string } from 'prop-types'
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
@@ -24,16 +24,11 @@ const ProjectPage = props => {
     return <Custom404 />
   }
 
-  if (props?.subProjects) {
-    return (
-      <SubProjectsGrid
-        parentProject={props.parentProject}
-        projects={props.subProjects}
-      />
-    )
+  if (props.projectGridProps) {
+    return <SubProjectsGrid {...props.projectGridProps} />
   }
 
-  return <SharedProjectPage {...props} />
+  return <MultiProjectPage {...props.projectProps} />
 }
 
 const SubProjectsGrid = ({ projects, parentProject }) => {
@@ -49,95 +44,40 @@ const SubProjectsGrid = ({ projects, parentProject }) => {
   )
 }
 
-ProjectPage.getInitialProps = async ({ query, req, res }) => {
+ProjectPage.getInitialProps = async args => {
+  const { query, res } = args
   const { username, projectName } = query
 
   const repoFullname = `${username}/${projectName}`
   const rootAssetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
-  const assetsPath = `${rootAssetsPath}/_`
-  const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   const exists = await repoExists(repoFullname)
   if (exists) {
-    const [
-      repo,
-      readme,
-      [bomInfoExists, bomInfo],
-      [gerberInfoExists, gerberInfo],
-      [kitspaceYamlExists, kitspaceYamlArray],
-      finishedProcessing,
-      hasIBOM,
-      // The repo owner and collaborators can upload files.
-      hasUploadPermission,
-    ] = await Promise.all([
-      getRepo(repoFullname),
-      getReadme(assetsPath),
-      getBoardBomInfo(assetsPath),
-      getBoardGerberInfo(assetsPath),
-      getKitspaceYamlArray(rootAssetsPath),
-      getIsProcessingDone(assetsPath),
-      hasInteractiveBom(assetsPath),
-      canCommit(repoFullname, session.user?.username, session.apiToken),
-    ])
-
+    const [ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
     const isSingleProject =
       kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
 
-    if (!isSingleProject && finishedProcessing) {
-      const searchResult = await meiliIndex.search('*', {
-        filter: `multiParentId = ${repo.id}`,
-      })
-      return {
-        subProjects: searchResult.hits,
-        parentProject: projectName,
-      }
+    if (isSingleProject) {
+      const projectProps = await MultiProjectPage.getInitialProps(args)
+      return { projectProps }
     }
 
-    const { zipPath, width, height, layers } = gerberInfo
-    const zipUrl = `${assetsPath}/${zipPath}`
-
+    const repo = await getRepo(repoFullname)
+    const searchResult = await meiliIndex.search('*', {
+      filter: `multiParentId = ${repo.id}`,
+    })
     return {
-      assetsPath,
-      repo,
-      projectFullname: repoFullname,
-      hasUploadPermission,
-      hasIBOM,
-      kitspaceYAML: kitspaceYamlArray[0],
-      zipUrl,
-      bomInfo,
-      boardSpecs: { width, height, layers },
-      readme,
-      isSynced: repo?.mirror,
-      // Whether the project was empty or not at the time of requesting the
-      // this page from the server.
-      isEmpty: repo?.empty,
-      username,
-      projectName: projectName,
-      isNew: query.create === 'true',
-      gerberInfoExists,
-      bomInfoExists,
-      readmeExists: readme !== null,
-      kitspaceYAMLExists: kitspaceYamlExists,
-      boardShowcaseAssetsExist: gerberInfoExists,
-      finishedProcessing,
-      description: kitspaceYamlArray.summary,
-      originalUrl: repo?.original_url,
+      projectGridProps: {
+        projects: searchResult.hits,
+        parentProject: projectName,
+      },
     }
   }
 
-  res.statusCode = 404
+  if (res != null) {
+    res.statusCode = 404
+  }
   return { notFound: true }
-}
-
-ProjectPage.propTypes = {
-  notFound: bool,
-  subProjects: arrayOf(object),
-  parentProject: string,
-}
-
-ProjectPage.defaultProps = {
-  notFound: false,
-  parentProject: '',
 }
 
 SubProjectsGrid.propTypes = {
