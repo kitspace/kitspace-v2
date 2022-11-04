@@ -63,13 +63,13 @@ module.exports = async phase => {
       // anywhere but they are technically reachable by crawlers, hence we re-direct them
       return [
         {
-          source: '/:user/:project/_',
-          destination: '/:user/:project',
+          source: '/:user/:repo/_',
+          destination: '/:user/:repo',
           permanent: true,
         },
         {
-          source: '/:user/:project/_/:slug*',
-          destination: '/:user/:project/:slug*',
+          source: '/:user/:repo/_/:slug*',
+          destination: '/:user/:repo/:slug*',
           permanent: true,
         },
       ]

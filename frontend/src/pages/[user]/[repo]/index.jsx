@@ -8,7 +8,7 @@ import { getKitspaceYamlArray } from '@utils/projectPage'
 import getConfig from 'next/config'
 import React from 'react'
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
-import MultiProjectPage from './[multiProjectName]'
+import ProjectPage from './[project]'
 
 const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
@@ -17,7 +17,7 @@ const fetchSearch = async (...args) => {
   return searchResult.hits
 }
 
-const ProjectPage = props => {
+const RepoPage = props => {
   if (props.errorCode) {
     return <ErrorPage statusCode={props.errorCode} />
   }
@@ -26,15 +26,15 @@ const ProjectPage = props => {
     const { swrFallback, initialProps } = props.projectGridProps
     return (
       <SWRConfig value={{ fallback: swrFallback }}>
-        <SubProjectsGrid {...initialProps} />
+        <ProjectGrid {...initialProps} />
       </SWRConfig>
     )
   }
 
-  return <MultiProjectPage {...props.projectProps} />
+  return <ProjectPage {...props.projectProps} />
 }
 
-const SubProjectsGrid = ({ parentProject, searchArgs }) => {
+const ProjectGrid = ({ parentProject, searchArgs }) => {
   const { data: projects } = useSWR(searchArgs, fetchSearch, {
     refreshInterval: 1000,
   })
@@ -51,14 +51,14 @@ const SubProjectsGrid = ({ parentProject, searchArgs }) => {
   )
 }
 
-ProjectPage.getInitialProps = async args => {
+RepoPage.getInitialProps = async args => {
   const { query, res } = args
-  const { username, projectName } = query
+  const { user: username, repo: repoName } = query
 
-  const repoFullname = `${username}/${projectName}`
-  const rootAssetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
+  const repoFullName = `${username}/${repoName}`
+  const rootAssetsPath = `${processorUrl}/files/${repoFullName}/HEAD`
 
-  const exists = await repoExists(repoFullname)
+  const exists = await repoExists(repoFullName)
   if (!exists) {
     if (res != null) {
       res.statusCode = 404
@@ -79,13 +79,13 @@ ProjectPage.getInitialProps = async args => {
     kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
 
   if (isSingleProject) {
-    // render the SubProject page as this page
-    args.query = { ...query, multiProjectName: '_' }
-    const projectProps = await MultiProjectPage.getInitialProps(args)
+    // render the project page as this page
+    args.query = { ...query, project: '_' }
+    const projectProps = await ProjectPage.getInitialProps(args)
     return { projectProps }
   }
 
-  const repo = await getRepo(repoFullname)
+  const repo = await getRepo(repoFullName)
   const searchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
   const hits = await fetchSearch(...searchArgs)
   return {
@@ -95,10 +95,10 @@ ProjectPage.getInitialProps = async args => {
       },
       initialProps: {
         searchArgs: searchArgs,
-        parentProject: projectName,
+        parentProject: repoName,
       },
     },
   }
 }
 
-export default ProjectPage
+export default RepoPage

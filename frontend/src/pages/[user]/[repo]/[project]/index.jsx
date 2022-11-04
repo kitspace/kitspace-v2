@@ -20,15 +20,15 @@ const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
-  const { username, projectName, multiProjectName } = query
+  const { user: username, repo: repoName, project: projectName } = query
 
-  const repoFullname = `${username}/${projectName}`
+  const repoFullName = `${username}/${repoName}`
 
-  const kitspaceYAMLPath = `${processorUrl}/files/${repoFullname}/HEAD`
-  const assetsPath = `${processorUrl}/files/${repoFullname}/HEAD/${multiProjectName}`
+  const rootAssetsPath = `${processorUrl}/files/${repoFullName}/HEAD`
+  const assetsPath = `${processorUrl}/files/${repoFullName}/HEAD/${projectName}`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
-  const exists = await repoExists(repoFullname)
+  const exists = await repoExists(repoFullName)
   if (exists) {
     const [
       repo,
@@ -40,24 +40,24 @@ MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
       hasIBOM,
       hasUploadPermission,
     ] = await Promise.all([
-      getRepo(repoFullname),
+      getRepo(repoFullName),
       getReadme(assetsPath),
       getBoardBomInfo(assetsPath),
       getBoardGerberInfo(assetsPath),
-      getKitspaceYamlArray(kitspaceYAMLPath),
+      getKitspaceYamlArray(rootAssetsPath),
       getIsProcessingDone(assetsPath),
       hasInteractiveBom(assetsPath),
       // The repo owner and collaborators can upload files.
-      canCommit(repoFullname, session.user?.username, session.apiToken),
+      canCommit(repoFullName, session.user?.username, session.apiToken),
     ])
 
-    const kitspaceYAML = kitspaceYamlArray.find(p => p.name === multiProjectName)
+    const kitspaceYAML = kitspaceYamlArray.find(p => p.name === projectName)
 
     const { zipPath, width, height, layers } = gerberInfo
     const zipUrl = `${assetsPath}/${zipPath}`
 
     if (!kitspaceYAML) {
-      // If there is not multiproject as specified in the url `{username}/{projectName}/{multiProjectName}`
+      // no project matched
       if (res != null) {
         res.statusCode = 404
       }
@@ -67,7 +67,7 @@ MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
     return {
       assetsPath,
       repo,
-      projectFullname: repoFullname,
+      projectFullname: repoFullName,
       hasUploadPermission,
       hasIBOM,
       kitspaceYAML,
@@ -76,10 +76,11 @@ MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
       boardSpecs: { width, height, layers },
       readme,
       isSynced: repo?.mirror,
-      // Whether the project were empty or not at the time of requesting the this page from the server.
+      // Whether the project was empty or not at the time of requesting this
+      // page from the server.
       isEmpty: repo?.empty,
       username,
-      projectName: multiProjectName === '_' ? projectName : multiProjectName,
+      projectName: projectName === '_' ? repoName : projectName,
       isNew: query.create === 'true',
       gerberInfoExists,
       bomInfoExists,
