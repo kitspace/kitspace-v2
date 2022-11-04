@@ -35,11 +35,11 @@ describe('Relative README images URLs normalization', () => {
     cy.get('[data-cy=relative-readme-img]', { timeout: 60_000 })
       .should('have.attr', 'src')
       .then(src => {
-        return fetch(src).then(res => {
+        fetch(src).then(res => {
           assert(res.ok, 'expected "ok" http response when requesting image')
           assert(
-            res.headers.get('content-type').startsWith("image/"),
-            'expected http response to have content-type image/*',
+            res.headers.get('content-type') === 'image/png',
+            'expected http response to have content-type image/png',
           )
         })
       })
