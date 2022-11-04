@@ -1,8 +1,9 @@
 import Page from '@components/Page'
 import ProjectCard from '@components/ProjectCard'
-import Custom404 from '@pages/404'
+import ErrorPage from '@pages/_error'
 import { getRepo, repoExists } from '@utils/giteaApi'
 import { meiliIndex } from '@utils/meili'
+import { delay } from '@utils/index'
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import getConfig from 'next/config'
 import React from 'react'
@@ -17,8 +18,8 @@ const fetchSearch = async (...args) => {
 }
 
 const ProjectPage = props => {
-  if (props.notFound) {
-    return <Custom404 />
+  if (props.errorCode) {
+    return <ErrorPage statusCode={props.errorCode} />
   }
 
   if (props.projectGridProps) {
@@ -59,12 +60,24 @@ ProjectPage.getInitialProps = async args => {
 
   const exists = await repoExists(repoFullname)
   if (exists) {
-    let [ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
+    const getYamlLoop = async () => {
+      let [ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
+      while (arr.length === 0) {
+        await delay(100)
+        ;[ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
+      }
+      return arr
+    }
+    const kitspaceYamlArray = await Promise.race([
+      delay(60_000).then(() => []),
+      getYamlLoop(),
+    ])
 
-    // TODO: get rid of this while loop by using SWR
-    while (kitspaceYamlArray.length === 0) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-      ;[ignored, kitspaceYamlArray] = await getKitspaceYamlArray(rootAssetsPath)
+    if (kitspaceYamlArray.length === 0) {
+      if (res != null) {
+        res.statusCode = 502
+      }
+      return { errorCode: 502 }
     }
 
     const isSingleProject =
@@ -95,7 +108,7 @@ ProjectPage.getInitialProps = async args => {
   if (res != null) {
     res.statusCode = 404
   }
-  return { notFound: true }
+  return { errorCode: 404 }
 }
 
 export default ProjectPage
