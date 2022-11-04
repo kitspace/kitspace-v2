@@ -87,31 +87,43 @@ export const MBytesToBytes = megs => {
   return 1048576 * num
 }
 
-export function delay(ms) {
+export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 /**
  * Loop until functions returns a truthy value from promise. Alternativley you
- * can provide your own `checkFn` to return a truthy/falsey value to check from
- * your promise return value.
+ * can provide your own `checkFn` which should return `true` when you want to
+ * stop or `false` to continue waiting.
  */
-export async function waitFor(fn, { timeout, interval = 100, checkFn = x => x }) {
+
+export type WaitForFunction<T> = () => Promise<T>
+export type WaitForCheckFunction<T> = (x: T) => boolean
+export interface WaitForOptions<T> {
+  timeoutMs: number
+  interval?: number
+  checkFn?: WaitForCheckFunction<T>
+}
+const defaultCheckFn: WaitForCheckFunction<unknown> = x => Boolean(x)
+export async function waitFor<T>(
+  fn: WaitForFunction<T>,
+  { timeoutMs, interval = 100, checkFn = defaultCheckFn }: WaitForOptions<T>,
+): Promise<T | null> {
   const controller = new AbortController()
 
-  const loop = async () => {
+  const loop = async (): Promise<T> => {
     let r = await fn()
-    while (checkFn(r) && !controller.signal.aborted) {
+    while (!checkFn(r) && !controller.signal.aborted) {
       await delay(interval)
       r = await fn()
     }
     return r
   }
 
-  const timer = async () => {
-    await delay(timeout)
+  const timer = async (): Promise<null> => {
+    await delay(timeoutMs)
     controller.abort()
-    return false
+    return null
   }
 
   return Promise.race([timer(), loop()])

@@ -50,7 +50,7 @@ const Sync = ({ setUserOp }) => {
           color: 'green',
         })
         const exists = waitFor(() => repoExists(`${username}/${repoName}`), {
-          timeout: 60_000,
+          timeoutMS: 60_000,
         })
         if (!exists) {
           setMessage({
