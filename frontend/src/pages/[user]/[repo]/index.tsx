@@ -90,9 +90,9 @@ RepoPage.getInitialProps = async (args): Promise<RepoPageProps> => {
   const kitspaceYamlArray = await waitFor(getYaml, { timeoutMs: 10_000, checkFn })
   if (!kitspaceYamlArray) {
     if (res != null) {
-      res.statusCode = 502
+      res.statusCode = 500
     }
-    return { errorCode: 502 }
+    return { errorCode: 500 }
   }
 
   const isSingleProject =
