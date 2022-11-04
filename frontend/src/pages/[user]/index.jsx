@@ -16,21 +16,22 @@ const fetchUserProjects = async username => {
 }
 
 export const getServerSideProps = async ({ params }) => {
-  const exists = await userExists(params.username)
+  const username = params.user
+  const exists = await userExists(username)
   if (!exists) {
     return {
       notFound: true,
     }
   }
 
-  const hits = await fetchUserProjects(params.username)
+  const hits = await fetchUserProjects(username)
 
   return {
     props: {
       swrFallback: {
         [params.username]: hits,
       },
-      username: params.username,
+      username,
     },
   }
 }
