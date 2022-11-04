@@ -60,7 +60,7 @@ const ProjectGrid = ({ parentProject, searchArgs }: ProjectGridProps) => {
       <h1>{parentProject}</h1>
       <div>
         {isProcessing
-          ? 'Processing repo...'
+          ? 'Processing repository...'
           : projects.map(project => <ProjectCard {...project} key={project.id} />)}
       </div>
     </Page>
@@ -82,8 +82,12 @@ RepoPage.getInitialProps = async args => {
     return { errorCode: 404 }
   }
 
-  const getYaml = async () => (await getKitspaceYamlArray(rootAssetsPath))[1]
-  const kitspaceYamlArray = await waitFor(getYaml, { timeout: 60_000 })
+  const getYaml = async () => {
+    const [ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
+    return arr
+  }
+  const checkFn = arr => arr.length > 0
+  const kitspaceYamlArray = await waitFor(getYaml, { timeoutMs: 10_000, checkFn })
   if (!kitspaceYamlArray) {
     if (res != null) {
       res.statusCode = 502
