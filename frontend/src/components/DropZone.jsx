@@ -5,7 +5,7 @@ import getConfig from 'next/config'
 
 // `FileWithPath is used in the `fileCustomValidator` function typing.
 // eslint-disable-next-line no-unused-vars
-import { useDropzone, ErrorCode, FileWithPath } from 'react-dropzone'
+import { useDropzone, ErrorCode } from 'react-dropzone'
 import { fromEvent } from 'file-selector'
 import { Button } from 'semantic-ui-react'
 

@@ -11,7 +11,7 @@ import styles from './index.module.scss'
 const BuyParts = ({ projectFullName, lines, parts }) => {
   const [extensionPresence, setExtensionPresence] = useState('unknown')
   // it's needed to fix the extension integration.
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   const [buyParts, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)

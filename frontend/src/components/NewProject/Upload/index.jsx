@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { bool, func, number } from 'prop-types'
 import { Loader, Progress } from 'semantic-ui-react'
 
@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 
 import { AuthContext } from '@contexts/AuthContext'
 import { commitInitialFiles } from '@utils/giteaInternalApi'
-import { createRepo, repoExists } from '@utils/giteaApi'
+import { createRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
 import DropZone from '@components/DropZone'
 import { UploadOp, NoOp } from '../Ops'
@@ -28,7 +28,6 @@ const Upload = ({ setUserOp }) => {
     setUserOp(UploadOp)
 
     const tempProjectName = slugifiedNameFromFiles(droppedFiles)
-    console.log({ tempProjectName })
     const repo = await createRepo(tempProjectName, '', apiToken)
 
     setProjectName(tempProjectName)
@@ -96,6 +95,7 @@ const Upload = ({ setUserOp }) => {
       />
       <UploadConflictModal
         conflictModalOpen={conflictModalOpen}
+        originalProjectName={originalProjectName}
         onClose={() => {
           setUserOp(NoOp)
           // Close the modal
@@ -103,7 +103,6 @@ const Upload = ({ setUserOp }) => {
           // reset the state as if the user didn't drop anything
           setDroppedFiles([])
         }}
-        originalProjectName={originalProjectName}
         onDifferentName={onDifferentName}
         onOverwrite={onUpdateToExisting}
       />
