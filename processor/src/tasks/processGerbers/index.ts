@@ -64,36 +64,35 @@ export default async function processGerbers(
   }
 
   try {
-    const gerberDir = kitspaceYaml.gerbers || ''
-    const color = kitspaceYaml.color || 'green'
-
     await execEscaped(['mkdir', '-p', path.join(outputDir, 'images')])
 
-    const files = globule.find(path.join(inputDir, '**'), { dot: true })
+    let inputFiles: PlottedGerbers['inputFiles']
+    let gerbers: PlottedGerbers['gerbers']
 
-    const gerberTypes = findGerberFiles(files, path.join(inputDir, gerberDir))
-    let gerbers = Object.keys(gerberTypes)
-
-    let inputFiles
-    // XXX this is 5 due to whats-that-gerber matching non-gerber files and 5
-    // being a number that works for the projects currently on kitspace. it
-    // could cause problems with new projects and should be fixed in
-    // whats-that-gerber
-    // https://github.com/tracespace/tracespace/issues/357
-    if (gerbers.length < 5) {
-      if (plottedGerbers.gerbers.length === 0) {
+    if (plottedGerbers.gerbers.length === 0) {
+      const gerberDir = kitspaceYaml.gerbers || ''
+      const files = globule.find(path.join(inputDir, '**'), { dot: true })
+      const gerberTypes = findGerberFiles(files, path.join(inputDir, gerberDir))
+      gerbers = Object.keys(gerberTypes)
+      // XXX this is 5 due to whats-that-gerber matching non-gerber files and 5
+      // being a number that works for the projects currently on kitspace. it
+      // could cause problems with new projects and should be fixed in
+      // whats-that-gerber
+      // https://github.com/tracespace/tracespace/issues/357
+      if (gerbers.length < 5) {
         throw Error('No PCB files found')
+      } else {
+        inputFiles = gerbers.reduce(
+          (result, k) => ({
+            ...result,
+            [path.relative(inputDir, k)]: gerberTypes[k],
+          }),
+          {},
+        )
       }
+    } else {
       gerbers = plottedGerbers.gerbers
       inputFiles = plottedGerbers.inputFiles
-    } else {
-      inputFiles = gerbers.reduce(
-        (result, k) => ({
-          ...result,
-          [path.relative(inputDir, k)]: gerberTypes[k],
-        }),
-        {},
-      )
     }
 
     const gerberData = await readGerbers(gerbers)
@@ -107,6 +106,7 @@ export default async function processGerbers(
         ),
     )
 
+    const color = kitspaceYaml.color || 'green'
     const stackup = await boardBuilder(gerberData, color)
 
     promises.push(
