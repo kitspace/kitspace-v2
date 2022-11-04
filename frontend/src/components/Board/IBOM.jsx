@@ -22,7 +22,7 @@ const IBOM = ({ projectFullname, html, pcbData, projectHref }) => {
       window.onresize = resizeAll;
       initBOM();
       const pcbTitle = pcbdata.metadata.title;
-  
+
       document.querySelector('#title').innerHTML = "<a href=/${projectHref}>${projectFullname}</a>";
       const head = document.head;
       const link = document.createElement("link");

@@ -12,24 +12,24 @@ export const getServerSideProps = async ({ params }) => {
     'utf-8',
   )
 
-  const projectFullname = `${params.username}/${params.projectName}`
+  const repoFullName = `${params.user}/${params.repo}`
   const interactiveBOMStatus = await fetch(
-    `${processorUrl}/status/${projectFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
+    `${processorUrl}/status/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
   )
     .then(r => r.json().then(body => body.status))
     .catch(() => 'fail')
 
   if (interactiveBOMStatus === 'done') {
     const pcbData = await fetch(
-      `${processorUrl}/files/${projectFullname}/HEAD/${params.multiProjectName}/interactive_bom.json`,
+      `${processorUrl}/files/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
     ).then(res => res.blob().then(b => b.text()))
 
     return {
       props: {
-        projectFullname,
+        projectFullname: repoFullName,
         html: IBOMHtml,
         pcbData,
-        projectHref: `${projectFullname}/${params.multiProjectName}`,
+        projectHref: `${repoFullName}/${params.project}`,
       },
     }
   }

@@ -22,11 +22,11 @@ const fetchSearch = async (...args: SearchArgs) => {
 
 interface RepoPageProps {
   errorCode?: number
-  projectGrid: {
+  projectGrid?: {
     swrFallback: Record<string, Array<unknown>>
-    initialProps: ProjectGridProps
+    gridProps: ProjectGridProps
   }
-  singleProject: object
+  singleProject?: object
 }
 const RepoPage = (props: RepoPageProps) => {
   if (props.errorCode) {
@@ -34,10 +34,10 @@ const RepoPage = (props: RepoPageProps) => {
   }
 
   if (props.projectGrid) {
-    const { swrFallback, initialProps } = props.projectGrid
+    const { swrFallback, gridProps } = props.projectGrid
     return (
       <SWRConfig value={{ fallback: swrFallback }}>
-        <ProjectGrid {...initialProps} />
+        <ProjectGrid {...gridProps} />
       </SWRConfig>
     )
   }
@@ -67,7 +67,7 @@ const ProjectGrid = ({ parentProject, searchArgs }: ProjectGridProps) => {
   )
 }
 
-RepoPage.getInitialProps = async args => {
+RepoPage.getInitialProps = async (args): Promise<RepoPageProps> => {
   const { query, res } = args
   const { user: username, repo: repoName } = query
 
@@ -101,19 +101,19 @@ RepoPage.getInitialProps = async args => {
   if (isSingleProject) {
     // render the project page as this page
     args.query = { ...query, project: '_' }
-    const projectProps = await ProjectPage.getInitialProps(args)
-    return { projectProps }
+    const singleProject = await ProjectPage.getInitialProps(args)
+    return { singleProject }
   }
 
   const repo = await getRepo(repoFullName)
   const searchArgs: SearchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
   const hits = await fetchSearch(...searchArgs)
   return {
-    projectGridProps: {
+    projectGrid: {
       swrFallback: {
         [unstable_serialize(searchArgs)]: hits,
       },
-      initialProps: {
+      gridProps: {
         searchArgs: searchArgs,
         parentProject: repoName,
       },
