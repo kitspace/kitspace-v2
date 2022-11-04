@@ -67,7 +67,7 @@ ProjectPage.getInitialProps = async args => {
   }
 
   const getYaml = async () => (await getKitspaceYamlArray(rootAssetsPath))[1]
-  const kitspaceYamlArray = waitFor(getYaml(), { timeout: 60_000 })
+  const kitspaceYamlArray = waitFor(getYaml, { timeout: 60_000 })
   if (!kitspaceYamlArray) {
     if (res != null) {
       res.statusCode = 502
