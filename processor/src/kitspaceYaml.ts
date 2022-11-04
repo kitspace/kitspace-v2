@@ -1,8 +1,8 @@
-import { z } from 'zod'
-import jsYaml from 'js-yaml'
-import path from 'node:path'
 import { promises as fs } from 'fs'
+import jsYaml from 'js-yaml'
 import log from 'loglevel'
+import path from 'node:path'
+import { z } from 'zod'
 
 const eda = z.object({ type: z.enum(['kicad', 'eagle']), pcb: z.string() })
 
@@ -21,6 +21,7 @@ export const singleKitspaceYaml = z.object({
     .array()
     .optional(),
   'ibom-enabled': z.boolean().default(true),
+  // a single kitspaceYaml doesn't have the multi key
   multi: z.undefined(),
 })
 
@@ -53,31 +54,33 @@ export async function getKitspaceYaml(
     'kitnic.yaml',
     'kitnic.yml',
   ].map(p => path.join(inputDir, p))
-  const yamlFile = await Promise.all(filePaths.map(tryReadFile)).then(
-    ([yaml, yml, kitnicYaml, kitnicYml]) => yaml || yml || kitnicYaml || kitnicYml,
-  )
-  const result = kitspaceYamlInput.safeParse(jsYaml.safeLoad(yamlFile) || {})
-
-  if (result.success === false) {
-    log.warn('Could not parse kitspace YAML file:', result.error)
+  let input: KitspaceYamlInput
+  try {
+    const yamlContents = await Promise.all(filePaths.map(tryReadFile)).then(
+      ([yaml, yml, kitnicYaml, kitnicYml]) =>
+        yaml || yml || kitnicYaml || kitnicYml,
+    )
+    const obj = jsYaml.load(yamlContents)
+    input = kitspaceYamlInput.parse(obj)
+  } catch (e) {
+    log.warn('Could not parse Kitspace YAML file:', e)
+    // return the default
     return [kitspaceYaml.parse({ name: '_' })]
   }
 
-  const parsedData = result.data
-
-  if (!parsedData.multi) {
-    return [{ ...parsedData, name: '_' } as KitspaceYaml]
+  if (!input.multi) {
+    return [{ ...input, name: '_' } as KitspaceYaml]
   }
 
   const arr: Array<KitspaceYaml> = []
-  for (const key of Object.keys(parsedData.multi)) {
-    arr.push({ ...parsedData.multi[key], name: formatAsGiteaRepoName(key) })
+  for (const key of Object.keys(input.multi)) {
+    arr.push({ ...input.multi[key], name: formatAsGiteaRepoName(key) })
   }
   return arr
 }
 
-function tryReadFile(filePath: string): Promise<string | Buffer> {
-  return fs.readFile(filePath).catch(err => {
+function tryReadFile(filePath: string): Promise<string> {
+  return fs.readFile(filePath, 'utf-8').catch(err => {
     // just return an empty string if the file doesn't exist
     if (err.code === 'ENOENT') {
       return ''
