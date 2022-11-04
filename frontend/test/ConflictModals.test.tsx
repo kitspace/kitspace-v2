@@ -1,10 +1,11 @@
 import { afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 
 import Sync from '@components/NewProject/Sync'
 import AuthProvider from '@contexts/AuthContext'
 
 import GetRepo from './fixtures/GetRepoRes.json'
+import { SyncConflictModal } from '@components/NewProject/ConflictModals'
 
 const SESSION = { user: { username: 'tester' } }
 
@@ -91,6 +92,58 @@ it('changes the overwrite button to OK if the new project name does not cause co
 
   // The button should say OK because we have changed the project name.
   expect(screen.getByText('OK')).toBeTruthy()
+})
+
+it('overwrites the repo if the user clicks on `Overwrite`', () => {
+  const onClose = vi.fn()
+  const onDifferentName = vi.fn()
+  const onOverwrite = vi.fn()
+
+  const screen = render(
+    <AuthProvider initialSession={SESSION}>
+      <SyncConflictModal
+        conflictModalOpen={true}
+        originalProjectName="test_repo"
+        onClose={onClose}
+        onDifferentName={onDifferentName}
+        onOverwrite={onOverwrite}
+      />
+    </AuthProvider>,
+  )
+  fireEvent.click(screen.getByText('Overwrite'))
+  expect(onOverwrite).toHaveBeenCalled()
+})
+
+it('creates a repo with a different name if the user the conflicting name and clicks `OK`', async () => {
+  const onClose = vi.fn()
+  const onDifferentName = vi.fn()
+  const onOverwrite = vi.fn()
+
+  const screen = render(
+    <AuthProvider initialSession={SESSION}>
+      <SyncConflictModal
+        conflictModalOpen={true}
+        originalProjectName="test_repo"
+        onClose={onClose}
+        onDifferentName={onDifferentName}
+        onOverwrite={onOverwrite}
+      />
+    </AuthProvider>,
+  )
+
+  const conflictModalInput = screen.getAllByRole('textbox')[0]
+
+  fireEvent.change(conflictModalInput, {
+    target: { value: 'new_test_repo' },
+  })
+
+  // Wait for the button to be enabled
+  await waitFor(() =>
+    expect(screen.getByText('OK')).toHaveProperty('disabled', false),
+  )
+
+  fireEvent.click(screen.getByText('OK'))
+  expect(onDifferentName).toHaveBeenCalled()
 })
 
 afterEach(() => {

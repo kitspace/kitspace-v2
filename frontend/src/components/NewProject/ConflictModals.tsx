@@ -32,12 +32,12 @@ const ConflictModal = ({
   }, [originalProjectName, populate])
 
   useEffect(() => {
-    if (form.name) {
+    if (form.name && didChangeName) {
       isUsableProjectName(user.username, form.name, isValid).then(
         setIsValidProjectName,
       )
     }
-  }, [user, form.name, isValid])
+  }, [user, form.name, isValid, didChangeName])
 
   return (
     <Modal
