@@ -6,7 +6,7 @@
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node src/server.js",
     "fmt": "prettier --write '*.json' 'src/**/*.{ts,js,tsx,jsx}'",
-    "lint": "eslint src/"
+    "lint": "next lint"
   },
   "license": "AGPL-3.0",
   "dependencies": {
