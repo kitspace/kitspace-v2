@@ -27,7 +27,7 @@ export default function UseForm(schema: Schema, validateOnBlur?: boolean) {
       setForm(prevForm => ({
         _csrf: csrf,
         ...prevForm,
-        [event.target.name]: event.target.value,
+        [event.target.name]: data.value,
       }))
     }
   }
