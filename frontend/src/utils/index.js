@@ -86,3 +86,7 @@ export const MBytesToBytes = megs => {
   // 1 Megabyte = 1048576 Bytes.
   return 1048576 * num
 }
+
+export function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
