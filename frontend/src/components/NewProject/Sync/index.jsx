@@ -8,7 +8,7 @@ import isEmpty from 'lodash/isEmpty'
 import { AuthContext } from '@contexts/AuthContext'
 import { mirrorRepo, repoExists } from '@utils/giteaApi'
 import { SyncOp, NoOp } from '../Ops'
-import { urlToName, delay } from '@utils/index'
+import { urlToName, waitFor } from '@utils/index'
 import styles from './index.module.scss'
 import SyncRepoFromModel from '@models/SyncRepoForm'
 import useForm from '@hooks/useForm'
@@ -49,26 +49,17 @@ const Sync = ({ setUserOp }) => {
           content: 'Imported successfully, redirecting to the project page...',
           color: 'green',
         })
-        const checkExistsLoop = async () => {
-          // XXX should really be cancelled with an AbortController in case of timeout
-          let exists = await repoExists(`${username}/${repoName}`)
-          while (!exists) {
-            await delay(100)
-            exists = await repoExists(`${username}/${repoName}`)
-          }
-        }
-        const actuallyExists = await Promise.race([
-          delay(60_000).then(() => false),
-          checkExistsLoop().then(() => true),
-        ])
-        if (!actuallyExists) {
+        const exists = waitFor(() => repoExists(`${username}/${repoName}`), {
+          timeout: 60_000,
+        })
+        if (!exists) {
           setMessage({
             content: `Sorry, something went wrong with importing this repsository.`,
             color: 'red',
           })
           return
         }
-        push(`/${username}/${repoName}`)
+        return push(`/${username}/${repoName}`)
       } else {
         // If migration failed don't remove the uploading side.
         clearTimeout(delayedSyncOp)

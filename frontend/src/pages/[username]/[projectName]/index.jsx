@@ -3,7 +3,7 @@ import ProjectCard from '@components/ProjectCard'
 import ErrorPage from '@pages/_error'
 import { getRepo, repoExists } from '@utils/giteaApi'
 import { meiliIndex } from '@utils/meili'
-import { delay } from '@utils/index'
+import { waitFor } from '@utils/index'
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import getConfig from 'next/config'
 import React from 'react'
@@ -59,56 +59,46 @@ ProjectPage.getInitialProps = async args => {
   const rootAssetsPath = `${processorUrl}/files/${repoFullname}/HEAD`
 
   const exists = await repoExists(repoFullname)
-  if (exists) {
-    const getYamlLoop = async () => {
-      let [ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
-      while (arr.length === 0) {
-        await delay(100)
-        ;[ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
-      }
-      return arr
+  if (!exists) {
+    if (res != null) {
+      res.statusCode = 404
     }
-    const kitspaceYamlArray = await Promise.race([
-      delay(60_000).then(() => []),
-      getYamlLoop(),
-    ])
+    return { errorCode: 404 }
+  }
 
-    if (kitspaceYamlArray.length === 0) {
-      if (res != null) {
-        res.statusCode = 502
-      }
-      return { errorCode: 502 }
+  const getYaml = async () => (await getKitspaceYamlArray(rootAssetsPath))[1]
+  const kitspaceYamlArray = waitFor(getYaml(), { timeout: 60_000 })
+  if (!kitspaceYamlArray) {
+    if (res != null) {
+      res.statusCode = 502
     }
+    return { errorCode: 502 }
+  }
 
-    const isSingleProject =
-      kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
+  const isSingleProject =
+    kitspaceYamlArray.length === 1 && kitspaceYamlArray[0].name === '_'
 
-    if (isSingleProject) {
-      args.query = { ...query, multiProjectName: '_' }
-      const projectProps = await MultiProjectPage.getInitialProps(args)
-      return { projectProps }
-    }
+  if (isSingleProject) {
+    // render the SubProject page as this page
+    args.query = { ...query, multiProjectName: '_' }
+    const projectProps = await MultiProjectPage.getInitialProps(args)
+    return { projectProps }
+  }
 
-    const repo = await getRepo(repoFullname)
-    const searchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
-    const hits = await fetchSearch(...searchArgs)
-    return {
-      projectGridProps: {
-        swrFallback: {
-          [unstable_serialize(searchArgs)]: hits,
-        },
-        initialProps: {
-          searchArgs: searchArgs,
-          parentProject: projectName,
-        },
+  const repo = await getRepo(repoFullname)
+  const searchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
+  const hits = await fetchSearch(...searchArgs)
+  return {
+    projectGridProps: {
+      swrFallback: {
+        [unstable_serialize(searchArgs)]: hits,
       },
-    }
+      initialProps: {
+        searchArgs: searchArgs,
+        parentProject: projectName,
+      },
+    },
   }
-
-  if (res != null) {
-    res.statusCode = 404
-  }
-  return { errorCode: 404 }
 }
 
 export default ProjectPage

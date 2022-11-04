@@ -90,3 +90,20 @@ export const MBytesToBytes = megs => {
 export function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+
+/**
+ * Loop until functions returns a truthy value from promise.
+ */
+export async function waitFor(fn, { timeout, interval = 100 }) {
+  const loop = () => {
+    let r = await fn()
+    while (!r) {
+      await delay(interval)
+      r = await fn()
+    }
+    return r
+  }
+
+  const timer = () => delay(timeout).then(() => false)
+  return Promise.race([timer(), loop()])
+}
