@@ -64,15 +64,13 @@ export default async function processGerbers(
   }
 
   try {
-    const gerberDir = kitspaceYaml.gerbers || ''
-    const color = kitspaceYaml.color || 'green'
-
     await execEscaped(['mkdir', '-p', path.join(outputDir, 'images')])
 
     let inputFiles: PlottedGerbers['inputFiles']
     let gerbers: PlottedGerbers['gerbers']
 
     if (plottedGerbers.gerbers.length === 0) {
+      const gerberDir = kitspaceYaml.gerbers || ''
       const files = globule.find(path.join(inputDir, '**'), { dot: true })
       const gerberTypes = findGerberFiles(files, path.join(inputDir, gerberDir))
       gerbers = Object.keys(gerberTypes)
@@ -108,6 +106,7 @@ export default async function processGerbers(
         ),
     )
 
+    const color = kitspaceYaml.color || 'green'
     const stackup = await boardBuilder(gerberData, color)
 
     promises.push(

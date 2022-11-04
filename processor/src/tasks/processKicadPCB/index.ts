@@ -38,15 +38,18 @@ async function processKicadPCB(
       return { inputFiles: {}, gerbers: [] }
     }
 
-    const gerbersPromise = plotKicadGerbers(outputDir, kicadPcbFile)
-
     const layoutPromise = plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
       .then(() => job.updateProgress({ status: 'done', file: layoutSvgPath }))
       .catch(error =>
         job.updateProgress({ status: 'failed', file: layoutSvgPath, error }),
       )
 
-    const gerbers = await gerbersPromise
+    // Only plot gerbers if there's no `gerbers` key in kitspace.yaml.
+    let gerbers = []
+    if (kitspaceYaml.gerbers == null) {
+      gerbers = await plotKicadGerbers(outputDir, kicadPcbFile)
+    }
+
     await layoutPromise
 
     const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
