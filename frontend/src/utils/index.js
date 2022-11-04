@@ -92,18 +92,27 @@ export function delay(ms) {
 }
 
 /**
- * Loop until functions returns a truthy value from promise.
+ * Loop until functions returns a truthy value from promise. Alternativley you
+ * can provide your own `checkFn` to return a truthy/falsey value to check from
+ * your promise return value.
  */
-export async function waitFor(fn, { timeout, interval = 100 }) {
-  const loop = () => {
+export async function waitFor(fn, { timeout, interval = 100, checkFn = x => x }) {
+  const controller = new AbortController()
+
+  const loop = async () => {
     let r = await fn()
-    while (!r) {
+    while (checkFn(r) && !controller.signal.aborted) {
       await delay(interval)
       r = await fn()
     }
     return r
   }
 
-  const timer = () => delay(timeout).then(() => false)
+  const timer = async () => {
+    await delay(timeout)
+    controller.abort()
+    return false
+  }
+
   return Promise.race([timer(), loop()])
 }
