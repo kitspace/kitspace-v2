@@ -58,19 +58,23 @@ module.exports = async phase => {
       ],
     },
     async redirects() {
-      // we use "_" as the project name when there is only one project in the repo
-      // i.e. no `multi` in the kitspace.yaml, we shouldn't use the /_ links
-      // anywhere but they are technically reachable by crawlers, hence we re-direct them
+      // we use "_" as the project name when there is only one project but we
+      // don't want it to appear in the URL of the project page
       return [
         {
           source: '/:user/:repo/_',
           destination: '/:user/:repo',
           permanent: true,
-        },
+        }
+      ]
+    },
+    async rewrites() {
+      // TODO actually use the destination version, with the "_", for the IBOM
+      // page of a non-multi project, rather than re-writing it
+      return [
         {
-          source: '/:user/:repo/_/:slug*',
-          destination: '/:user/:repo/:slug*',
-          permanent: true,
+          source: '/:user/:repo/IBOM',
+          destination: '/:user/:repo/_/IBOM',
         },
       ]
     },
