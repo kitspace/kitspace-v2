@@ -69,8 +69,8 @@ module.exports = async phase => {
       ]
     },
     async rewrites() {
-      // TODO actually use the destination version, with the "_", for the IBOM
-      // page of a non-multi project, rather than re-writing it
+      // TODO: https://github.com/kitspace/kitspace-v2/issues/486
+      // we should get rid of this rewrite and just link to `/_/IBOM`
       return [
         {
           source: '/:user/:repo/IBOM',
