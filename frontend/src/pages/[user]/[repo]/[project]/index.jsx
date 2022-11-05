@@ -19,7 +19,7 @@ const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
-MultiProjectPage.getInitialProps = async ({ query, req, res }) => {
+MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => {
   const { user: username, repo: repoName, project: projectName } = query
 
   const repoFullName = `${username}/${repoName}`
