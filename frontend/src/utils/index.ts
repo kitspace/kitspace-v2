@@ -91,30 +91,30 @@ export function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-/**
- * Loop until functions returns a truthy value from promise. Alternativley you
- * can provide your own `checkFn` which should return `true` when you want to
- * stop or `false` to continue waiting.
- */
-
 export type WaitForFunction<T> = () => Promise<T>
 export type WaitForCheckFunction<T> = (x: T) => boolean
 export interface WaitForOptions<T> {
   timeoutMs: number
-  interval?: number
+  intervalMs?: number
   checkFn?: WaitForCheckFunction<T>
 }
 const defaultCheckFn: WaitForCheckFunction<unknown> = x => Boolean(x)
-export async function waitFor<T>(
+
+/**
+ * Retry function until it returns a promise that resolves to a truthy value.
+ * Alternatively you can provide your own `checkFn` which should return `true`
+ * when you want to stop or `false` to continue retrying.
+ */
+export function waitFor<T>(
   fn: WaitForFunction<T>,
-  { timeoutMs, interval = 100, checkFn = defaultCheckFn }: WaitForOptions<T>,
+  { timeoutMs, intervalMs = 100, checkFn = defaultCheckFn }: WaitForOptions<T>,
 ): Promise<T | null> {
   const controller = new AbortController()
 
   const loop = async (): Promise<T> => {
     let r = await fn()
     while (!checkFn(r) && !controller.signal.aborted) {
-      await delay(interval)
+      await delay(intervalMs)
       r = await fn()
     }
     return r
