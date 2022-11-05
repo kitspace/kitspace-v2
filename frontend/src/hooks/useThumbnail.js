@@ -5,8 +5,8 @@ const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
-const useThumbnail = (fullName, multiProjectName) => {
-  const img = `/${fullName}/HEAD/${multiProjectName}/images/top.png`
+const useThumbnail = (repoFullName, projectName) => {
+  const img = `/${repoFullName}/HEAD/${projectName}/images/top.png`
   const statusUrl = `${processorUrl}/status/${img}`
   const { data, error } = useSWR(statusUrl, fetcher)
   const isError = error || data?.status === 'failed'

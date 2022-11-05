@@ -10,14 +10,14 @@ const meili = new MeiliSearch({
 })
 const index = meili.index('projects')
 index.updateSettings({
-  filterableAttributes: ['id', 'multiParentId', 'gitHash', 'ownerName'],
+  filterableAttributes: ['id', 'repoId', 'gitHash', 'ownerName'],
   searchableAttributes: [
-    'name',
+    'projectName',
     'summary',
     'bom',
     'readme',
     'ownerName',
-    'multiParentName',
+    'repoName',
   ],
 })
 
@@ -52,11 +52,10 @@ export default async function addToSearch(
 
   const searchId = `${giteaId}-${subprojectName}`
   const readme = getReadmeAsText(readmeHTML)
-  const multiParentId = subprojectName ? giteaId : null
 
   const document = {
     id: searchId,
-    name: subprojectName,
+    projectName: subprojectName,
     summary: kitspaceYaml.summary,
     bom: {
       lines: bom?.lines || [],
@@ -64,8 +63,8 @@ export default async function addToSearch(
     gitHash: hash,
     readme,
     ownerName,
-    multiParentId,
-    multiParentName: subprojectName ? repoName : null,
+    repoId: giteaId,
+    repoName,
   }
   log.debug(
     `meilisearch: adding/updating document id='${searchId}' for repo ${ownerName}/${repoName}`,
@@ -74,9 +73,10 @@ export default async function addToSearch(
   await index.addDocuments([document])
 
   // if there are any lingering docs with an old gitHash then the multi project
-  // was renamed (thus they were not over-written above), so we delete them.
+  // was renamed (so they were not over-written with new gitHash above), so we
+  // delete them.
   const renamedMultis = await index.search('', {
-    filter: `(multiParentId = ${multiParentId}) AND (gitHash != ${hash})`,
+    filter: `(repoId = ${giteaId}) AND (gitHash != ${hash})`,
   })
   if (renamedMultis.hits.length > 0) {
     const docIds = renamedMultis.hits.map(x => x.id)
