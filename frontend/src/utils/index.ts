@@ -107,7 +107,7 @@ const defaultCheckFn: WaitForCheckFunction<unknown> = x => Boolean(x)
  */
 export function waitFor<T>(
   fn: WaitForFunction<T>,
-  { timeoutMs, intervalMs = 100, checkFn = defaultCheckFn }: WaitForOptions<T>,
+  { timeoutMs, intervalMs = 1000, checkFn = defaultCheckFn }: WaitForOptions<T>,
 ): Promise<T | null> {
   const controller = new AbortController()
 
