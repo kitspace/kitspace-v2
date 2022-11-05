@@ -7,22 +7,24 @@ import Image from 'next/image'
 import useThumbnail from '@hooks/useThumbnail'
 import styles from './index.module.scss'
 
-const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
-  const isSingleProject = name === '_'
-  const nameOnCard = isSingleProject ? multiParentName : name
-  const repoName = multiParentName
-  const { src, isLoading, isError } = useThumbnail(`${ownerName}/${repoName}`, name)
+const ProjectCard = ({ projectName, summary, ownerName, repoName }) => {
+  const isSingleProject = projectName === '_'
+  const nameOnCard = isSingleProject ? repoName : projectName
+  const { src, isLoading, isError } = useThumbnail(
+    `${ownerName}/${repoName}`,
+    projectName,
+  )
   return (
     <Link
       passHref
-      href={`/${ownerName}/${repoName}${isSingleProject ? '' : '/' + name}`}
+      href={`/${ownerName}/${repoName}${isSingleProject ? '' : '/' + projectName}`}
     >
       <Card as="a" className={styles.card} data-cy="project-card">
         <div className={styles.thumbnail}>
           <div>
             {isLoading || isError ? null : (
               <Image
-                alt={`${name} by ${ownerName}`}
+                alt={`Render of PCB of ${nameOnCard}`}
                 data-cy="project-card-thumbnail"
                 height={180}
                 objectFit="contain"
@@ -47,14 +49,10 @@ const ProjectCard = ({ name, summary, ownerName, multiParentName }) => {
 }
 
 ProjectCard.propTypes = {
-  name: string.isRequired,
+  projectName: string.isRequired,
   summary: string.isRequired,
   ownerName: string.isRequired,
-  multiParentName: string,
-}
-
-ProjectCard.defaultProps = {
-  multiParentName: null,
+  repoName: string,
 }
 
 export default ProjectCard

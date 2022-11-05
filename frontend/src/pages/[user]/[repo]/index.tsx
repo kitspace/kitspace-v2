@@ -107,7 +107,7 @@ RepoPage.getInitialProps = async (args): Promise<RepoPageProps> => {
   }
 
   const repo = await getRepo(repoFullName)
-  const searchArgs: SearchArgs = ['*', { filter: `multiParentId = ${repo.id}` }]
+  const searchArgs: SearchArgs = ['*', { filter: `repoId = ${repo.id}` }]
   const hits = await fetchSearch(...searchArgs)
   return {
     projectGrid: {
