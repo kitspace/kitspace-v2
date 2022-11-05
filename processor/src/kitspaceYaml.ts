@@ -1,6 +1,6 @@
-import { promises as fs } from 'fs'
 import jsYaml from 'js-yaml'
 import log from 'loglevel'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
 
@@ -68,10 +68,14 @@ export async function getKitspaceYaml(
     return [kitspaceYaml.parse({ name: '_' })]
   }
 
+  // if we have a single project then name the project "_" and return it in a
+  // length 1 array
   if (!input.multi) {
     return [{ ...input, name: '_' } as KitspaceYaml]
   }
 
+  // if the kitspacey yaml uses `multi` then return an array of all the
+  // sub-projects under `multi`, using their keys as names
   const arr: Array<KitspaceYaml> = []
   for (const key of Object.keys(input.multi)) {
     arr.push({ ...input.multi[key], name: formatAsGiteaRepoName(key) })
