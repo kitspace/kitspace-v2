@@ -17,7 +17,8 @@ subprocess.run(
 
 pulls = github_api.get_pulls()
 
-for pull in pulls:
+# reversed so we merge oldest first
+for pull in reversed(pulls):
     is_allowed = (
         pull["author_association"] == "MEMBER"
         or pull["author_association"] == "CONTRIBUTOR"
