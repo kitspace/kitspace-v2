@@ -6,6 +6,7 @@ const { KITSPACE_MEILISEARCH_URL, meiliApiKey } = getConfig().publicRuntimeConfi
 interface NoApiKeyIndex {
   search: () => Promise<never>
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let index: Index<any> | NoApiKeyIndex = {
   async search() {
     throw Error('Search performed but meiliApiKey was not set')

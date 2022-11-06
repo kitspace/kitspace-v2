@@ -4,6 +4,7 @@ import { node, object } from 'prop-types'
 
 import { logout, getSession } from '@utils/giteaInternalApi'
 
+/* eslint-disable @typescript-eslint/no-empty-function */
 export const AuthContext = createContext({
   apiToken: null,
   csrf: '',

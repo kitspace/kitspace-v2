@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const SearchContext = createContext({
   query: '',
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   updateQuery: () => {},
 })
 

@@ -140,7 +140,7 @@ const getYamlArray = (
   const repoFullName = `${username}/${repoName}`
   const rootAssetsPath = `${processorUrl}/files/${repoFullName}/HEAD`
   const getYaml = async () => {
-    const [ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
+    const [_, arr] = await getKitspaceYamlArray(rootAssetsPath)
     return arr
   }
   const checkFn = arr => arr.length > 0

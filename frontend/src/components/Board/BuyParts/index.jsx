@@ -12,7 +12,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
   const [extensionPresence, setExtensionPresence] = useState('unknown')
   // it's needed to fix the extension integration.
   // eslint-disable-next-line no-unused-vars
-  const [buyParts, setBuyParts] = useState(null)
+  const [_, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
