@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react'
-import { composeServerSideProps } from 'next-composition'
 import { func } from 'prop-types'
 import { useRouter } from 'next/router'
 import {
@@ -63,9 +62,7 @@ const Login = () => {
   )
 }
 
-export const getServerSideProps = composeServerSideProps({
-  use: [withAlreadySignedIn],
-})
+export const getServerSideProps = withAlreadySignedIn
 
 const SignInForm = () => {
   const endpoint = `${KITSPACE_GITEA_URL}/user/kitspace/sign_in`
