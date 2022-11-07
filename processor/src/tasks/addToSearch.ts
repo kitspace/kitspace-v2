@@ -50,7 +50,10 @@ export default async function addToSearch(
     return
   }
 
-  const searchId = `${giteaId}-${subprojectName}`
+  // A document identifier must be of type integer or string,
+  // composed only of alphanumeric characters (a-z A-Z 0-9), hyphens (-), and underscores (_).
+  // See, https://docs.meilisearch.com/reference/errors/error_codes.html#invalid-document-id
+  const searchId = `${giteaId}-${subprojectName.replace(/[^\w\d-_]/g, '-')}`
   const readme = getReadmeAsText(readmeHTML)
 
   const document = {
