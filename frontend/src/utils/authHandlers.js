@@ -15,13 +15,14 @@ export const withRequireSignIn =
     const isRelativePath = asPath.startsWith('/')
     if (!isAuthenticated(session) && isRelativePath) {
       return {
+        props: {},
         redirect: {
           destination: `/login?redirect=${encodeURIComponent(asPath)}`,
           permanent: false,
         },
       }
     }
-    return {}
+    return { props: {} }
   }
 
 /**
@@ -37,6 +38,7 @@ export const withAlreadySignedIn = ({ req }) => {
     // Only redirect if it belongs to our website.
     if (redirect.startsWith('/')) {
       return {
+        props: {},
         redirect: {
           destination: redirect,
           permanent: false,
@@ -44,7 +46,7 @@ export const withAlreadySignedIn = ({ req }) => {
       }
     }
   }
-  return {}
+  return { props: {} }
 }
 
 const isAuthenticated = session => session?.user != null

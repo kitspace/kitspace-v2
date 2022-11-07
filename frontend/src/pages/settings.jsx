@@ -1,5 +1,4 @@
 import React from 'react'
-import { composeServerSideProps } from 'next-composition'
 
 import { withRequireSignIn } from '@utils/authHandlers'
 import Page from '@components/Page'
@@ -12,8 +11,6 @@ const Settings = () => {
   )
 }
 
-export const getServerSideProps = composeServerSideProps({
-  use: [withRequireSignIn('/settings')],
-})
+export const getServerSideProps = withRequireSignIn('/settings')
 
 export default Settings

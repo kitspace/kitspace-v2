@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { composeServerSideProps } from 'next-composition'
 import { Grid, Divider } from 'semantic-ui-react'
 
 import { NoOp, SyncOp, UploadOp } from '@components/NewProject/Ops'
@@ -72,8 +71,6 @@ const New = () => {
   )
 }
 
-export const getServerSideProps = composeServerSideProps({
-  use: [withRequireSignIn('/projects/new')],
-})
+export const getServerSideProps = withRequireSignIn('/projects/new')
 
 export default New
