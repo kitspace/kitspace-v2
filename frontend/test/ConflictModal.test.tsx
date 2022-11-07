@@ -54,7 +54,7 @@ it('opens conflict modal if the project name conflict with existing project', as
   // Click the Sync button
   fireEvent.click(screen.getByText('Sync'))
   // Wait the modal to appear
-  await screen.findByText('Heads up!')
+  await screen.findByText('A project with that name already exists.')
   // It should set the userOp to sync
   expect(setUserOp).toHaveBeenCalled()
 
@@ -82,7 +82,7 @@ it('changes the overwrite button to OK if the new project name does not cause co
   // Click the Sync button
   fireEvent.click(screen.getByText('Sync'))
   // Wait the modal to appear.
-  await screen.findByText('Heads up!')
+  await screen.findByText('A project with that name already exists.')
 
   const conflictModalInput = screen.getAllByRole('textbox')[1] as HTMLInputElement
   // Change the project name.

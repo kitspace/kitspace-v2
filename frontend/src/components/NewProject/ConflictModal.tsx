@@ -46,7 +46,7 @@ const ConflictModal = ({
       open={conflictModalOpen}
       onClose={onClose}
     >
-      <Modal.Header>Heads up!</Modal.Header>
+      <Modal.Header>A project with that name already exists.</Modal.Header>
       <Modal.Content>
         <p>{message}</p>
         <Form>

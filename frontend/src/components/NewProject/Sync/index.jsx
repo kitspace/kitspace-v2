@@ -6,8 +6,8 @@ import { useRouter } from 'next/router'
 import isEmpty from 'lodash/isEmpty'
 
 import { AuthContext } from '@contexts/AuthContext'
-import { deleteRepo, mirrorRepo } from '@utils/giteaApi'
-import { urlToName } from '@utils/index'
+import { deleteRepo, mirrorRepo, repoExists } from '@utils/giteaApi'
+import { urlToName, waitFor } from '@utils/index'
 import SyncRepoFromModel from '@models/SyncRepoForm'
 import useForm from '@hooks/useForm'
 import { SyncOp, NoOp } from '../Ops'
@@ -24,7 +24,7 @@ const Sync = ({ setUserOp }) => {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({})
   const [conflictModalOpen, setConflictModalOpen] = useState(false)
-  const projectName = urlToName(form.url)
+  const repoName = urlToName(form.url)
 
   const uid = user?.id
   const username = user?.username
@@ -134,7 +134,7 @@ const Sync = ({ setUserOp }) => {
     const repoName = urlToName(repoURL)
 
     const deletedRepoSuccessfully = await deleteRepo(
-      `${user.username}/${projectName}`,
+      `${user.username}/${repoName}`,
       apiToken,
     )
 
@@ -154,7 +154,7 @@ const Sync = ({ setUserOp }) => {
 
       setLoading(false)
       setMessage({
-        content: `Couldn't overwrite "${projectName}"`,
+        content: `Couldn't overwrite "${repoName}"`,
         color: 'red',
       })
     }
@@ -205,7 +205,7 @@ const Sync = ({ setUserOp }) => {
       </div>
       <SyncConflictModal
         conflictModalOpen={conflictModalOpen}
-        originalProjectName={projectName}
+        originalProjectName={repoName}
         onClose={() => {
           setUserOp(NoOp)
           // Close the modal
