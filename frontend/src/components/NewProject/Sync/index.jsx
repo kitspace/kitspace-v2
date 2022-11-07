@@ -29,6 +29,42 @@ const Sync = ({ setUserOp }) => {
   const uid = user?.id
   const username = user?.username
 
+  const onSuccessfulSync = async repoName => {
+    setMessage({
+      content: 'Migrated successfully, redirecting the project page...',
+      color: 'green',
+    })
+
+    const exists = waitFor(() => repoExists(`${username}/${repoName}`), {
+      timeoutMS: 60_000,
+    })
+
+    if (!exists) {
+      setMessage({
+        content: `Sorry, something went wrong with importing this repository.`,
+        color: 'red',
+      })
+      return
+    }
+    await push(`/${username}/${repoName}`)
+  }
+
+  const onFailedSync = async (delayedSyncOp, alreadySynced = false) => {
+    // If migration failed don't remove the uploading side.
+    clearTimeout(delayedSyncOp)
+    setUserOp(NoOp)
+
+    setLoading(false)
+    if (alreadySynced) {
+      setConflictModalOpen(true)
+    } else {
+      setMessage({
+        content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
+        color: 'red',
+      })
+    }
+  }
+
   const handleClick = async () => {
     if (isEmpty(errors)) {
       // Syncing can be instantaneous, avoid flickering by delaying setting the user operation.
@@ -48,35 +84,9 @@ const Sync = ({ setUserOp }) => {
       const alreadySynced = res.status === 409
 
       if (migrateSuccessfully) {
-        setMessage({
-          content: 'Imported successfully, redirecting to the project page...',
-          color: 'green',
-        })
-        const exists = waitFor(() => repoExists(`${username}/${repoName}`), {
-          timeoutMS: 60_000,
-        })
-        if (!exists) {
-          setMessage({
-            content: `Sorry, something went wrong with importing this repsository.`,
-            color: 'red',
-          })
-          return
-        }
-        return push(`/${username}/${repoName}`)
+        onSuccessfulSync(repoName)
       } else {
-        // If migration failed don't remove the uploading side.
-        clearTimeout(delayedSyncOp)
-        setUserOp(NoOp)
-
-        setLoading(false)
-        if (alreadySynced) {
-          setConflictModalOpen(true)
-        } else {
-          setMessage({
-            content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
-            color: 'red',
-          })
-        }
+        onFailedSync(delayedSyncOp, alreadySynced)
       }
     } else {
       setMessage({
@@ -103,21 +113,9 @@ const Sync = ({ setUserOp }) => {
     const migrateSuccessfully = res.ok
 
     if (migrateSuccessfully) {
-      setMessage({
-        content: 'Migrated successfully, redirecting the project page...',
-        color: 'green',
-      })
-      await push(`/${username}/${repoName}`)
+      onSuccessfulSync(repoName)
     } else {
-      // If migration failed don't remove the uploading side.
-      clearTimeout(delayedSyncOp)
-      setUserOp(NoOp)
-
-      setLoading(false)
-      setMessage({
-        content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
-        color: 'red',
-      })
+      onFailedSync(delayedSyncOp)
     }
   }
 
@@ -145,22 +143,9 @@ const Sync = ({ setUserOp }) => {
       const migrateSuccessfully = res.ok
 
       if (migrateSuccessfully) {
-        setMessage({
-          content: 'Migrated successfully, redirecting the project page...',
-          color: 'green',
-        })
-        await push(`/${username}/${repoName}`)
-        return
+        onSuccessfulSync(repoName)
       } else {
-        // If migration failed don't remove the uploading side.
-        clearTimeout(delayedSyncOp)
-        setUserOp(NoOp)
-
-        setLoading(false)
-        setMessage({
-          content: `Something went wrong. Are you sure "${form.url}" is a valid git repository?`,
-          color: 'red',
-        })
+        onFailedSync(delayedSyncOp)
       }
     } else {
       // If migration failed don't remove the uploading side.
