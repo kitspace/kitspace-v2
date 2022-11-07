@@ -2,10 +2,10 @@ import { afterEach, beforeAll, beforeEach, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 
 import Sync from '@components/NewProject/Sync'
+import { SyncConflictModal } from '@components/NewProject/ConflictModal'
 import AuthProvider from '@contexts/AuthContext'
 
 import GetRepo from './fixtures/GetRepoRes.json'
-import { SyncConflictModal } from '@components/NewProject/ConflictModals'
 
 const SESSION = { user: { username: 'tester' } }
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { Button, Form, Input, Modal } from 'semantic-ui-react'
 
-import UseForm from '@hooks/useForm'
+import useForm from '@hooks/useForm'
 import ExistingProjectFromModel from '@models/ExistingProjectForm'
 import { isUsableProjectName } from '@utils/giteaApi'
 import { formatAsGiteaRepoName } from '@utils/index'
@@ -18,7 +18,7 @@ const ConflictModal = ({
   onOverwriteButtonContent,
 }: BaseConflictModalProps) => {
   const { user } = useContext(AuthContext)
-  const { form, onChange, isValid, populate, formatErrorPrompt } = UseForm(
+  const { form, onChange, isValid, populate, formatErrorPrompt } = useForm(
     ExistingProjectFromModel,
   )
 

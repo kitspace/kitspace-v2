@@ -11,7 +11,7 @@ import { urlToName } from '@utils/index'
 import SyncRepoFromModel from '@models/SyncRepoForm'
 import useForm from '@hooks/useForm'
 import { SyncOp, NoOp } from '../Ops'
-import { SyncConflictModal } from '../ConflictModals'
+import { SyncConflictModal } from '../ConflictModal'
 import styles from './index.module.scss'
 
 const remoteRepoPlaceHolder = 'https://github.com/emard/ulx3s'

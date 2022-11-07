@@ -10,7 +10,7 @@ import { createRepo } from '@utils/giteaApi'
 import { slugifiedNameFromFiles } from '@utils/index'
 import DropZone from '@components/DropZone'
 import { UploadOp, NoOp } from '../Ops'
-import { UploadConflictModal } from '../ConflictModals'
+import { UploadConflictModal } from '../ConflictModal'
 import styles from './index.module.scss'
 
 const Upload = ({ setUserOp }) => {
