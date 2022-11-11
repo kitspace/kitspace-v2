@@ -18,21 +18,18 @@ describe('Sign up form validation', () => {
 
   it('should display error message on using invalid username', () => {
     // Try different invalid usernames.
-    const invalidUsernames = [
-      'a_b',
-      'abc ',
-      'abc@',
-      ' ',
-      '^',
-      'ZqFe3jOudI7DuBOJ1wyXT',
-    ]
+    const invalidUsernames = ['abc ', 'abc@', ' ', '^', 'longusername'.repeat(4)]
 
     invalidUsernames.forEach(username => {
       cy.get('input[name=username]').clear().type(username).blur()
 
       // The error message should indicate that the username is invalid.
       cy.get('.prompt.label').as('message')
-      cy.get('@message').should('be.visible')
+      cy.get('@message')
+        .contains(
+          /Invalid "username"\. Username must contain only letters, numbers, "_", "-", and "\."|"username" length must be less than or equal to 40 characters long|"username" length must be at least 2 characters long/g,
+        )
+        .should('be.visible')
       cy.get('@message').should('include.text', '"username"')
     })
   })
@@ -49,7 +46,7 @@ describe('Sign up form validation', () => {
       // The error message should indicate that the email is invalid.
       cy.get('.prompt.label').as('message')
       cy.get('@message').should('be.visible')
-      cy.get('@message').should('include.text', '"email"')
+      cy.get('@message').should('include.text', 'Invalid email address')
     })
   })
 

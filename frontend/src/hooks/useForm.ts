@@ -101,7 +101,8 @@ const validate = (form, schema) => {
 
   const allErrors = {}
   for (const errorField of details) {
-    allErrors[errorField.context.key] = errorField.message
+    allErrors[errorField.context.key] =
+      errorField.context.message ?? errorField.message
   }
 
   return allErrors
