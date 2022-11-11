@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('Upload project', () => {
   before(() => {
@@ -12,9 +10,7 @@ describe('Upload project', () => {
   })
 
   it('should create a project and redirect to its update route on file drop', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -36,9 +32,7 @@ describe('Upload project', () => {
 })
 
 describe('User projects name collision', () => {
-  const username = getFakeUsername()
-  const email = faker.internet.email()
-  const password = '123456'
+  const { username, email, password } = getFakeUser()
 
   before(() => {
     /*

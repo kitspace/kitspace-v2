@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('Syncing a project behavior validation', () => {
   before(() => {
@@ -15,9 +13,7 @@ describe('Syncing a project behavior validation', () => {
     const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
     const repoName = 'light-test-repo'
 
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -38,9 +34,7 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it('should display original url for synced repos', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'CH330_Hardware'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
@@ -68,9 +62,7 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it.skip('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'ArduTouch'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/ArduTouch'
@@ -95,9 +87,7 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it.skip('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'CH330_Hardware_without_summary'
     const syncedRepoUrl =
@@ -129,9 +119,7 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it.skip('should escape and render project description correctly', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'LED-Zappelin'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/LED-Zappelin'

@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('IBOM page', () => {
   before(() => {
@@ -12,9 +10,7 @@ describe('IBOM page', () => {
   })
 
   it('should redirect to project page (multi project)', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -58,9 +54,7 @@ describe('IBOM page', () => {
   })
 
   it('should redirect to the project page (normal project)', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -95,9 +89,7 @@ describe('IBOM page', () => {
   })
 
   it('should not render `Assembly Guide` button for projects with `ibom-enabled: false', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
     cy.createUser(username, email, password)
     cy.visit('/')
     cy.get('[data-cy=user-menu]')

@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 const syncedRepoUrlMultiProjects =
   'https://github.com/kitspace-test-repos/DIY_particle_detector'
@@ -19,9 +17,7 @@ describe('Render project cards', () => {
   })
 
   it('should render a card for each multiproject', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = syncedRepoUrlMultiProjects.split('/').slice(-1).toString()
 
@@ -52,9 +48,7 @@ describe('Render project cards', () => {
   })
 
   it('should display card thumbnail', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -96,9 +90,7 @@ describe('Render project cards', () => {
   })
 
   it('should redirect to the multi project page', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -142,9 +134,7 @@ describe('Render project cards', () => {
   })
 
   it('should handle subproject names with URL invalid characters', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -187,9 +177,7 @@ describe('Multi project page', () => {
   })
 
   it('should render the page components', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -238,9 +226,7 @@ describe('Multi project page', () => {
   })
 
   it('should render the details from multi project in kitspace.yaml', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     cy.createUser(username, email, password)
     cy.visit('/')

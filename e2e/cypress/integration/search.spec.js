@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('Homepage search bar', () => {
   it('should redirect to /search when search is submitted', () => {
@@ -19,9 +17,7 @@ describe('Homepage search bar', () => {
   })
 
   it('should display project card on submitting search form', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'CH330_Hardware'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
@@ -64,9 +60,7 @@ describe('Search', () => {
   })
 
   it('should use `q` from query parameters', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'HACK'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/HACK'

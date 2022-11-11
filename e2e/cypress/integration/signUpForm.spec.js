@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('Sign up form validation', () => {
   before(() => {
@@ -69,9 +67,7 @@ describe('Sign up form validation', () => {
 })
 
 describe('Sign up form submission', () => {
-  const username = getFakeUsername()
-  const email = faker.unique(faker.internet.email)
-  const password = '123456'
+  const { username, email, password } = getFakeUser()
 
   before(() => {
     /*
@@ -92,11 +88,9 @@ describe('Sign up form submission', () => {
   })
 
   it('should automatically sign the user in after submitting a valid form', () => {
-    const newUsername = getFakeUsername()
-    const newEmail = faker.unique(faker.internet.email)
-    const newPassword = '123456'
+    const { username, email, password } = getFakeUser()
 
-    cy.signUp(newUsername, newEmail, newPassword)
+    cy.signUp(username, email, password)
 
     // the user should be signed in
     cy.get('[data-cy=user-menu]').should('be.visible')

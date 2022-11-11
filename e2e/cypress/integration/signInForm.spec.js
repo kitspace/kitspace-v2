@@ -1,6 +1,6 @@
 import faker from 'faker'
 
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('Log in form validation', () => {
   before(() => {
@@ -30,9 +30,7 @@ describe('Log in form validation', () => {
 })
 
 describe('Log in form submission', () => {
-  const username = getFakeUsername()
-  const email = faker.unique(faker.internet.email)
-  const password = '123456'
+  const { username, email, password } = getFakeUser()
 
   before(() => {
     // create user and log him in.
