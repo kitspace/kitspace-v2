@@ -120,12 +120,6 @@ const SiteMenuItems = () => {
       <Menu.Item className={styles.SearchBarContainer}>
         <SearchBar />
       </Menu.Item>
-      {/* Align menu items with the search bar vertically. */}
-      <style global jsx>{`
-        #nav div .menu :is(a, div).item {
-          align-self: center;
-        }
-      `}</style>
     </>
   )
 }
