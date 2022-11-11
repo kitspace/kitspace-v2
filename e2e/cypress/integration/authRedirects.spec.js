@@ -29,7 +29,7 @@ describe('Authentication redirects', () => {
     cy.clearCookies()
     cy.forceVisit('/')
     // navigate to `/projects/new`with client-side interactions.
-    cy.get('#add-project').click({ timeout: 10000 })
+    cy.get('[data-cy=add-project]').click({ timeout: 10000 })
     // `/project/new` is marked as require sign in.
     cy.get('[data-cy=login-grid]').should('be.visible')
   })
