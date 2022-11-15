@@ -21,7 +21,7 @@
   --zone-color-highlight: #d0404080;
 }
 
-.ibom topmostdiv {
+.ibom .dark.topmostdiv {
   --pcb-edge-color: #eee;
   --pad-color: #808080;
   --pin1-outline-color: #ffa800;
