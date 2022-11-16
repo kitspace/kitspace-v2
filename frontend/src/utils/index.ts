@@ -1,4 +1,3 @@
-import slugify from 'slugify'
 import path from 'path'
 
 /**
@@ -18,7 +17,7 @@ export const slugifiedNameFromFiles = files => {
   // TODO: make this look for all PCB software generated files not just KiCad projects
   const kicadProject = FilesNames.find(f => f.endsWith('.pro'))
   const projectWithExt = kicadProject || FilesNames[0]
-  return slugify(projectWithExt.split('.')[0])
+  return formatAsGiteaRepoName(projectWithExt)
 }
 
 /**
@@ -30,6 +29,7 @@ export const b64toBlob = base64 => fetch(base64).then(res => res.blob())
 
 /**
  * Get the repo name from its url
+ * !if `url` is invalid the form validation would have caught it
  * @param url
  * @returns {string}
  * @example
@@ -37,8 +37,12 @@ export const b64toBlob = base64 => fetch(base64).then(res => res.blob())
  * urlToName('https://github.com/emard/ulx3s/')
  */
 export const urlToName = url => {
-  const urlObj = new URL(url)
-  return path.basename(urlObj.pathname, path.extname(urlObj.pathname))
+  try {
+    url = new URL(url)
+  } catch {
+    return ''
+  }
+  return path.basename(url.pathname, path.extname(url.pathname))
 }
 
 /**
@@ -128,3 +132,11 @@ export function waitFor<T>(
 
   return Promise.race([timer(), loop()])
 }
+/**
+ * format projectName name as a valid gitea repo name.
+ * This replaces any **non* (alphanumeric, -, _, and .) with a '-',
+ * see https://github.com/go-gitea/gitea/blob/b59b0cad0a550223f74add109ff13c0d2f4309f3/services/forms/repo_form.go#L35
+ * @param projectName {string}
+ */
+export const formatAsGiteaRepoName = projectName =>
+  projectName.replace(/[^\w\d-_.]/g, '-').slice(0, 100)

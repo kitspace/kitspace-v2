@@ -1,6 +1,6 @@
-import slugify from 'slugify'
 import platformPath from 'path'
 import getConfig from 'next/config'
+import { formatAsGiteaRepoName } from './index'
 
 const giteaApiUrl = `${getConfig().publicRuntimeConfig.KITSPACE_GITEA_URL}/api/v1`
 const credentials = 'include'
@@ -17,7 +17,7 @@ const headers = { 'Content-Type': 'application/json' }
 export const createRepo = async (name, description, apiToken) => {
   const endpoint = `${giteaApiUrl}/user/repos`
   const giteaOptions = {
-    name: slugify(name),
+    name: formatAsGiteaRepoName(name),
     description,
     repo_template: '',
     issue_labels: '',
@@ -109,10 +109,11 @@ export const getGitServiceFromUrl = url => {
  * @param remoteRepo {string} url of the remote repo
  * @param uid {string}
  * @param apiToken {string}
+ * @param repoName {string=}
  * @returns {Promise<Response>}
  */
-export const mirrorRepo = async (remoteRepo, uid, apiToken) => {
-  const repoName = urlToName(remoteRepo)
+export const mirrorRepo = async (remoteRepo, uid, apiToken, repoName) => {
+  repoName = repoName || urlToName(remoteRepo)
   const service = getGitServiceFromUrl(remoteRepo)
   const endpoint = `${giteaApiUrl}/repos/migrate`
   const giteaOptions = {
@@ -227,6 +228,22 @@ export const repoExists = async fullname => {
   const repo = await getRepo(fullname)
 
   return repo != null
+}
+/**
+ *
+ * @param {string} username
+ * @param {string} repoName
+ * @param {boolean} isValidProjectName
+ * @returns
+ */
+export const isUsableProjectName = async (
+  username,
+  repoName,
+  isValidProjectName,
+) => {
+  // Check if the new name will also cause a conflict.
+  const repoFullName = `${username}/${formatAsGiteaRepoName(repoName)}`
+  return isValidProjectName && !(await repoExists(repoFullName))
 }
 
 /**

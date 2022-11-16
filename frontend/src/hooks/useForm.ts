@@ -1,15 +1,11 @@
 import { useState, useContext, useCallback, useEffect } from 'react'
 import { AuthContext } from '@contexts/AuthContext'
+import { Schema } from 'joi'
 
-/**
- *
- * @param {object} schema
- * @param {boolean=} validateOnBlur
- */
-export default function UseForm(schema, validateOnBlur) {
+export default function UseForm(schema: Schema, validateOnBlur?: boolean) {
   const { csrf } = useContext(AuthContext)
-  const [form, setForm] = useState({})
-  const [formValidationErrors, setFormValidationErrors] = useState([])
+  const [form, setForm] = useState<any>({})
+  const [formValidationErrors, setFormValidationErrors] = useState<any>([])
   /*
   For forms supporting lazy validation (onBlur),
   a dirty field is a field the user has interacted with on blurred it (moved focus to other element).
@@ -31,7 +27,7 @@ export default function UseForm(schema, validateOnBlur) {
       setForm(prevForm => ({
         _csrf: csrf,
         ...prevForm,
-        [event.target.name]: event.target.value,
+        [event.target.name]: data.value,
       }))
     }
   }
@@ -89,6 +85,7 @@ export default function UseForm(schema, validateOnBlur) {
     errors: formValidationErrors,
     formatErrorPrompt,
     onBlur,
+    clear: () => setForm({}),
   }
 }
 
