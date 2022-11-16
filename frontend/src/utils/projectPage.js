@@ -1,68 +1,4 @@
-import yaml from 'js-yaml'
 import { updateFile, uploadFile } from '@utils/giteaApi'
-import flatten from 'lodash/flatten'
-import getConfig from 'next/config'
-
-const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
-
-/**
- * Given an array of kitspace repos return the an array of projects.
- * Each multi project is treated as a standalone project.
- * @param {object[]} repos
- * @returns {Promise<[]object>}
- */
-export const getFlatProjects = async repos => {
-  /**
-   * @param {string} fullname
-   * @returns {Promise<object?>} The multi projects in kitspace.yaml.
-   */
-  const getMultiInfo = async fullname => {
-    const res = await fetch(
-      `${processorUrl}/files/${fullname}/HEAD/kitspace-yaml.json`,
-    )
-
-    if (!res.ok) {
-      return null
-    }
-
-    const kitspaceYAML = await res.json()
-    return kitspaceYAML?.multi
-  }
-
-  /**
-   * Get an array of multi projects in a project.
-   * @param {object} project
-   * @param {object} multi
-   * @returns{object[]}
-   */
-  const multiProjects = async (project, multi) =>
-    Object.keys(multi).map(projectName => ({
-      name: projectName,
-      /*
-       * `full_name` = `[username]/[top-level-project-name]`
-       * For multi projects the `full_name` can't be `[top-level-project-name]/[multiproject]`;
-       * because the processor uses `[top-level-project-name]/[git-ref]/[multiproject].
-       */
-      full_name: project.full_name,
-      description: multi[projectName].summary,
-      owner: project.owner,
-      isMultiProject: true,
-    }))
-
-  return flatten(
-    await Promise.all(
-      repos.map(async repo => {
-        const multi = await getMultiInfo(repo.full_name)
-        const isMulti = multi != null
-        if (!isMulti) {
-          return repo
-        } else {
-          return multiProjects(repo, multi)
-        }
-      }),
-    ),
-  )
-}
 
 /**
  *
@@ -115,16 +51,19 @@ export const getKitspaceYamlArray = async assetsPath => {
 
 /**
  *
- * @param {string} assetsPath
+ * @param {string} rootAssetPath
  * @returns {Promise<boolean>} whether the processor is done whether the processor is still processing or not.
  */
-export const getIsProcessingDone = async assetsPath => {
-  const statusPath = getStatusPath(assetsPath)
-  const rootStatusPath = statusPath.replace(/HEAD.+/, 'HEAD/')
-  const rootAssetsPath = assetsPath.replace(/HEAD.+/, 'HEAD/')
+export const getIsProcessingDone = async rootAssetPath => {
+  const res = await fetch(`${rootAssetPath}/kitspace-yaml.json`)
 
-  // https://github.com/kitspace/kitspace-v2/tree/master/processor#parameters
-  const assetsNames = [
+  if (!res.ok) {
+    return false
+  }
+
+  const kitspaceYamlArray = await res.json()
+
+  const assetNames = [
     'gerber-info.json',
     'images/bottom.svg',
     'images/top.svg',
@@ -133,43 +72,13 @@ export const getIsProcessingDone = async assetsPath => {
     'bom-info.json',
     'readme.html',
   ]
-
-  const res = await fetch(`${rootAssetsPath}/kitspace-yaml.json`)
-
-  if (!res.ok) {
-    return false
-  }
-
-  const kitspaceYamlArray = await res.json()
-
-  let statuses = flatten(
-    await Promise.all(
-      kitspaceYamlArray.map(
-        async project =>
-          // A multi project assets processing status
-          await Promise.all(
-            assetsNames.map(assetName =>
-              fetch(`${rootStatusPath}/${project.name}/${assetName}`),
-            ),
-          ),
-      ),
-    ),
+  const assetUrls = kitspaceYamlArray.flatMap(project =>
+    assetNames.map(assetName => `${rootAssetPath}/${project.name}/${assetName}`),
   )
-
-  // If any request failed
-  if (statuses.some(r => !r.ok)) {
-    return false
-  }
-
-  try {
-    statuses = await Promise.all(statuses.map(r => r.json()))
-  } catch (e) {
-    console.warn(e)
-    return false
-  }
-
-  // If any asset is still in progress
-  return statuses.every(status => status !== 'in_progress')
+  const responses = await Promise.all(
+    assetUrls.map(url => fetch(url, { method: 'HEAD' })),
+  )
+  return responses.every(r => r.ok)
 }
 
 /**
@@ -178,15 +87,8 @@ export const getIsProcessingDone = async assetsPath => {
  * @returns{Promise<boolean>}
  */
 export const hasInteractiveBom = async assetsPath => {
-  const statusPath = getStatusPath(assetsPath)
-  const res = await fetch(`${statusPath}/interactive_bom.json`)
-
-  if (!res.ok) {
-    return false
-  }
-
-  const { status } = await res.json()
-  return status === 'done'
+  const res = await fetch(`${assetsPath}/interactive_bom.json`, { method: 'HEAD' })
+  return res.ok
 }
 
 /**

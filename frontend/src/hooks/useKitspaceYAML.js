@@ -3,7 +3,7 @@ import getConfig from 'next/config'
 
 const fetcher = (...args) => fetch(...args).then(r => r.json())
 
-const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
 /**
  * A hook to get the kitspace-yaml.json
@@ -13,7 +13,7 @@ const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
  * @returns {{isLoading: boolean, isError: boolean, kitspaceYAML: object, mutate: function}}
  */
 const useKitspaceYAML = (projectFullname, shouldFetch, swrOpts = {}) => {
-  const endpoint = `${processorUrl}/files/${projectFullname}/HEAD/kitspace-yaml.json`
+  const endpoint = `${assetUrl}/files/${projectFullname}/HEAD/kitspace-yaml.json`
 
   const { data, error, mutate } = useSWR(
     shouldFetch ? endpoint : null,

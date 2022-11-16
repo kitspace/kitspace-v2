@@ -1,22 +1,11 @@
-import path from 'node:path'
-
-import { unified } from 'unified'
 import globule from 'globule'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import rehypeHighlight from 'rehype-highlight'
-import rehypeRaw from 'rehype-raw'
-import rehypeSanitize from 'rehype-sanitize'
-import rehypeShiftHeading from 'rehype-shift-heading'
-import rehypeSlug from 'rehype-slug'
-import rehypeStringify from 'rehype-stringify'
-import remarkEmoji from 'remark-emoji'
-import remarkGfm from 'remark-gfm'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-
-import { exists, readFile, writeFile, exec } from '../../utils.js'
+import path from 'node:path'
+import fs from 'node:fs/promises'
 import { JobData } from '../../jobData.js'
-import urlTransformer, { rehypeSanitizeOpts } from './urlTransformer.js'
+import { S3 } from '../../s3.js'
+import { renderMarkdown } from './renderMarkdown.js'
+
+export const outputFiles = ['readme.html'] as const
 
 async function processReadme(
   job,
@@ -29,14 +18,15 @@ async function processReadme(
     originalUrl,
     defaultBranch,
   }: Partial<JobData>,
+  s3: S3,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
   job.updateProgress({ status: 'in_progress', file: readmePath })
 
-  if (await exists(readmePath)) {
+  if (await s3.exists(readmePath)) {
     job.updateProgress({ status: 'done', file: readmePath })
-    return readFile(readmePath, 'utf-8')
+    return s3.getFileContents(readmePath)
   }
 
   let readmeInputPath: string
@@ -56,20 +46,19 @@ async function processReadme(
     readmeInputPath = readmeFile
   }
 
-  const rawMarkdown = await readFile(readmeInputPath, { encoding: 'utf8' })
+  const rawMarkdown = await fs.readFile(readmeInputPath, { encoding: 'utf8' })
 
   const readmeFolder = path.dirname(path.relative(inputDir, readmeInputPath))
-  const processedReadmeHTML = await renderMarkdown(
+  const processedReadmeHTML = await renderMarkdown({
     rawMarkdown,
     ownerName,
     repoName,
     readmeFolder,
     originalUrl,
     defaultBranch,
-  )
+  })
 
-  await exec(`mkdir -p ${outputDir}`)
-  await writeFile(readmePath, processedReadmeHTML)
+  s3.uploadFileContents(readmePath, processedReadmeHTML, 'text/html')
     .then(() => job.updateProgress({ status: 'done', file: readmePath }))
     .catch(error =>
       job.updateProgress({ status: 'failed', file: readmePath, error }),
@@ -91,38 +80,6 @@ function findReadmeFile(inputDir: string) {
     return readmeFiles[0]
   }
   return null
-}
-
-async function renderMarkdown(
-  rawMarkdown: string,
-  ownerName: string,
-  repoName: string,
-  readmeFolder: string,
-  originalUrl: string,
-  defaultBranch: string,
-) {
-  const Remarker = unified()
-    .use(remarkParse)
-    .use(remarkEmoji)
-    .use(remarkGfm)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw)
-    .use(urlTransformer, {
-      readmeFolder,
-      originalUrl,
-      ownerName,
-      repoName,
-      defaultBranch,
-    })
-    .use(rehypeSlug)
-    .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
-    .use(rehypeShiftHeading, { shift: 1 })
-    .use(rehypeHighlight)
-    .use(rehypeSanitize, rehypeSanitizeOpts)
-    .use(rehypeStringify)
-
-  const processedMarkdown = await Remarker.process(rawMarkdown)
-  return String(processedMarkdown)
 }
 
 export default processReadme

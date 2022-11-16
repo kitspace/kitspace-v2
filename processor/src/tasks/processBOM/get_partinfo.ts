@@ -1,5 +1,5 @@
 import superagent from 'superagent'
-import ramda from 'ramda'
+import * as ramda from 'ramda'
 
 const partinfoURL = 'https://partinfo.kitspace.org/graphql'
 

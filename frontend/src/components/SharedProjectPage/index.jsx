@@ -23,7 +23,7 @@ const SharedProjectPage = props => {
   )
 
   const { done } = useProcessingStatus(
-    props.assetsPath,
+    props.rootAssetPath,
     !props.finishedProcessing,
     {
       refreshInterval: 1000,
@@ -83,6 +83,7 @@ const SharedProjectPage = props => {
       ) : null}
       <PageElements
         {...props}
+        assetPath={`${props.rootAssetPath}/${props.projectName}`}
         description={props.description}
         owner={props.username}
         previewOnly={props.isSynced}
@@ -92,7 +93,7 @@ const SharedProjectPage = props => {
 }
 
 SharedProjectPage.propTypes = {
-  assetsPath: string.isRequired,
+  rootAssetPath: string.isRequired,
   description: string.isRequired,
   projectName: string.isRequired,
   projectFullname: string.isRequired,

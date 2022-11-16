@@ -1,6 +1,10 @@
 version: '2'
 
 services:
+  frontend:
+    environment:
+      - 'KITSPACE_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000'
+
   e2e:
     build:
       context: e2e
@@ -21,4 +25,25 @@ services:
     working_dir: /e2e
     volumes:
       - ./e2e:/e2e
-      - /etc/hosts:/etc/hosts
+      - /etc/hosts:/etc/hosts:ro
+
+  nginx:
+    environment:
+      - 'USE_LOCAL_MINIO=true'
+
+  processor:
+    environment:
+      - 'USE_LOCAL_MINIO=true'
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
+    environment:
+      - MINIO_DOMAIN=kitspace-minio.test
+      - MINIO_ROOT_USER=${S3_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${S3_SECRET_KEY}
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9090"
+
+volumes:
+  minio-data:

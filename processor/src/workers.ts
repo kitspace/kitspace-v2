@@ -1,13 +1,12 @@
 import bullmq from 'bullmq'
-
-import * as search from './tasks/addToSearch.js'
+import log from 'loglevel'
+import { InjectedDependencies } from './injectedDependencies.js'
 import connection from './redisConnection.js'
-import events from './events.js'
+import * as search from './tasks/addToSearch.js'
 import processIBOM from './tasks/processIBOM/index.js'
 import processInfo from './tasks/processInfo.js'
 import processKicadPCB from './tasks/processKicadPCB/index.js'
 import processPCB from './tasks/processPCB.js'
-import processSchematics from './tasks/processSchematics/index.js'
 import writeKitspaceYaml from './tasks/writeKitspaceYaml.js'
 
 const defaultConcurrency = 1
@@ -18,18 +17,17 @@ interface JobProgress {
   error?: Error
 }
 
-export function createWorkers({ giteaDB = null }) {
+export function createWorkers({ giteaDB, s3, meiliIndex }: InjectedDependencies) {
   const workers = [
-    addWorker('writeKitspaceYaml', writeKitspaceYaml),
-    addWorker('processKicadPCB', processKicadPCB),
-    addWorker('processSchematics', processSchematics),
-    addWorker('processPCB', processPCB),
-    addWorker('processInfo', processInfo),
-    addWorker('processIBOM', processIBOM),
+    addWorker('writeKitspaceYaml', writeKitspaceYaml, s3),
+    addWorker('processKicadPCB', processKicadPCB, s3),
+    addWorker('processPCB', processPCB, s3),
+    addWorker('processInfo', processInfo, { s3, meiliIndex }),
+    addWorker('processIBOM', processIBOM, s3),
   ]
   let dbSubscription
   if (giteaDB) {
-    dbSubscription = search.continuallySyncDeletions(giteaDB)
+    dbSubscription = search.continuallySyncDeletions(giteaDB, meiliIndex)
   }
   const stop = async () => {
     await Promise.all(workers.map(worker => worker.close()))
@@ -38,15 +36,18 @@ export function createWorkers({ giteaDB = null }) {
   return stop
 }
 
-function addWorker(name, fn, options?) {
-  const worker = new bullmq.Worker(name, job => fn(job, job.data), {
+function addWorker(name, fn, deps, options?) {
+  const worker = new bullmq.Worker(name, job => fn(job, job.data, deps), {
     connection,
     concurrency: defaultConcurrency,
     ...options,
   })
 
   worker.on('progress', (job: bullmq.Job, progress: JobProgress) => {
-    events.emit(`${job.name}:${progress.status}`, progress.file, progress.error)
+    log.debug(`${job.name}:${progress.status}`, progress.file, progress.error || '')
+  })
+  worker.on('failed', err => {
+    log.error(err)
   })
 
   return worker

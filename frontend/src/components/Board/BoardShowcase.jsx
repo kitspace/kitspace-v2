@@ -7,8 +7,8 @@ import styles from './BoardShowcase.module.scss'
 
 const dimensions = { height: 250, width: 450 }
 
-const BoardShowcase = ({ assetsPath }) => {
-  const { top, bottom, isLoading, isError } = useProjectAssets(assetsPath)
+const BoardShowcase = ({ assetPath }) => {
+  const { top, bottom, isLoading, isError } = useProjectAssets(assetPath)
   const [selected, setSelected] = useState('top')
 
   return (
@@ -81,7 +81,7 @@ const BoardShowcase = ({ assetsPath }) => {
 }
 
 BoardShowcase.propTypes = {
-  assetsPath: string.isRequired,
+  assetPath: string.isRequired,
 }
 
 export default BoardShowcase

@@ -286,7 +286,7 @@ When it first builds the docker container it builds the whole Gitea project (`ma
 
 ## Processor
 
-This is a NodeJS and [Express](https://expressjs.com/) server that processes all the assets. As with the frontend, changing dependencies requires you to restart the development container.
+This is a NodeJS program that processes all the assets and uploads them to an AWS S3 compatible service (in development we use Minio). As with the frontend, changing dependencies requires you to restart the development container.
 
 ## Auto Deploys
 

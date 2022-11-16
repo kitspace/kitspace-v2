@@ -4,6 +4,7 @@ services:
     image: ghcr.io/kitspace/frontend${FRONTEND_DEPLOY_IMAGE_TAG}
     environment:
       - NODE_ENV=production
+      - 'KITSPACE_ASSET_URL=https://${S3_PROCESSOR_BUCKET_NAME}.s3.amazonaws.com'
     restart: always
 
   gitea:
@@ -20,14 +21,18 @@ services:
       - 443:443
     environment:
       - RUN_CERTBOT=${CERTBOT_ENABLED}
-      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},processor.${KITSPACE_DOMAIN},meilisearch.${KITSPACE_DOMAIN}
+      - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},meilisearch.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+      - 'USE_LOCAL_MINIO=false'
     volumes:
       - /etc/letsencrypt
     restart: always
 
   processor:
     image: ghcr.io/kitspace/processor${PROCESSOR_DEPLOY_IMAGE_TAG}
+    environment:
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_PROCESSOR_BUCKET_NAME=${S3_PROCESSOR_BUCKET_NAME}
     restart: always
 
   redis:

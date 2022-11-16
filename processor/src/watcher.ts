@@ -4,7 +4,7 @@ import log from 'loglevel'
 import path from 'node:path'
 
 import { addProjectToQueues, stopQueues } from './queues.js'
-import { GiteaDB } from './giteatDB.js'
+import { GiteaDB } from './giteaDB.js'
 
 interface WatchOptions {
   giteaDB: GiteaDB | null
@@ -24,44 +24,40 @@ export function watch(repoDir, { giteaDB }: WatchOptions) {
         dirWatchers[gitDir].queuing = true
 
         // '/repositories/user/project.git' -> ['user', 'project']
-        let [ownerName, repoName] = path
+        const [lowercaseOwner, lowercaseRepo] = path
           .relative(repoDir, gitDir)
           .slice(0, -4)
           .split('/')
 
-        let defaultBranch = ''
-        let giteaId = null
-        let repoDescription = ''
-        let originalUrl = ''
-
-        if (giteaDB != null) {
-          const giteaRepo = await giteaDB.getRepoInfo(ownerName, repoName)
-          if (giteaRepo == null) {
-            log.error(`${ownerName}/${repoName} is not in giteaDB`)
+        let giteaRepo = await giteaDB.getRepoInfo(lowercaseOwner, lowercaseRepo)
+        if (giteaRepo == null) {
+          log.error(`${lowercaseOwner}/${lowercaseRepo} is not in giteaDB`)
+          // dirWatchers[gitDir] can be deleted from the unlinkDir callback below
+          if (dirWatchers[gitDir] != null) {
             dirWatchers[gitDir].queuing = false
-            return
           }
-
-          giteaId = giteaRepo.id
-
-          if (giteaRepo.is_empty) {
-            await giteaDB.waitForNonEmpty(giteaId)
-          }
-
-          if (giteaRepo.is_mirror) {
-            await giteaDB.waitForRepoMigration(giteaId)
-          }
-
-          // Get the repo info again after the migration is done.
-          // Some fields, (e.g., default_branch) only gets populated after migration
-          const finalGiteaRepoData = await giteaDB.getRepoInfo(ownerName, repoName)
-          originalUrl = finalGiteaRepoData.original_url
-          repoDescription = finalGiteaRepoData.description
-          defaultBranch = finalGiteaRepoData.default_branch
-          // use case-correct names from the DB
-          ownerName = finalGiteaRepoData.owner_name
-          repoName = finalGiteaRepoData.name
+          return
         }
+
+        const giteaId = giteaRepo.id
+
+        if (giteaRepo.is_empty) {
+          await giteaDB.waitForNonEmpty(giteaId)
+        }
+
+        if (giteaRepo.is_mirror) {
+          await giteaDB.waitForRepoMigration(giteaId)
+        }
+
+        // Get the repo info again after the migration is done.
+        // Some fields, (e.g., default_branch) only gets populated after migration
+        giteaRepo = await giteaDB.getRepoInfo(lowercaseOwner, lowercaseRepo)
+        const originalUrl = giteaRepo.original_url
+        const repoDescription = giteaRepo.description
+        const defaultBranch = giteaRepo.default_branch
+        // use case-correct names from the DB
+        const ownerName = giteaRepo.owner_name
+        const repoName = giteaRepo.name
 
         await addProjectToQueues({
           defaultBranch,
