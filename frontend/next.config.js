@@ -65,7 +65,12 @@ module.exports = async phase => {
           source: '/:user/:repo/_',
           destination: '/:user/:repo',
           permanent: true,
-        }
+        },
+        {
+          source: '/:user/:repo/1-click-BOM.tsv',
+          destination: '/:user/:repo/_/1-click-BOM.tsv',
+          permanent: true,
+        },
       ]
     },
     async rewrites() {
