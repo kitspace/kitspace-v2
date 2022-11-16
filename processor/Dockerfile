@@ -32,4 +32,4 @@ RUN addgroup --gid 1000 node && \
     chown -R node /data /gitea-data
 
 USER node
-CMD ["node", "dist/src/server.js"]
+CMD ["node", "dist/src/main.js"]

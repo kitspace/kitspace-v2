@@ -1,4 +1,3 @@
-import { getFlatProjects } from '@utils/projectPage'
 import useSWR from 'swr'
 import getConfig from 'next/config'
 
@@ -56,66 +55,6 @@ export const useRepo = (fullname, swrOpts = {}) => {
     repo: data,
     isLoading: !(data || error),
     isError: error || notFound,
-    mutate,
-  }
-}
-
-/**
- * A hook to search all repos
- * @param sort{string}
- * @param order{string}
- * @param swrOpts{swrOptions}
- * @param q{string=}: search query, leave undefined to return all repos
- * @returns {{repos: [Object], isLoading: boolean, isError: boolean, mutate: function}}
- */
-export const useSearchRepos = (
-  q,
-  swrOpts = {},
-  sort = 'updated',
-  order = 'desc',
-) => {
-  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${
-    q ? `&q=${q}` : ''
-  }`
-  const { data, error, mutate } = useSWR(
-    endpoint,
-    url => fetcher(url).then(({ data }) => getFlatProjects(data ?? [])),
-    swrOpts,
-  )
-
-  return {
-    repos: data,
-    isLoading: !(data || error),
-    isError: error,
-    mutate,
-  }
-}
-
-/**
- * A hook to get all repos on gitea
- * @param swrOpts{swrOptions}
- * @returns {{repos: [Object], IsLoading: boolean, IsError: boolean, mutate: function}}
- */
-export const useAllRepos = (swrOpts = {}) => useSearchRepos(null, swrOpts)
-
-/**
- * A hook to get repos owned by as user
- * @param username{string}
- * @param swrOpts{swrOptions}
- * @returns {{isLoading: boolean, isError: boolean, repos: [Object], mutate: function}}
- */
-export const useUserProjects = (username, swrOpts = {}) => {
-  const endpoint = `${giteaApiUrl}/users/${username}/repos`
-  const { data, error, mutate } = useSWR(
-    endpoint,
-    url => fetcher(url).then(getFlatProjects),
-    swrOpts,
-  )
-
-  return {
-    repos: data || [],
-    isLoading: !(data || error),
-    isError: error,
     mutate,
   }
 }

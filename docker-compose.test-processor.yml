@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  processor:
+    user: root
+    build:
+      context: processor/
+      dockerfile: Dockerfile
+    environment:
+      - LOG_LEVEL=${KITSPACE_PROCESSOR_LOG_LEVEL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - ./processor:/app
+    command: /bin/bash --verbose -c 'yarn install && yarn test'
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6.2-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD}

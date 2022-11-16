@@ -13,4 +13,4 @@ jobs:
         with:
           submodules: 'recursive'
       - run: cp .env.example .env
-      - run: scripts/clear_volumes_and_test_processor.sh
+      - run: docker-compose -f docker-compose.test-processor.yml run --rm processor

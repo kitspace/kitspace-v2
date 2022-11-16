@@ -1,4 +1,5 @@
 172.17.0.1    kitspace.test
 172.17.0.1    gitea.kitspace.test
-172.17.0.1    processor.kitspace.test
 172.17.0.1    meilisearch.kitspace.test
+172.17.0.1    kitspace-minio.test
+172.17.0.1    processor-bucket.kitspace-minio.test

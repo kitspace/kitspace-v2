@@ -13,11 +13,17 @@ sed \
    -e "s/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g" \
    /opt/kitspace.template > /etc/nginx/conf.d/default.conf
 
+if [ "${USE_LOCAL_MINIO:-}" == "true" ]; then
+   cp /opt/kitspace-minio.test.conf /etc/nginx/conf.d/
+else
+   rm -f /etc/nginx/conf.d/kitspace-minio.test.conf
+fi
+
 nginx -g "daemon off;" &
 
 if [ "${RUN_CERTBOT:-}" == "true" ]; then
    # Run certbot which should get certificates and modify your nginx config
-   certbot --nginx --domains ${CERTBOT_DOMAINS} --email ${CERTBOT_EMAIL} --agree-tos --redirect --reinstall --non-interactive --expand;
+   certbot --nginx --domains ${CERTBOT_DOMAINS} --email ${CERTBOT_EMAIL} --agree-tos --redirect --reinstall --non-interactive --expand
 else
 echo "Not requesting certificates through certbot, set RUN_CERTBOT=true to run."
 fi

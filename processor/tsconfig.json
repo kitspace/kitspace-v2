@@ -2,14 +2,14 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "module": "es2020",
+    "target": "es2020",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "outDir": "dist",
     "resolveJsonModule": false,
     "skipLibCheck": true,
     "sourceMap": true,
-    "stripInternal": true,
-    "target": "ES6"
+    "stripInternal": true
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "src/tasks/processIBOM/InteractiveHtmlBom/"]

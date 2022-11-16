@@ -14,7 +14,7 @@ import {
 import SharedProjectPage from '@components/SharedProjectPage'
 import Custom404 from '@pages/404'
 
-const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
 const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
@@ -24,8 +24,8 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
 
   const repoFullName = `${username}/${repoName}`
 
-  const rootAssetsPath = `${processorUrl}/files/${repoFullName}/HEAD`
-  const assetsPath = `${processorUrl}/files/${repoFullName}/HEAD/${projectName}`
+  const rootAssetPath = `${assetUrl}/files/${repoFullName}/HEAD`
+  const assetPath = `${rootAssetPath}/${projectName}`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   const exists = await repoExists(repoFullName)
@@ -41,12 +41,12 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
       hasUploadPermission,
     ] = await Promise.all([
       getRepo(repoFullName),
-      getReadme(assetsPath),
-      getBoardBomInfo(assetsPath),
-      getBoardGerberInfo(assetsPath),
-      getKitspaceYamlArray(rootAssetsPath),
-      getIsProcessingDone(assetsPath),
-      hasInteractiveBom(assetsPath),
+      getReadme(assetPath),
+      getBoardBomInfo(assetPath),
+      getBoardGerberInfo(assetPath),
+      getKitspaceYamlArray(rootAssetPath),
+      getIsProcessingDone(rootAssetPath),
+      hasInteractiveBom(assetPath),
       // The repo owner and collaborators can upload files.
       canCommit(repoFullName, session.user?.username, session.apiToken),
     ])
@@ -54,7 +54,7 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
     const kitspaceYAML = kitspaceYamlArray.find(p => p.name === projectName)
 
     const { zipPath, width, height, layers } = gerberInfo
-    const zipUrl = `${assetsPath}/${zipPath}`
+    const zipUrl = `${assetPath}/${zipPath}`
 
     if (!kitspaceYAML) {
       // no project matched
@@ -65,7 +65,7 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
     }
 
     return {
-      assetsPath,
+      rootAssetPath,
       repo,
       projectFullname: repoFullName,
       hasUploadPermission,

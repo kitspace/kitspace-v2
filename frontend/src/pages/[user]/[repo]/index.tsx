@@ -12,7 +12,7 @@ import React from 'react'
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 import ProjectPage from './[project]'
 
-const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
 interface RepoPageProps {
   errorCode?: number
@@ -138,9 +138,9 @@ const getYamlArray = (
   repoName: string,
 ): Promise<YamlArray | null> => {
   const repoFullName = `${username}/${repoName}`
-  const rootAssetsPath = `${processorUrl}/files/${repoFullName}/HEAD`
+  const rootAssetPath = `${assetUrl}/files/${repoFullName}/HEAD`
   const getYaml = async () => {
-    const [ignored, arr] = await getKitspaceYamlArray(rootAssetsPath)
+    const [ignored, arr] = await getKitspaceYamlArray(rootAssetPath)
     return arr
   }
   const checkFn = arr => arr.length > 0

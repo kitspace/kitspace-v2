@@ -1,14 +1,18 @@
 import * as oneClickBom from '1-click-bom'
-import path from 'node:path'
+import { promises as fs } from 'fs'
 import log from 'loglevel'
-
-import { exists, existsAll, writeFile, readFile, exec } from '../../utils.js'
+import path from 'node:path'
 import { JobData } from '../../jobData.js'
+import { S3 } from '../../s3.js'
+import { exists } from '../../utils.js'
 import getPartinfo from './get_partinfo.js'
+
+export const outputFiles = ['1-click-BOM.tsv', 'bom-info.json'] as const
 
 async function processBOM(
   job,
   { inputDir, kitspaceYaml, outputDir }: Partial<JobData>,
+  s3: S3,
 ) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
@@ -19,11 +23,11 @@ async function processBOM(
     job.updateProgress({ status: 'in_progress', file })
   }
 
-  if (await existsAll(filePaths)) {
+  if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'done', file })
     }
-    const info = JSON.parse(await readFile(infoJsonPath, 'utf-8'))
+    const info = JSON.parse(await s3.getFileContents(infoJsonPath))
     return info.bom
   }
 
@@ -37,7 +41,7 @@ async function processBOM(
         bomInputPath = path.join(inputDir, '1-click-bom.csv')
       }
     }
-    const content = await readFile(bomInputPath)
+    const content = await fs.readFile(bomInputPath)
     const bom = oneClickBom.parse(content, {
       ext: /\.kicad_pcb$/i.test(bomInputPath) ? 'kicad_pcb' : null,
     })
@@ -68,14 +72,15 @@ async function processBOM(
     bom.parts = await getPartinfo(bom.lines)
 
     const info = { bom, inputFile: path.relative(inputDir, bomInputPath) }
-    await exec(`mkdir -p ${outputDir}`)
     await Promise.all([
-      writeFile(infoJsonPath, JSON.stringify(info))
+      s3
+        .uploadFileContents(infoJsonPath, JSON.stringify(info), 'application/json')
         .then(() => job.updateProgress({ status: 'done', file: infoJsonPath }))
         .catch(error =>
           job.updateProgress({ status: 'failed', file: infoJsonPath, error }),
         ),
-      writeFile(bomOutputPath, bom.tsv)
+      s3
+        .uploadFileContents(bomOutputPath, bom.tsv, 'text/tab-seperated-values')
         .then(() => job.updateProgress({ status: 'done', file: bomOutputPath }))
         .catch(error =>
           job.updateProgress({ status: 'failed', file: bomOutputPath, error }),

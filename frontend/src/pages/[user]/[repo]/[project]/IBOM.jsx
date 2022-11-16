@@ -4,7 +4,7 @@ import path from 'path'
 import IBOM from '@components/Board/IBOM'
 import getConfig from 'next/config'
 
-const processorUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(
@@ -13,28 +13,26 @@ export const getServerSideProps = async ({ params }) => {
   )
 
   const repoFullName = `${params.user}/${params.repo}`
-  const interactiveBOMStatus = await fetch(
-    `${processorUrl}/status/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
+
+  const res = await fetch(
+    `${assetUrl}/files/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
   )
-    .then(r => r.json().then(body => body.status))
-    .catch(() => 'fail')
 
-  if (interactiveBOMStatus === 'done') {
-    const pcbData = await fetch(
-      `${processorUrl}/files/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
-    ).then(res => res.blob().then(b => b.text()))
-
+  if (!res.ok) {
     return {
-      props: {
-        projectFullname: repoFullName,
-        html: IBOMHtml,
-        pcbData,
-        projectHref: `${repoFullName}/${params.project}`,
-      },
+      notFound: true,
     }
   }
+
+  const pcbData = await res.blob().then(b => b.text())
+
   return {
-    notFound: true,
+    props: {
+      projectFullname: repoFullName,
+      html: IBOMHtml,
+      pcbData,
+      projectHref: `${repoFullName}/${params.project}`,
+    },
   }
 }
 

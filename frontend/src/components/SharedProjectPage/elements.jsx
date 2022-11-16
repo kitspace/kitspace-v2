@@ -19,7 +19,7 @@ import Readme from '@components/Board/Readme'
 import UploadModal from '@components/UploadModal'
 
 const PageElements = ({
-  assetsPath,
+  assetPath,
   hasUploadPermission,
   hasIBOM,
   kitspaceYAML,
@@ -177,7 +177,7 @@ const PageElements = ({
         )}
         {boardShowcaseAssetsExist ? (
           <>
-            <BoardShowcase assetsPath={assetsPath} />
+            <BoardShowcase assetPath={assetPath} />
             <BoardExtraMenus hasInteractiveBom={hasIBOM} zipUrl={zipUrl} />
           </>
         ) : (
@@ -289,7 +289,7 @@ AssetPlaceholder.propTypes = {
 }
 
 PageElements.propTypes = {
-  assetsPath: string.isRequired,
+  assetPath: string.isRequired,
   hasUploadPermission: bool.isRequired,
   hasIBOM: bool.isRequired,
   kitspaceYAML: shape({

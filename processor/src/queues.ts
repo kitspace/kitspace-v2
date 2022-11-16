@@ -66,23 +66,12 @@ export async function addProjectToQueues({
   giteaId,
   gitDir,
 }: AddProjectToQueueData) {
-  const inputDir = path.join(
-    DATA_DIR,
-    'checkout',
-    ownerName.toLowerCase(),
-    repoName.toLowerCase(),
-  )
+  const inputDir = path.join(DATA_DIR, 'checkout', ownerName, repoName)
 
   await sync(gitDir, inputDir)
 
   const hash = await getGitHash(inputDir)
-  const outputDir = path.join(
-    DATA_DIR,
-    'files',
-    ownerName.toLowerCase(),
-    repoName.toLowerCase(),
-    hash,
-  )
+  const outputDir = path.join(DATA_DIR, 'files', ownerName, repoName, hash)
 
   await execEscaped(['mkdir', '-p', outputDir])
 
