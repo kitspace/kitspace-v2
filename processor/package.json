@@ -20,7 +20,7 @@
     "fmt": "yarn prettier --write"
   },
   "dependencies": {
-    "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#master",
+    "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#cb4447684f1011c7202f7b084bbc69a247da1ba4",
     "async-lock": "^1.3.2",
     "bullmq": "^1.91.1",
     "cheerio": "^1.0.0-rc.10",
