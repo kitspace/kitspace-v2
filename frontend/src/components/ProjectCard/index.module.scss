@@ -7,14 +7,19 @@
   align-items: center;
 }
 
+$project-card-width: 290px;
+.card {
+  margin: 0 !important;
+  width: $project-card-width;
+}
 .card:hover {
   text-decoration: none;
 }
 
 .cardText {
-  overflow:hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
-  white-space:nowrap;
+  white-space: nowrap;
 }
 
 .cardDescription {

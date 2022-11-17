@@ -1,3 +1,5 @@
+@import '../../components/ProjectCard/index.module.scss';
+
 .searchFormGroup {
   display: grid !important;
   grid-template-columns: 4fr 1fr;
@@ -18,4 +20,25 @@
 .noMatching {
   text-align: center;
   padding-top: 20vh;
+}
+
+$gap: 16px;
+
+.cardsGrid {
+  /* 
+    We can't simply use a css grid because it doesn't support centering elements if there are less
+    than 3 elements in the last row.
+  */
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: $gap;
+  column-gap: $gap;
+  margin: auto;
+  justify-content: center;
+  /* There are three cards per row, so there are to gaps in each row. */
+  max-width: calc($project-card-width * 3 + $gap * 2);
+}
+
+.cardsGrid > div {
+  flex: 0 0 0 33.333%;
 }

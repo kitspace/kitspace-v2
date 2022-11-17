@@ -59,7 +59,7 @@ const CardsGrid = () => {
   }
 
   return (
-    <div data-cy="cards-grid">
+    <div className={styles.cardsGrid} data-cy="cards-grid">
       {projects?.map(project => (
         <ProjectCard {...project} key={project.id} />
       ))}
