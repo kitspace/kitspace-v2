@@ -1,6 +1,4 @@
-import faker from 'faker'
-
-import { getFakeUsername } from '../support/getFakeUsername'
+import { getFakeUser } from '../support/getFakeUser'
 
 describe('Relative README images URLs normalization', () => {
   before(() => {
@@ -12,9 +10,7 @@ describe('Relative README images URLs normalization', () => {
   })
 
   it('should be able to fetch relative README image', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'CH330_Hardware'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
@@ -46,9 +42,7 @@ describe('Relative README images URLs normalization', () => {
   })
 
   it('handles readmes in folders', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'readmes-in-folders'
     const syncedRepoUrl =
@@ -84,9 +78,7 @@ describe('Relative README images URLs normalization', () => {
   })
 
   it('redirects relative urls to original git service', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'readmes-in-folders'
     const syncedRepoUrl =
@@ -118,9 +110,7 @@ describe('Relative README images URLs normalization', () => {
 
 describe('Readme style', () => {
   it('should auto link readme and summary links', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'readme-and-summary-auto-link'
     const syncedRepoUrl =
@@ -159,9 +149,7 @@ describe('Readme style', () => {
   })
 
   it('renders :emoji: in readme and project description', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'ogx360'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/ogx360'
@@ -187,9 +175,7 @@ describe('Readme style', () => {
   })
 
   it('preserves URLs for GitHub Actions badges', () => {
-    const username = getFakeUsername()
-    const email = faker.unique(faker.internet.email)
-    const password = '123456'
+    const { username, email, password } = getFakeUser()
 
     const repoName = 'ogx360'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/ogx360'
