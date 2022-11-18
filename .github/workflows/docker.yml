@@ -307,21 +307,20 @@ jobs:
           docker-compose -f docker-compose.yml -f docker-compose.deploy.yml -f docker-compose.e2e.yml up \
             --abort-on-container-exit --exit-code-from e2e
 
-  publish:
-    name: Tag "latest"
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-    runs-on: ubuntu-20.04
+  tag_docker_images:
+    if: ${{ github.event_name == 'push' }}
+    name: Tag with branch name
+    runs-on: ubuntu-22.04
     needs:
       - get_version
       - build
-      - test
     strategy:
       fail-fast: false
       matrix:
         service: [frontend, processor, nginx, gitea]
 
     steps:
-      - name: Tag ${{ matrix.service }}:latest
+      - name: Tag '${{ matrix.service }}:${{ github.ref_name }}'
         run: |
           case '${{ matrix.service }}' in
             frontend)
@@ -339,8 +338,7 @@ jobs:
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
           curl -X PUT \
-            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/latest \
+            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ github.ref_name }} \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
             -d '@manifest.json'
-          rm manifest.json
