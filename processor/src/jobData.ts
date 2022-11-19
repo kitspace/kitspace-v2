@@ -1,7 +1,7 @@
+import { KitspaceYaml } from './kitspaceYaml'
 export interface JobData {
   giteaId: string | null
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  kitspaceYaml: Record<string, any>
+  kitspaceYaml: KitspaceYaml
   originalUrl: string
   defaultBranch: string
   ownerName: string
