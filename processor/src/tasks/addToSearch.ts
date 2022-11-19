@@ -6,6 +6,8 @@ import { JobData } from '../jobData.js'
 import { GiteaDB } from '../giteaDB.js'
 import { InjectedDependencies } from '../injectedDependencies.js'
 
+export const outputFiles = [] as const
+
 export const meiliSettings: Settings = {
   filterableAttributes: ['id', 'repoId', 'gitHash', 'ownerName'],
   searchableAttributes: [

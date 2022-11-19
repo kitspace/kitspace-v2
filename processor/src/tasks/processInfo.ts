@@ -1,10 +1,14 @@
 import { JobData } from '../jobData.js'
-import addToSearch from './addToSearch.js'
+import addToSearch, { outputFiles as addToSearchFiles } from './addToSearch.js'
 import processBOM, { outputFiles as bomFiles } from './processBOM/index.js'
 import processReadme, { outputFiles as readmeFiles } from './processReadme/index.js'
 import { InjectedDependencies } from '../injectedDependencies.js'
 
-export const outputFiles = [...bomFiles, ...readmeFiles] as const
+export const outputFiles = [
+  ...bomFiles,
+  ...readmeFiles,
+  ...addToSearchFiles,
+] as const
 
 export default async function processInfo(
   job,
