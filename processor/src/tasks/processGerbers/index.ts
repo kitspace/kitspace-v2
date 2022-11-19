@@ -3,7 +3,7 @@ import Jszip from 'jszip'
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
 import { JobData } from '../../jobData.js'
-import { S3 } from '../../s3.js'
+import { s3 } from '../../s3.js'
 import { exec, execEscaped } from '../../utils.js'
 import boardBuilder from './board_builder.js'
 import findGerberFiles from './findGerberFiles.js'
@@ -41,7 +41,6 @@ export default async function processGerbers(
     plottedGerbers,
     hash,
   }: ProcessGerbersData & Partial<JobData>,
-  s3: S3,
 ) {
   const zipVersion = hash.slice(0, 7)
   const zipFileName = `${
@@ -114,7 +113,7 @@ export default async function processGerbers(
 
     const promises = []
     promises.push(
-      generateZip(zipPath, gerberData, s3)
+      generateZip(zipPath, gerberData)
         .then(() => job.updateProgress({ status: 'done', file: zipPath }))
         .catch(error =>
           job.updateProgress({ status: 'failed', file: zipPath, error }),
@@ -134,7 +133,7 @@ export default async function processGerbers(
     )
 
     promises.push(
-      generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath, s3)
+      generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath)
         .then(() => job.updateProgress({ status: 'done', file: gerberInfoPath }))
         .catch(error =>
           job.updateProgress({ status: 'failed', file: gerberInfoPath, error }),
@@ -156,13 +155,13 @@ export default async function processGerbers(
     // sequence. They all invoke Inkscape and can use a lot of RAM so we run them
     // one at a time even though they don't depend on each other.
 
-    await generateTopPng(topSvgPath, stackup, topPngPath, s3)
+    await generateTopPng(topSvgPath, stackup, topPngPath)
       .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
       .catch(error =>
         job.updateProgress({ status: 'failed', file: topPngPath, error }),
       )
 
-    await generateTopLargePng(topSvgPath, stackup, topLargePngPath, s3)
+    await generateTopLargePng(topSvgPath, stackup, topLargePngPath)
       .then(() => job.updateProgress({ status: 'done', file: topLargePngPath }))
       .catch(error =>
         job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
@@ -170,7 +169,7 @@ export default async function processGerbers(
 
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
 
-    await generateTopWithBgnd(topMetaPngPath, topWithBgndPath, s3)
+    await generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
       .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
       .catch(error =>
         job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
@@ -184,7 +183,7 @@ export default async function processGerbers(
   }
 }
 
-async function generateTopLargePng(topSvgPath, stackup, topLargePngPath, s3: S3) {
+async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
   let cmd_large = `inkscape --without-gui '${topSvgPath}'`
   cmd_large += ` --export-png='${topLargePngPath}'`
   if (stackup.top.width > stackup.top.height + 0.05) {
@@ -196,7 +195,7 @@ async function generateTopLargePng(topSvgPath, stackup, topLargePngPath, s3: S3)
   return s3.uploadFile(topLargePngPath, 'image/png')
 }
 
-async function generateTopPng(topSvgPath, stackup, topPngPath, s3: S3) {
+async function generateTopPng(topSvgPath, stackup, topPngPath) {
   let cmd = `inkscape --without-gui '${topSvgPath}'`
   cmd += ` --export-png='${topPngPath}'`
   if (stackup.top.width > stackup.top.height + 0.05) {
@@ -227,7 +226,7 @@ function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath) {
   return exec(cmd_meta)
 }
 
-async function generateTopWithBgnd(topMetaPngPath, topWithBgndPath, s3: S3) {
+async function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
   const cmd = `convert -background '#373737' -gravity center '${topMetaPngPath}' -extent 1000x524 '${topWithBgndPath}'`
   await exec(cmd)
   return s3.uploadFile(topWithBgndPath, 'image/png')
@@ -238,7 +237,6 @@ async function generateGerberInfo(
   stackup,
   inputFiles,
   gerberInfoPath,
-  s3: S3,
 ) {
   const gerberInfo = {
     zipPath: path.basename(zipPath),
@@ -266,7 +264,7 @@ async function generateGerberInfo(
   )
 }
 
-function readGerbers(gerbers) {
+function readGerbers(gerbers: Array<string>): Promise<Array<{filename: string, gerber: string}>> {
   return Promise.all(
     gerbers.map(async gerberPath => {
       const data = await fs.readFile(gerberPath, { encoding: 'utf8' })
@@ -275,7 +273,7 @@ function readGerbers(gerbers) {
   )
 }
 
-function generateZip(zipPath, gerberData, s3: S3) {
+function generateZip(zipPath, gerberData): Promise<void> {
   const folderName = path.basename(zipPath, '.zip')
   const zip = new Jszip()
   for (const { filename, gerber } of gerberData) {
@@ -287,5 +285,5 @@ function generateZip(zipPath, gerberData, s3: S3) {
       compression: 'DEFLATE',
       compressionOptions: { level: 6 },
     })
-    .then(content => s3.uploadFileContents(zipPath, content, 'application/zip'))
+    .then(contents => s3.uploadFileContents(zipPath, contents, 'application/zip'))
 }

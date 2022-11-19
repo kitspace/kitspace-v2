@@ -8,7 +8,7 @@ import { any, mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import { GiteaDB, RepoInfo } from '../../src/giteaDB.js'
-import { S3 } from '../../src/s3.js'
+import { s3 as s3Imported, S3 } from '../../src/s3.js'
 import { delay } from '../../src/utils.js'
 
 const exec = util.promisify(cp.exec)
@@ -41,8 +41,8 @@ vi.mock('loglevel', () => {
   }
 })
 
-function createS3Mock(): MockProxy<S3> {
-  const s3 = mock<S3>()
+vi.mock('../../src/s3.js', () => {
+  const s3: MockProxy<S3> = mock<S3>()
   s3.exists.mockReturnValue(Promise.resolve(false))
   s3.existsAll.mockImplementation(filepaths => {
     for (const p of filepaths) {
@@ -54,8 +54,10 @@ function createS3Mock(): MockProxy<S3> {
   s3.uploadFile.mockImplementation((filepath, contentType) =>
     s3.uploadFileContents(filepath, '', contentType),
   )
-  return s3
-}
+  return { s3 }
+})
+
+const s3 = s3Imported as MockProxy<S3>
 
 function createMeiliMock(): MockProxy<Index> {
   const meiliIndex = mock<Index>()
@@ -78,17 +80,15 @@ function createGiteaMock(): MockProxy<GiteaDB> {
 describe(
   'gitea projects functionality',
   function () {
-    let s3: MockProxy<S3>
     let meiliIndex: MockProxy<Index>
     let giteaDB: MockProxy<GiteaDB>
     let app: KitspaceProcessorApp
     beforeEach(async function () {
       await exec(`mkdir -p ${tmpDir}`)
       await exec(`mkdir -p ${repoDir}`)
-      s3 = createS3Mock()
       meiliIndex = createMeiliMock()
       giteaDB = createGiteaMock()
-      app = createApp(repoDir, { giteaDB, s3, meiliIndex })
+      app = createApp(repoDir, { giteaDB, meiliIndex })
     })
 
     it('creates app', async function () {
@@ -298,6 +298,7 @@ describe(
     })
 
     afterEach(async function () {
+      vi.clearAllMocks()
       await app.stop()
       await exec(`rm -rf ${tmpDir}`)
     })

@@ -1,4 +1,5 @@
 import { KitspaceYaml } from './kitspaceYaml'
+
 export interface JobData {
   giteaId: string | null
   kitspaceYaml: KitspaceYaml

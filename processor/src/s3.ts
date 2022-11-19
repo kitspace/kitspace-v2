@@ -34,7 +34,9 @@ const s3ClientConfig = {
 }
 const bucketName = S3_PROCESSOR_BUCKET_NAME
 
-export async function createS3(): Promise<S3> {
+export const s3 = await createS3()
+
+async function createS3(): Promise<S3> {
   const s3Client = new S3Client(s3ClientConfig)
 
   try {
@@ -204,3 +206,4 @@ function streamToString(stream, encoding: BufferEncoding): Promise<string> {
     stream.on('end', () => resolve(Buffer.concat(chunks).toString(encoding)))
   })
 }
+

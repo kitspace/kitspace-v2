@@ -2,7 +2,7 @@ import globule from 'globule'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { JobData } from '../../jobData.js'
-import { S3 } from '../../s3.js'
+import { s3 } from '../../s3.js'
 import { renderMarkdown } from './renderMarkdown.js'
 
 export const outputFiles = ['readme.html'] as const
@@ -18,7 +18,6 @@ async function processReadme(
     originalUrl,
     defaultBranch,
   }: Partial<JobData>,
-  s3: S3,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
