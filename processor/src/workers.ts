@@ -25,13 +25,12 @@ export function createWorkers({ giteaDB, s3, meiliIndex }: InjectedDependencies)
     addWorker('processInfo', processInfo, { s3, meiliIndex }),
     addWorker('processIBOM', processIBOM, s3),
   ]
-  let dbSubscription
-  if (giteaDB) {
-    dbSubscription = search.continuallySyncDeletions(giteaDB, meiliIndex)
-  }
+
+  const dbSubscription = search.continuallySyncDeletions(giteaDB, meiliIndex)
   const stop = async () => {
     await Promise.all(workers.map(worker => worker.close()))
-    dbSubscription?.unsubscribe?.()
+    const { unsubscribe } = await dbSubscription
+    unsubscribe()
   }
   return stop
 }
