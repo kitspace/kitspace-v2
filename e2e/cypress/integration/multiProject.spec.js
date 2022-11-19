@@ -80,10 +80,8 @@ describe('Render project cards', () => {
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
 
     cy.visit(`/${username}`)
-    // Wait for the repo to finish processing, by checking the visibility of the project-card
-    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should('be.visible')
-    // There should be 3 thumbnails = 2 form multiprojects + 1 normal project
-    cy.get('[data-cy=project-card-thumbnail]').should(
+    // There should be 3 cards = 2 form multiprojects + 1 normal project
+    cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length + 1,
     )
