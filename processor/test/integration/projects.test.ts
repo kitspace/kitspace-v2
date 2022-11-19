@@ -69,6 +69,9 @@ function createGiteaMock(): MockProxy<GiteaDB> {
   const giteaDB = mock<GiteaDB>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
+  giteaDB.subscribeToRepoDeletions.mockReturnValue(
+    Promise.resolve({ unsubscribe: () => {} }),
+  )
   return giteaDB
 }
 
