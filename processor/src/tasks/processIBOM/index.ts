@@ -4,7 +4,7 @@ import path from 'node:path'
 import url from 'node:url'
 import { promises as fs } from 'fs'
 import { JobData } from '../../jobData.js'
-import { S3 } from '../../s3.js'
+import { s3 } from '../../s3.js'
 import { execEscaped } from '../../utils.js'
 
 export const outputFiles = ['interactive_bom.json'] as const
@@ -12,7 +12,6 @@ export const outputFiles = ['interactive_bom.json'] as const
 async function processIBOM(
   job,
   { inputDir, kitspaceYaml, outputDir, repoName, subprojectName }: Partial<JobData>,
-  s3: S3,
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
 

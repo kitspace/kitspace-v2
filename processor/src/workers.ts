@@ -17,13 +17,13 @@ interface JobProgress {
   error?: Error
 }
 
-export function createWorkers({ giteaDB, s3, meiliIndex }: InjectedDependencies) {
+export function createWorkers({ giteaDB, meiliIndex }: InjectedDependencies) {
   const workers = [
-    addWorker('writeKitspaceYaml', writeKitspaceYaml, s3),
-    addWorker('processKicadPCB', processKicadPCB, s3),
-    addWorker('processPCB', processPCB, s3),
-    addWorker('processInfo', processInfo, { s3, meiliIndex }),
-    addWorker('processIBOM', processIBOM, s3),
+    addWorker('writeKitspaceYaml', writeKitspaceYaml),
+    addWorker('processKicadPCB', processKicadPCB),
+    addWorker('processPCB', processPCB),
+    addWorker('processInfo', processInfo, { meiliIndex }),
+    addWorker('processIBOM', processIBOM),
   ]
 
   const dbSubscription = search.continuallySyncDeletions(giteaDB, meiliIndex)
@@ -35,7 +35,7 @@ export function createWorkers({ giteaDB, s3, meiliIndex }: InjectedDependencies)
   return stop
 }
 
-function addWorker(name, fn, deps, options?) {
+function addWorker(name, fn, deps?, options?) {
   const worker = new bullmq.Worker(name, job => fn(job, job.data, deps), {
     connection,
     concurrency: defaultConcurrency,

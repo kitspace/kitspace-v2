@@ -9,7 +9,7 @@ export interface KitspaceProcessorApp {
 
 export function createApp(
   repoDir: string,
-  { giteaDB, s3, meiliIndex }: InjectedDependencies,
+  { giteaDB, meiliIndex }: InjectedDependencies,
 ): KitspaceProcessorApp {
   const app: KitspaceProcessorApp = {
     cleanup: [],
@@ -21,7 +21,7 @@ export function createApp(
   const unwatch = watch(repoDir, { giteaDB })
   app.cleanup.push(unwatch)
 
-  const stopWorkers = createWorkers({ giteaDB, s3, meiliIndex })
+  const stopWorkers = createWorkers({ giteaDB, meiliIndex })
   app.cleanup.push(stopWorkers)
 
   return app

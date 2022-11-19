@@ -8,7 +8,7 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { JobData } from '../jobData.js'
 import { KitspaceYaml } from '../kitspaceYaml.js'
-import { S3 } from '../s3.js'
+import { s3 } from '../s3.js'
 
 export const outputFiles = ['kitspace-yaml.json'] as const
 
@@ -19,7 +19,6 @@ export interface WriteKitspaceYamlInput {
 export default async function writeKitspaceYaml(
   job,
   { kitspaceYamlArray, outputDir }: WriteKitspaceYamlInput & Partial<JobData>,
-  s3: S3,
 ) {
   const kitspaceYamlJson = path.join(outputDir, 'kitspace-yaml.json')
   job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson })

@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import log from 'loglevel'
 import path from 'node:path'
 import { JobData } from '../../jobData.js'
-import { S3 } from '../../s3.js'
+import { s3 } from '../../s3.js'
 import { exists } from '../../utils.js'
 import getPartinfo from './get_partinfo.js'
 
@@ -12,7 +12,6 @@ export const outputFiles = ['1-click-BOM.tsv', 'bom-info.json'] as const
 async function processBOM(
   job,
   { inputDir, kitspaceYaml, outputDir }: Partial<JobData>,
-  s3: S3,
 ) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')
