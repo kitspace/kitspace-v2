@@ -170,7 +170,7 @@ describe('"Add Project" behavior', () => {
     cy.get('#add_project').click()
 
     const { username, email, password } = getFakeUser()
-    cy.createUser(username, email, password)
+    cy.signUp(username, email, password)
     cy.url().should('eq', 'http://kitspace.test:3000/projects/new')
   })
 
