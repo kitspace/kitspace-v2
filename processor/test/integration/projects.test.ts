@@ -124,8 +124,14 @@ describe(
           ...standardProjectFiles.map(f => `_/${f}`),
         ]
 
-        while (s3.uploadFileContents.mock.calls.length < files.length) {
+        // wait for the processor-report.json upload that happens when processing
+        // is done
+        let isDone = false
+        while (!isDone) {
           await delay(10)
+          isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
+            f.endsWith('processor-report.json'),
+          )
         }
 
         for (const f of files) {
@@ -189,10 +195,15 @@ describe(
         const zipFileName = `${projectName}-${hash.slice(0, 7)}-gerbers.zip`
         files.push(path.join(projectRoot, zipFileName))
         files.push(path.join(projectRoot, 'images/layout.svg'))
-      }
-
-      while (s3.uploadFileContents.mock.calls.length < files.length) {
-        await delay(10)
+        // wait for the processor-report.json upload that happens when processing
+        // is done
+        let isDone = false
+        while (!isDone) {
+          await delay(10)
+          isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
+            f.endsWith(`${projectName}/processor-report.json`),
+          )
+        }
       }
 
       for (const p of files) {
@@ -234,8 +245,14 @@ describe(
         ...standardProjectFiles.map(f => `_/${f}`),
       ]
 
-      while (s3.uploadFileContents.mock.calls.length < files.length) {
+      // wait for the processor-report.json upload that happens when processing
+      // is done
+      let isDone = false
+      while (!isDone) {
         await delay(10)
+        isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
+          f.endsWith('processor-report.json'),
+        )
       }
 
       for (const f of files) {
@@ -283,8 +300,14 @@ describe(
         ...standardProjectFiles.map(f => path.join(projectName, f)),
       ]
 
-      while (s3.uploadFileContents.mock.calls.length < files.length) {
+      // wait for the processor-report.json upload that happens when processing
+      // is done
+      let isDone = false
+      while (!isDone) {
         await delay(10)
+        isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
+          f.endsWith('processor-report.json'),
+        )
       }
 
       for (const f of files) {

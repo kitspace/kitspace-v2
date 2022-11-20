@@ -3,14 +3,14 @@ import loglevel from 'loglevel'
 import path from 'node:path'
 import url from 'node:url'
 import { promises as fs } from 'fs'
-import { JobData } from '../../jobData.js'
+import { Job, JobData } from '../../job.js'
 import { s3 } from '../../s3.js'
 import { execEscaped } from '../../utils.js'
 
 export const outputFiles = ['interactive_bom.json'] as const
 
 async function processIBOM(
-  job,
+  job: Job,
   { inputDir, kitspaceYaml, outputDir, repoName, subprojectName }: Partial<JobData>,
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
@@ -21,14 +21,15 @@ async function processIBOM(
       status: 'failed',
       file: ibomOutputPath,
       error: new Error('IBOM is disabled.'),
+      outputDir,
     })
     return
   }
 
-  job.updateProgress({ status: 'in_progress', file: ibomOutputPath })
+  job.updateProgress({ status: 'in_progress', file: ibomOutputPath, outputDir })
 
   if (await s3.exists(ibomOutputPath)) {
-    job.updateProgress({ status: 'done', file: ibomOutputPath })
+    job.updateProgress({ status: 'done', file: ibomOutputPath, outputDir })
     return
   }
 
@@ -51,6 +52,7 @@ async function processIBOM(
       status: 'failed',
       file: ibomOutputPath,
       error: Error('No PCB file found'),
+      outputDir,
     })
     return
   }
@@ -66,14 +68,26 @@ async function processIBOM(
   await execEscaped([run_ibom, pcbFile, ibomName, summary, ibomOutputPath]).catch(
     error => {
       loglevel.debug(error.stack)
-      return job.updateProgress({ status: 'failed', file: ibomOutputPath, error })
+      return job.updateProgress({
+        status: 'failed',
+        file: ibomOutputPath,
+        error,
+        outputDir,
+      })
     },
   )
   await s3
     .uploadFile(ibomOutputPath, 'application/json')
-    .then(() => job.updateProgress({ status: 'done', file: ibomOutputPath }))
+    .then(() =>
+      job.updateProgress({ status: 'done', file: ibomOutputPath, outputDir }),
+    )
     .catch(error =>
-      job.updateProgress({ status: 'failed', file: ibomOutputPath, error }),
+      job.updateProgress({
+        status: 'failed',
+        file: ibomOutputPath,
+        error,
+        outputDir,
+      }),
     )
 }
 

@@ -3,10 +3,10 @@ import bullmq from 'bullmq'
 import log from 'loglevel'
 import path from 'node:path'
 import { DATA_DIR } from './env.js'
-import { exists, execEscaped } from './utils.js'
-import { JobData } from './jobData.js'
-import redisConnection from './redisConnection.js'
+import { JobData } from './job.js'
 import { getKitspaceYaml } from './kitspaceYaml.js'
+import redisConnection from './redisConnection.js'
+import { execEscaped, exists } from './utils.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour

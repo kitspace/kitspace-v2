@@ -2,7 +2,7 @@ import globule from 'globule'
 import Jszip from 'jszip'
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
-import { JobData } from '../../jobData.js'
+import { Job, JobData } from '../../job.js'
 import { s3 } from '../../s3.js'
 import { exec, execEscaped } from '../../utils.js'
 import boardBuilder from './board_builder.js'
@@ -15,7 +15,6 @@ export const outputFiles = [
   'gerber-info.json',
   'images/top.png',
   'images/top-large.png',
-  'images/top-meta.png',
   'images/top-with-background.png',
 ] as const
 
@@ -31,7 +30,7 @@ interface ProcessGerbersData {
 }
 
 export default async function processGerbers(
-  job,
+  job: Job,
   {
     inputDir,
     kitspaceYaml,
@@ -52,7 +51,6 @@ export default async function processGerbers(
   const gerberInfoPath = path.join(outputDir, 'gerber-info.json')
   const topPngPath = path.join(outputDir, 'images/top.png')
   const topLargePngPath = path.join(outputDir, 'images/top-large.png')
-  const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
   const topWithBgndPath = path.join(outputDir, 'images/top-with-background.png')
 
   const filePaths = [
@@ -62,17 +60,16 @@ export default async function processGerbers(
     topSvgPath,
     topPngPath,
     topLargePngPath,
-    topMetaPngPath,
     topWithBgndPath,
   ]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file })
+    job.updateProgress({ status: 'in_progress', file, outputDir })
   }
 
   if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file })
+      job.updateProgress({ status: 'done', file, outputDir })
     }
     return
   }
@@ -114,9 +111,11 @@ export default async function processGerbers(
     const promises = []
     promises.push(
       generateZip(zipPath, gerberData)
-        .then(() => job.updateProgress({ status: 'done', file: zipPath }))
+        .then(() =>
+          job.updateProgress({ status: 'done', file: zipPath, outputDir }),
+        )
         .catch(error =>
-          job.updateProgress({ status: 'failed', file: zipPath, error }),
+          job.updateProgress({ status: 'failed', file: zipPath, error, outputDir }),
         ),
     )
 
@@ -126,26 +125,47 @@ export default async function processGerbers(
     promises.push(
       s3
         .uploadFileContents(bottomSvgPath, stackup.bottom.svg, 'image/svg+xml')
-        .then(() => job.updateProgress({ status: 'done', file: bottomSvgPath }))
+        .then(() =>
+          job.updateProgress({ status: 'done', file: bottomSvgPath, outputDir }),
+        )
         .catch(error =>
-          job.updateProgress({ status: 'failed', file: bottomSvgPath, error }),
+          job.updateProgress({
+            status: 'failed',
+            file: bottomSvgPath,
+            error,
+            outputDir,
+          }),
         ),
     )
 
     promises.push(
       generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath)
-        .then(() => job.updateProgress({ status: 'done', file: gerberInfoPath }))
+        .then(() =>
+          job.updateProgress({ status: 'done', file: gerberInfoPath, outputDir }),
+        )
         .catch(error =>
-          job.updateProgress({ status: 'failed', file: gerberInfoPath, error }),
+          job.updateProgress({
+            status: 'failed',
+            file: gerberInfoPath,
+            error,
+            outputDir,
+          }),
         ),
     )
 
     promises.push(
       s3
         .uploadFileContents(topSvgPath, stackup.top.svg, 'image/svg+xml')
-        .then(() => job.updateProgress({ status: 'done', file: topSvgPath }))
+        .then(() =>
+          job.updateProgress({ status: 'done', file: topSvgPath, outputDir }),
+        )
         .catch(error =>
-          job.updateProgress({ status: 'failed', file: topSvgPath, error }),
+          job.updateProgress({
+            status: 'failed',
+            file: topSvgPath,
+            error,
+            outputDir,
+          }),
         ),
     )
 
@@ -156,29 +176,51 @@ export default async function processGerbers(
     // one at a time even though they don't depend on each other.
 
     await generateTopPng(topSvgPath, stackup, topPngPath)
-      .then(() => job.updateProgress({ status: 'done', file: topPngPath }))
+      .then(() =>
+        job.updateProgress({ status: 'done', file: topPngPath, outputDir }),
+      )
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topPngPath, error }),
+        job.updateProgress({
+          status: 'failed',
+          file: topPngPath,
+          error,
+          outputDir,
+        }),
       )
 
     await generateTopLargePng(topSvgPath, stackup, topLargePngPath)
-      .then(() => job.updateProgress({ status: 'done', file: topLargePngPath }))
+      .then(() =>
+        job.updateProgress({ status: 'done', file: topLargePngPath, outputDir }),
+      )
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topLargePngPath, error }),
+        job.updateProgress({
+          status: 'failed',
+          file: topLargePngPath,
+          error,
+          outputDir,
+        }),
       )
 
+    const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
 
     await generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
-      .then(() => job.updateProgress({ status: 'done', file: topWithBgndPath }))
+      .then(() =>
+        job.updateProgress({ status: 'done', file: topWithBgndPath, outputDir }),
+      )
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: topWithBgndPath, error }),
+        job.updateProgress({
+          status: 'failed',
+          file: topWithBgndPath,
+          error,
+          outputDir,
+        }),
       )
 
     await Promise.all(promises)
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error })
+      job.updateProgress({ status: 'failed', file, error, outputDir })
     }
   }
 }
