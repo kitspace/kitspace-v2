@@ -4,6 +4,8 @@ services:
   frontend:
     environment:
       - 'KITSPACE_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000'
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
 
   e2e:
     build:
@@ -34,6 +36,8 @@ services:
   processor:
     environment:
       - 'USE_LOCAL_MINIO=true'
+    volumes:
+      - /etc/hosts:/etc/hosts:ro
 
   minio:
     image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
