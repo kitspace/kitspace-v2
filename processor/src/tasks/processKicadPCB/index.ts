@@ -39,11 +39,7 @@ async function processKicadPCB(
       return { inputFiles: {}, gerbers: [] }
     }
 
-    const layoutPromise = plotKicadLayoutSvg(
-      outputDir,
-      layoutSvgPath,
-      kicadPcbFile,
-    )
+    const layoutPromise = plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
       .then(() => job.updateProgress({ status: 'done', file: layoutSvgPath }))
       .catch(error =>
         job.updateProgress({ status: 'failed', file: layoutSvgPath, error }),

@@ -232,12 +232,7 @@ async function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
   return s3.uploadFile(topWithBgndPath, 'image/png')
 }
 
-async function generateGerberInfo(
-  zipPath,
-  stackup,
-  inputFiles,
-  gerberInfoPath,
-) {
+async function generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath) {
   const gerberInfo = {
     zipPath: path.basename(zipPath),
     width: Math.ceil(Math.max(stackup.top.width, stackup.bottom.width)),
@@ -264,7 +259,9 @@ async function generateGerberInfo(
   )
 }
 
-function readGerbers(gerbers: Array<string>): Promise<Array<{filename: string, gerber: string}>> {
+function readGerbers(
+  gerbers: Array<string>,
+): Promise<Array<{ filename: string; gerber: string }>> {
   return Promise.all(
     gerbers.map(async gerberPath => {
       const data = await fs.readFile(gerberPath, { encoding: 'utf8' })

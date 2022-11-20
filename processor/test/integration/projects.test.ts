@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { any, mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
-import { GiteaDB, RepoInfo } from '../../src/giteaDB.js'
+import { giteaDB as giteaDBImported, GiteaDB, RepoInfo } from '../../src/giteaDB.js'
 import { s3 as s3Imported, S3 } from '../../src/s3.js'
 import { delay } from '../../src/utils.js'
 
@@ -45,6 +45,8 @@ vi.mock('../../src/s3.js', () => {
   const s3: MockProxy<S3> = mock<S3>()
   s3.exists.mockReturnValue(Promise.resolve(false))
   s3.existsAll.mockImplementation(filepaths => {
+    // call it for every file since we check the `exists` mock calls in our
+    // tests
     for (const p of filepaths) {
       s3.exists(p)
     }
@@ -59,36 +61,34 @@ vi.mock('../../src/s3.js', () => {
 
 const s3 = s3Imported as MockProxy<S3>
 
-function createMeiliMock(): MockProxy<Index> {
-  const meiliIndex = mock<Index>()
+vi.mock('../../src/meili.js', () => {
+  const meiliIndex: MockProxy<Index> = mock<Index>()
   const searchResponse = mock<SearchResponse<unknown>>()
   searchResponse.hits = []
   meiliIndex.search.mockReturnValue(Promise.resolve(searchResponse))
-  return meiliIndex
-}
+  return { meiliIndex }
+})
 
-function createGiteaMock(): MockProxy<GiteaDB> {
-  const giteaDB = mock<GiteaDB>()
+vi.mock('../../src/giteaDB.js', () => {
+  const giteaDB: MockProxy<GiteaDB> = mock<GiteaDB>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
   giteaDB.subscribeToRepoDeletions.mockReturnValue(
     Promise.resolve({ unsubscribe: () => {} }),
   )
-  return giteaDB
-}
+  return { giteaDB }
+})
+
+const giteaDB = giteaDBImported as MockProxy<GiteaDB>
 
 describe(
   'gitea projects functionality',
   function () {
-    let meiliIndex: MockProxy<Index>
-    let giteaDB: MockProxy<GiteaDB>
     let app: KitspaceProcessorApp
     beforeEach(async function () {
       await exec(`mkdir -p ${tmpDir}`)
       await exec(`mkdir -p ${repoDir}`)
-      meiliIndex = createMeiliMock()
-      giteaDB = createGiteaMock()
-      app = createApp(repoDir, { giteaDB, meiliIndex })
+      app = createApp(repoDir)
     })
 
     it('creates app', async function () {
@@ -140,7 +140,7 @@ describe(
     const nonKicadHash = 'f8bdf1d0c358f88b70a8306c6855538ac933914e'
     it('processes the kitspace ruler project', generateRulerTest(nonKicadHash))
     it(
-      'processes the kitspace ruler project with eda: kicad',
+      'processes the kitspace ruler project with `eda: kicad` in kitspace.yaml',
       generateRulerTest(kicadHash),
     )
 
@@ -201,7 +201,7 @@ describe(
       }
     })
 
-    it('process project that has assets in hidden folders (.kitspace)', async function () {
+    it('processes project that has assets in hidden folders (.kitspace)', async function () {
       const repoInfo: RepoInfo = {
         id: '1',
         is_mirror: true,
@@ -248,7 +248,7 @@ describe(
       }
     })
 
-    it('process project with special characters in `gerbers` path', async function () {
+    it('processes project with special characters in `gerbers` path', async function () {
       const repoInfo: RepoInfo = {
         id: '1',
         is_mirror: true,
@@ -298,9 +298,9 @@ describe(
     })
 
     afterEach(async function () {
-      vi.clearAllMocks()
       await app.stop()
       await exec(`rm -rf ${tmpDir}`)
+      vi.clearAllMocks()
     })
   },
   { timeout: 120_000 },

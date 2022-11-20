@@ -206,4 +206,3 @@ function streamToString(stream, encoding: BufferEncoding): Promise<string> {
     stream.on('end', () => resolve(Buffer.concat(chunks).toString(encoding)))
   })
 }
-
