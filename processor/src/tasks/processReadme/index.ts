@@ -1,14 +1,14 @@
 import globule from 'globule'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import { JobData } from '../../jobData.js'
+import { Job, JobData } from '../../job.js'
 import { s3 } from '../../s3.js'
 import { renderMarkdown } from './renderMarkdown.js'
 
 export const outputFiles = ['readme.html'] as const
 
 async function processReadme(
-  job,
+  job: Job,
   {
     inputDir,
     kitspaceYaml,
@@ -21,10 +21,10 @@ async function processReadme(
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
-  job.updateProgress({ status: 'in_progress', file: readmePath })
+  job.updateProgress({ status: 'in_progress', file: readmePath, outputDir })
 
   if (await s3.exists(readmePath)) {
-    job.updateProgress({ status: 'done', file: readmePath })
+    job.updateProgress({ status: 'done', file: readmePath, outputDir })
     return s3.getFileContents(readmePath)
   }
 
@@ -39,6 +39,7 @@ async function processReadme(
         status: 'failed',
         file: readmePath,
         error: Error("couldn't find readme file"),
+        outputDir,
       })
       return ''
     }
@@ -58,9 +59,9 @@ async function processReadme(
   })
 
   s3.uploadFileContents(readmePath, processedReadmeHTML, 'text/html')
-    .then(() => job.updateProgress({ status: 'done', file: readmePath }))
+    .then(() => job.updateProgress({ status: 'done', file: readmePath, outputDir }))
     .catch(error =>
-      job.updateProgress({ status: 'failed', file: readmePath, error }),
+      job.updateProgress({ status: 'failed', file: readmePath, error, outputDir }),
     )
 
   return processedReadmeHTML

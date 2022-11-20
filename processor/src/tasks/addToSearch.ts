@@ -2,7 +2,7 @@ import cheerio from 'cheerio'
 import log from 'loglevel'
 import { giteaDB } from '../giteaDB.js'
 import { meiliIndex } from '../meili.js'
-import { JobData } from '../jobData.js'
+import { Job, JobData } from '../job.js'
 
 export const outputFiles = [] as const
 
@@ -16,7 +16,7 @@ interface AddToSearchData {
 }
 
 export default async function addToSearch(
-  job,
+  job: Job,
   {
     subprojectName,
     giteaId,

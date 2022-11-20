@@ -1,4 +1,4 @@
-import { JobData } from '../jobData.js'
+import { Job, JobData } from '../job.js'
 import processGerbers, {
   outputFiles as gerberFiles,
 } from './processGerbers/index.js'
@@ -8,7 +8,7 @@ import processKicadPCB, {
 
 export const outputFiles = [...gerberFiles, ...kicadFiles] as const
 
-export default async function processPCB(job, jobData: JobData) {
+export default async function processPCB(job: Job, jobData: JobData) {
   const plottedGerbers = await processKicadPCB(job, jobData)
   await processGerbers(job, { ...jobData, plottedGerbers })
 }

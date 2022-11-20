@@ -1,14 +1,14 @@
 import globule from 'globule'
 import path from 'node:path'
 import url from 'node:url'
-import { JobData } from '../../jobData.js'
+import { JobData, Job } from '../../job.js'
 import { s3 } from '../../s3.js'
 import { execEscaped, findKicadPcbFile } from '../../utils.js'
 
 export const outputFiles = ['images/layout.svg'] as const
 
 async function processKicadPCB(
-  job,
+  job: Job,
   { inputDir, kitspaceYaml = {}, outputDir }: Partial<JobData>,
 ) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
@@ -16,12 +16,12 @@ async function processKicadPCB(
   const filePaths = [layoutSvgPath]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file })
+    job.updateProgress({ status: 'in_progress', file, outputDir })
   }
 
   if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file })
+      job.updateProgress({ status: 'done', file, outputDir })
     }
     // XXX should really return gerbers here, but they are temp files
     return { inputFiles: {}, gerbers: [] }
@@ -35,14 +35,22 @@ async function processKicadPCB(
         status: 'failed',
         file: layoutSvgPath,
         error: Error('No .kicad_pcb file found'),
+        outputDir,
       })
       return { inputFiles: {}, gerbers: [] }
     }
 
     const layoutPromise = plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
-      .then(() => job.updateProgress({ status: 'done', file: layoutSvgPath }))
+      .then(() =>
+        job.updateProgress({ status: 'done', file: layoutSvgPath, outputDir }),
+      )
       .catch(error =>
-        job.updateProgress({ status: 'failed', file: layoutSvgPath, error }),
+        job.updateProgress({
+          status: 'failed',
+          file: layoutSvgPath,
+          error,
+          outputDir,
+        }),
       )
 
     // Only plot gerbers if there's no `gerbers` key in kitspace.yaml.
@@ -58,7 +66,7 @@ async function processKicadPCB(
     return { inputFiles, gerbers }
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error })
+      job.updateProgress({ status: 'failed', file, error, outputDir })
     }
     return { inputFiles: {}, gerbers: [] }
   }
