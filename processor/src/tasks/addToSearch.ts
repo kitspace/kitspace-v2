@@ -1,24 +1,10 @@
-import { Index, Settings } from 'meilisearch'
 import cheerio from 'cheerio'
 import log from 'loglevel'
-
+import { giteaDB } from '../giteaDB.js'
+import { meiliIndex } from '../meili.js'
 import { JobData } from '../jobData.js'
-import { GiteaDB } from '../giteaDB.js'
-import { InjectedDependencies } from '../injectedDependencies.js'
 
 export const outputFiles = [] as const
-
-export const meiliSettings: Settings = {
-  filterableAttributes: ['id', 'repoId', 'gitHash', 'ownerName'],
-  searchableAttributes: [
-    'projectName',
-    'summary',
-    'bom',
-    'readme',
-    'ownerName',
-    'repoName',
-  ],
-}
 
 interface BOM {
   lines: Array<object>
@@ -41,7 +27,6 @@ export default async function addToSearch(
     hash,
     readmeHTML,
   }: AddToSearchData & Partial<JobData>,
-  { meiliIndex }: Partial<InjectedDependencies>,
 ) {
   // A document identifier must be of type integer or string,
   // composed only of alphanumeric characters (a-z A-Z 0-9), hyphens (-), and underscores (_).
@@ -90,7 +75,7 @@ function getReadmeAsText(readmeHTML) {
  * Subscribe to deletions on the repository table in the GiteaDB and delete
  * search index documents accordingly.
  */
-export function continuallySyncDeletions(giteaDB: GiteaDB, meiliIndex: Index) {
+export function continuallySyncDeletions() {
   return giteaDB.subscribeToRepoDeletions(async row => {
     const result = await meiliIndex.search('', {
       filter: `repoId = ${row.id}`,

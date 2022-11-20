@@ -24,10 +24,6 @@ const giteaDBConfig: Options<never> = {
   password: GITEA_DB_PASSWORD,
 }
 
-export function createGiteaDB(): GiteaDB {
-  return new GiteaDB()
-}
-
 export class GiteaDB {
   // not sure why `Sql` is parametric, (i.e. what type does it want?), hence we
   // use the `never` type
@@ -117,6 +113,8 @@ export class GiteaDB {
     })
   }
 }
+
+export const giteaDB = new GiteaDB()
 
 export interface RepoInfo {
   id: string

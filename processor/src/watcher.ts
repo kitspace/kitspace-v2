@@ -4,12 +4,9 @@ import log from 'loglevel'
 import path from 'node:path'
 
 import { addProjectToQueues, stopQueues } from './queues.js'
-import { GiteaDB } from './giteaDB.js'
+import { giteaDB } from './giteaDB.js'
 
-interface WatchOptions {
-  giteaDB: GiteaDB | null
-}
-export function watch(repoDir, { giteaDB }: WatchOptions) {
+export function watch(repoDir) {
   let dirWatchers = {}
 
   // watch repositories for file-system events and process the project

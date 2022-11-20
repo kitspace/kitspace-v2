@@ -1,4 +1,3 @@
-import { InjectedDependencies } from './injectedDependencies.js'
 import { watch } from './watcher.js'
 import { createWorkers } from './workers.js'
 
@@ -7,10 +6,7 @@ export interface KitspaceProcessorApp {
   stop: () => Promise<void>
 }
 
-export function createApp(
-  repoDir: string,
-  { giteaDB, meiliIndex }: InjectedDependencies,
-): KitspaceProcessorApp {
+export function createApp(repoDir: string): KitspaceProcessorApp {
   const app: KitspaceProcessorApp = {
     cleanup: [],
     async stop() {
@@ -18,10 +14,10 @@ export function createApp(
     },
   }
 
-  const unwatch = watch(repoDir, { giteaDB })
+  const unwatch = watch(repoDir)
   app.cleanup.push(unwatch)
 
-  const stopWorkers = createWorkers({ giteaDB, meiliIndex })
+  const stopWorkers = createWorkers()
   app.cleanup.push(stopWorkers)
 
   return app

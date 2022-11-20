@@ -1,6 +1,5 @@
 import bullmq from 'bullmq'
 import log from 'loglevel'
-import { InjectedDependencies } from './injectedDependencies.js'
 import connection from './redisConnection.js'
 import * as search from './tasks/addToSearch.js'
 import processIBOM from './tasks/processIBOM/index.js'
@@ -17,16 +16,16 @@ interface JobProgress {
   error?: Error
 }
 
-export function createWorkers({ giteaDB, meiliIndex }: InjectedDependencies) {
+export function createWorkers() {
   const workers = [
     addWorker('writeKitspaceYaml', writeKitspaceYaml),
     addWorker('processKicadPCB', processKicadPCB),
     addWorker('processPCB', processPCB),
-    addWorker('processInfo', processInfo, { meiliIndex }),
+    addWorker('processInfo', processInfo),
     addWorker('processIBOM', processIBOM),
   ]
 
-  const dbSubscription = search.continuallySyncDeletions(giteaDB, meiliIndex)
+  const dbSubscription = search.continuallySyncDeletions()
   const stop = async () => {
     await Promise.all(workers.map(worker => worker.close()))
     const { unsubscribe } = await dbSubscription
@@ -35,8 +34,8 @@ export function createWorkers({ giteaDB, meiliIndex }: InjectedDependencies) {
   return stop
 }
 
-function addWorker(name, fn, deps?, options?) {
-  const worker = new bullmq.Worker(name, job => fn(job, job.data, deps), {
+function addWorker(name, fn, options?) {
+  const worker = new bullmq.Worker(name, job => fn(job, job.data), {
     connection,
     concurrency: defaultConcurrency,
     ...options,
