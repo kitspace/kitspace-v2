@@ -17,7 +17,17 @@
   ],
   "plugins": ["prettier", "mocha", "@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-use-before-define": "off",
+    "no-user-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "enums": false,
+        "typedefs": false,
+        "classes": true,
+        "variables": true
+      }
+    ],
     "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "arrow-body-style": "off",

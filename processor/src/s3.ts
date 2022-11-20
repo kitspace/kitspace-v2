@@ -34,60 +34,6 @@ const s3ClientConfig = {
 }
 const bucketName = S3_PROCESSOR_BUCKET_NAME
 
-export const s3 = await createS3()
-
-async function createS3(): Promise<S3> {
-  const s3Client = new S3Client(s3ClientConfig)
-
-  try {
-    // check if it exists already
-    await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
-  } catch (err) {
-    // if it doesn't exist create it
-    await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
-
-    const publicReadPolicy = {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Effect: 'Allow',
-          Principal: {
-            AWS: ['*'],
-          },
-          Action: ['s3:GetObject'],
-          Resource: [`arn:aws:s3:::${bucketName}/*`],
-        },
-      ],
-    }
-    await s3Client.send(
-      new PutBucketPolicyCommand({
-        Bucket: bucketName,
-        Policy: JSON.stringify(publicReadPolicy),
-      }),
-    )
-    // we need cors on all assets, minio doesn't support this command so for
-    // development it's handled in nginx instead
-    if (!USE_LOCAL_MINIO) {
-      await s3Client.send(
-        new PutBucketCorsCommand({
-          Bucket: bucketName,
-          CORSConfiguration: {
-            CORSRules: [
-              {
-                AllowedMethods: ['GET', 'HEAD'],
-                AllowedHeaders: ['*'],
-                AllowedOrigins: ['*'],
-              },
-            ],
-          },
-        }),
-      )
-    }
-  }
-
-  return new S3(s3Client)
-}
-
 export class S3 {
   #s3Client: S3Client
 
@@ -174,6 +120,60 @@ export class S3 {
     return allDoExist
   }
 }
+
+async function createS3(): Promise<S3> {
+  const s3Client = new S3Client(s3ClientConfig)
+
+  try {
+    // check if it exists already
+    await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
+  } catch (err) {
+    // if it doesn't exist create it
+    await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
+
+    const publicReadPolicy = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: ['*'],
+          },
+          Action: ['s3:GetObject'],
+          Resource: [`arn:aws:s3:::${bucketName}/*`],
+        },
+      ],
+    }
+    await s3Client.send(
+      new PutBucketPolicyCommand({
+        Bucket: bucketName,
+        Policy: JSON.stringify(publicReadPolicy),
+      }),
+    )
+    // we need cors on all assets, minio doesn't support this command so for
+    // development it's handled in nginx instead
+    if (!USE_LOCAL_MINIO) {
+      await s3Client.send(
+        new PutBucketCorsCommand({
+          Bucket: bucketName,
+          CORSConfiguration: {
+            CORSRules: [
+              {
+                AllowedMethods: ['GET', 'HEAD'],
+                AllowedHeaders: ['*'],
+                AllowedOrigins: ['*'],
+              },
+            ],
+          },
+        }),
+      )
+    }
+  }
+
+  return new S3(s3Client)
+}
+
+export const s3 = await createS3()
 
 export type MimeType =
   | 'application/json'
