@@ -63,22 +63,17 @@ export const getIsProcessingDone = async rootAssetPath => {
 
   const kitspaceYamlArray = await res.json()
 
-  const assetNames = [
-    'gerber-info.json',
-    'images/bottom.svg',
-    'images/top.svg',
-    'images/top.png',
-    '1-click-BOM.tsv',
-    'bom-info.json',
-    'readme.html',
-  ]
-  const assetUrls = kitspaceYamlArray.flatMap(project =>
-    assetNames.map(assetName => `${rootAssetPath}/${project.name}/${assetName}`),
-  )
-  const responses = await Promise.all(
-    assetUrls.map(url => fetch(url, { method: 'HEAD' })),
-  )
-  return responses.every(r => r.ok)
+  for (const project of kitspaceYamlArray) {
+    const r = await fetch(`${rootAssetPath}/${project.name}/processor-report.json`)
+    if (!r.ok) {
+      return false
+    }
+    const report = await r.json()
+    if (report.status !== 'done') {
+      return false
+    }
+  }
+  return true
 }
 
 /**
