@@ -10,7 +10,9 @@ import { bool, object, string } from 'prop-types'
 
 const SharedProjectPage = props => {
   const { reload } = useRouter()
-  const title = `${props.projectName} on Kitspace`
+  const title = `${
+    props.projectName === '_' ? props.repoName : props.projectName
+  } on Kitspace`
 
   const [isSyncing, setIsSyncing] = useState(props.isEmpty)
   // If the repo is migrating, poll for update every second, otherwise use default config.
@@ -95,6 +97,7 @@ const SharedProjectPage = props => {
 SharedProjectPage.propTypes = {
   rootAssetPath: string.isRequired,
   description: string.isRequired,
+  repoName: string.isRequired,
   projectName: string.isRequired,
   projectFullname: string.isRequired,
   repo: object.isRequired,

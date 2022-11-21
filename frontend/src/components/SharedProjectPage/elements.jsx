@@ -20,6 +20,7 @@ import UploadModal from '@components/UploadModal'
 
 const PageElements = ({
   assetPath,
+  repoName,
   hasUploadPermission,
   hasIBOM,
   kitspaceYAML,
@@ -161,7 +162,7 @@ const PageElements = ({
     <>
       <InfoBar
         description={description}
-        name={projectName}
+        name={projectName === "_" ? repoName : projectName}
         originalUrl={originalUrl}
         site={kitspaceYAML?.site}
       />
@@ -310,6 +311,7 @@ PageElements.propTypes = {
   owner: string.isRequired,
   description: string.isRequired,
   projectName: string.isRequired,
+  repoName: string.isRequired,
   projectFullname: string.isRequired,
   originalUrl: string.isRequired,
   gerberInfoExists: bool.isRequired,
