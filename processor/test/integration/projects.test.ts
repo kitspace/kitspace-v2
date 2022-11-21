@@ -9,7 +9,9 @@ import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import { giteaDB as giteaDBImported, GiteaDB, RepoInfo } from '../../src/giteaDB.js'
 import { s3 as s3Imported, S3 } from '../../src/s3.js'
-import { delay } from '../../src/utils.js'
+import { delay, waitFor } from '../../src/utils.js'
+
+const timeout = 120_000
 
 const exec = util.promisify(cp.exec)
 
@@ -124,15 +126,7 @@ describe(
           ...standardProjectFiles.map(f => `_/${f}`),
         ]
 
-        // wait for the processor-report.json upload that happens when processing
-        // is done
-        let isDone = false
-        while (!isDone) {
-          await delay(10)
-          isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
-            f.endsWith('processor-report.json'),
-          )
-        }
+        await waitForDone({ projectName: '_' })
 
         for (const f of files) {
           const p = path.join(DATA_DIR, `files/kitspace/ruler/${hash}/${f}`)
@@ -195,15 +189,7 @@ describe(
         const zipFileName = `${projectName}-${hash.slice(0, 7)}-gerbers.zip`
         files.push(path.join(projectRoot, zipFileName))
         files.push(path.join(projectRoot, 'images/layout.svg'))
-        // wait for the processor-report.json upload that happens when processing
-        // is done
-        let isDone = false
-        while (!isDone) {
-          await delay(10)
-          isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
-            f.endsWith(`${projectName}/processor-report.json`),
-          )
-        }
+        await waitForDone({ projectName })
       }
 
       for (const p of files) {
@@ -245,15 +231,7 @@ describe(
         ...standardProjectFiles.map(f => `_/${f}`),
       ]
 
-      // wait for the processor-report.json upload that happens when processing
-      // is done
-      let isDone = false
-      while (!isDone) {
-        await delay(10)
-        isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
-          f.endsWith('processor-report.json'),
-        )
-      }
+      await waitForDone({ projectName: '_' })
 
       for (const f of files) {
         const p = path.join(
@@ -300,15 +278,7 @@ describe(
         ...standardProjectFiles.map(f => path.join(projectName, f)),
       ]
 
-      // wait for the processor-report.json upload that happens when processing
-      // is done
-      let isDone = false
-      while (!isDone) {
-        await delay(10)
-        isDone = s3.uploadFileContents.mock.calls.some(([f]) =>
-          f.endsWith('processor-report.json'),
-        )
-      }
+      await waitForDone({ projectName })
 
       for (const f of files) {
         const p = path.join(
@@ -326,5 +296,16 @@ describe(
       vi.clearAllMocks()
     })
   },
-  { timeout: 120_000 },
+  { timeout },
 )
+
+async function waitForDone({ projectName }): Promise<void> {
+  const checkFn = async () =>
+    s3.uploadFileContents.mock.calls.some(
+      ([f, s]) =>
+        f.endsWith(`${projectName}/processor-report.json`) &&
+        JSON.parse(s as string).status === 'done',
+    )
+  const isDone = await waitFor(checkFn, { timeoutMs: timeout })
+  assert(isDone, 'waitForDone timed out')
+}
