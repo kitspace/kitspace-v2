@@ -80,7 +80,8 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
       // page from the server.
       isEmpty: repo?.empty,
       username,
-      projectName: projectName === '_' ? repoName : projectName,
+      projectName,
+      repoName,
       isNew: query.create === 'true',
       gerberInfoExists,
       bomInfoExists,
