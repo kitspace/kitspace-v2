@@ -82,6 +82,9 @@ try {
   }
 }
 
+/**
+ * Upload file contents as object called `filepath` to S3.
+ */
 export async function uploadFileContents(
   filepath: string,
   contents: string | Uint8Array | Buffer,
@@ -117,6 +120,9 @@ export async function uploadFileContents(
   ])
 }
 
+/**
+ * Upload file from disk as object called `filepath` to S3.
+ */
 export async function uploadFile(
   filepath: string,
   contentType: MimeType,
@@ -125,6 +131,9 @@ export async function uploadFile(
   return this.uploadFileContents(filepath, contents, contentType)
 }
 
+/**
+ * Get object contents from S3 as a string.
+ */
 export async function getFileContents(
   filepath: string,
   encoding: BufferEncoding = 'utf8',
@@ -141,6 +150,9 @@ export async function getFileContents(
   return streamToString(stream, encoding)
 }
 
+/**
+ * Check if object named `filepath` exists in S3.
+ */
 export async function exists(filepath: string): Promise<boolean> {
   const filename = path.relative(DATA_DIR, filepath)
   try {
@@ -156,6 +168,9 @@ export async function exists(filepath: string): Promise<boolean> {
   }
 }
 
+/**
+ * Check if all objects exist in S3.
+ */
 export async function existsAll(paths: Array<string>): Promise<boolean> {
   let allDoExist = true
   for (const p of paths) {
