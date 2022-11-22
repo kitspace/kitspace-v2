@@ -4,7 +4,7 @@ import path from 'node:path'
 import url from 'node:url'
 import { promises as fs } from 'fs'
 import { Job, JobData } from '../../job.js'
-import { s3 } from '../../s3.js'
+import * as s3 from '../../s3.js'
 import { execEscaped } from '../../utils.js'
 
 export const outputFiles = ['interactive_bom.json'] as const

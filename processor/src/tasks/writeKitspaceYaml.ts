@@ -8,7 +8,7 @@ import remarkRehype from 'remark-rehype'
 import { unified } from 'unified'
 import { Job, JobData } from '../job.js'
 import { KitspaceYaml } from '../kitspaceYaml.js'
-import { s3 } from '../s3.js'
+import * as s3 from '../s3.js'
 
 export const outputFiles = ['kitspace-yaml.json'] as const
 

@@ -9,7 +9,7 @@ import { mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import { GiteaDB, giteaDB as giteaDBImported, RepoInfo } from '../../src/giteaDB.js'
-import { S3, s3 as s3Imported } from '../../src/s3.js'
+import * as s3Imported from '../../src/s3.js'
 import { waitFor } from '../../src/utils.js'
 import generateImageHash from './generateImageHash.js'
 
@@ -45,6 +45,8 @@ vi.mock('loglevel', () => {
   }
 })
 
+type S3 = typeof s3Imported
+
 vi.mock('../../src/s3.js', () => {
   const s3: MockProxy<S3> = mock<S3>()
   s3.exists.mockReturnValue(Promise.resolve(false))
@@ -61,7 +63,7 @@ vi.mock('../../src/s3.js', () => {
     const contents = await fs.readFile(filepath)
     return s3.uploadFileContents(filepath, contents, contentType)
   })
-  return { s3 }
+  return s3
 })
 
 const s3 = s3Imported as MockProxy<S3>
