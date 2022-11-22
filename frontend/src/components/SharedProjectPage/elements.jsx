@@ -162,7 +162,7 @@ const PageElements = ({
     <>
       <InfoBar
         description={description}
-        name={projectName === "_" ? repoName : projectName}
+        name={projectName === '_' ? repoName : projectName}
         originalUrl={originalUrl}
         site={kitspaceYAML?.site}
       />

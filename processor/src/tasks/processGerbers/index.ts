@@ -274,7 +274,12 @@ async function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
   return s3.uploadFile(topWithBgndPath, 'image/png')
 }
 
-function generateGerberInfo(zipPath, stackup, inputFiles, gerberInfoPath): Promise<void> {
+function generateGerberInfo(
+  zipPath,
+  stackup,
+  inputFiles,
+  gerberInfoPath,
+): Promise<void> {
   const gerberInfo = {
     zipPath: path.basename(zipPath),
     width: Math.ceil(Math.max(stackup.top.width, stackup.bottom.width)),

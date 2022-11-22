@@ -117,7 +117,10 @@ export async function uploadFileContents(
   ])
 }
 
-export async function uploadFile(filepath: string, contentType: MimeType): Promise<void> {
+export async function uploadFile(
+  filepath: string,
+  contentType: MimeType,
+): Promise<void> {
   const contents = await fs.readFile(filepath)
   return this.uploadFileContents(filepath, contents, contentType)
 }
