@@ -7,7 +7,6 @@ const Readme = ({ renderedReadme }) => (
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: renderedReadme }}
     />
-    {/* <style global jsx>{``}</style> */}
   </div>
 )
 
