@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import log from 'loglevel'
 import path from 'node:path'
 import { Job, JobData } from '../../job.js'
-import { s3 } from '../../s3.js'
+import * as s3 from '../../s3.js'
 import { exists } from '../../utils.js'
 import getPartinfo from './get_partinfo.js'
 

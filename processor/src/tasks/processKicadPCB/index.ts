@@ -2,7 +2,7 @@ import globule from 'globule'
 import path from 'node:path'
 import url from 'node:url'
 import { JobData, Job } from '../../job.js'
-import { s3 } from '../../s3.js'
+import * as s3 from '../../s3.js'
 import { execEscaped, findKicadPcbFile } from '../../utils.js'
 
 export const outputFiles = ['images/layout.svg'] as const

@@ -34,146 +34,132 @@ const s3ClientConfig = {
 }
 const bucketName = S3_PROCESSOR_BUCKET_NAME
 
-export class S3 {
-  #s3Client: S3Client
+const s3Client = new S3Client(s3ClientConfig)
 
-  constructor(s3Client: S3Client) {
-    this.#s3Client = s3Client
-  }
+try {
+  // check if it exists already
+  await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
+} catch (err) {
+  // if it doesn't exist create it
+  await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
 
-  async uploadFileContents(
-    filepath: string,
-    contents: string | Uint8Array | Buffer,
-    contentType: MimeType,
-  ): Promise<void> {
-    const filename = path.relative(DATA_DIR, filepath)
-    let contentEncoding: undefined | 'gzip'
-    if (useGzip(contentType)) {
-      contents = await gzip(contents)
-      contentEncoding = 'gzip'
-    }
-    await Promise.all([
-      this.#s3Client.send(
-        new PutObjectCommand({
-          Bucket: bucketName,
-          Key: filename,
-          Body: contents,
-          ContentType: contentType,
-          ContentEncoding: contentEncoding,
-        }),
-      ),
-      // make a copy that you can access with user/project/HEAD instead of
-      // the exact hash
-      this.#s3Client.send(
-        new PutObjectCommand({
-          Bucket: bucketName,
-          Key: getHeadPath(filename),
-          Body: contents,
-          ContentType: contentType,
-          ContentEncoding: contentEncoding,
-        }),
-      ),
-    ])
-  }
-
-  async uploadFile(filepath: string, contentType: MimeType): Promise<void> {
-    const contents = await fs.readFile(filepath)
-    return this.uploadFileContents(filepath, contents, contentType)
-  }
-
-  async getFileContents(
-    filepath: string,
-    encoding: BufferEncoding = 'utf8',
-  ): Promise<string> {
-    const filename = path.relative(DATA_DIR, filepath)
-    const response = await this.#s3Client.send(
-      new GetObjectCommand({ Bucket: bucketName, Key: filename }),
-    )
-    let stream = response.Body
-    if (response.ContentEncoding === 'gzip') {
-      // @ts-ignore
-      stream = response.Body.pipe(zlib.createGunzip())
-    }
-    return streamToString(stream, encoding)
-  }
-
-  async exists(filepath: string): Promise<boolean> {
-    const filename = path.relative(DATA_DIR, filepath)
-    try {
-      await this.#s3Client.send(
-        new HeadObjectCommand({ Bucket: bucketName, Key: filename }),
-      )
-      return true
-    } catch (err) {
-      if (err?.$metadata?.httpStatusCode === 404) {
-        return false
-      }
-      throw err
-    }
-  }
-
-  async existsAll(paths: Array<string>): Promise<boolean> {
-    let allDoExist = true
-    for (const p of paths) {
-      allDoExist = allDoExist && (await this.exists(p))
-    }
-    return allDoExist
-  }
-}
-
-async function createS3(): Promise<S3> {
-  const s3Client = new S3Client(s3ClientConfig)
-
-  try {
-    // check if it exists already
-    await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
-  } catch (err) {
-    // if it doesn't exist create it
-    await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
-
-    const publicReadPolicy = {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Effect: 'Allow',
-          Principal: {
-            AWS: ['*'],
-          },
-          Action: ['s3:GetObject'],
-          Resource: [`arn:aws:s3:::${bucketName}/*`],
+  const publicReadPolicy = {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Principal: {
+          AWS: ['*'],
         },
-      ],
-    }
+        Action: ['s3:GetObject'],
+        Resource: [`arn:aws:s3:::${bucketName}/*`],
+      },
+    ],
+  }
+  await s3Client.send(
+    new PutBucketPolicyCommand({
+      Bucket: bucketName,
+      Policy: JSON.stringify(publicReadPolicy),
+    }),
+  )
+  // we need cors on all assets, minio doesn't support this command so for
+  // development it's handled in nginx instead
+  if (!USE_LOCAL_MINIO) {
     await s3Client.send(
-      new PutBucketPolicyCommand({
+      new PutBucketCorsCommand({
         Bucket: bucketName,
-        Policy: JSON.stringify(publicReadPolicy),
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedMethods: ['GET', 'HEAD'],
+              AllowedHeaders: ['*'],
+              AllowedOrigins: ['*'],
+            },
+          ],
+        },
       }),
     )
-    // we need cors on all assets, minio doesn't support this command so for
-    // development it's handled in nginx instead
-    if (!USE_LOCAL_MINIO) {
-      await s3Client.send(
-        new PutBucketCorsCommand({
-          Bucket: bucketName,
-          CORSConfiguration: {
-            CORSRules: [
-              {
-                AllowedMethods: ['GET', 'HEAD'],
-                AllowedHeaders: ['*'],
-                AllowedOrigins: ['*'],
-              },
-            ],
-          },
-        }),
-      )
-    }
   }
-
-  return new S3(s3Client)
 }
 
-export const s3 = await createS3()
+export async function uploadFileContents(
+  filepath: string,
+  contents: string | Uint8Array | Buffer,
+  contentType: MimeType,
+): Promise<void> {
+  const filename = path.relative(DATA_DIR, filepath)
+  let contentEncoding: undefined | 'gzip'
+  if (useGzip(contentType)) {
+    contents = await gzip(contents)
+    contentEncoding = 'gzip'
+  }
+  await Promise.all([
+    s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: filename,
+        Body: contents,
+        ContentType: contentType,
+        ContentEncoding: contentEncoding,
+      }),
+    ),
+    // make a copy that you can access with user/project/HEAD instead of
+    // the exact hash
+    s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: getHeadPath(filename),
+        Body: contents,
+        ContentType: contentType,
+        ContentEncoding: contentEncoding,
+      }),
+    ),
+  ])
+}
+
+export async function uploadFile(filepath: string, contentType: MimeType): Promise<void> {
+  const contents = await fs.readFile(filepath)
+  return this.uploadFileContents(filepath, contents, contentType)
+}
+
+export async function getFileContents(
+  filepath: string,
+  encoding: BufferEncoding = 'utf8',
+): Promise<string> {
+  const filename = path.relative(DATA_DIR, filepath)
+  const response = await s3Client.send(
+    new GetObjectCommand({ Bucket: bucketName, Key: filename }),
+  )
+  let stream = response.Body
+  if (response.ContentEncoding === 'gzip') {
+    // @ts-ignore
+    stream = response.Body.pipe(zlib.createGunzip())
+  }
+  return streamToString(stream, encoding)
+}
+
+export async function exists(filepath: string): Promise<boolean> {
+  const filename = path.relative(DATA_DIR, filepath)
+  try {
+    await s3Client.send(
+      new HeadObjectCommand({ Bucket: bucketName, Key: filename }),
+    )
+    return true
+  } catch (err) {
+    if (err?.$metadata?.httpStatusCode === 404) {
+      return false
+    }
+    throw err
+  }
+}
+
+export async function existsAll(paths: Array<string>): Promise<boolean> {
+  let allDoExist = true
+  for (const p of paths) {
+    allDoExist = allDoExist && (await this.exists(p))
+  }
+  return allDoExist
+}
 
 export type MimeType =
   | 'application/json'

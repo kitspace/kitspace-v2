@@ -2,7 +2,7 @@ import globule from 'globule'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { Job, JobData } from '../../job.js'
-import { s3 } from '../../s3.js'
+import * as s3 from '../../s3.js'
 import { renderMarkdown } from './renderMarkdown.js'
 
 export const outputFiles = ['readme.html'] as const
