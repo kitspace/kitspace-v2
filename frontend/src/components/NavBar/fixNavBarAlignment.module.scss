@@ -1,0 +1,9 @@
+/*
+ * We are keeping this file here to keep it closer to the component that uses it.
+ * We import it in _app.scss because we can't apply global style in *.module.scss files.
+*/
+
+#nav div .menu :is(a, div).item {
+  // Align menu items with the search bar vertically.
+  align-self: center;
+}

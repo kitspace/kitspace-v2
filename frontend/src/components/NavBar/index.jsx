@@ -51,7 +51,7 @@ const BigBar = () => (
 
 const SmallBar = () => (
   /* This is the Navbar render on small screens */
-  <div className={styles.smallMenu}>
+  <div className={styles.smallNavBar}>
     <Logo />
     <Popup
       basic
@@ -64,29 +64,19 @@ const SmallBar = () => (
         </Button>
       }
     >
-      <Menu inverted vertical id="small-menu">
+      <Menu inverted vertical className={styles.smallMenu}>
         <UserControllerButton smallNavBar />
         <AddProjectButton />
         <SiteMenuItems />
         <SocialMenuItems />
       </Menu>
-      {
-        /* Add a separation line after user specific actions.*/
-        <style global jsx>{`
-          #small-menu #projects:before {
-            background-color: white;
-            height: 1px;
-            margin-bottom: 30px;
-          }
-        `}</style>
-      }
     </Popup>
   </div>
 )
 
 const AddProjectButton = () => {
   return (
-    <Menu.Item id="add-project">
+    <Menu.Item className={styles.addProject} data-cy="add-project">
       <Link passHref href="/projects/new">
         <Button icon as="a" color="green" id="add_project" labelPosition="left">
           <Icon name="plus" />
@@ -107,7 +97,13 @@ const SiteMenuItems = () => {
   return (
     <>
       <Link passHref href="/">
-        <Menu.Item active={isProjectRoute} as="a" id="projects">
+        <Menu.Item
+          active={isProjectRoute}
+          as="a"
+          // Add a separation line after user specific actions.
+          className={styles.projects}
+          href="/"
+        >
           Projects
         </Menu.Item>
       </Link>
@@ -124,12 +120,6 @@ const SiteMenuItems = () => {
       <Menu.Item className={styles.SearchBarContainer}>
         <SearchBar />
       </Menu.Item>
-      {/* Align menu items with the search bar vertically. */}
-      <style global jsx>{`
-        #nav div .menu :is(a, div).item {
-          align-self: center;
-        }
-      `}</style>
     </>
   )
 }
@@ -209,7 +199,7 @@ const LogInButton = () => {
   }
 
   return (
-    <Menu.Item>
+    <Menu.Item className={styles.LogInButton}>
       <Link passHref href={href}>
         <Button as="a" color="green" id="login">
           Login
