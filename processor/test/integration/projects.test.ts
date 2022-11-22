@@ -5,7 +5,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import util from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { any, mock, MockProxy } from 'vitest-mock-extended'
+import { mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import { GiteaDB, giteaDB as giteaDBImported, RepoInfo } from '../../src/giteaDB.js'
@@ -57,9 +57,10 @@ vi.mock('../../src/s3.js', () => {
     return Promise.resolve(false)
   })
   s3.uploadFileContents.mockReturnValue(Promise.resolve())
-  s3.uploadFile.mockImplementation((filepath, contentType) =>
-    s3.uploadFileContents(filepath, '', contentType),
-  )
+  s3.uploadFile.mockImplementation(async (filepath, contentType) => {
+    const contents = await fs.readFile(filepath)
+    return s3.uploadFileContents(filepath, contents, contentType)
+  })
   return { s3 }
 })
 
@@ -133,7 +134,11 @@ describe(
         for (const f of files) {
           const p = path.join(DATA_DIR, `files/kitspace/ruler/${hash}/${f}`)
           expect(s3.exists).toHaveBeenCalledWith(p)
-          expect(s3.uploadFileContents).toHaveBeenCalledWith(p, any(), any())
+          expect(s3.uploadFileContents).toHaveBeenCalledWith(
+            p,
+            expect.anything(),
+            expect.anything(),
+          )
         }
       }
     }
@@ -196,7 +201,11 @@ describe(
 
       for (const p of files) {
         expect(s3.exists).toHaveBeenCalledWith(p)
-        expect(s3.uploadFileContents).toHaveBeenCalledWith(p, any(), any())
+        expect(s3.uploadFileContents).toHaveBeenCalledWith(
+          p,
+          expect.anything(),
+          expect.anything(),
+        )
       }
     })
 
@@ -241,7 +250,11 @@ describe(
           `files/kitspace-test-repos/tinyogx360/${hash}/${f}`,
         )
         expect(s3.exists).toHaveBeenCalledWith(p)
-        expect(s3.uploadFileContents).toHaveBeenCalledWith(p, any(), any())
+        expect(s3.uploadFileContents).toHaveBeenCalledWith(
+          p,
+          expect.anything(),
+          expect.anything(),
+        )
       }
     })
 
@@ -288,7 +301,11 @@ describe(
           `files/kitspace-test-repos/spaces-in-kitspace-data-paths/${hash}/${f}`,
         )
         expect(s3.exists).toHaveBeenCalledWith(p)
-        expect(s3.uploadFileContents).toHaveBeenCalledWith(p, any(), any())
+        expect(s3.uploadFileContents).toHaveBeenCalledWith(
+          p,
+          expect.anything(),
+          expect.anything(),
+        )
       }
     })
 
@@ -304,12 +321,6 @@ describe(
         description: '',
       }
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
-      s3.uploadFile.mockImplementation(async (filepath, contentType) => {
-        if (filepath.endsWith('images/layout.svg')) {
-          const contents = await fs.readFile(filepath)
-          return s3.uploadFileContents(filepath, contents, contentType)
-        }
-      })
       // first we reset HEAD/master to an exact version of the repo
       // so future changes of the repo don't affect this test
       const hash = '4cb9f9a659b4b68e57fde0d5c2d2930157157c96'
@@ -351,8 +362,11 @@ describe(
       )
       const layoutHash = await generateImageHash(layoutCall[1] as Buffer)
 
-      expect(topHash).toBe(topHashFixture)
-      expect(layoutHash).toBe(layoutHashFixture)
+      assert(topHash === topHashFixture, "hash of top.svg doesn't match fixture")
+      assert(
+        layoutHash === layoutHashFixture,
+        "hash of layout.svg doesn't match fixture",
+      )
     })
 
     afterEach(async function () {
@@ -367,9 +381,9 @@ describe(
 async function waitForDone({ projectName }): Promise<void> {
   const checkFn = async () =>
     s3.uploadFileContents.mock.calls.some(
-      ([f, s]) =>
-        f.endsWith(`${projectName}/processor-report.json`) &&
-        JSON.parse(s as string).status === 'done',
+      ([filepath, contents]) =>
+        filepath.endsWith(`${projectName}/processor-report.json`) &&
+        JSON.parse(contents as string).status === 'done',
     )
   const isDone = await waitFor(checkFn, { timeoutMs: timeout })
   assert(isDone, 'waitForDone timed out')
