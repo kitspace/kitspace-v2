@@ -1,15 +1,17 @@
-import assert from 'assert'
 import { Index, SearchResponse } from 'meilisearch'
+import assert from 'node:assert'
 import cp from 'node:child_process'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import util from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { any, mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
-import { giteaDB as giteaDBImported, GiteaDB, RepoInfo } from '../../src/giteaDB.js'
-import { s3 as s3Imported, S3 } from '../../src/s3.js'
-import { delay, waitFor } from '../../src/utils.js'
+import { GiteaDB, giteaDB as giteaDBImported, RepoInfo } from '../../src/giteaDB.js'
+import { S3, s3 as s3Imported } from '../../src/s3.js'
+import { waitFor } from '../../src/utils.js'
+import generateImageHash from './generateImageHash.js'
 
 const timeout = 120_000
 
@@ -290,11 +292,74 @@ describe(
       }
     })
 
+    it('generates correct images when `eda` is specified', async function () {
+      const repoInfo: RepoInfo = {
+        id: '1',
+        is_mirror: true,
+        is_empty: false,
+        owner_name: 'kitspace-test-repos',
+        default_branch: 'master',
+        original_url: 'https://github.com/kitspace-test-repos/rover',
+        name: 'rover',
+        description: '',
+      }
+      giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
+      s3.uploadFile.mockImplementation(async (filepath, contentType) => {
+        if (filepath.endsWith('images/layout.svg')) {
+          const contents = await fs.readFile(filepath)
+          return s3.uploadFileContents(filepath, contents, contentType)
+        }
+      })
+      // first we reset HEAD/master to an exact version of the repo
+      // so future changes of the repo don't affect this test
+      const hash = '4cb9f9a659b4b68e57fde0d5c2d2930157157c96'
+      const tmpBare = path.join(tmpDir, 'kitspace-test-repos/rover.git')
+      await exec(
+        `git clone --bare https://github.com/kitspace-test-repos/rover ${tmpBare}`,
+      )
+      await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
+      await exec(
+        `git clone --bare ${tmpBare} ${path.join(
+          repoDir,
+          'kitspace-test-repos/rover.git',
+        )}`,
+      )
+
+      const projectName = 'open-source-rover-shield'
+
+      await waitForDone({ projectName })
+
+      // Got these manually running md5sum on the files
+      const topHashFixture = 'fb281b13a0404ba5a1e1f016c85e9251'
+      const layoutHashFixture = '20c67554774b93489e068137765602e5'
+
+      const topCall = s3.uploadFileContents.mock.calls.find(([f]) =>
+        f.endsWith(`${projectName}/images/top.svg`),
+      )
+      const layoutCall = s3.uploadFileContents.mock.calls.find(([f]) =>
+        f.endsWith(`${projectName}/images/layout.svg`),
+      )
+
+      assert(topCall != null)
+      assert(layoutCall != null)
+
+      expect(topCall).toHaveLength(3)
+      expect(layoutCall).toHaveLength(3)
+
+      const topHash = await generateImageHash(
+        Buffer.from(topCall[1] as string, 'utf8'),
+      )
+      const layoutHash = await generateImageHash(layoutCall[1] as Buffer)
+
+      expect(topHash).toBe(topHashFixture)
+      expect(layoutHash).toBe(layoutHashFixture)
+    })
+
     afterEach(async function () {
       await app.stop()
       await exec(`rm -rf ${tmpDir}`)
       vi.clearAllMocks()
-    })
+    }, timeout)
   },
   { timeout },
 )
