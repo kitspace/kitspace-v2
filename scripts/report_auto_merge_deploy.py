@@ -7,7 +7,7 @@ import github_api
 # which is "<merger-email> <parent1-sha> <parent2-sha>"
 merges = (
     subprocess.check_output(
-        ["git", "log", "origin/master..HEAD", "--merges", "--format=%ae %P"],
+        ["git", "log", "origin/master..HEAD", "--merges", "--format=%ae %P", "--"],
     )
     .decode("utf-8")
     .splitlines()
