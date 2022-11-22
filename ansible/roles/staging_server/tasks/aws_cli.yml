@@ -1,0 +1,41 @@
+---
+- name: Ensure unzip is installed
+  become: true
+  apt:
+    pkg: [unzip]
+    update_cache: true
+
+# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+- name: Ensure awscli v2 is downloaded
+  unarchive:
+    src: "https://awscli.amazonaws.com/awscli-exe-linux-{{ ansible_architecture }}.zip"
+    dest: /tmp/
+    remote_src: true
+    creates: /tmp/aws
+    mode: 0755
+
+- name: Ensure awscli v2 is installed
+  command:
+  args:
+    cmd: /tmp/aws/install
+    creates: /usr/local/bin/aws
+  become: true
+  register: aws_install
+
+- name: Ensure awscli config dir exists
+  file: path="~/.aws" state=directory
+
+- name: Ensure awscli credentials are present
+  copy:
+    src: files/secrets/{{ inventory_hostname }}.aws-cli.credentials
+    dest: ~/.aws/credentials
+
+- name: Ensure awscli config dir exists for deploy user
+  become: true
+  file: path="/home/deploy/.aws" state=directory
+
+- name: Ensure awscli credentials are present for deploy user
+  become: true
+  copy:
+    src: files/secrets/{{ inventory_hostname }}.aws-cli.credentials
+    dest: /home/deploy/.aws/credentials

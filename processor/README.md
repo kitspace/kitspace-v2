@@ -41,3 +41,13 @@ cd ..
 docker-compose restart processor
 ```
 
+
+## Staging
+
+On the staging servers the processor uses actual AWS S3 buckets rather than a
+Minio Docker container. To clear out the data SSH into the staging server and
+remove the bucket. E.g.:
+
+```
+ssh deploy@review.staging.kitspace.dev 'aws s3 rm s3://kitspace-staging-review'
+```
