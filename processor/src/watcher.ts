@@ -2,9 +2,8 @@ import * as chokidar from 'chokidar'
 import debounce from 'lodash.debounce'
 import log from 'loglevel'
 import path from 'node:path'
-
+import * as giteaDB from './giteaDB.js'
 import { addProjectToQueues, stopQueues } from './queues.js'
-import { giteaDB } from './giteaDB.js'
 
 export function watch(repoDir) {
   let dirWatchers = {}
