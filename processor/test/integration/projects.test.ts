@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
-import { GiteaDB, giteaDB as giteaDBImported, RepoInfo } from '../../src/giteaDB.js'
+import * as giteaDBImported from '../../src/giteaDB.js'
 import * as s3Imported from '../../src/s3.js'
 import { waitFor } from '../../src/utils.js'
 import generateImageHash from './generateImageHash.js'
@@ -76,6 +76,8 @@ vi.mock('../../src/meili.js', () => {
   return { meiliIndex }
 })
 
+type GiteaDB = typeof giteaDBImported
+
 vi.mock('../../src/giteaDB.js', () => {
   const giteaDB: MockProxy<GiteaDB> = mock<GiteaDB>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
@@ -83,7 +85,7 @@ vi.mock('../../src/giteaDB.js', () => {
   giteaDB.subscribeToRepoDeletions.mockReturnValue(
     Promise.resolve({ unsubscribe: () => {} }),
   )
-  return { giteaDB }
+  return giteaDB
 })
 
 const giteaDB = giteaDBImported as MockProxy<GiteaDB>
@@ -104,7 +106,7 @@ describe(
 
     function generateRulerTest(hash: string) {
       return async function testRuler() {
-        const repoInfo: RepoInfo = {
+        const repoInfo: giteaDBImported.RepoInfo = {
           id: '1',
           is_mirror: true,
           is_empty: false,
@@ -154,7 +156,7 @@ describe(
     )
 
     it('processes a multi project correctly', async function () {
-      const repoInfo: RepoInfo = {
+      const repoInfo: giteaDBImported.RepoInfo = {
         id: '1',
         is_mirror: true,
         is_empty: false,
@@ -212,7 +214,7 @@ describe(
     })
 
     it('processes project that has assets in hidden folders (.kitspace)', async function () {
-      const repoInfo: RepoInfo = {
+      const repoInfo: giteaDBImported.RepoInfo = {
         id: '1',
         is_mirror: true,
         is_empty: false,
@@ -261,7 +263,7 @@ describe(
     })
 
     it('processes project with special characters in `gerbers` path', async function () {
-      const repoInfo: RepoInfo = {
+      const repoInfo: giteaDBImported.RepoInfo = {
         id: '1',
         is_mirror: true,
         is_empty: false,
@@ -312,7 +314,7 @@ describe(
     })
 
     it('generates correct images when `eda` is specified', async function () {
-      const repoInfo: RepoInfo = {
+      const repoInfo: giteaDBImported.RepoInfo = {
         id: '1',
         is_mirror: true,
         is_empty: false,

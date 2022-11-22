@@ -1,8 +1,8 @@
 import cheerio from 'cheerio'
 import log from 'loglevel'
-import { giteaDB } from '../giteaDB.js'
-import { meiliIndex } from '../meili.js'
+import * as giteaDB from '../giteaDB.js'
 import { Job, JobData } from '../job.js'
+import { meiliIndex } from '../meili.js'
 
 export const outputFiles = [] as const
 
