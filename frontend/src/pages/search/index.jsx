@@ -1,34 +1,25 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { object, string } from 'prop-types'
 import { SWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import { useInView } from 'react-intersection-observer'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
-import CardsGrid, { cardsPerRow, limit } from '@components/CardsGrid'
-import { meiliIndex } from '@utils/meili'
+import CardsGrid, {
+  cardsPerRow,
+  getKey,
+  gridFetcher,
+  useUpdateBeforeReachingLimit,
+} from '@components/CardsGrid'
 
 import styles from './index.module.scss'
-
-const getKey = query => (pageIndex, previousPageData) => {
-  if (previousPageData && !previousPageData.length) {
-    return null // reached the end
-  }
-  return { query, offset: pageIndex * limit, limit }
-}
-
-const fetchSearch = async ({ query, offset, limit }) => {
-  const searchResult = await meiliIndex.search(query, { limit, offset })
-  return searchResult.hits
-}
 
 export const getServerSideProps = async ({ query }) => {
   // '*' or '' means return everything but '' can't be used as a SWR cache key
   const { q = '*' } = query
 
-  const hits = await fetchSearch({ query: q, limit, offset: 0 })
+  const hits = await gridFetcher({ query: q })
 
   return {
     props: {
@@ -52,17 +43,10 @@ const Search = ({ swrFallback, initialQuery }) => {
 
 const PageContent = () => {
   const { query } = useSearchQuery()
-  const { data, setSize } = useSWRInfinite(getKey(query || '*'), fetchSearch, {
-    revalidateFirstPage: false,
-  })
-  const projects = data?.flat()
-  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
+  const { data, setSize } = useSWRInfinite(getKey(query || '*'), gridFetcher)
+  const intersectionObserverRef = useUpdateBeforeReachingLimit(setSize)
 
-  useEffect(() => {
-    if (isReachingLimit) {
-      setSize(size => size + 1)
-    }
-  }, [isReachingLimit, setSize])
+  const projects = data?.flat()
 
   if (projects?.length === 0) {
     return (
@@ -78,7 +62,7 @@ const PageContent = () => {
   return (
     <CardsGrid
       cardsPerRow={cardsPerRow}
-      intersectionObserverRef={ref}
+      intersectionObserverRef={intersectionObserverRef}
       projects={projects}
     />
   )

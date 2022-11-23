@@ -1,29 +1,16 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { object, string } from 'prop-types'
 import { SWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
 import Page from '@components/Page'
-import CardsGrid, { cardsPerRow, limit } from '@components/CardsGrid'
-import { useInView } from 'react-intersection-observer'
+import CardsGrid, {
+  cardsPerRow,
+  getKey,
+  gridFetcher,
+  useUpdateBeforeReachingLimit,
+} from '@components/CardsGrid'
 import { userExists } from '@utils/giteaApi'
-import { meiliIndex } from '@utils/meili'
-
-const getKey = (query, filter) => (pageIndex, previousPageData) => {
-  if (previousPageData && !previousPageData.length) {
-    return null // reached the end
-  }
-  return { query, offset: pageIndex * limit, limit, filter }
-}
-
-const fetchUserProjects = async ({ query, offset, limit, filter }) => {
-  const searchResult = await meiliIndex.search(query, {
-    offset,
-    limit,
-    filter,
-  })
-  return searchResult.hits
-}
 
 export const getServerSideProps = async ({ params }) => {
   const username = params.user
@@ -35,13 +22,10 @@ export const getServerSideProps = async ({ params }) => {
   }
 
   const q = {
-    query: '*',
     filter: `ownerName = ${username}`,
-    limit,
-    offset: 0,
   }
 
-  const hits = await fetchUserProjects(q)
+  const hits = await gridFetcher(q)
 
   return {
     props: {
@@ -69,24 +53,18 @@ UserPage.propTypes = {
 const User = ({ username }) => {
   const { data, setSize } = useSWRInfinite(
     getKey('*', `ownerName = ${username}`),
-    fetchUserProjects,
+    gridFetcher,
   )
+  const intersectionObserverRef = useUpdateBeforeReachingLimit(setSize)
 
   const userProjects = data?.flat()
-  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
-
-  useEffect(() => {
-    if (isReachingLimit) {
-      setSize(size => size + 1)
-    }
-  }, [isReachingLimit, setSize])
 
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
       <CardsGrid
         cardsPerRow={cardsPerRow}
-        intersectionObserverRef={ref}
+        intersectionObserverRef={intersectionObserverRef}
         projects={userProjects}
       />
     </Page>

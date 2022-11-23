@@ -1,15 +1,16 @@
-import Page from '@components/Page'
-import ProjectCard from '@components/ProjectCard'
-import ErrorPage from '@pages/_error'
-import { getRepo, repoExists } from '@utils/giteaApi'
-import { waitFor } from '@utils/index'
-import { meiliIndex } from '@utils/meili'
-import { getKitspaceYamlArray } from '@utils/projectPage'
-import { SearchParams } from 'meilisearch'
-import { NextPageContext } from 'next'
-import getConfig from 'next/config'
 import React from 'react'
+import { NextPageContext } from 'next'
+import { SearchParams } from 'meilisearch'
+import getConfig from 'next/config'
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
+
+import { getKitspaceYamlArray } from '@utils/projectPage'
+import { getRepo, repoExists } from '@utils/giteaApi'
+import { meiliIndex } from '@utils/meili'
+import { waitFor } from '@utils/index'
+import CardsGrid from '@components/CardsGrid'
+import ErrorPage from '@pages/_error'
+import Page from '@components/Page'
 import ProjectPage from './[project]'
 
 const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
@@ -29,7 +30,7 @@ const RepoPage = (props: RepoPageProps) => {
     const { swrFallback, gridProps } = props.projectGrid
     return (
       <SWRConfig value={{ fallback: swrFallback }}>
-        <ProjectGrid {...gridProps} />
+        <PageContent {...gridProps} />
       </SWRConfig>
     )
   }
@@ -88,19 +89,20 @@ interface ProjectGridProps {
   searchArgs: SearchArgs
 }
 
-const ProjectGrid = ({ parentProject, searchArgs }: ProjectGridProps) => {
+const PageContent = ({ parentProject, searchArgs }: ProjectGridProps) => {
   const { data: projects } = useSWR(searchArgs, fetchSearch, {
     refreshInterval: 1000,
   })
   const isProcessing = projects.length === 0
+
   return (
     <Page title={parentProject}>
       <h1>{parentProject}</h1>
-      <div>
-        {isProcessing
-          ? 'Processing repository...'
-          : projects.map(project => <ProjectCard {...project} key={project.id} />)}
-      </div>
+      {isProcessing ? (
+        <p>Processing repository...</p>
+      ) : (
+        <CardsGrid projects={projects} />
+      )}
     </Page>
   )
 }
@@ -118,7 +120,10 @@ const getGridData = async (
 ): Promise<ProjectGridData> => {
   const repoFullName = `${username}/${repoName}`
   const repo = await getRepo(repoFullName)
-  const searchArgs: SearchArgs = ['*', { filter: `repoId = ${repo.id}` }]
+  const searchArgs: SearchArgs = [
+    '*',
+    { filter: `repoId = ${repo.id}`, limit: 1000 },
+  ]
   const hits = await fetchSearch(...searchArgs)
   return {
     swrFallback: {
