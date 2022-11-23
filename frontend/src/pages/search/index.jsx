@@ -7,13 +7,10 @@ import { useInView } from 'react-intersection-observer'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
-import CardsGrid from '@components/CardsGrid'
+import CardsGrid, { cardsPerRow, limit } from '@components/CardsGrid'
 import { meiliIndex } from '@utils/meili'
 
 import styles from './index.module.scss'
-
-const cardsPerRow = 3
-const limit = cardsPerRow * 6
 
 const getKey = query => (pageIndex, previousPageData) => {
   if (previousPageData && !previousPageData.length) {

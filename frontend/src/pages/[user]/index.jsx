@@ -1,16 +1,26 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { object, string } from 'prop-types'
-import useSWR, { SWRConfig } from 'swr'
+import { SWRConfig } from 'swr'
+import useSWRInfinite from 'swr/infinite'
 
 import Page from '@components/Page'
-import ProjectCard from '@components/ProjectCard'
+import CardsGrid, { cardsPerRow, limit } from '@components/CardsGrid'
+import { useInView } from 'react-intersection-observer'
 import { userExists } from '@utils/giteaApi'
 import { meiliIndex } from '@utils/meili'
-import styles from './username.module.scss'
 
-const fetchUserProjects = async username => {
-  const searchResult = await meiliIndex.search('*', {
-    filter: `ownerName = ${username}`,
+const getKey = (query, filter) => (pageIndex, previousPageData) => {
+  if (previousPageData && !previousPageData.length) {
+    return null // reached the end
+  }
+  return { query, offset: pageIndex * limit, limit, filter }
+}
+
+const fetchUserProjects = async ({ query, offset, limit, filter }) => {
+  const searchResult = await meiliIndex.search(query, {
+    offset,
+    limit,
+    filter,
   })
   return searchResult.hits
 }
@@ -24,12 +34,19 @@ export const getServerSideProps = async ({ params }) => {
     }
   }
 
-  const hits = await fetchUserProjects(username)
+  const q = {
+    query: '*',
+    filter: `ownerName = ${username}`,
+    limit,
+    offset: 0,
+  }
+
+  const hits = await fetchUserProjects(q)
 
   return {
     props: {
       swrFallback: {
-        [params.username]: hits,
+        [q]: hits,
       },
       username,
     },
@@ -50,15 +67,28 @@ UserPage.propTypes = {
 }
 
 const User = ({ username }) => {
-  const { data: userProjects } = useSWR(username, fetchUserProjects)
+  const { data, setSize } = useSWRInfinite(
+    getKey('*', `ownerName = ${username}`),
+    fetchUserProjects,
+  )
+
+  const userProjects = data?.flat()
+  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
+
+  useEffect(() => {
+    if (isReachingLimit) {
+      setSize(size => size + 1)
+    }
+  }, [isReachingLimit, setSize])
+
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
-      <div className={styles.projectsList}>
-        {userProjects?.map(project => (
-          <ProjectCard {...project} key={project.id} />
-        ))}
-      </div>
+      <CardsGrid
+        cardsPerRow={cardsPerRow}
+        intersectionObserverRef={ref}
+        projects={userProjects}
+      />
     </Page>
   )
 }
