@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { object, string } from 'prop-types'
-import useSWR, { SWRConfig } from 'swr'
+import { SWRConfig } from 'swr'
+import useSWRInfinite from 'swr/infinite'
+import { useInView } from 'react-intersection-observer'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
@@ -10,8 +12,18 @@ import { meiliIndex } from '@utils/meili'
 
 import styles from './index.module.scss'
 
-const fetchSearch = async query => {
-  const searchResult = await meiliIndex.search(query)
+const cardsPerRow = 3
+const limit = cardsPerRow * 6
+
+const getKey = query => (pageIndex, previousPageData) => {
+  if (previousPageData && !previousPageData.length) {
+    return null // reached the end
+  }
+  return { query, offset: pageIndex * limit, limit }
+}
+
+const fetchSearch = async ({ query, offset, limit }) => {
+  const searchResult = await meiliIndex.search(query, { limit, offset })
   return searchResult.hits
 }
 
@@ -19,7 +31,7 @@ export const getServerSideProps = async ({ query }) => {
   // '*' or '' means return everything but '' can't be used as a SWR cache key
   const { q = '*' } = query
 
-  const hits = await fetchSearch(q)
+  const hits = await fetchSearch({ query: q, limit, offset: 0 })
 
   return {
     props: {
@@ -43,9 +55,17 @@ const Search = ({ swrFallback, initialQuery }) => {
 
 const CardsGrid = () => {
   const { query } = useSearchQuery()
-  const { data: projects } = useSWR(query || '*', fetchSearch, {
-    refreshInterval: 1000,
+  const { data, setSize } = useSWRInfinite(getKey(query || '*'), fetchSearch, {
+    revalidateFirstPage: false,
   })
+  const projects = data?.flat()
+  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
+
+  useEffect(() => {
+    if (isReachingLimit) {
+      setSize(size => size + 1)
+    }
+  }, [isReachingLimit, setSize])
 
   if (projects?.length === 0) {
     return (
@@ -60,8 +80,12 @@ const CardsGrid = () => {
 
   return (
     <div className={styles.cardsGrid} data-cy="cards-grid">
-      {projects?.map(project => (
-        <ProjectCard {...project} key={project.id} />
+      {projects?.map((project, index) => (
+        <ProjectCard
+          {...project}
+          key={project.id}
+          ref={index === projects.length - cardsPerRow * 2 ? ref : null}
+        />
       ))}
     </div>
   )
