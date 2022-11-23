@@ -7,7 +7,7 @@ import { useInView } from 'react-intersection-observer'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
-import ProjectCard from '@components/ProjectCard'
+import CardsGrid from '@components/CardsGrid'
 import { meiliIndex } from '@utils/meili'
 
 import styles from './index.module.scss'
@@ -47,13 +47,13 @@ const Search = ({ swrFallback, initialQuery }) => {
   return (
     <SWRConfig value={{ fallback: swrFallback }}>
       <Page initialQuery={initialQuery} title="Kitspace">
-        <CardsGrid />
+        <PageContent />
       </Page>
     </SWRConfig>
   )
 }
 
-const CardsGrid = () => {
+const PageContent = () => {
   const { query } = useSearchQuery()
   const { data, setSize } = useSWRInfinite(getKey(query || '*'), fetchSearch, {
     revalidateFirstPage: false,
@@ -79,15 +79,11 @@ const CardsGrid = () => {
   }
 
   return (
-    <div className={styles.cardsGrid} data-cy="cards-grid">
-      {projects?.map((project, index) => (
-        <ProjectCard
-          {...project}
-          key={project.id}
-          ref={index === projects.length - cardsPerRow * 2 ? ref : null}
-        />
-      ))}
-    </div>
+    <CardsGrid
+      cardsPerRow={cardsPerRow}
+      intersectionObserverRef={ref}
+      projects={projects}
+    />
   )
 }
 
