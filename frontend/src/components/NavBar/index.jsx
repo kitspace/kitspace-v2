@@ -76,7 +76,7 @@ const SmallBar = () => (
 
 const AddProjectButton = () => {
   return (
-    <Menu.Item className={styles.addProject} data-cy="add-project">
+    <Menu.Item data-cy="add-project">
       <Link passHref href="/projects/new">
         <Button icon as="a" color="green" id="add_project" labelPosition="left">
           <Icon name="plus" />
