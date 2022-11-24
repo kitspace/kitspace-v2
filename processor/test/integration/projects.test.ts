@@ -1,6 +1,7 @@
 import { Index, SearchResponse } from 'meilisearch'
 import assert from 'node:assert'
 import cp from 'node:child_process'
+import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import util from 'node:util'
@@ -11,7 +12,6 @@ import { DATA_DIR } from '../../src/env.js'
 import * as giteaDBImported from '../../src/giteaDB.js'
 import * as s3Imported from '../../src/s3.js'
 import { waitFor } from '../../src/utils.js'
-import generateImageHash from './generateImageHash.js'
 
 const timeout = 120_000
 
@@ -344,33 +344,16 @@ describe(
 
       await waitForDone({ projectName })
 
-      // Got these manually running md5sum on the files
-      const topHashFixture = 'fb281b13a0404ba5a1e1f016c85e9251'
-      const layoutHashFixture = '20c67554774b93489e068137765602e5'
-
       const topCall = s3.uploadFileContents.mock.calls.find(([f]) =>
-        f.endsWith(`${projectName}/images/top.svg`),
+        f.endsWith(`${projectName}/images/top.png`),
       )
-      const layoutCall = s3.uploadFileContents.mock.calls.find(([f]) =>
-        f.endsWith(`${projectName}/images/layout.svg`),
-      )
-
       assert(topCall != null)
-      assert(layoutCall != null)
-
       expect(topCall).toHaveLength(3)
-      expect(layoutCall).toHaveLength(3)
 
-      const topHash = await generateImageHash(
-        Buffer.from(topCall[1] as string, 'utf8'),
-      )
-      const layoutHash = await generateImageHash(layoutCall[1] as Buffer)
-
-      assert(topHash === topHashFixture, "hash of top.svg doesn't match fixture")
-      assert(
-        layoutHash === layoutHashFixture,
-        "hash of layout.svg doesn't match fixture",
-      )
+      const topHashExpected = 'ca028a1dab49092a5df15401b5a825e4'
+      const topContents = topCall[1]
+      const topHash = crypto.createHash('md5').update(topContents).digest('hex')
+      assert(topHash === topHashExpected, "hash of top.png doesn't match expected")
     })
 
     afterEach(async function () {
