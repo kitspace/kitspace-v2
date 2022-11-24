@@ -1,8 +1,8 @@
 import globule from 'globule'
 import loglevel from 'loglevel'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
-import { promises as fs } from 'fs'
 import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { execEscaped } from '../../utils.js'
@@ -89,6 +89,7 @@ async function processIBOM(
         outputDir,
       }),
     )
+  await fs.rm(ibomOutputPath, {force: true})
 }
 
 async function findBoardFile(folderPath, ext, check?) {

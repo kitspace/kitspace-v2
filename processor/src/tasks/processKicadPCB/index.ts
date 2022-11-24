@@ -1,7 +1,8 @@
 import globule from 'globule'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
-import { JobData, Job } from '../../job.js'
+import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { execEscaped, findKicadPcbFile } from '../../utils.js'
 
@@ -63,11 +64,13 @@ async function processKicadPCB(
 
     const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
     const inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
+    await fs.rm(layoutSvgPath)
     return { inputFiles, gerbers }
   } catch (error) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'failed', file, error, outputDir })
     }
+    await fs.rm(layoutSvgPath, { force: true })
     return { inputFiles: {}, gerbers: [] }
   }
 }

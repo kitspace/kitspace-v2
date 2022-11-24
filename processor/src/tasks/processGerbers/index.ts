@@ -1,7 +1,7 @@
 import globule from 'globule'
 import Jszip from 'jszip'
+import fs from 'node:fs/promises'
 import path from 'node:path'
-import { promises as fs } from 'node:fs'
 import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { exec, execEscaped } from '../../utils.js'
@@ -223,6 +223,8 @@ export default async function processGerbers(
       job.updateProgress({ status: 'failed', file, error, outputDir })
     }
   }
+
+  await Promise.all(filePaths.map(fp => fs.rm(fp, { force: true })))
 }
 
 async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
@@ -234,7 +236,7 @@ async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
     cmd_large += ` --export-height=${180 * 3 - 128}`
   }
   await exec(cmd_large)
-  return s3.uploadFile(topLargePngPath, 'image/png')
+  await s3.uploadFile(topLargePngPath, 'image/png')
 }
 
 async function generateTopPng(topSvgPath, stackup, topPngPath) {
