@@ -89,7 +89,7 @@ async function processIBOM(
         outputDir,
       }),
     )
-  await fs.rm(ibomOutputPath, {force: true})
+  await fs.rm(ibomOutputPath, { force: true })
 }
 
 async function findBoardFile(folderPath, ext, check?) {

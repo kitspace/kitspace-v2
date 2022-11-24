@@ -223,8 +223,9 @@ export default async function processGerbers(
       job.updateProgress({ status: 'failed', file, error, outputDir })
     }
   }
-
-  await Promise.all(filePaths.map(fp => fs.rm(fp, { force: true })))
+  await Promise.all(
+    filePaths.concat(plottedGerbers.gerbers).map(fp => fs.rm(fp, { force: true })),
+  )
 }
 
 async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
