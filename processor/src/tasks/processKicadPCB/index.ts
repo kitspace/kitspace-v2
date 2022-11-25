@@ -26,12 +26,12 @@ async function processKicadPCB(
   const filePaths = [layoutSvgPath]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file, outputDir })
+    await job.updateProgress({ status: 'in_progress', file, outputDir })
   }
 
   if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file, outputDir })
+      await job.updateProgress({ status: 'done', file, outputDir })
     }
     // XXX should really return gerbers here, but they are temp files
     return { inputFiles: {}, gerbers: [] }
@@ -41,7 +41,7 @@ async function processKicadPCB(
     const files = globule.find(path.join(inputDir, '**'), { dot: true })
     const kicadPcbFile = findKicadPcbFile(inputDir, files, kitspaceYaml)
     if (kicadPcbFile == null) {
-      job.updateProgress({
+      await job.updateProgress({
         status: 'failed',
         file: layoutSvgPath,
         error: Error('No .kicad_pcb file found'),
@@ -76,7 +76,7 @@ async function processKicadPCB(
     return { inputFiles, gerbers }
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error, outputDir })
+      await job.updateProgress({ status: 'failed', file, error, outputDir })
     }
     return { inputFiles: {}, gerbers: [] }
   } finally {

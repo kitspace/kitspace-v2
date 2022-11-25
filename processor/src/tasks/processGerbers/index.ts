@@ -66,12 +66,12 @@ export default async function processGerbers(
   const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file, outputDir })
+    await job.updateProgress({ status: 'in_progress', file, outputDir })
   }
 
   if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file, outputDir })
+      await job.updateProgress({ status: 'done', file, outputDir })
     }
     return
   }
@@ -221,7 +221,7 @@ export default async function processGerbers(
     await Promise.all(promises)
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, error, outputDir })
+      await job.updateProgress({ status: 'failed', file, error, outputDir })
     }
   }
 

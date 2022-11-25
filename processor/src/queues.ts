@@ -77,7 +77,7 @@ export async function addProjectToQueues({
 
   const kitspaceYamlArray = await getKitspaceYaml(inputDir)
 
-  writeKitspaceYamlQueue.add(
+  await writeKitspaceYamlQueue.add(
     'projectAPI',
     { kitspaceYamlArray, outputDir },
     { jobId: outputDir },

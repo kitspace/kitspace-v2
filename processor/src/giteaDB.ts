@@ -1,3 +1,4 @@
+import log from 'loglevel'
 import postgres, {
   Options,
   ReplicationEvent,
@@ -92,7 +93,7 @@ function once(event: string, testFunction: (row: Row) => boolean): Promise<void>
   return new Promise(resolve => {
     const sub = sql.subscribe(event, row => {
       if (testFunction(row)) {
-        sub.then(({ unsubscribe }) => unsubscribe())
+        sub.then(({ unsubscribe }) => unsubscribe()).catch(e => log.error(e))
         resolve()
       }
     })

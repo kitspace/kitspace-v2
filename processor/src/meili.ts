@@ -18,4 +18,4 @@ const meili = new MeiliSearch({
   apiKey: MEILI_MASTER_KEY,
 })
 export const meiliIndex = meili.index('projects')
-meiliIndex.updateSettings(meiliSettings)
+await meiliIndex.updateSettings(meiliSettings)

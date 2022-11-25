@@ -17,7 +17,7 @@
   ],
   "plugins": ["prettier", "mocha", "@typescript-eslint"],
   "rules": {
-    "no-user-before-define": "off",
+    "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": [
       "error",
       {
@@ -28,17 +28,18 @@
         "variables": true
       }
     ],
-    "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/naming-convention": "off",
+    "@typescript-eslint/no-floating-promises": "error",
     "arrow-body-style": "off",
     "camelcase": "off",
     "consistent-return": "off",
+    "import/prefer-default-export": "off",
+    "no-await-in-loop": "off",
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
-    "no-await-in-loop": "off",
-    "import/prefer-default-export": "off",
-    "prefer-destructuring": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "prefer-destructuring": "off"
   },
   "ignorePatterns": ["src/tasks/processIBOM/InteractiveHtmlBom/**/*"],
   "overrides": [

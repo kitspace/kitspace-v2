@@ -21,10 +21,10 @@ async function processReadme(
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 
-  job.updateProgress({ status: 'in_progress', file: readmePath, outputDir })
+  await job.updateProgress({ status: 'in_progress', file: readmePath, outputDir })
 
   if (await s3.exists(readmePath)) {
-    job.updateProgress({ status: 'done', file: readmePath, outputDir })
+    await job.updateProgress({ status: 'done', file: readmePath, outputDir })
     return s3.getFileContents(readmePath)
   }
 
@@ -35,7 +35,7 @@ async function processReadme(
   } else {
     const readmeFile = findReadmeFile(inputDir)
     if (readmeFile === null) {
-      job.updateProgress({
+      await job.updateProgress({
         status: 'failed',
         file: readmePath,
         error: Error("couldn't find readme file"),

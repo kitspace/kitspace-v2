@@ -50,13 +50,13 @@ type S3 = typeof s3Imported
 vi.mock('../../src/s3.js', () => {
   const s3: MockProxy<S3> = mock<S3>()
   s3.exists.mockReturnValue(Promise.resolve(false))
-  s3.existsAll.mockImplementation(filepaths => {
+  s3.existsAll.mockImplementation(async filepaths => {
     // call it for every file since we check the `exists` mock calls in our
     // tests
     for (const p of filepaths) {
-      s3.exists(p)
+      await s3.exists(p)
     }
-    return Promise.resolve(false)
+    return false
   })
   s3.uploadFileContents.mockReturnValue(Promise.resolve())
   s3.uploadFile.mockImplementation(async (filepath, contentType) => {
