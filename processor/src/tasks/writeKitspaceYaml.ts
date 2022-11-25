@@ -21,10 +21,14 @@ export default async function writeKitspaceYaml(
   { kitspaceYamlArray, outputDir }: WriteKitspaceYamlInput & Partial<JobData>,
 ) {
   const kitspaceYamlJson = path.join(outputDir, 'kitspace-yaml.json')
-  job.updateProgress({ status: 'in_progress', file: kitspaceYamlJson, outputDir })
+  await job.updateProgress({
+    status: 'in_progress',
+    file: kitspaceYamlJson,
+    outputDir,
+  })
 
   if (await s3.exists(kitspaceYamlJson)) {
-    job.updateProgress({ status: 'done', file: kitspaceYamlJson, outputDir })
+    await job.updateProgress({ status: 'done', file: kitspaceYamlJson, outputDir })
     return
   }
 

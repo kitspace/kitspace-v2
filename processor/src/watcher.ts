@@ -89,11 +89,11 @@ export function watch(repoDir) {
   let watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
 
   // re-scan every minute in case we missed a file-system event
-  const timer = setInterval(() => {
-    watcher.close()
+  const timer = setInterval(async () => {
+    await watcher.close()
     for (const gitDir of Object.keys(dirWatchers)) {
-      dirWatchers[gitDir].add.close()
-      dirWatchers[gitDir].unlinkDir.close()
+      await dirWatchers[gitDir].add.close()
+      await dirWatchers[gitDir].unlinkDir.close()
     }
     dirWatchers = {}
     watcher = chokidar.watch(repoWildcard).on('addDir', handleAddDir)
@@ -101,10 +101,10 @@ export function watch(repoDir) {
 
   const unwatch = async () => {
     clearInterval(timer)
-    watcher.close()
+    await watcher.close()
     for (const gitDir of Object.keys(dirWatchers)) {
-      dirWatchers[gitDir].add.close()
-      dirWatchers[gitDir].unlinkDir.close()
+      await dirWatchers[gitDir].add.close()
+      await dirWatchers[gitDir].unlinkDir.close()
     }
     await stopQueues()
   }

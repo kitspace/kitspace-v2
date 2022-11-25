@@ -19,12 +19,12 @@ async function processBOM(
   const filePaths = [bomOutputPath, infoJsonPath]
 
   for (const file of filePaths) {
-    job.updateProgress({ status: 'in_progress', file, outputDir })
+    await job.updateProgress({ status: 'in_progress', file, outputDir })
   }
 
   if (await s3.existsAll(filePaths)) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'done', file, outputDir })
+      await job.updateProgress({ status: 'done', file, outputDir })
     }
     const info = JSON.parse(await s3.getFileContents(infoJsonPath))
     return info.bom
@@ -58,7 +58,7 @@ async function processBOM(
     }
     if (!bom.lines || bom.lines.length === 0) {
       for (const file of filePaths) {
-        job.updateProgress({
+        await job.updateProgress({
           status: 'failed',
           file,
           outputDir,
@@ -103,7 +103,7 @@ async function processBOM(
     return info.bom
   } catch (error) {
     for (const file of filePaths) {
-      job.updateProgress({ status: 'failed', file, outputDir, error })
+      await job.updateProgress({ status: 'failed', file, outputDir, error })
     }
   }
 }

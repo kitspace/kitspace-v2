@@ -17,7 +17,7 @@ async function processIBOM(
 
   const disableIBOM = !kitspaceYaml['ibom-enabled']
   if (disableIBOM) {
-    job.updateProgress({
+    await job.updateProgress({
       status: 'failed',
       file: ibomOutputPath,
       error: new Error('IBOM is disabled.'),
@@ -26,10 +26,14 @@ async function processIBOM(
     return
   }
 
-  job.updateProgress({ status: 'in_progress', file: ibomOutputPath, outputDir })
+  await job.updateProgress({
+    status: 'in_progress',
+    file: ibomOutputPath,
+    outputDir,
+  })
 
   if (await s3.exists(ibomOutputPath)) {
-    job.updateProgress({ status: 'done', file: ibomOutputPath, outputDir })
+    await job.updateProgress({ status: 'done', file: ibomOutputPath, outputDir })
     return
   }
 
@@ -48,7 +52,7 @@ async function processIBOM(
   }
 
   if (pcbFile == null) {
-    job.updateProgress({
+    await job.updateProgress({
       status: 'failed',
       file: ibomOutputPath,
       error: Error('No PCB file found'),

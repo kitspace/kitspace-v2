@@ -1,5 +1,6 @@
 import cheerio from 'cheerio'
 import log from 'loglevel'
+import { SubscriptionHandle } from 'postgres'
 import * as giteaDB from '../giteaDB.js'
 import { Job, JobData } from '../job.js'
 import { meiliIndex } from '../meili.js'
@@ -75,12 +76,18 @@ function getReadmeAsText(readmeHTML) {
  * Subscribe to deletions on the repository table in the GiteaDB and delete
  * search index documents accordingly.
  */
-export function continuallySyncDeletions() {
-  return giteaDB.subscribeToRepoDeletions(async row => {
-    const result = await meiliIndex.search('', {
-      filter: `repoId = ${row.id}`,
-    })
-    const docIds = result.hits.map(x => x.id)
-    await meiliIndex.deleteDocuments(docIds)
+export function continuallySyncDeletions(): Promise<SubscriptionHandle> {
+  return giteaDB.subscribeToRepoDeletions(row => {
+    meiliIndex
+      .search('', {
+        filter: `repoId = ${row.id}`,
+      })
+      .then(result => {
+        const docIds = result.hits.map(x => x.id)
+        return meiliIndex.deleteDocuments(docIds)
+      })
+      .catch(e => {
+        log.error(e)
+      })
   })
 }
