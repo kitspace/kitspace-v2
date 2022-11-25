@@ -1,4 +1,5 @@
 import React from 'react'
+import { GetServerSideProps } from 'next'
 import { SWRConfig } from 'swr'
 import useSWRInfinite, { unstable_serialize } from 'swr/infinite'
 
@@ -10,7 +11,6 @@ import ProjectCardGrid, {
   useUpdateBeforeReachingLimit,
 } from '@components/ProjectCardGrid'
 import { userExists } from '@utils/giteaApi'
-import { GetServerSideProps } from 'next'
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const username = params.user as string
@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   }
 
   const searchParams = {
-    query: '*',
+    query: '',
     filter: `ownerName = ${username}`,
   }
 
@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   return {
     props: {
       swrFallback: {
-        [unstable_serialize(getKey(searchParams))]: hits,
+        [unstable_serialize(getKey(searchParams))]: [hits],
       },
       username,
     },
@@ -53,7 +53,7 @@ const UserPage = ({ swrFallback, username }: UserPageProps) => {
 
 const UserProjects = ({ username }: Partial<UserPageProps>) => {
   const { data, setSize } = useSWRInfinite(
-    getKey({ query: '*', filter: `ownerName = ${username}` }),
+    getKey({ query: '', filter: `ownerName = ${username}` }),
     gridFetcher,
   )
   const intersectionObserverRef = useUpdateBeforeReachingLimit(setSize)

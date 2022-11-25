@@ -88,11 +88,11 @@ interface ProjectGridData {
 
 interface ProjectGridProps {
   parentProject: string
-  searchArgs: GridFetcherArgs
+  searchParams: GridFetcherArgs
 }
 
-const PageContent = ({ parentProject, searchArgs }: ProjectGridProps) => {
-  const { data: projects } = useSWR(searchArgs, gridFetcher, {
+const PageContent = ({ parentProject, searchParams }: ProjectGridProps) => {
+  const { data: projects } = useSWR(searchParams, gridFetcher, {
     refreshInterval: 1000,
   })
   const isProcessing = projects.length === 0
@@ -115,14 +115,14 @@ const getGridData = async (
 ): Promise<ProjectGridData> => {
   const repoFullName = `${username}/${repoName}`
   const repo = await getRepo(repoFullName)
-  const searchArgs = { filter: `repoId = ${repo.id}`, limit: 1000 }
-  const hits = await gridFetcher(searchArgs)
+  const searchParams = { filter: `repoId = ${repo.id}`, limit: 1000 }
+  const hits = await gridFetcher(searchParams)
   return {
     swrFallback: {
-      [unstable_serialize(searchArgs)]: hits,
+      [unstable_serialize(searchParams)]: hits,
     },
     gridProps: {
-      searchArgs: searchArgs,
+      searchParams,
       parentProject: repoName,
     },
   }

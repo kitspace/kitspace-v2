@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
+import { Filter } from 'meilisearch'
 
 import { meiliIndex } from '@utils/meili'
-import { Filter } from 'meilisearch'
 import ProjectCard, { IntersectionObserverRef } from '../ProjectCard'
 import styles from './index.module.scss'
 
@@ -43,9 +43,16 @@ const ProjectCardGrid = ({
   )
 }
 
+interface SearchSWRKeyParams {
+  filter: Filter
+  limit: number
+  offset: number
+  query: string
+}
+
 export const getKey =
-  ({ query, filter }: { query: string; filter?: Filter }) =>
-  (pageIndex: number, previousPageData: Project[]) => {
+  ({ query, filter }: Partial<SearchSWRKeyParams>) =>
+  (pageIndex: number, previousPageData: Project[]): SearchSWRKeyParams => {
     if (previousPageData && !previousPageData.length) {
       // reached the end
       return null
@@ -53,17 +60,12 @@ export const getKey =
     return { query, offset: pageIndex * defaultLimit, limit: defaultLimit, filter }
   }
 
-export interface GridFetcherArgs {
-  filter?: Filter
-  limit?: number
-  offset?: number
-  query?: string
-}
+export type GridFetcherArgs = Partial<SearchSWRKeyParams>
 
 export const gridFetcher = async ({
   filter,
   offset = 0,
-  query = '*',
+  query = '',
   limit = defaultLimit,
 }: GridFetcherArgs) => {
   const searchResult = await meiliIndex.search(query, { limit, offset, filter })

@@ -18,15 +18,16 @@ import styles from './index.module.scss'
 export const getServerSideProps: GetServerSideProps = async ({
   query: queryParams,
 }) => {
-  // '*' or '' means return everything but '' can't be used as a SWR cache key
-  const query = (queryParams.q as string) || '*'
+  const query = (queryParams.q as string) || ''
 
-  const hits = await gridFetcher({ query })
+  const searchParams = { query }
+
+  const hits = await gridFetcher(searchParams)
 
   return {
     props: {
       swrFallback: {
-        [unstable_serialize(getKey({ query }))]: hits,
+        [unstable_serialize(getKey(searchParams))]: [hits],
       },
       initialQuery: query,
     },
