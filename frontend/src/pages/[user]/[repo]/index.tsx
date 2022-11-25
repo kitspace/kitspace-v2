@@ -1,14 +1,16 @@
 import React from 'react'
 import { NextPageContext } from 'next'
-import { SearchParams } from 'meilisearch'
 import getConfig from 'next/config'
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import { getRepo, repoExists } from '@utils/giteaApi'
-import { meiliIndex } from '@utils/meili'
 import { waitFor } from '@utils/index'
-import CardsGrid from '@components/CardsGrid'
+import CardsGrid, {
+  gridFetcher,
+  GridFetcherArgs,
+  Project,
+} from '@components/CardsGrid'
 import ErrorPage from '@pages/_error'
 import Page from '@components/Page'
 import ProjectPage from './[project]'
@@ -80,17 +82,17 @@ RepoPage.getInitialProps = async (ctx: NextPageContext): Promise<RepoPageProps> 
 }
 
 interface ProjectGridData {
-  swrFallback: Record<string, Array<unknown>>
+  swrFallback: Record<string, Project[]>
   gridProps: ProjectGridProps
 }
 
 interface ProjectGridProps {
   parentProject: string
-  searchArgs: SearchArgs
+  searchArgs: GridFetcherArgs
 }
 
 const PageContent = ({ parentProject, searchArgs }: ProjectGridProps) => {
-  const { data: projects } = useSWR(searchArgs, fetchSearch, {
+  const { data: projects } = useSWR(searchArgs, gridFetcher, {
     refreshInterval: 1000,
   })
   const isProcessing = projects.length === 0
@@ -107,24 +109,14 @@ const PageContent = ({ parentProject, searchArgs }: ProjectGridProps) => {
   )
 }
 
-type SearchArgs = [string, SearchParams]
-
-const fetchSearch = async (...args: SearchArgs) => {
-  const searchResult = await meiliIndex.search(...args)
-  return searchResult.hits
-}
-
 const getGridData = async (
   username: string,
   repoName: string,
 ): Promise<ProjectGridData> => {
   const repoFullName = `${username}/${repoName}`
   const repo = await getRepo(repoFullName)
-  const searchArgs: SearchArgs = [
-    '*',
-    { filter: `repoId = ${repo.id}`, limit: 1000 },
-  ]
-  const hits = await fetchSearch(...searchArgs)
+  const searchArgs = { filter: `repoId = ${repo.id}`, limit: 1000 }
+  const hits = await gridFetcher(searchArgs)
   return {
     swrFallback: {
       [unstable_serialize(searchArgs)]: hits,

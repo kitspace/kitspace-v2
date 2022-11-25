@@ -1,13 +1,13 @@
 import React from 'react'
+import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import { object, string } from 'prop-types'
 import { SWRConfig } from 'swr'
-import useSWRInfinite from 'swr/infinite'
+import useSWRInfinite, { unstable_serialize } from 'swr/infinite'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
 import CardsGrid, {
-  cardsPerRow,
   getKey,
   gridFetcher,
   useUpdateBeforeReachingLimit,
@@ -15,18 +15,20 @@ import CardsGrid, {
 
 import styles from './index.module.scss'
 
-export const getServerSideProps = async ({ query }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  query: queryParams,
+}) => {
   // '*' or '' means return everything but '' can't be used as a SWR cache key
-  const { q = '*' } = query
+  const query = (queryParams.q as string) || '*'
 
-  const hits = await gridFetcher({ query: q })
+  const hits = await gridFetcher({ query })
 
   return {
     props: {
       swrFallback: {
-        [q]: hits,
+        [unstable_serialize(getKey({ query }))]: hits,
       },
-      initialQuery: q,
+      initialQuery: query,
     },
   }
 }
@@ -43,7 +45,7 @@ const Search = ({ swrFallback, initialQuery }) => {
 
 const PageContent = () => {
   const { query } = useSearchQuery()
-  const { data, setSize } = useSWRInfinite(getKey(query || '*'), gridFetcher)
+  const { data, setSize } = useSWRInfinite(getKey({ query }), gridFetcher)
   const intersectionObserverRef = useUpdateBeforeReachingLimit(setSize)
 
   const projects = data?.flat()
@@ -61,7 +63,6 @@ const PageContent = () => {
 
   return (
     <CardsGrid
-      cardsPerRow={cardsPerRow}
       intersectionObserverRef={intersectionObserverRef}
       projects={projects}
     />

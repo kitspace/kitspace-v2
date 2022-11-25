@@ -1,19 +1,19 @@
 import React from 'react'
-import { object, string } from 'prop-types'
 import { SWRConfig } from 'swr'
-import useSWRInfinite from 'swr/infinite'
+import useSWRInfinite, { unstable_serialize } from 'swr/infinite'
 
 import Page from '@components/Page'
 import CardsGrid, {
-  cardsPerRow,
   getKey,
   gridFetcher,
+  Project,
   useUpdateBeforeReachingLimit,
 } from '@components/CardsGrid'
 import { userExists } from '@utils/giteaApi'
+import { GetServerSideProps } from 'next'
 
-export const getServerSideProps = async ({ params }) => {
-  const username = params.user
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const username = params.user as string
   const exists = await userExists(username)
   if (!exists) {
     return {
@@ -21,38 +21,39 @@ export const getServerSideProps = async ({ params }) => {
     }
   }
 
-  const q = {
+  const searchParams = {
+    query: '*',
     filter: `ownerName = ${username}`,
   }
 
-  const hits = await gridFetcher(q)
+  const hits = await gridFetcher(searchParams)
 
   return {
     props: {
       swrFallback: {
-        [q]: hits,
+        [unstable_serialize(getKey(searchParams))]: hits,
       },
       username,
     },
   }
 }
 
-const UserPage = ({ swrFallback, username }) => {
+interface UserPageProps {
+  username: string
+  swrFallback: Record<string, Project[]>
+}
+
+const UserPage = ({ swrFallback, username }: UserPageProps) => {
   return (
     <SWRConfig value={{ fallback: swrFallback }}>
-      <User username={username} />
+      <UserProjects username={username} />
     </SWRConfig>
   )
 }
 
-UserPage.propTypes = {
-  swrFallback: object,
-  username: string.isRequired,
-}
-
-const User = ({ username }) => {
+const UserProjects = ({ username }: Partial<UserPageProps>) => {
   const { data, setSize } = useSWRInfinite(
-    getKey('*', `ownerName = ${username}`),
+    getKey({ query: '*', filter: `ownerName = ${username}` }),
     gridFetcher,
   )
   const intersectionObserverRef = useUpdateBeforeReachingLimit(setSize)
@@ -63,16 +64,11 @@ const User = ({ username }) => {
     <Page title={username}>
       <h1>Projects by {username}</h1>
       <CardsGrid
-        cardsPerRow={cardsPerRow}
         intersectionObserverRef={intersectionObserverRef}
         projects={userProjects}
       />
     </Page>
   )
-}
-
-User.propTypes = {
-  username: string.isRequired,
 }
 
 export default UserPage
