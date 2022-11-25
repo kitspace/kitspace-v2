@@ -10,13 +10,9 @@ export const cardsPerRow = 3
 const defaultLimit = cardsPerRow * 6
 
 export interface Project {
-  bom: object
-  gitHash: string
   id: string
   ownerName: string
   projectName: string
-  readme: string
-  repoId: string
   repoName: string
   summary: string
 }
