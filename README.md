@@ -303,6 +303,25 @@ We also auto deploy some development branches:
 - [abdo-dev.staging.kitspace.dev](https://abdo-dev.staging.kitspace.dev) (from [abdo-dev](https://github.com/kitspace/kitspace-v2/tree/abdo-dev), [@AbdulrhmnGhanem](https://github.com/AbdulrhmnGhanem)'s branch)
 - [kaspar-dev.staging.kitspace.dev](https://abdo-dev.staging.kitspace.dev) (from [kaspar-dev](https://github.com/kitspace/kitspace-v2/tree/kaspar-dev), [@kasbah](https://github.com/kasbah)'s branch)
 
+### Docker Image Tags
+
+When you notice issues in CI e2e or staging which you can't reproduce with the dev version then you can put something like this in .env:
+
+```
+FRONTEND_DEPLOY_IMAGE_TAG=:kaspar-dev
+PROCESSOR_DEPLOY_IMAGE_TAG=:kaspar-dev
+NGINX_DEPLOY_IMAGE_TAG=:kaspar-dev
+GITEA_DEPLOY_IMAGE_TAG=:kaspar-dev
+```
+
+and 
+
+```
+docker-compose -f docker-compose.yml -f docker-compose.deploy.yml -f docker-compose.e2e.yml
+```
+
+to  try and reproduce the issue locally. 
+
 ## Ansible
 
 We configure our staging servers using [Ansible](https://docs.ansible.com/ansible/latest/index.html). Our playbooks and roles are in the [ansible](ansible/) directory.
