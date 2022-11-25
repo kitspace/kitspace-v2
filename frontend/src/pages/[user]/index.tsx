@@ -3,12 +3,12 @@ import { SWRConfig } from 'swr'
 import useSWRInfinite, { unstable_serialize } from 'swr/infinite'
 
 import Page from '@components/Page'
-import CardsGrid, {
+import ProjectCardGrid, {
   getKey,
   gridFetcher,
   Project,
   useUpdateBeforeReachingLimit,
-} from '@components/CardsGrid'
+} from '@components/ProjectCardGrid'
 import { userExists } from '@utils/giteaApi'
 import { GetServerSideProps } from 'next'
 
@@ -63,7 +63,7 @@ const UserProjects = ({ username }: Partial<UserPageProps>) => {
   return (
     <Page title={username}>
       <h1>Projects by {username}</h1>
-      <CardsGrid
+      <ProjectCardGrid
         intersectionObserverRef={intersectionObserverRef}
         projects={userProjects}
       />

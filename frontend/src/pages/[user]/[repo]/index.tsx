@@ -6,11 +6,11 @@ import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import { getRepo, repoExists } from '@utils/giteaApi'
 import { waitFor } from '@utils/index'
-import CardsGrid, {
+import ProjectCardGrid, {
   gridFetcher,
   GridFetcherArgs,
   Project,
-} from '@components/CardsGrid'
+} from '@components/ProjectCardGrid'
 import ErrorPage from '@pages/_error'
 import Page from '@components/Page'
 import ProjectPage from './[project]'
@@ -103,7 +103,7 @@ const PageContent = ({ parentProject, searchArgs }: ProjectGridProps) => {
       {isProcessing ? (
         <p>Processing repository...</p>
       ) : (
-        <CardsGrid projects={projects} />
+        <ProjectCardGrid projects={projects} />
       )}
     </Page>
   )

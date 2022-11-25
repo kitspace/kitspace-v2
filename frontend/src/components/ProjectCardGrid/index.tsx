@@ -21,12 +21,15 @@ export interface Project {
   summary: string
 }
 
-interface CardsGridProps {
+interface ProjectCardGridProps {
   projects: Project[]
   intersectionObserverRef?: IntersectionObserverRef
 }
 
-const CardsGrid = ({ projects, intersectionObserverRef }: CardsGridProps) => {
+const ProjectCardGrid = ({
+  projects,
+  intersectionObserverRef,
+}: ProjectCardGridProps) => {
   return (
     <div className={styles.cardsGrid} data-cy="cards-grid">
       {projects?.map((project, index) => (
@@ -91,4 +94,4 @@ export const useUpdateBeforeReachingLimit = (setSize: SetSWRInfiniteSize) => {
   return ref
 }
 
-export default CardsGrid
+export default ProjectCardGrid

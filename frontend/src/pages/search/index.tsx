@@ -7,11 +7,11 @@ import useSWRInfinite, { unstable_serialize } from 'swr/infinite'
 
 import Page from '@components/Page'
 import { useSearchQuery } from '@contexts/SearchContext'
-import CardsGrid, {
+import ProjectCardGrid, {
   getKey,
   gridFetcher,
   useUpdateBeforeReachingLimit,
-} from '@components/CardsGrid'
+} from '@components/ProjectCardGrid'
 
 import styles from './index.module.scss'
 
@@ -62,7 +62,7 @@ const PageContent = () => {
   }
 
   return (
-    <CardsGrid
+    <ProjectCardGrid
       intersectionObserverRef={intersectionObserverRef}
       projects={projects}
     />
