@@ -9,11 +9,12 @@ describe('Relative README images URLs normalization', () => {
     cy.visit('/')
   })
 
-  it('should be able to fetch relative README image', () => {
+  it('handles readme images starting with `/`', () => {
     const { username, email, password } = getFakeUser()
 
     const repoName = 'CH330_Hardware'
-    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
+    const syncedRepoUrl =
+      'https://github.com/kitspace-test-repos/CH330_Hardware'
 
     cy.createUser(username, email, password)
     cy.visit('/')
@@ -28,14 +29,14 @@ describe('Relative README images URLs normalization', () => {
     // Wait for redirection for project page
     cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
 
-    cy.get('[data-cy=relative-readme-img]', { timeout: 60_000 })
+    cy.get('[data-cy=readme-img]', { timeout: 60_000 })
       .should('have.attr', 'src')
       .then(src =>
         fetch(src).then(res => {
           assert(res.ok, 'expected "ok" http response when requesting image')
           assert(
-            res.headers.get('content-type') === 'image/png',
-            'expected http response to have content-type image/png',
+            res.headers.get('content-type').startsWith('image/'),
+            'expected http response to have content-type image/*',
           )
         }),
       )
