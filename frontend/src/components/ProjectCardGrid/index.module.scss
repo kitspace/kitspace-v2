@@ -9,7 +9,7 @@ $gap: 16px;
   column-gap: $gap;
   margin: auto;
   justify-content: center;
-  /* There are three cards per row, so there are to gaps in each row. */
+  /* There are three cards per row, so there are two gaps in each row. */
   max-width: calc($project-card-width * 3 + $gap * 2);
 }
 

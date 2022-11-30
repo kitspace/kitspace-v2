@@ -1,19 +1,25 @@
 import React from 'react'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
-import { object, string } from 'prop-types'
 import { SWRConfig } from 'swr'
-import useSWRInfinite, { unstable_serialize } from 'swr/infinite'
+import { unstable_serialize } from 'swr/infinite'
 
 import Page from '@components/Page'
+import Project from '@models/Project'
+import {
+  makeSWRKeyGetter,
+  searchFetcher,
+  useLazySearch,
+} from '@hooks/useLazySearch'
+import ProjectCardGrid from '@components/ProjectCardGrid'
 import { useSearchQuery } from '@contexts/SearchContext'
-import ProjectCardGrid, {
-  getKey,
-  gridFetcher,
-  useUpdateBeforeReachingLimit,
-} from '@components/ProjectCardGrid'
 
 import styles from './index.module.scss'
+
+interface SearchPageProps {
+  initialQuery: string
+  swrFallback: Record<string, Array<Array<Project>>>
+}
 
 export const getServerSideProps: GetServerSideProps = async ({
   query: queryParams,
@@ -22,19 +28,21 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const searchParams = { query }
 
-  const hits = await gridFetcher(searchParams)
+  const hits = await searchFetcher(searchParams)
+  const props: SearchPageProps = {
+    swrFallback: {
+      // unstable_serialize is clever enough to turn our key getter function into the right string key
+      [unstable_serialize(makeSWRKeyGetter(searchParams))]: [hits],
+    },
+    initialQuery: query,
+  }
 
   return {
-    props: {
-      swrFallback: {
-        [unstable_serialize(getKey(searchParams))]: [hits],
-      },
-      initialQuery: query,
-    },
+    props,
   }
 }
 
-const Search = ({ swrFallback, initialQuery }) => {
+const Search = ({ swrFallback, initialQuery }: SearchPageProps) => {
   return (
     <SWRConfig value={{ fallback: swrFallback }}>
       <Page initialQuery={initialQuery} title="Kitspace">
@@ -46,11 +54,7 @@ const Search = ({ swrFallback, initialQuery }) => {
 
 const PageContent = () => {
   const { query } = useSearchQuery()
-  const { data, setSize } = useSWRInfinite(getKey({ query }), gridFetcher)
-  const intersectionObserverRef = useUpdateBeforeReachingLimit(setSize)
-
-  const projects = data?.flat()
-
+  const { projects, intersectionObserverRef } = useLazySearch({ query })
   if (projects?.length === 0) {
     return (
       <p className={styles.noMatching} data-cy="cards-grid">
@@ -68,11 +72,6 @@ const PageContent = () => {
       projects={projects}
     />
   )
-}
-
-Search.propTypes = {
-  swrFallback: object.isRequired,
-  initialQuery: string,
 }
 
 export default Search

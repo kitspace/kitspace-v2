@@ -1,24 +1,11 @@
-import React, { useEffect } from 'react'
-import { useInView } from 'react-intersection-observer'
-import { Filter } from 'meilisearch'
-
-import { meiliIndex } from '@utils/meili'
+import React from 'react'
+import { cardsPerRow } from '@hooks/useLazySearch'
+import Project from '@models/Project'
 import ProjectCard, { IntersectionObserverRef } from '../ProjectCard'
 import styles from './index.module.scss'
 
-export const cardsPerRow = 3
-const defaultLimit = cardsPerRow * 6
-
-export interface Project {
-  id: string
-  ownerName: string
-  projectName: string
-  repoName: string
-  summary: string
-}
-
 interface ProjectCardGridProps {
-  projects: Project[]
+  projects: Array<Project>
   intersectionObserverRef?: IntersectionObserverRef
 }
 
@@ -26,6 +13,7 @@ const ProjectCardGrid = ({
   projects,
   intersectionObserverRef,
 }: ProjectCardGridProps) => {
+  const loadMoreProjectsMarker = projects.length - cardsPerRow * 2
   return (
     <div className={styles.cardsGrid} data-cy="cards-grid">
       {projects?.map((project, index) => (
@@ -33,63 +21,12 @@ const ProjectCardGrid = ({
           {...project}
           key={project.id}
           intersectionObserverRef={
-            index === projects.length - cardsPerRow * 2
-              ? intersectionObserverRef
-              : null
+            index === loadMoreProjectsMarker ? intersectionObserverRef : null
           }
         />
       ))}
     </div>
   )
-}
-
-interface SearchSWRKeyParams {
-  filter: Filter
-  limit: number
-  offset: number
-  query: string
-}
-
-export const getKey =
-  ({ query, filter }: Partial<SearchSWRKeyParams>) =>
-  (pageIndex: number, previousPageData: Project[]): SearchSWRKeyParams => {
-    if (previousPageData && !previousPageData.length) {
-      // reached the end
-      return null
-    }
-    return { query, offset: pageIndex * defaultLimit, limit: defaultLimit, filter }
-  }
-
-export type GridFetcherArgs = Partial<SearchSWRKeyParams>
-
-export const gridFetcher = async ({
-  filter,
-  offset = 0,
-  query = '',
-  limit = defaultLimit,
-}: GridFetcherArgs) => {
-  const searchResult = await meiliIndex.search(query, { limit, offset, filter })
-  return searchResult.hits as Project[]
-}
-
-type SetSWRInfiniteSize = (
-  size: (_size: number) => number,
-) => Promise<Project[][] | undefined>
-
-/**
- * Update useSWRInfinite size when the user reaches two rows from the end of the grid.
- * @param  setSize - the function returned by useSWRInfinite.
- */
-export const useUpdateBeforeReachingLimit = (setSize: SetSWRInfiniteSize) => {
-  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
-
-  useEffect(() => {
-    if (isReachingLimit) {
-      setSize(size => size + 1)
-    }
-  }, [isReachingLimit, setSize])
-
-  return ref
 }
 
 export default ProjectCardGrid

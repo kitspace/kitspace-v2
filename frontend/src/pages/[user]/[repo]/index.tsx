@@ -6,11 +6,9 @@ import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 import { getKitspaceYamlArray } from '@utils/projectPage'
 import { getRepo, repoExists } from '@utils/giteaApi'
 import { waitFor } from '@utils/index'
-import ProjectCardGrid, {
-  gridFetcher,
-  GridFetcherArgs,
-  Project,
-} from '@components/ProjectCardGrid'
+import Project from '@models/Project'
+import { searchFetcher, SearchFetcherParams } from '@hooks/useLazySearch'
+import ProjectCardGrid from '@components/ProjectCardGrid'
 import ErrorPage from '@pages/_error'
 import Page from '@components/Page'
 import ProjectPage from './[project]'
@@ -82,17 +80,17 @@ RepoPage.getInitialProps = async (ctx: NextPageContext): Promise<RepoPageProps> 
 }
 
 interface ProjectGridData {
-  swrFallback: Record<string, Project[]>
+  swrFallback: Record<string, Array<Project>>
   gridProps: ProjectGridProps
 }
 
 interface ProjectGridProps {
   parentProject: string
-  searchParams: GridFetcherArgs
+  searchParams: SearchFetcherParams
 }
 
 const PageContent = ({ parentProject, searchParams }: ProjectGridProps) => {
-  const { data: projects } = useSWR(searchParams, gridFetcher, {
+  const { data: projects } = useSWR(searchParams, searchFetcher, {
     refreshInterval: 1000,
   })
   const isProcessing = projects.length === 0
@@ -116,7 +114,7 @@ const getGridData = async (
   const repoFullName = `${username}/${repoName}`
   const repo = await getRepo(repoFullName)
   const searchParams = { filter: `repoId = ${repo.id}`, limit: 1000 }
-  const hits = await gridFetcher(searchParams)
+  const hits = await searchFetcher(searchParams)
   return {
     swrFallback: {
       [unstable_serialize(searchParams)]: hits,
