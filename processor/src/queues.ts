@@ -77,16 +77,10 @@ export async function addProjectToQueues({
 
   const kitspaceYamlArray = await getKitspaceYaml(inputDir)
 
-  await writeKitspaceYamlQueue.add(
-    'projectAPI',
-    { kitspaceYamlArray, outputDir },
-    { jobId: outputDir },
-  )
-
   for (const kitspaceYaml of kitspaceYamlArray) {
     const projectOutputDir = path.join(outputDir, kitspaceYaml.name)
-    // fall back to repo description if there's no summary.
-    kitspaceYaml.summary ||= repoDescription
+
+    kitspaceYaml.summary = kitspaceYaml.summary || repoDescription
 
     createJobs({
       defaultBranch,
@@ -101,6 +95,12 @@ export async function addProjectToQueues({
       hash,
     })
   }
+
+  await writeKitspaceYamlQueue.add(
+    'projectAPI',
+    { kitspaceYamlArray, outputDir },
+    { jobId: outputDir },
+  )
 }
 
 export async function stopQueues() {
