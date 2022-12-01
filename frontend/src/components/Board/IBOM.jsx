@@ -100,6 +100,7 @@ const IBOMScriptsWrapper = ({
     ]}
   `
 
+  const IBOMTitle = projectHref.endsWith('_') ? projectFullname : projectHref
   const initScript = `(function() {
     // i. set the 'pcbdata' var needed by IBOM.
     window.pcbdata = ${pcbData};
@@ -110,7 +111,7 @@ const IBOMScriptsWrapper = ({
     ibom().forEach(f => window[f.name] = f);
     window.initBOM();
     // iv. make the title anchor tag linking to the project page.
-    document.querySelector('#title').innerHTML = "<a href=/${projectHref}>${projectFullname}</a>";
+    document.querySelector('#title').innerHTML = "<a href=/${projectHref}>${IBOMTitle}</a>";
     // vi. prefetch project page.
     const link = document.createElement("link");
     link.rel = "prefetch";
