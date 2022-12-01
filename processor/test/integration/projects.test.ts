@@ -30,18 +30,6 @@ const standardProjectFiles = [
   'readme.html',
 ]
 
-/* eslint-disable no-console */
-vi.mock('loglevel', () => {
-  return {
-    default: {
-      debug: process.env.LOG_LEVEL === 'debug' ? console.debug : () => {},
-      info: console.info,
-      error: console.error,
-      warn: console.warn,
-    },
-  }
-})
-
 type S3 = typeof s3Imported
 
 vi.mock('../../src/s3.js', () => {

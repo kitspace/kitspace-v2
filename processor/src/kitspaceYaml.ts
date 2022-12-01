@@ -1,8 +1,8 @@
 import jsYaml from 'js-yaml'
-import log from 'loglevel'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
+import { log } from './log.js'
 
 const eda = z.object({ type: z.enum(['kicad', 'eagle']), pcb: z.string() })
 

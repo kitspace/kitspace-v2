@@ -25,3 +25,5 @@ export const S3_PROCESSOR_BUCKET_NAME = process.env.S3_PROCESSOR_BUCKET_NAME
 export const USE_LOCAL_MINIO = process.env.USE_LOCAL_MINIO === 'true'
 
 export const MEILI_MASTER_KEY = process.env.MEILI_MASTER_KEY
+
+export const LOG_LEVEL = process.env.LOG_LEVEL
