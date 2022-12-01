@@ -1,0 +1,18 @@
+@import '../../components/ProjectCard/index.module.scss';
+
+$gap: 16px;
+
+.cardsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: $gap;
+  column-gap: $gap;
+  margin: auto;
+  justify-content: center;
+  /* There are three cards per row, so there are two gaps in each row. */
+  max-width: calc($project-card-width * 3 + $gap * 2);
+}
+
+.cardsGrid > div {
+  flex-basis: 33.333%;
+}

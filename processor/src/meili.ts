@@ -11,6 +11,7 @@ const meiliSettings: Settings = {
     'ownerName',
     'repoName',
   ],
+  displayedAttributes: ['id', 'ownerName', 'projectName', 'repoName', 'summary'],
 }
 
 const meili = new MeiliSearch({

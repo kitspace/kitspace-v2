@@ -32,6 +32,7 @@
     "react-double-scrollbar": "^0.0.15",
     "react-dropzone": "^11.5.1",
     "react-hot-toast": "^1.0.1",
+    "react-intersection-observer": "^9.4.1",
     "react-social-login-buttons": "3.1.2",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
