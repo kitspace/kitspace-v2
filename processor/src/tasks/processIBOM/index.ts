@@ -64,8 +64,7 @@ async function processIBOM(
   const ibomOutputFolder = path.dirname(ibomOutputPath)
   await fs.mkdir(ibomOutputFolder, { recursive: true })
 
-  // !note: we can't escape empty `summary` so we have to quote it manually.
-  const summary = kitspaceYaml.summary || "''"
+  const summary = kitspaceYaml.summary
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const run_ibom = path.join(__dirname, 'run_ibom')
   const ibomName = subprojectName === '_' ? repoName : subprojectName

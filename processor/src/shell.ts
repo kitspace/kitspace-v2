@@ -9,14 +9,22 @@ export interface ExecReturn {
 }
 
 /*
- * Tagged template that escapes inputs and executes via the shell
- * example: sh`echo ${userName}`
+ * Tagged template that escapes inputs and executes given command via the shell.
+ * example: await sh`echo hello ${name}`
  */
-export async function sh(
+export function sh(
   strings: TemplateStringsArray,
   ...values: Array<unknown>
 ): Promise<ExecReturn> {
-  const escaped = values.map(String).map(shellEscape)
+  const escaped = values
+    // since having "undefined" or "null" in a command is never useful we turn
+    // them into empty strings
+    .map(x => (x == null ? '' : x))
+    .map(String)
+    .map(shellEscape)
+    // we use empty quotes for empty strings so that they still appear in the
+    // command
+    .map(s => (s === '' ? "''" : s))
   const cmd = recombineTemplate(strings, escaped)
   return exec(cmd)
 }
@@ -25,8 +33,8 @@ export async function sh(
 function shellEscape(s: string): string {
   if (/[^A-Za-z0-9_/:=-]/.test(s)) {
     s = `'${s.replace(/'/g, "'\\''")}'`
-    // unduplicate single-quote at the beginning
     s = s
+      // unduplicate single-quote at the beginning
       .replace(/^(?:'')+/g, '')
       // remove non-escaped single-quote if there are enclosed between 2 escaped
       .replace(/\\'''/g, "\\'")
