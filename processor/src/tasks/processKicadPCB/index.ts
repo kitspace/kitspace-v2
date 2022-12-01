@@ -73,14 +73,14 @@ async function processKicadPCB(
 
     const relativeKicadPcbFile = path.relative(inputDir, kicadPcbFile)
     const inputFiles = { [relativeKicadPcbFile]: { type: 'kicad', side: null } }
-    await fs.rm(layoutSvgPath)
     return { inputFiles, gerbers }
   } catch (error) {
     for (const file of filePaths) {
       job.updateProgress({ status: 'failed', file, error, outputDir })
     }
-    await fs.rm(layoutSvgPath, { force: true })
     return { inputFiles: {}, gerbers: [] }
+  } finally {
+    await fs.rm(layoutSvgPath, { force: true })
   }
 }
 
