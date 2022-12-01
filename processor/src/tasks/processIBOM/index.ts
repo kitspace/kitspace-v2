@@ -1,11 +1,11 @@
 import globule from 'globule'
-import loglevel from 'loglevel'
+import log from 'loglevel'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
 import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
-import { execEscaped } from '../../utils.js'
+import { sh } from '../../shell.js'
 
 export const outputFiles = ['interactive_bom.json'] as const
 
@@ -62,16 +62,16 @@ async function processIBOM(
   }
 
   const ibomOutputFolder = path.dirname(ibomOutputPath)
-  await execEscaped(['mkdir', '-p', ibomOutputFolder])
+  await fs.mkdir(ibomOutputFolder, { recursive: true })
 
   // !note: we can't escape empty `summary` so we have to quote it manually.
   const summary = kitspaceYaml.summary || "''"
   const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
   const run_ibom = path.join(__dirname, 'run_ibom')
   const ibomName = subprojectName === '_' ? repoName : subprojectName
-  await execEscaped([run_ibom, pcbFile, ibomName, summary, ibomOutputPath]).catch(
+  await sh`${run_ibom} ${pcbFile} ${ibomName} ${summary} ${ibomOutputPath}`.catch(
     error => {
-      loglevel.debug(error.stack)
+      log.debug(error.stack)
       return job.updateProgress({
         status: 'failed',
         file: ibomOutputPath,

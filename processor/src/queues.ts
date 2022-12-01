@@ -1,12 +1,14 @@
 import AsyncLock from 'async-lock'
 import bullmq from 'bullmq'
 import log from 'loglevel'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import { DATA_DIR } from './env.js'
 import { JobData } from './job.js'
 import { getKitspaceYaml } from './kitspaceYaml.js'
 import redisConnection from './redisConnection.js'
-import { execEscaped, exists } from './utils.js'
+import { sh } from './shell.js'
+import { exists } from './utils.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
@@ -73,7 +75,7 @@ export async function addProjectToQueues({
   const hash = await getGitHash(inputDir)
   const outputDir = path.join(DATA_DIR, 'files', ownerName, repoName, hash)
 
-  await execEscaped(['mkdir', '-p', outputDir])
+  await fs.mkdir(outputDir, { recursive: true })
 
   const kitspaceYamlArray = await getKitspaceYaml(inputDir)
 
@@ -108,10 +110,8 @@ export async function stopQueues() {
   await Promise.all(qs.map(q => q.obliterate({ force: true })))
 }
 
-async function getGitHash(checkoutDir) {
-  const { stdout } = await execEscaped(['git', 'rev-parse', 'HEAD'], {
-    cwd: checkoutDir,
-  })
+async function getGitHash(checkoutDir: string) {
+  const { stdout } = await sh`cd ${checkoutDir} && git rev-parse HEAD`
   return stdout.slice(0, -1)
 }
 
@@ -123,7 +123,7 @@ async function sync(gitDir, checkoutDir) {
 
       if (await exists(checkoutDir)) {
         log.debug('Pulling updates for', gitDir)
-        await execEscaped(['git', 'pull'], { cwd: checkoutDir }).catch(err => {
+        await sh`cd ${checkoutDir} && git pull`.catch(err => {
           // repos with no branches yet will create this error
           if (
             err.stderr ===
@@ -136,7 +136,7 @@ async function sync(gitDir, checkoutDir) {
         })
       } else {
         log.debug('Cloning ', gitDir)
-        await execEscaped(['git', 'clone', gitDir, checkoutDir]).catch(err => {
+        await sh`git clone ${gitDir} ${checkoutDir}`.catch(err => {
           if (err.stderr) {
             done(err)
           }
