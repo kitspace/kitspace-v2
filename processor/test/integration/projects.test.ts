@@ -1,21 +1,18 @@
 import { Index, SearchResponse } from 'meilisearch'
 import assert from 'node:assert'
-import cp from 'node:child_process'
 import crypto from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import util from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import * as giteaDBImported from '../../src/giteaDB.js'
 import * as s3Imported from '../../src/s3.js'
+import { sh } from '../../src/shell.js'
 import { waitFor } from '../../src/utils.js'
 
 const timeout = 120_000
-
-const exec = util.promisify(cp.exec)
 
 const tmpDir = '/data/test/temp/kitspace-processor-test-projects'
 const repoDir = path.join(tmpDir, 'repos')
@@ -95,8 +92,8 @@ describe(
   function () {
     let app: KitspaceProcessorApp
     beforeEach(async function () {
-      await exec(`mkdir -p ${tmpDir}`)
-      await exec(`mkdir -p ${repoDir}`)
+      await sh`mkdir -p ${tmpDir}`
+      await sh`mkdir -p ${repoDir}`
       app = createApp(repoDir)
     })
 
@@ -120,11 +117,12 @@ describe(
         // first we reset HEAD/master to an exact version of the ruler repo
         // so future changes of the repo don't affect this test
         const tmpBare = path.join(tmpDir, 'ruler.git')
-        await exec(`git clone --bare https://github.com/kitspace/ruler ${tmpBare}`)
-        await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
-        await exec(
-          `git clone --bare ${tmpBare} ${path.join(repoDir, 'kitspace/ruler.git')}`,
-        )
+        await sh`git clone --bare https://github.com/kitspace/ruler ${tmpBare}`
+        await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
+        await sh`git clone --bare ${tmpBare} ${path.join(
+          repoDir,
+          'kitspace/ruler.git',
+        )}`
 
         const files = [
           'kitspace-yaml.json',
@@ -171,16 +169,12 @@ describe(
       // so future changes of the repo don't affect this test
       const hash = '53a7770a66fe0209b38a826d560bc8a4b6b56a0d'
       const tmpBare = path.join(tmpDir, 'diy_particle_detector.git')
-      await exec(
-        `git clone --bare https://github.com/kitspace-forks/DIY_particle_detector ${tmpBare}`,
-      )
-      await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
-      await exec(
-        `git clone --bare ${tmpBare} ${path.join(
-          repoDir,
-          'kitspace-forks/diy_particle_detector.git',
-        )}`,
-      )
+      await sh`git clone --bare https://github.com/kitspace-forks/DIY_particle_detector ${tmpBare}`
+      await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
+      await sh`git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-forks/diy_particle_detector.git',
+      )}`
 
       const repoRoot = path.join(
         DATA_DIR,
@@ -229,16 +223,12 @@ describe(
       // so future changes of the repo don't affect this test
       const hash = '3f945920eb3d161d0f6d43a286d1f6ff2a7174d4'
       const tmpBare = path.join(tmpDir, 'tinyogx360.git')
-      await exec(
-        `git clone --bare https://github.com/kitspace-test-repos/tinyogx360 ${tmpBare}`,
-      )
-      await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
-      await exec(
-        `git clone --bare ${tmpBare} ${path.join(
-          repoDir,
-          'kitspace-test-repos/tinyogx360.git',
-        )}`,
-      )
+      await sh`git clone --bare https://github.com/kitspace-test-repos/tinyogx360 ${tmpBare}`
+      await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
+      await sh`git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/tinyogx360.git',
+      )}`
 
       const files = [
         'kitspace-yaml.json',
@@ -279,16 +269,12 @@ describe(
       // so future changes of the repo don't affect this test
       const hash = 'eacd4ccc160c4ff7cfa9ca5d0047c90ff3f95d42'
       const tmpBare = path.join(tmpDir, 'spaces-in-kitspace-data-paths.git')
-      await exec(
-        `git clone --bare https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths ${tmpBare}`,
-      )
-      await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
-      await exec(
-        `git clone --bare ${tmpBare} ${path.join(
-          repoDir,
-          'kitspace-test-repos/spaces-in-kitspace-data-paths.git',
-        )}`,
-      )
+      await sh`git clone --bare https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths ${tmpBare}`
+      await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
+      await sh`git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/spaces-in-kitspace-data-paths.git',
+      )}`
 
       const projectName = 'aux-ps-cs'
       const files = [
@@ -329,16 +315,12 @@ describe(
       // so future changes of the repo don't affect this test
       const hash = '4cb9f9a659b4b68e57fde0d5c2d2930157157c96'
       const tmpBare = path.join(tmpDir, 'kitspace-test-repos/rover.git')
-      await exec(
-        `git clone --bare https://github.com/kitspace-test-repos/rover ${tmpBare}`,
-      )
-      await exec(`cd ${tmpBare} && git update-ref HEAD ${hash}`)
-      await exec(
-        `git clone --bare ${tmpBare} ${path.join(
-          repoDir,
-          'kitspace-test-repos/rover.git',
-        )}`,
-      )
+      await sh`git clone --bare https://github.com/kitspace-test-repos/rover ${tmpBare}`
+      await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
+      await sh`git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/rover.git',
+      )}`
 
       const projectName = 'open-source-rover-shield'
 
@@ -358,7 +340,7 @@ describe(
 
     afterEach(async function () {
       await app.stop()
-      await exec(`rm -rf ${tmpDir}`)
+      await sh`rm -rf ${tmpDir}`
       vi.clearAllMocks()
     }, timeout)
   },
