@@ -1,15 +1,25 @@
 import globule from 'globule'
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
-import { JobData, Job } from '../../job.js'
+import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { execEscaped, findKicadPcbFile } from '../../utils.js'
 
 export const outputFiles = ['images/layout.svg'] as const
 
+export interface ProcessKicadPcbData {
+  tmpDir: string
+}
+
 async function processKicadPCB(
   job: Job,
-  { inputDir, kitspaceYaml = {}, outputDir }: Partial<JobData>,
+  {
+    inputDir,
+    kitspaceYaml = {},
+    outputDir,
+    tmpDir,
+  }: ProcessKicadPcbData & Partial<JobData>,
 ) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 
@@ -40,7 +50,7 @@ async function processKicadPCB(
       return { inputFiles: {}, gerbers: [] }
     }
 
-    const layoutPromise = plotKicadLayoutSvg(outputDir, layoutSvgPath, kicadPcbFile)
+    const layoutPromise = plotKicadLayoutSvg(layoutSvgPath, kicadPcbFile, tmpDir)
       .then(() =>
         job.updateProgress({ status: 'done', file: layoutSvgPath, outputDir }),
       )
@@ -56,7 +66,7 @@ async function processKicadPCB(
     // Only plot gerbers if there's no `gerbers` key in kitspace.yaml.
     let gerbers = []
     if (kitspaceYaml.gerbers == null) {
-      gerbers = await plotKicadGerbers(outputDir, kicadPcbFile)
+      gerbers = await plotKicadGerbers(kicadPcbFile, tmpDir)
     }
 
     await layoutPromise
@@ -69,34 +79,34 @@ async function processKicadPCB(
       job.updateProgress({ status: 'failed', file, error, outputDir })
     }
     return { inputFiles: {}, gerbers: [] }
+  } finally {
+    await fs.rm(layoutSvgPath, { force: true })
   }
 }
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
 
-async function plotKicadGerbers(outputDir, kicadPcbFile) {
-  const tempGerberFolder = path.join('/tmp/kitspace', outputDir, 'gerbers')
-  await execEscaped(['rm', '-rf', tempGerberFolder])
-  await execEscaped(['mkdir', '-p', tempGerberFolder])
-  const plotCommand = [plot_kicad_pcb, 'gerber', kicadPcbFile, tempGerberFolder]
+async function plotKicadGerbers(kicadPcbFile, tmpDir) {
+  const tmpGerberFolder = path.join(tmpDir, 'gerbers')
+  await fs.mkdir(tmpGerberFolder)
+  const plotCommand = [plot_kicad_pcb, 'gerber', kicadPcbFile, tmpGerberFolder]
   await execEscaped(plotCommand)
-  return globule.find(path.join(tempGerberFolder, '*'))
+  return globule.find(path.join(tmpGerberFolder, '*'))
 }
 
 async function plotKicadLayoutSvg(
-  outputDir: string,
   layoutSvgPath: string,
   kicadPcbFile: string,
+  tmpDir: string,
 ) {
-  const tempFolder = path.join('/tmp/kitspace', outputDir, 'svg')
-  await execEscaped(['rm', '-rf', tempFolder])
-  await execEscaped(['mkdir', '-p', tempFolder])
+  const tmpSvgFolder = path.join(tmpDir, 'svg')
+  await fs.mkdir(tmpSvgFolder)
   const plotCommand = [
     plot_kicad_pcb,
     'svg',
     kicadPcbFile,
-    tempFolder,
+    tmpSvgFolder,
     layoutSvgPath,
   ]
   await execEscaped(plotCommand)
