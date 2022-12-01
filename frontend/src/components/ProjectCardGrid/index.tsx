@@ -1,5 +1,4 @@
 import React from 'react'
-import { cardsPerRow } from '@hooks/useLazySearch'
 import Project from '@models/Project'
 import ProjectCard, { IntersectionObserverRef } from '../ProjectCard'
 import styles from './index.module.scss'
@@ -13,7 +12,8 @@ const ProjectCardGrid = ({
   projects,
   intersectionObserverRef,
 }: ProjectCardGridProps) => {
-  const loadMoreProjectsMarker = projects.length - cardsPerRow * 2
+  // Set the marker to load more projects to 6 cards before the end of the grid.
+  const loadMoreProjectsMarker = projects.length - 6
   return (
     <div className={styles.cardsGrid} data-cy="cards-grid">
       {projects?.map((project, index) => (

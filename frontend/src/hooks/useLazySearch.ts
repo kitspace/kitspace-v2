@@ -16,8 +16,7 @@ interface SearchSWRKeyParams extends SearchParams {
   offset: number
 }
 
-export const cardsPerRow = 3
-const defaultLimit = cardsPerRow * 6
+const defaultPageSize = 18
 
 export const makeSWRKeyGetter =
   ({ query, filter }: SearchParams) =>
@@ -26,7 +25,12 @@ export const makeSWRKeyGetter =
       // reached the end
       return null
     }
-    return { query, offset: pageIndex * defaultLimit, limit: defaultLimit, filter }
+    return {
+      query,
+      offset: pageIndex * defaultPageSize,
+      limit: defaultPageSize,
+      filter,
+    }
   }
 
 export type SearchFetcherParams = Partial<SearchSWRKeyParams>
@@ -35,7 +39,7 @@ export const searchFetcher = async ({
   filter,
   offset = 0,
   query = '',
-  limit = defaultLimit,
+  limit = defaultPageSize,
 }: SearchFetcherParams) => {
   const searchResult = await meiliIndex.search(query, { limit, offset, filter })
   return searchResult.hits as Array<Project>
