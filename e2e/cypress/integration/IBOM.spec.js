@@ -63,7 +63,7 @@ describe('IBOM page', () => {
     /* Migrate the normal repo */
     cy.forceVisit('/projects/new')
 
-    const syncedRepoUrl = 'https://github.com/kitspace-forks/CH330_Hardware'
+    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
     const normalRepoName = 'CH330_Hardware'
 
     cy.get('[data-cy=sync-field]').type(syncedRepoUrl)

@@ -67,7 +67,7 @@ function urlTransformer({
             SrcModifier({ readmeFolder, ownerName, repoName, defaultBranch }),
           )
           node.properties.loading = 'lazy'
-          node.properties['data-cy'] = 'relative-readme-img'
+          node.properties['data-cy'] = 'readme-img'
           break
         default:
           break
