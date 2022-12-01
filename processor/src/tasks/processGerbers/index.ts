@@ -63,6 +63,8 @@ export default async function processGerbers(
     topWithBgndPath,
   ]
 
+  const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
+
   for (const file of filePaths) {
     job.updateProgress({ status: 'in_progress', file, outputDir })
   }
@@ -201,7 +203,6 @@ export default async function processGerbers(
         }),
       )
 
-    const topMetaPngPath = path.join(outputDir, 'images/top-meta.png')
     await generateTopMetaPng(topSvgPath, stackup, topMetaPngPath)
 
     await generateTopWithBgnd(topMetaPngPath, topWithBgndPath)
@@ -224,7 +225,9 @@ export default async function processGerbers(
     }
   }
 
-  await Promise.all(filePaths.map(fp => fs.rm(fp, { force: true })))
+  await Promise.all(
+    [...filePaths, topMetaPngPath].map(fp => fs.rm(fp, { force: true })),
+  )
 }
 
 async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
