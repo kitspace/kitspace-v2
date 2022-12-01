@@ -23,8 +23,8 @@ export async function sh(
 
 // adapted from https://github.com/xxorax/node-shell-escape
 function shellEscape(s: string): string {
-  if (/[^A-Za-z0-9_\/:=-]/.test(s)) {
-    s = "'" + s.replace(/'/g, "'\\''") + "'"
+  if (/[^A-Za-z0-9_/:=-]/.test(s)) {
+    s = `'${s.replace(/'/g, "'\\''")}'`
     // unduplicate single-quote at the beginning
     s = s
       .replace(/^(?:'')+/g, '')
