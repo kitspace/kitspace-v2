@@ -1,6 +1,6 @@
 import { getFakeUser } from '../support/getFakeUser'
 
-describe.skip('Regression test for IBOM ', () => {
+describe('Regression test for IBOM ', () => {
   before(() => {
     const { username, email, password } = getFakeUser()
 
