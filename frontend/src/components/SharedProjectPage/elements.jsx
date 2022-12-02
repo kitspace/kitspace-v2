@@ -179,7 +179,11 @@ const PageElements = ({
         {boardShowcaseAssetsExist ? (
           <>
             <BoardShowcase assetPath={assetPath} />
-            <BoardExtraMenus hasInteractiveBom={hasIBOM} zipUrl={zipUrl} />
+            <BoardExtraMenus
+              hasInteractiveBom={hasIBOM}
+              interactiveBomPath={projectName === '_' ? '_/IBOM' : 'IBOM'}
+              zipUrl={zipUrl}
+            />
           </>
         ) : (
           <AssetPlaceholderWithUploadPermissions asset="board" />

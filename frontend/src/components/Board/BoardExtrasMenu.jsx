@@ -7,9 +7,9 @@ import { bool, string } from 'prop-types'
 import IBomIcon from './IBomIcon'
 import TracespaceIcon from './TracespaceIcon'
 
-const BoardExtraMenus = ({ zipUrl, hasInteractiveBom }) => {
+const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, interactiveBomPath }) => {
   const { asPath } = useRouter()
-  const ibomUrl = `${asPath}/IBOM/`
+  const ibomUrl = `${asPath}/${interactiveBomPath}`
 
   return (
     <div
@@ -45,6 +45,7 @@ const BoardExtraMenus = ({ zipUrl, hasInteractiveBom }) => {
 BoardExtraMenus.propTypes = {
   zipUrl: string.isRequired,
   hasInteractiveBom: bool.isRequired,
+  interactiveBomPath: string.isRequired,
 }
 
 export default BoardExtraMenus
