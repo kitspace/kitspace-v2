@@ -216,6 +216,7 @@ function getGitServiceFromUrl(url: string): string {
     case 'gitlab.com':
       return 'gitlab'
     case 'try.gitea.io':
+    case 'gitea.com':
       return 'gitea'
     default:
       return 'git'

@@ -1,0 +1,50 @@
+name: Copy import script
+
+on:
+  push:
+    paths:
+      - 'scripts/importBoardsTxt.ts'
+      - '.github/workflows/copy-import-script.yml'
+
+jobs:
+  copy_import_script:
+    runs-on: ubuntu-22.04
+    environment: staging
+    strategy:
+      matrix:
+        host:
+          [
+            abdo-dev.staging.kitspace.dev,
+            kaspar-dev.staging.kitspace.dev,
+            review.staging.kitspace.dev,
+            master.staging.kitspace.dev,
+          ]
+    steps:
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - run: mkdir target
+
+      - uses: actions/checkout@v2
+      - name: Compile the script
+        run: deno compile --allow-env --allow-net --target x86_64-unknown-linux-gnu --output target/importBoardsTxt scripts/importBoardsTxt.ts
+
+      - name: Copy the script to hosts
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ matrix.host }}
+          username: deploy
+          key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          source: 'target'
+          target: '/home/deploy'
+
+      - name: Make the script executable on hosts
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ matrix.host }}
+          username: deploy
+          key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/deploy && mv target/importBoardsTxt importBoardsTxt && chmod +x importBoardsTxt && rm -rf target
