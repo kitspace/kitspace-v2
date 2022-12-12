@@ -13,7 +13,7 @@ Usage: importBoardsTxt [options]
 ### To generate `adminToken` run `create_gitea_admin_token.sh`
 ```console
 $ ./scripts/create_gitea_admin_token.sh
-Usage: create_gitea_admin_user <username> <password> <email>
+Usage: create_gitea_admin_token.sh <username> <password> <email>
 ```
 
 ## On staging servers

@@ -3,7 +3,7 @@
 # Usage: create_gitea_admin_user <username> <password> <email>
 # Example: create_gitea_admin_user admin admin
 if [ $# -ne 3 ]; then
-    echo "Usage: create_gitea_admin_user <username> <password> <email>"
+    echo "Usage: $(basename "$0") <username> <password> <email>"
     exit 1
 fi
 
