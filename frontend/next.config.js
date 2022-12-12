@@ -69,6 +69,11 @@ module.exports = async phase => {
           destination: '/:user/:repo',
           permanent: true,
         },
+        {
+          source: '/boards/:service/:user/:repo*',
+          destination: '/:user/:repo*',
+          permanent: true,
+        },
       ]
     },
     async headers() {
