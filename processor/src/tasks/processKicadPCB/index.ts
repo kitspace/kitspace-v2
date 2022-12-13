@@ -4,7 +4,8 @@ import path from 'node:path'
 import url from 'node:url'
 import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
-import { execEscaped, findKicadPcbFile } from '../../utils.js'
+import { sh } from '../../shell.js'
+import { findKicadPcbFile } from '../../utils.js'
 
 export const outputFiles = ['images/layout.svg'] as const
 
@@ -90,8 +91,7 @@ const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
 async function plotKicadGerbers(kicadPcbFile, tmpDir) {
   const tmpGerberFolder = path.join(tmpDir, 'gerbers')
   await fs.mkdir(tmpGerberFolder)
-  const plotCommand = [plot_kicad_pcb, 'gerber', kicadPcbFile, tmpGerberFolder]
-  await execEscaped(plotCommand)
+  await sh`${plot_kicad_pcb} gerber ${kicadPcbFile} ${tmpGerberFolder}`
   return globule.find(path.join(tmpGerberFolder, '*'))
 }
 
@@ -102,14 +102,7 @@ async function plotKicadLayoutSvg(
 ) {
   const tmpSvgFolder = path.join(tmpDir, 'svg')
   await fs.mkdir(tmpSvgFolder)
-  const plotCommand = [
-    plot_kicad_pcb,
-    'svg',
-    kicadPcbFile,
-    tmpSvgFolder,
-    layoutSvgPath,
-  ]
-  await execEscaped(plotCommand)
+  await sh`${plot_kicad_pcb} svg ${kicadPcbFile} ${tmpSvgFolder} ${layoutSvgPath}`
   await s3.uploadFile(layoutSvgPath, 'image/svg+xml')
 }
 

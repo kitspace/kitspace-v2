@@ -4,7 +4,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { Job, JobData } from '../../job.js'
 import * as s3 from '../../s3.js'
-import { exec, execEscaped } from '../../utils.js'
+import { sh } from '../../shell.js'
 import boardBuilder from './board_builder.js'
 import findGerberFiles from './findGerberFiles.js'
 
@@ -77,7 +77,7 @@ export default async function processGerbers(
   }
 
   try {
-    await execEscaped(['mkdir', '-p', path.join(outputDir, 'images')])
+    await fs.mkdir(path.join(outputDir, 'images'), { recursive: true })
 
     let inputFiles: PlottedGerbers['inputFiles']
     let gerbers: PlottedGerbers['gerbers']
@@ -231,51 +231,47 @@ export default async function processGerbers(
 }
 
 async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
-  let cmd_large = `inkscape --without-gui '${topSvgPath}'`
-  cmd_large += ` --export-png='${topLargePngPath}'`
+  let constraint: string
   if (stackup.top.width > stackup.top.height + 0.05) {
-    cmd_large += ` --export-width=${240 * 3 - 128}`
+    constraint = `--export-width=${240 * 3 - 128}`
   } else {
-    cmd_large += ` --export-height=${180 * 3 - 128}`
+    constraint = `--export-height=${180 * 3 - 128}`
   }
-  await exec(cmd_large)
+  await sh`inkscape --without-gui ${topSvgPath} ${constraint} --export-png=${topLargePngPath}`
   await s3.uploadFile(topLargePngPath, 'image/png')
 }
 
 async function generateTopPng(topSvgPath, stackup, topPngPath) {
-  let cmd = `inkscape --without-gui '${topSvgPath}'`
-  cmd += ` --export-png='${topPngPath}'`
+  let constraint: string
   if (stackup.top.width > stackup.top.height + 0.05) {
-    cmd += ' --export-width=240'
+    constraint = `--export-width=${240}`
   } else {
-    cmd += ' --export-height=180'
+    constraint = `--export-height=${180}`
   }
-  await exec(cmd)
+  await sh`inkscape --without-gui ${topSvgPath} ${constraint} --export-png=${topPngPath}`
   return s3.uploadFile(topPngPath, 'image/png')
 }
 
-function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath) {
-  let cmd_meta = `inkscape --without-gui '${topSvgPath}'`
-  cmd_meta += ` --export-png='${topMetaPngPath}'`
+async function generateTopMetaPng(topSvgPath, stackup, topMetaPngPath) {
   const width = 900
   let height = 400
   const ratioW = width / stackup.top.width
-  if (ratioW * stackup.top.height > height) {
+  const isWide = ratioW * stackup.top.height > height
+  if (isWide) {
     let ratioH = height / stackup.top.height
     while (ratioH * stackup.top.width > width) {
       height -= 1
       ratioH = height / stackup.top.height
     }
-    cmd_meta += ` --export-height=${height}`
-  } else {
-    cmd_meta += ` --export-width=${width}`
   }
-  return exec(cmd_meta)
+  const constraint = isWide
+    ? `--export-height=${height}`
+    : `--export-width=${width}`
+  await sh`inkscape --without-gui ${topSvgPath} ${constraint} --export-png=${topMetaPngPath}`
 }
 
 async function generateTopWithBgnd(topMetaPngPath, topWithBgndPath) {
-  const cmd = `convert -background '#373737' -gravity center '${topMetaPngPath}' -extent 1000x524 '${topWithBgndPath}'`
-  await exec(cmd)
+  await sh`convert -background '#373737' -gravity center ${topMetaPngPath} -extent 1000x524 ${topWithBgndPath}`
   return s3.uploadFile(topWithBgndPath, 'image/png')
 }
 
