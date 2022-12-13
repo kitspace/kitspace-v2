@@ -50,7 +50,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "refs/heads/master" ]];
           then
-            echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\", \"firefox\"],\"containers\":[1,2,3]}"
+            echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\"],\"containers\":[1,2,3]}"
           else
             echo "::set-output name=matrix::{\"browser\":[\"chrome\"],\"containers\":[1,2,3]}"
           fi
