@@ -8,7 +8,10 @@
 }
 
 $project-card-width: 290px;
+$card_bg_color: #fafafa;
+
 .card {
+  background-color: $card_bg_color !important;
   margin: 0 !important;
   width: $project-card-width;
 }
@@ -16,10 +19,25 @@ $project-card-width: 290px;
   text-decoration: none;
 }
 
+$card_font_size: 16px !important;
+$card_font_weight: normal !important;
 .cardText {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: $card_font_size;
+  font-weight: $card_font_weight;
+}
+
+.cardHeader {
+  height: 30px;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+.ownerName {
+  font-size: 14px !important;
+  font-weight: $card_font_weight;
 }
 
 .cardDescription {
@@ -34,4 +52,8 @@ $project-card-width: 290px;
   word-wrap: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
+  background-color: $card_bg_color;
+  color: #373737 !important;
+  font-size: $card_font_size;
+  font-weight: $card_font_weight;
 }
