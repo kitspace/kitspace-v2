@@ -6,7 +6,7 @@ export interface KitspaceProcessorApp {
   stop: () => Promise<void>
 }
 
-export function createApp(repoDir: string): KitspaceProcessorApp {
+export async function createApp(repoDir: string): Promise<KitspaceProcessorApp> {
   const app: KitspaceProcessorApp = {
     cleanup: [],
     async stop() {
@@ -14,7 +14,7 @@ export function createApp(repoDir: string): KitspaceProcessorApp {
     },
   }
 
-  const unwatch = watch(repoDir)
+  const unwatch = await watch(repoDir)
   app.cleanup.push(unwatch)
 
   const stopWorkers = createWorkers()

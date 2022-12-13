@@ -82,7 +82,7 @@ describe(
     beforeEach(async function () {
       await sh`mkdir -p ${tmpDir}`
       await sh`mkdir -p ${repoDir}`
-      app = createApp(repoDir)
+      app = await createApp(repoDir)
     })
 
     it('creates app', async function () {

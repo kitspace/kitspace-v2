@@ -86,6 +86,18 @@ export async function subscribeToRepoDeletions(
 }
 
 /**
+ * Subscribe to all events on the repository table.
+ * the callback will be called.
+ * @param callback
+ * @returns
+ */
+export async function subscribeToRepo(
+  callback: (row: Row | null, info: ReplicationEvent) => void,
+): Promise<SubscriptionHandle> {
+  return sql.subscribe('*:repository', callback)
+}
+
+/**
  * Subscribe to event stream till testFunction returns true once. Unsubscribe
  * and resolve Promise when it does.
  */
