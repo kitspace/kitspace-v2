@@ -47,10 +47,15 @@ const ProjectCard = ({
           )}
         </div>
         <Card.Content>
-          <Card.Header className={styles.cardText} data-cy="project-card-name">
+          <Card.Header
+            className={`${styles.cardText} ${styles.cardHeader}`}
+            data-cy="project-card-name"
+          >
             {nameOnCard}
           </Card.Header>
-          <Card.Meta className={styles.cardText}>{ownerName}</Card.Meta>
+          <Card.Meta className={`${styles.cardText} ${styles.ownerName}`}>
+            {ownerName}
+          </Card.Meta>
           <Card.Description className={styles.cardDescription}>
             {summary}
           </Card.Description>
