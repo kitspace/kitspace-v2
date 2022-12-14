@@ -33,11 +33,19 @@ export async function getRepoInfo(
   repoName: string,
 ): Promise<RepoInfo | undefined> {
   const rows = await sql<RepoInfo[]>`
-      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
+      SELECT id, is_mirror, is_empty, owner_name, lower_name, name, description, original_url, default_branch
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
 
   return rows[0]
+}
+
+export async function getAllReposInfo(): Promise<RepoInfo[]> {
+  const rows = await sql<RepoInfo[]>`
+      SELECT id, is_mirror, is_empty, owner_name, lower_name, name, description, original_url, default_branch
+        FROM repository`
+
+  return rows
 }
 
 /**
@@ -117,6 +125,7 @@ export interface RepoInfo {
   is_mirror: boolean
   is_empty: boolean
   owner_name: string
+  lower_name: string
   default_branch: string
   original_url: string
   name: string
