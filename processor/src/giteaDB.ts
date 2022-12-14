@@ -1,4 +1,3 @@
-import log from 'loglevel'
 import postgres, {
   Options,
   ReplicationEvent,
@@ -12,6 +11,7 @@ import {
   GITEA_DB_USER,
   POSTGRES_DB,
 } from './env.js'
+import { log } from './log.js'
 
 // not sure why `Options` is parametric, (i.e. what type does it want?), hence we
 // use the `never` type
