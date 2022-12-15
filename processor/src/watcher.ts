@@ -6,7 +6,7 @@ import { addProjectToQueues, stopQueues } from './queues.js'
 const addToQueues = debounce(
   async (giteaRepo: giteaDB.RepoInfo, repoDir: string) => {
     let ownerName = giteaRepo.owner_name.toLowerCase()
-    let repoName = giteaRepo.lower_name
+    let repoName = giteaRepo.name.toLocaleLowerCase()
 
     if (giteaRepo == null) {
       log.error(`${ownerName}/${repoName} is not in giteaDB`)
@@ -57,7 +57,6 @@ export async function watch(repoDir: string) {
       // We don't subscribe to repo deletions.
       return
     }
-
     const reposQueue = new Set<string>()
 
     if (!reposQueue.has(repo.id)) {

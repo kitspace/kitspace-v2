@@ -5,6 +5,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
+import { ReplicationEvent, Row } from 'postgres'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import * as giteaDBImported from '../../src/giteaDB.js'
@@ -60,20 +61,33 @@ vi.mock('../../src/meili.js', () => {
   meiliIndex.search.mockReturnValue(Promise.resolve(searchResponse))
   return { meiliIndex }
 })
-
-type GiteaDB = typeof giteaDBImported
+type GiteaDB = MockProxy<typeof giteaDBImported> & {
+  addRepoCallback?: (row: Row | null, info: ReplicationEvent) => Promise<void>
+}
 
 vi.mock('../../src/giteaDB.js', () => {
-  const giteaDB: MockProxy<GiteaDB> = mock<GiteaDB>()
+  const giteaDB: GiteaDB = mock<GiteaDB>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
   giteaDB.subscribeToRepoDeletions.mockReturnValue(
     Promise.resolve({ unsubscribe: () => {} }),
   )
+  giteaDB.subscribeToRepo.mockImplementation(callback => {
+    giteaDB.addRepoCallback = callback
+    return Promise.resolve({ unsubscribe: () => {} })
+  })
+  giteaDB.getAllReposInfo.mockReturnValue(Promise.resolve([]))
   return giteaDB
 })
 
-const giteaDB = giteaDBImported as MockProxy<GiteaDB>
+const subscribeToRepoReplicationEvent: ReplicationEvent = {
+  command: 'update',
+  relation: null,
+  old: null,
+  key: null,
+}
+
+const giteaDB = giteaDBImported as GiteaDB
 
 describe(
   'gitea projects functionality',
@@ -96,13 +110,13 @@ describe(
           is_mirror: true,
           is_empty: false,
           owner_name: 'kitspace',
-          lower_name: 'ruler',
           default_branch: 'master',
           original_url: 'https://github.com/kitspace/ruler',
           name: 'ruler',
           description: '',
         }
         giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
+
         // first we reset HEAD/master to an exact version of the ruler repo
         // so future changes of the repo don't affect this test
         const tmpBare = path.join(tmpDir, 'ruler.git')
@@ -112,6 +126,8 @@ describe(
           repoDir,
           'kitspace/ruler.git',
         )}`
+
+        await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
 
         const files = [
           'kitspace-yaml.json',
@@ -148,7 +164,6 @@ describe(
         is_mirror: true,
         is_empty: false,
         owner_name: 'kitspace-forks',
-        lower_name: 'diy_particle_detector',
         default_branch: 'master',
         original_url: 'https://github.com/kitspace-forks/diy_particle_detector',
         name: 'diy_particle_detector',
@@ -165,6 +180,8 @@ describe(
         repoDir,
         'kitspace-forks/diy_particle_detector.git',
       )}`
+
+      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
 
       const repoRoot = path.join(
         DATA_DIR,
@@ -203,7 +220,6 @@ describe(
         is_mirror: true,
         is_empty: false,
         owner_name: 'kitspace-test-repos',
-        lower_name: 'tinyogx360',
         default_branch: 'master',
         original_url: 'https://github.com/kitspace-test-repos/tinyogx360',
         name: 'tinyogx360',
@@ -220,6 +236,8 @@ describe(
         repoDir,
         'kitspace-test-repos/tinyogx360.git',
       )}`
+
+      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
 
       const files = [
         'kitspace-yaml.json',
@@ -249,13 +267,13 @@ describe(
         is_mirror: true,
         is_empty: false,
         owner_name: 'kitspace-test-repos',
-        lower_name: 'special-characters-in-gerbers-path',
         default_branch: 'master',
         original_url:
           'https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths',
         name: 'spaces-in-kitspace-data-paths',
         description: '',
       }
+
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
       // first we reset HEAD/master to an exact version of the repo
       // so future changes of the repo don't affect this test
@@ -267,6 +285,8 @@ describe(
         repoDir,
         'kitspace-test-repos/spaces-in-kitspace-data-paths.git',
       )}`
+
+      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
 
       const projectName = 'aux-ps-cs'
       const files = [
@@ -297,12 +317,12 @@ describe(
         is_mirror: true,
         is_empty: false,
         owner_name: 'kitspace-test-repos',
-        lower_name: 'rover',
         default_branch: 'master',
         original_url: 'https://github.com/kitspace-test-repos/rover',
         name: 'rover',
         description: '',
       }
+
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
       // first we reset HEAD/master to an exact version of the repo
       // so future changes of the repo don't affect this test
@@ -314,6 +334,8 @@ describe(
         repoDir,
         'kitspace-test-repos/rover.git',
       )}`
+
+      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
 
       const projectName = 'open-source-rover-shield'
 

@@ -33,7 +33,7 @@ export async function getRepoInfo(
   repoName: string,
 ): Promise<RepoInfo | undefined> {
   const rows = await sql<RepoInfo[]>`
-      SELECT id, is_mirror, is_empty, owner_name, lower_name, name, description, original_url, default_branch
+      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
 
@@ -42,7 +42,7 @@ export async function getRepoInfo(
 
 export async function getAllReposInfo(): Promise<RepoInfo[]> {
   const rows = await sql<RepoInfo[]>`
-      SELECT id, is_mirror, is_empty, owner_name, lower_name, name, description, original_url, default_branch
+      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
         FROM repository`
 
   return rows
@@ -100,7 +100,7 @@ export async function subscribeToRepoDeletions(
  * @returns
  */
 export async function subscribeToRepo(
-  callback: (row: Row | null, info: ReplicationEvent) => void,
+  callback: (row: Row | null, info: ReplicationEvent) => Promise<void>,
 ): Promise<SubscriptionHandle> {
   return sql.subscribe('*:repository', callback)
 }
@@ -125,7 +125,6 @@ export interface RepoInfo {
   is_mirror: boolean
   is_empty: boolean
   owner_name: string
-  lower_name: string
   default_branch: string
   original_url: string
   name: string
