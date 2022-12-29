@@ -51,18 +51,18 @@ const addToQueues = debounce(
 
 export async function watch(repoDir: string) {
   await addToQueuesOnStartUp(repoDir)
+  const reposBeingQueued = new Set<string>()
 
   const { unsubscribe } = await giteaDB.subscribeToRepo(async (repo, info) => {
     if (info.command === 'delete') {
       // We don't subscribe to repo deletions.
       return
     }
-    const reposQueue = new Set<string>()
 
-    if (!reposQueue.has(repo.id)) {
-      reposQueue.add(repo.id)
+    if (!reposBeingQueued.has(repo.id)) {
+      reposBeingQueued.add(repo.id)
       await addToQueues(repo as giteaDB.RepoInfo, repoDir)
-      reposQueue.delete(repo.id)
+      reposBeingQueued.delete(repo.id)
     }
   })
 

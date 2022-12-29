@@ -17,6 +17,11 @@ const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: { age: 3600 },
   // keep the last 5000 failed jobs
   removeOnFail: { count: 5000 },
+  attempts: 3,
+  backoff: {
+    type: 'exponential',
+    delay: 1000,
+  },
 }
 
 const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
