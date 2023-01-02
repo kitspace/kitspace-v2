@@ -1,0 +1,18 @@
+@import '../colors.scss';
+
+.icon {
+  color: $silver-chalice;
+}
+
+main #search-field::placeholder {
+  color: $silver-chalice !important;
+  font-size: 18px;
+}
+
+main #search-field {
+  height: 60px;
+}
+
+main #search-field:focus {
+  border: 1px solid $lightlightgray !important;
+}
