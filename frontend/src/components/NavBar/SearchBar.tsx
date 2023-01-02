@@ -57,8 +57,10 @@ const SearchBar = ({ className }: SearchBarProps) => {
   )
 }
 
-const LoadingIcon = () => <Icon loading className={styles.icon} name="spinner" />
-const SearchIcon = () => <Icon className={styles.icon} name="search" />
+const LoadingIcon = () => (
+  <Icon loading className={styles.searchFieldIcon} name="spinner" />
+)
+const SearchIcon = () => <Icon className={styles.searchFieldIcon} name="search" />
 
 export default SearchBar
 

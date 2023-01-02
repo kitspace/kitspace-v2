@@ -12,6 +12,7 @@ import {
   useLazySearch,
 } from '@hooks/useLazySearch'
 import ProjectCardGrid from '@components/ProjectCardGrid'
+import SearchBar from '@components/NavBar/SearchBar'
 import { useSearchQuery } from '@contexts/SearchContext'
 
 import styles from './index.module.scss'
@@ -55,22 +56,36 @@ const Search = ({ swrFallback, initialQuery }: SearchPageProps) => {
 const PageContent = () => {
   const { query } = useSearchQuery()
   const { projects, intersectionObserverRef } = useLazySearch({ query })
-  if (projects?.length === 0) {
-    return (
-      <p className={styles.noMatching} data-cy="cards-grid">
-        Sorry, no result.{' '}
-        <Link href="/projects/new">
-          <a>Add your project!</a>
-        </Link>
-      </p>
-    )
-  }
 
   return (
-    <ProjectCardGrid
-      intersectionObserverRef={intersectionObserverRef}
-      projects={projects}
-    />
+    <>
+      <SearchBar className={styles.mobileSearchBar} />
+      {query === '' && <IntroText />}
+      {projects.length === 0 ? (
+        <p className={styles.noMatching} data-cy="cards-grid">
+          Sorry, no result.{' '}
+          <Link href="/projects/new">
+            <a>Add your project!</a>
+          </Link>
+        </p>
+      ) : (
+        <ProjectCardGrid
+          intersectionObserverRef={intersectionObserverRef}
+          projects={projects}
+        />
+      )}
+    </>
+  )
+}
+
+const IntroText = () => {
+  return (
+    <div className={styles.introTextContainer}>
+      <div className={styles.introText}>
+        Kitspace is a place to share ready-to-order electronics designs. We automate
+        parts purchasing so you can focus on building.
+      </div>
+    </div>
   )
 }
 

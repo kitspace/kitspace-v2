@@ -13,7 +13,7 @@ const ProjectCardGrid = ({
   intersectionObserverRef,
 }: ProjectCardGridProps) => {
   // Set the marker to load more projects to 6 cards before the end of the grid.
-  const loadMoreProjectsMarker = projects.length - 6
+  const loadMoreProjectsMarker = projects?.length - 6
   return (
     <div className={styles.cardsGrid} data-cy="cards-grid">
       {projects?.map((project, index) => (
