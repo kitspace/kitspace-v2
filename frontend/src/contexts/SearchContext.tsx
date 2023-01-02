@@ -1,13 +1,12 @@
 import { useRouter } from 'next/router'
-import { node, string } from 'prop-types'
 import { createContext, useContext, useEffect, useState } from 'react'
 
-const SearchContext = createContext({
+const SearchContext = createContext<SearchContext | null>({
   query: '',
   updateQuery: () => {},
 })
 
-const SearchProvider = ({ children, initialQuery }) => {
+const SearchProvider = ({ children, initialQuery }: SearchProviderProps) => {
   const [query, setQuery] = useState(initialQuery)
 
   const {
@@ -27,11 +26,16 @@ const SearchProvider = ({ children, initialQuery }) => {
   )
 }
 
-SearchProvider.propTypes = {
-  children: node.isRequired,
-  initialQuery: string.isRequired,
-}
-
 export const useSearchQuery = () => useContext(SearchContext)
 
 export default SearchProvider
+
+interface SearchContext {
+  query: string
+  updateQuery: (q: string) => void
+}
+
+interface SearchProviderProps {
+  children: React.ReactNode
+  initialQuery: string
+}
