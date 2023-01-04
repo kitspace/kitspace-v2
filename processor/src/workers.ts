@@ -6,6 +6,7 @@ import { log } from './log.js'
 import connection from './redisConnection.js'
 import * as s3 from './s3.js'
 import * as search from './tasks/addToSearch.js'
+import cleanUp from './tasks/cleanUp.js'
 import processIBOM, { outputFiles as ibomFiles } from './tasks/processIBOM/index.js'
 import processInfo, { outputFiles as infoFiles } from './tasks/processInfo.js'
 import processPCB, { outputFiles as pcbFiles } from './tasks/processPCB.js'
@@ -28,6 +29,7 @@ export function createWorkers() {
     addWorker('processPCB', processPCB),
     addWorker('processInfo', processInfo),
     addWorker('processIBOM', processIBOM),
+    addWorker('cleanUp', cleanUp),
   ]
 
   const dbSubscription = search.continuallySyncDeletions()

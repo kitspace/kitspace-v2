@@ -2,7 +2,7 @@ import globule from 'globule'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
-import { Job, JobData } from '../../job.js'
+import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { sh } from '../../shell.js'
 import { log } from '../../log.js'
@@ -11,7 +11,13 @@ export const outputFiles = ['interactive_bom.json'] as const
 
 async function processIBOM(
   job: Job,
-  { inputDir, kitspaceYaml, outputDir, repoName, subprojectName }: Partial<JobData>,
+  {
+    inputDir,
+    kitspaceYaml,
+    outputDir,
+    repoName,
+    subprojectName,
+  }: Partial<ProjectJobData>,
 ) {
   const ibomOutputPath = path.join(outputDir, 'interactive_bom.json')
 

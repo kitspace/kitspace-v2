@@ -1,7 +1,7 @@
 import * as oneClickBom from '1-click-bom'
 import { promises as fs } from 'fs'
 import path from 'node:path'
-import { Job, JobData } from '../../job.js'
+import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { exists } from '../../utils.js'
 import getPartinfo from './get_partinfo.js'
@@ -11,7 +11,7 @@ export const outputFiles = ['1-click-BOM.tsv', 'bom-info.json'] as const
 
 async function processBOM(
   job: Job,
-  { inputDir, kitspaceYaml, outputDir }: Partial<JobData>,
+  { inputDir, kitspaceYaml, outputDir }: Partial<ProjectJobData>,
 ) {
   const bomOutputPath = path.join(outputDir, '1-click-BOM.tsv')
   const infoJsonPath = path.join(outputDir, 'bom-info.json')

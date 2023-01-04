@@ -1,4 +1,4 @@
-import { Job, JobData } from '../job.js'
+import { Job, ProjectJobData } from '../job.js'
 import addToSearch, { outputFiles as addToSearchFiles } from './addToSearch.js'
 import processBOM, { outputFiles as bomFiles } from './processBOM/index.js'
 import processReadme, { outputFiles as readmeFiles } from './processReadme/index.js'
@@ -9,7 +9,7 @@ export const outputFiles = [
   ...addToSearchFiles,
 ] as const
 
-export default async function processInfo(job: Job, jobData: JobData) {
+export default async function processInfo(job: Job, jobData: ProjectJobData) {
   const [bom, readmeHTML] = await Promise.all([
     processBOM(job, jobData),
     processReadme(job, jobData),

@@ -1,16 +1,16 @@
 import AsyncLock from 'async-lock'
-import bullmq from 'bullmq'
+import bullmq, { FlowProducer } from 'bullmq'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { DATA_DIR } from './env.js'
 import { exists } from './utils.js'
-import { JobData } from './job.js'
+import { ProjectJobData, RepoJobData } from './job.js'
 import { KitspaceYaml, getKitspaceYaml } from './kitspaceYaml.js'
 import { log } from './log.js'
+import { meiliIndex } from './meili.js'
 import { sh } from './shell.js'
 import * as s3 from './s3.js'
 import redisConnection from './redisConnection.js'
-import { meiliIndex } from './meili.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
@@ -26,12 +26,13 @@ const defaultJobOptions: bullmq.JobsOptions = {
   },
 }
 
+const projectQueues: Array<bullmq.Queue> = []
+
 const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
   connection: redisConnection,
   defaultJobOptions,
 })
 
-const projectQueues: Array<bullmq.Queue> = []
 const processPCBQueue = new bullmq.Queue('processPCB', {
   connection: redisConnection,
   defaultJobOptions,
@@ -50,11 +51,49 @@ const processIBOMQueue = new bullmq.Queue('processIBOM', {
 })
 projectQueues.push(processIBOMQueue)
 
-async function createJobs(jobData: JobData) {
+const cleanUpQueue = new bullmq.Queue('cleanUp', {
+  connection: redisConnection,
+  defaultJobOptions,
+})
+
+const repoProcessingFlow = new FlowProducer({ connection: redisConnection })
+
+/**
+ * Create jobs for each project in a repo, and when all projects are done, clean up the checkout and the output dir.
+ */
+async function createJobs(jobData: RepoJobData) {
   const jobId = jobData.outputDir
-  for (const q of projectQueues) {
-    await q.add('projectAPI', jobData, { jobId })
-  }
+
+  const childrenJobs = jobData.kitspaceYamlArray
+    .map(kitspaceYaml => {
+      const projectOutputDir = path.join(jobData.outputDir, kitspaceYaml.name)
+      kitspaceYaml.summary = kitspaceYaml.summary || jobData.repoDescription
+      const data: ProjectJobData = {
+        ...jobData,
+        kitspaceYaml,
+        outputDir: projectOutputDir,
+        subprojectName: kitspaceYaml.name,
+      }
+
+      return projectQueues.map(q => ({
+        data,
+        name: 'projectAPI',
+        opts: { jobId: projectOutputDir },
+        queueName: q.name,
+      }))
+    })
+    .flat()
+
+  await repoProcessingFlow.add({
+    children: childrenJobs,
+    data: jobData,
+    name: 'projectAPI',
+    // We have to use unique jobId for the cleanup job, whenever we recreate it;
+    // There are case where the repo gets re-cloned and if we use the same jobId
+    // the cleanup job will be ignore.
+    opts: { jobId: `${jobId}-${Date.now()}` },
+    queueName: cleanUpQueue.name,
+  })
 }
 
 export interface AddProjectToQueueData {
@@ -91,24 +130,18 @@ export async function addProjectToQueues({
 
   await fs.mkdir(outputDir, { recursive: true })
 
-  for (const kitspaceYaml of kitspaceYamlArray) {
-    const projectOutputDir = path.join(outputDir, kitspaceYaml.name)
-
-    kitspaceYaml.summary = kitspaceYaml.summary || repoDescription
-
-    await createJobs({
-      defaultBranch,
-      subprojectName: kitspaceYaml.name,
-      giteaId,
-      inputDir,
-      kitspaceYaml,
-      outputDir: projectOutputDir,
-      originalUrl,
-      ownerName,
-      repoName,
-      hash,
-    })
-  }
+  await createJobs({
+    defaultBranch,
+    giteaId,
+    hash,
+    inputDir,
+    kitspaceYamlArray,
+    originalUrl,
+    outputDir,
+    ownerName,
+    repoDescription,
+    repoName,
+  })
 
   await writeKitspaceYamlQueue.add(
     'projectAPI',
