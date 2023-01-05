@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# This healthcheck tests all the web services reachability from the docker
+# network (`http://<service>`) and for external server access
+# (`https://<service>.$KITSPACE_DOMAIN`) in production and staging envrionments.
+# If one of the services is unreachable it will reload nginx. If reloading
+# nginx fails it exits marks the container as unhealthy.
+
+reload_nginx() {
+    echo "Reloading nginx!"
+    # We try to reload nginx first, if this fails we mark the container as unhealthy
+    nginx -s reload || exit 1
+    # Sleep for 10 seconds to give nginx time to reload before we check the next service.
+    sleep 10s
+}
+
+# Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
+curl -s "http://frontend:3000" | grep -q "<title>Kitspace</title>" || reload_nginx
+curl -s "http://gitea:3000" | grep -q "<title>Gitea: Git with a cup of tea</title>" || reload_nginx
+curl -s "http://meilisearch:7700" | grep -q "Meilisearch" || reload_nginx
+
+# Run the prevoious two checks for the domain name if it's not kitspace.test
+if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
+    curl -s "https://$KITSPACE_DOMAIN" | grep -q "<title>Kitspace<title/>" || reload_nginx
+    curl -s "https://gitea.$KITSPACE_DOMAIN" | grep -q "<title>Gitea: Git with a cup of tea</title>" || reload_nginx
+    curl -s "https://meilisearch.$KITSPACE_DOMAIN" | grep -q "Meilisearch" || reload_nginx
+fi
