@@ -1,4 +1,4 @@
-FROM nginx:1.17-alpine
+FROM nginx:1.23-alpine
 RUN apk add inotify-tools certbot openssl bash certbot-nginx curl
 
 WORKDIR /usr/local/bin
