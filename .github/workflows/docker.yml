@@ -235,6 +235,9 @@ jobs:
           MAXIMUM_REPO_MIGRATION_TIME: '300000'
           KITSPACE_ROBOTS_TXT: "User-agent: *\\\\nDisallow: \\/\\\\n"
           S3_ENDPOINT: https://s3.eu-west-2.amazonaws.com
+          SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'
+          SENTRY_ENVIRONMENT: staging
+          SENTRY_RELEASE: '${{ github.sha }}'
         with:
           remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
           ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
@@ -249,6 +252,30 @@ jobs:
       - name: Report "review" deploy success
         if: ${{ success() && github.ref == 'refs/heads/review' }}
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'success'
+
+  sentry_release:
+    if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
+    environment: staging
+    name: Create Sentry release
+    runs-on: ubuntu-20.04
+    needs:
+      - deploy
+    steps:
+      - name: Check out the repo
+        # https://github.com/getsentry/action-release#troubleshooting
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        with:
+          environment: staging
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.STAGING_SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: kitspace
+          SENTRY_PROJECT: nginx
 
   test:
     name: Test E2E
