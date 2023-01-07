@@ -9,21 +9,39 @@ set -Eeuo pipefail
 # nginx fails it exits marks the container as unhealthy.
 
 reload_nginx() {
+    echo "$1 is unreachable!"
     echo "Reloading nginx!"
     # We try to reload nginx first, if this fails we mark the container as unhealthy
-    nginx -s reload || exit 1
+    nginx -s reload || echo "Reloading nginx failed!"
     # Sleep for 10 seconds to give nginx time to reload before we check the next service.
-    sleep 10s
+    sleep 20s
+    # Run the healthcheck again to make sure all services are reachable
+    healthcheck || report_healthcheck_failure
 }
 
-# Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
-curl -s "http://frontend:3000" | grep -q "<title>Kitspace</title>" || reload_nginx
-curl -s "http://gitea:3000" | grep -q "<title>Gitea: Git with a cup of tea</title>" || reload_nginx
-curl -s "http://meilisearch:7700" | grep -q "Meilisearch" || reload_nginx
+report_healthcheck_failure() {
+    echo "Healthcheck failed!"
+    sentry-cli send-event -m "Reachability healthcheck failed" \
+        --env "$SENTRY_ENVIRONMENT" \
+        --release "$SENTRY_RELEASE" \
+        --tag "container:nginx" \
+        --tag "healthcheck:reachability" \
+        --tag "domain:$KITSPACE_DOMAIN"
+    exit 1
+}
 
-# Run the prevoious two checks for the domain name if it's not kitspace.test
-if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
-    curl -s "https://$KITSPACE_DOMAIN" | grep -q "<title>Kitspace<title/>" || reload_nginx
-    curl -s "https://gitea.$KITSPACE_DOMAIN" | grep -q "<title>Gitea: Git with a cup of tea</title>" || reload_nginx
-    curl -s "https://meilisearch.$KITSPACE_DOMAIN" | grep -q "Meilisearch" || reload_nginx
-fi
+healthcheck() {
+    # Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
+    curl -s "http://frontend:3000" | grep -q "<title>Kitspace</title>" || reload_nginx "frontend"
+    curl -s "http://gitea:3000" | grep -q "<title>Gitea: Git with a cup of tea</title>"  || reload_nginx "gitea"
+    curl -s "http://meilisearch:7700" | grep -q "Meilisearch" || reload_nginx "meilisearch"
+
+    # Run the prevoious two checks for the domain name if it's not kitspace.test
+    if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
+        curl -s "https://$KITSPACE_DOMAIN" | grep -q "<title>Kitspace</title>" || reload_nginx "The website"
+        curl -s "https://gitea.$KITSPACE_DOMAIN" | grep -q "<title>Gitea: Git with a cup of tea</title>" || reload_nginx "gitea external"
+        curl -s "https://meilisearch.$KITSPACE_DOMAIN" | grep -q "Meilisearch" || reload_nginx "meilisearch external"
+    fi
+}
+
+healthcheck

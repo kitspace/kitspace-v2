@@ -52,6 +52,9 @@ services:
       - KITSPACE_SCHEME=${KITSPACE_SCHEME}
       - KITSPACE_EXTERNAL_PORT=${KITSPACE_EXTERNAL_PORT}
       - KITSPACE_ROBOTS_TXT=${KITSPACE_ROBOTS_TXT}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_RELEASE=${SENTRY_RELEASE}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
     depends_on:
       - frontend
       - gitea
@@ -60,10 +63,11 @@ services:
     ports:
       - '${KITSPACE_DEV_PORT}:80'
     healthcheck:
-      test: ["CMD", "/usr/local/bin/reachability_healthcheck"]
-      interval: 1m
-      retries: 1
-      start_period: 1m30s
+      test: ["CMD", "reachability_healthcheck"]
+      interval: 30s
+      # If any of the services is unreachable for 2 minutes, mark the container as unhealthy.
+      retries: 4
+      start_period: 2m
 
   processor:
     environment:
