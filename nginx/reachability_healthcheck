@@ -8,15 +8,29 @@ set -Eeuo pipefail
 # If one of the services is unreachable it will reload nginx. If reloading
 # nginx fails it exits marks the container as unhealthy.
 
+healthcheck() {
+    # Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
+    test_reachability "http://frontend:3000" "<title>Kitspace</title>" || reload_nginx "frontend"
+    test_reachability "http://gitea:3000" "<title>Gitea: Git with a cup of tea</title>"  || reload_nginx "gitea"
+    test_reachability "http://meilisearch:7700" "Meilisearch" || reload_nginx "meilisearch"
+
+    # Run the prevoious two checks for the domain name if it's not kitspace.test
+    if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
+        test_reachability "https://$KITSPACE_DOMAIN" "<title>Kitspace</title>" || reload_nginx "The website"
+        test_reachability "https://gitea.$KITSPACE_DOMAIN" "<title>Gitea: Git with a cup of tea</title>" || reload_nginx "gitea external"
+        test_reachability "https://meilisearch.$KITSPACE_DOMAIN" "Meilisearch" || reload_nginx "meilisearch external"
+    fi
+}
+
 reload_nginx() {
     echo "$1 is unreachable!"
     echo "Reloading nginx!"
     # We try to reload nginx first, if this fails we mark the container as unhealthy
-    nginx -s reload || echo "Reloading nginx failed!"
+    nginx -s reload || report_healthcheck_failure
     # Sleep for 10 seconds to give nginx time to reload before we check the next service.
     sleep 20s
     # Run the healthcheck again to make sure all services are reachable
-    healthcheck || report_healthcheck_failure
+    healthcheck
 }
 
 report_healthcheck_failure() {
@@ -30,18 +44,13 @@ report_healthcheck_failure() {
     exit 1
 }
 
-healthcheck() {
-    # Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
-    curl -s "http://frontend:3000" | grep -q "<title>Kitspace</title>" || reload_nginx "frontend"
-    curl -s "http://gitea:3000" | grep -q "<title>Gitea: Git with a cup of tea</title>"  || reload_nginx "gitea"
-    curl -s "http://meilisearch:7700" | grep -q "Meilisearch" || reload_nginx "meilisearch"
-
-    # Run the prevoious two checks for the domain name if it's not kitspace.test
-    if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
-        curl -s "https://$KITSPACE_DOMAIN" | grep -q "<title>Kitspace</title>" || reload_nginx "The website"
-        curl -s "https://gitea.$KITSPACE_DOMAIN" | grep -q "<title>Gitea: Git with a cup of tea</title>" || reload_nginx "gitea external"
-        curl -s "https://meilisearch.$KITSPACE_DOMAIN" | grep -q "Meilisearch" || reload_nginx "meilisearch external"
-    fi
+test_reachability() {
+    # test the existence of $2 on the response of `curl -s $1` and tries that 3 times
+    for i in {1..3}; do
+        curl -s "$1" | grep -q "$2" && return 0
+        sleep 5s
+    done
+    return $?
 }
 
 healthcheck
