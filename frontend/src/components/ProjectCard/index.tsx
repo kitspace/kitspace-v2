@@ -12,6 +12,7 @@ interface ProjectCardProps {
   summary: string
   ownerName: string
   repoName: string
+  priority?: boolean
   intersectionObserverRef?: IntersectionObserverRef
 }
 
@@ -20,6 +21,7 @@ const ProjectCard = ({
   summary,
   ownerName,
   repoName,
+  priority,
   intersectionObserverRef,
 }: ProjectCardProps) => {
   const isSingleProject = projectName === '_'
@@ -41,6 +43,7 @@ const ProjectCard = ({
               data-cy="project-card-thumbnail"
               height={180}
               objectFit="contain"
+              priority={priority}
               src={src}
               width={240}
             />
