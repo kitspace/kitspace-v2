@@ -68,16 +68,6 @@ module.exports = async phase => {
           source: '/:user/:repo/_',
           destination: '/:user/:repo',
           permanent: true,
-        }
-      ]
-    },
-    async rewrites() {
-      // TODO: https://github.com/kitspace/kitspace-v2/issues/486
-      // we should get rid of this rewrite and just link to `/_/IBOM`
-      return [
-        {
-          source: '/:user/:repo/IBOM',
-          destination: '/:user/:repo/_/IBOM',
         },
       ]
     },

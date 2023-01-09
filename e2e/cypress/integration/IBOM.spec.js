@@ -76,7 +76,7 @@ describe('IBOM page', () => {
 
     // Go to IBOM page for a single (not multi) project
     cy.get('[data-cy=ibom]').should('be.visible')
-    cy.visit(`${username}/${normalRepoName}/IBOM`)
+    cy.visit(`${username}/${normalRepoName}/_/IBOM`)
 
     // Click on the title
     cy.get('#title').click()
@@ -120,7 +120,7 @@ describe('404 IBOM for nonexistent projects', () => {
   })
 
   it("should return 404 status code for IBOM if the project isn't found (normal project)", () => {
-    cy.request({ url: '/someone/project/IBOM', failOnStatusCode: false }).then(
+    cy.request({ url: '/someone/repo/_/IBOM', failOnStatusCode: false }).then(
       res => {
         expect(res.status).to.eq(404)
       },
