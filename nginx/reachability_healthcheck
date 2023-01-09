@@ -10,14 +10,14 @@ set -Eeuo pipefail
 
 healthcheck() {
     # Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
-    test_reachability "http://frontend:3000" "<title>Kitspace</title>" || reload_nginx "frontend"
-    test_reachability "http://gitea:3000" "<title>Gitea: Git with a cup of tea</title>"  || reload_nginx "gitea"
+    test_reachability "http://frontend:3000" "Kitspace" || reload_nginx "frontend"
+    test_reachability "http://gitea:3000" "Gitea"  || reload_nginx "gitea"
     test_reachability "http://meilisearch:7700" "Meilisearch" || reload_nginx "meilisearch"
 
-    # Run the prevoious two checks for the domain name if it's not kitspace.test
+    # Run the previous two checks for the domain name if it's not kitspace.test
     if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
-        test_reachability "https://$KITSPACE_DOMAIN" "<title>Kitspace</title>" || reload_nginx "The website"
-        test_reachability "https://gitea.$KITSPACE_DOMAIN" "<title>Gitea: Git with a cup of tea</title>" || reload_nginx "gitea external"
+        test_reachability "https://$KITSPACE_DOMAIN" "Kitspace" || reload_nginx "The website"
+        test_reachability "https://gitea.$KITSPACE_DOMAIN" "Gitea" || reload_nginx "gitea external"
         test_reachability "https://meilisearch.$KITSPACE_DOMAIN" "Meilisearch" || reload_nginx "meilisearch external"
     fi
 }
@@ -26,16 +26,12 @@ reload_nginx() {
     echo "$1 is unreachable!"
     echo "Reloading nginx!"
     # We try to reload nginx first, if this fails we mark the container as unhealthy
-    nginx -s reload || report_healthcheck_failure
-    # Sleep for 10 seconds to give nginx time to reload before we check the next service.
-    sleep 20s
-    # Run the healthcheck again to make sure all services are reachable
-    healthcheck
+    nginx -s reload || report_healthcheck_failure "$1"
 }
 
 report_healthcheck_failure() {
     echo "Healthcheck failed!"
-    sentry-cli send-event -m "Reachability healthcheck failed" \
+    sentry-cli send-event -m "Reachability healthcheck failed: "$1" is unreachable" \
         --env "$SENTRY_ENVIRONMENT" \
         --release "$SENTRY_RELEASE" \
         --tag "container:nginx" \
@@ -47,8 +43,7 @@ report_healthcheck_failure() {
 test_reachability() {
     # test the existence of $2 on the response of `curl -s $1` and tries that 3 times
     for i in {1..3}; do
-        curl -s "$1" | grep -q "$2" && return 0
-        sleep 5s
+        curl --connect-timeout 3 -s "$1" | grep -q "$2" && return 0
     done
     return $?
 }

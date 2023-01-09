@@ -64,8 +64,9 @@ services:
       - '${KITSPACE_DEV_PORT}:80'
     healthcheck:
       test: ["CMD", "reachability_healthcheck"]
-      interval: 30s
-      # If any of the services is unreachable for 2 minutes, mark the container as unhealthy.
+      interval: 1m
+      timeout: 1m
+      # If any of the services is unreachable for 4 minutes, mark the container as unhealthy.
       retries: 4
       start_period: 2m
 
