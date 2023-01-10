@@ -13,6 +13,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
   const pcbShopperUrl = `https://pcbshopper.com/?Width=${boardSpecs.width}&Height=${boardSpecs.height}&Units=mm&Layers=${boardSpecs.layers}&Quantity=1&GetPrices`
   const jlcpcbUrl = `https://cart.jlcpcb.com/quote?fileurl=${zipUrl}&from=kitspace`
+  const pcbgogoUrl = `https://www.pcbgogo.com/pcb-fabrication-quote.html?fileurl=${zipUrl}`
 
   const trackClick = vendor => () => {
     window.plausible('Order PCBs', {
@@ -92,8 +93,22 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('OSHPark')}
           >
             <Image
-              alt="OSHPARK logo"
+              alt="OSHPark logo"
               src="/static/images/oshpark.png"
+              {...retailerLogosDimensions}
+            />
+          </a>
+          <a
+            className={styles.PCBMenu__link}
+            href={pcbgogoUrl}
+            rel="nofollow noreferrer"
+            target="_blank"
+            onAuxClick={trackClick('PCBGoGo')}
+            onClick={trackClick('PCBGoGo')}
+          >
+            <Image
+              alt="PCBGoGo logo"
+              src="/static/images/pcbgogo.png"
               {...retailerLogosDimensions}
             />
           </a>
