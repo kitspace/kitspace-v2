@@ -5,7 +5,7 @@ import { Icon } from 'semantic-ui-react'
 
 import styles from './OrderPCBs.module.scss'
 
-const retailerLogosDimensions = { height: 30, width: 100 }
+const retailerLogosDimensions = { height: 29, width: 100 }
 
 const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
