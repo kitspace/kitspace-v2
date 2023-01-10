@@ -5,7 +5,7 @@ import { Icon } from 'semantic-ui-react'
 
 import styles from './OrderPCBs.module.scss'
 
-const retailerLogosDimensions = { height: 29, width: 100 }
+const serviceLogoDimensions = { height: 29, width: 100 }
 
 const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
@@ -50,7 +50,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="Aisler logo"
               src="/static/images/aisler.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
 
@@ -65,7 +65,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="PCBWay logo"
               src="/static/images/pcbway.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
 
@@ -80,7 +80,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="JLCPCB logo"
               src="/static/images/jlcpcb.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
 
@@ -95,7 +95,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="OSHPark logo"
               src="/static/images/oshpark.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
           <a
@@ -109,7 +109,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="PCBGoGo logo"
               src="/static/images/pcbgogo.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
         </div>
@@ -131,7 +131,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="PCBSHOPPER logo"
               src="/static/images/pcbshopper.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
         </div>
