@@ -112,6 +112,20 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
               {...serviceLogoDimensions}
             />
           </a>
+          <a
+            className={styles.PCBMenu__link}
+            href={pcbgogoUrl}
+            rel="nofollow noreferrer"
+            target="_blank"
+            onAuxClick={trackClick('PCBGoGo')}
+            onClick={trackClick('PCBGoGo')}
+          >
+            <Image
+              alt="PCBGoGo logo"
+              src="/static/images/pcbgogo.png"
+              {...retailerLogosDimensions}
+            />
+          </a>
         </div>
       </div>
 
