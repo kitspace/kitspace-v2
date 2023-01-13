@@ -25,6 +25,10 @@ const rehypeSanitizeOpts: RehypeSanitizeOptions = {
     span: [...(defaultSchema.attributes.span || []), ['className']],
     code: [...(defaultSchema.attributes.code || []), ['className']],
   },
+  protocols: {
+    ...defaultSchema.protocols,
+    href: ['http', 'https', 'ftp', 'ftps', 'ssh', 'mailto', 'tel', 'sms', 'magnet'],
+  },
 }
 
 export interface RenderMarkdownArgs {
