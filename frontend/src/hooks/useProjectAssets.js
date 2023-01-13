@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 
-const fetcher = (...args) => fetch(...args, { method: 'HEAD' }).then(r => r.ok)
+import { fetcher } from './s3HeadFetcher'
 
 const useProjectAssets = assetsPath => {
   const top = `${assetsPath}/images/top.svg`

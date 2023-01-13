@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 import getConfig from 'next/config'
 
-const fetcher = (...args) => fetch(...args).then(r => r.json())
+import { fetcher } from './s3HeadFetcher'
 
 const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
