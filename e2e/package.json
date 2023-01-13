@@ -9,10 +9,10 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "@types/faker": "^5.1.0",
-    "cypress": "^9.4.1",
-    "cypress-fail-fast": "^3.3.0",
+    "cypress": "^12.3.0",
+    "cypress-fail-fast": "^7.0.0",
     "cypress-image-snapshot": "^4.0.1",
-    "cypress-terminal-report": "^3.4.1",
+    "cypress-terminal-report": "^5.0.0",
     "eslint": ">=7.0.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-import-resolver-alias": "^1.1.2",
