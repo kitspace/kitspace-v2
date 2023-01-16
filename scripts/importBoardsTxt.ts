@@ -1,27 +1,38 @@
-#!/usr/bin/env -S deno run --allow-env --allow-net
+#!/usr/bin/env -S deno run --allow-env --allow-net --allow-run
 /* eslint-disable no-console */
 
 import { cryptoRandomString } from 'https://deno.land/x/crypto_random_string@1.0.0/mod.ts'
+import { exec, OutputMode } from 'https://deno.land/x/exec@0.0.5/mod.ts'
 import { parse } from 'https://deno.land/std@0.119.0/flags/mod.ts'
 import * as path from 'https://deno.land/std@0.167.0/path/mod.ts'
 import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
 
 const flags = parse(Deno.args, {
   string: ['giteaUrl', 'adminToken', 'githubToken'],
-  boolean: ['help'],
+  boolean: ['help', 'tokenOnly'],
   default: { numberOfRepos: 150, giteaUrl: 'http://localhost:3333' },
 })
 
-if (flags.help || !flags.adminToken || !flags.githubToken) {
+if (flags.help || !(flags.githubToken || flags.tokenOnly)) {
   console.log(`Usage: importBoardsTxt [options]
     options:
       --giteaUrl: Gitea URL (default: http://localhost:3333)
-      --adminToken: Gitea admin API token
-      --githubToken: GitHub API token (classic)
+      --adminToken: Gitea admin API token (default: generated automatically)
+      --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
       --numberOfRepos: Number of repositories to import (default: 1000)
+      --tokenOnly: Only generate the admin token and exit.
       --help: Show this help
   `)
   Deno.exit(0)
+}
+
+if (!flags.adminToken) {
+  flags.adminToken = await generateGiteaAdminToken()
+
+  if (flags.tokenOnly) {
+    console.log(flags.adminToken)
+    Deno.exit(0)
+  }
 }
 
 const KITSPACE_GITEA_URL = flags.giteaUrl
@@ -66,7 +77,10 @@ async function getRegistryBoards() {
   return boards.map(board => board.repo)
 }
 
-async function importRepo(url: string, GithubReposDescriptions: GithubReposDescriptionsMap) {
+async function importRepo(
+  url: string,
+  GithubReposDescriptions: GithubReposDescriptionsMap,
+) {
   const userInfo = getUserInfoFromUrl(url)
   const user = await createGiteaUser(userInfo)
   const repoName = urlToName(url)
@@ -99,7 +113,12 @@ async function createGiteaUser(userInfo: UserInfo): Promise<GiteaUser> {
   return response.json()
 }
 
-async function mirrorRepo(remoteRepo: string, user: GiteaUser, repoName: string, GithubReposDescriptions: GithubReposDescriptionsMap) {
+async function mirrorRepo(
+  remoteRepo: string,
+  user: GiteaUser,
+  repoName: string,
+  GithubReposDescriptions: GithubReposDescriptionsMap,
+) {
   if (await repoExists(user.username, repoName)) {
     // Skipped mirroring; repo already exists!
     return
@@ -124,7 +143,10 @@ async function mirrorRepo(remoteRepo: string, user: GiteaUser, repoName: string,
     issues: false,
     // This is the workaround for avoiding the Github rate limit.
     service: service === 'github' ? null : service,
-    description: service === 'github' ? GithubReposDescriptions.get(`${user.username}/${repoName}`) : null,
+    description:
+      service === 'github'
+        ? GithubReposDescriptions.get(`${user.username}/${repoName}`)
+        : null,
   }
 
   const response = await fetch(endpoint, {
@@ -144,30 +166,40 @@ async function mirrorRepo(remoteRepo: string, user: GiteaUser, repoName: string,
  * Use the github graphql API to get the description of all the repos.
  * We can't use the REST API because it doesn't allow us to get the description of multiple repos in one request.
  * And if we requested the description of each repo separately, we would hit the rate limit.
- * @param reposUrls 
+ * @param reposUrls
  */
-async function getAllGithubReposDescriptions(reposUrls: string[]): Promise<Map<string, string>> {
-  const githubRepos = reposUrls.filter(url => getGitServiceFromUrl(url) === 'github')
-  const reposOwnerAndName = githubRepos.map(repoName => repoName.split('/', 5).slice(-2) as [string, string])
+async function getAllGithubReposDescriptions(
+  reposUrls: string[],
+): Promise<Map<string, string>> {
+  const githubRepos = reposUrls.filter(
+    url => getGitServiceFromUrl(url) === 'github',
+  )
+  const reposOwnerAndName = githubRepos.map(
+    repoName => repoName.split('/', 5).slice(-2) as [string, string],
+  )
 
   const query = `
   query {
-    ${reposOwnerAndName.map(([owner, name], index) => `
+    ${reposOwnerAndName.map(
+    ([owner, name], index) => `
     r${index}: repository(owner: "${owner}", name: "${name}") {
       fullName: nameWithOwner
       description
-    }`)}
+    }`,
+  )}
   }
   `
-  const { data: reposInfo }: GitHubRepoInfoGQLResponse = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `bearer ${flags.githubToken}`,
+  const { data: reposInfo }: GitHubRepoInfoGQLResponse = await fetch(
+    'https://api.github.com/graphql',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `bearer ${flags.githubToken}`,
+      },
+      body: JSON.stringify({ query }),
     },
-    body: JSON.stringify({ query }),
-  }).then(res => res.json())
-
+  ).then(res => res.json())
 
   const repoDescriptionsMap = new Map<string, string>()
   for (const entry of Object.values(reposInfo)) {
@@ -244,6 +276,37 @@ function waitMs(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+async function generateGiteaAdminToken() {
+  const adminUsername =
+    'importer' + cryptoRandomString({ length: 8, type: 'numeric' })
+  const adminPassword: string = cryptoRandomString({ length: 32, type: 'base64' })
+
+  const getGiteaContainerCommand = await exec(
+    `bash -c "docker ps | grep gitea | awk '{print $1}'"`,
+    { output: OutputMode.Capture },
+  )
+
+  const giteaAdminCommand = await exec(
+    `bash -c "docker exec --user git ${getGiteaContainerCommand.output} /bin/sh -c 'gitea admin user create --username ${adminUsername} --password ${adminPassword} --email ${adminUsername}@example.com --admin --must-change-password=false'"`,
+    { output: OutputMode.Capture },
+  )
+
+  if (!giteaAdminCommand.status.success) {
+    throw new Error('Failed to create gitea admin user')
+  }
+
+  const giteaAdminTokenCommand = await exec(
+    `bash -c "docker exec --user git ${getGiteaContainerCommand.output} /bin/sh -c 'gitea admin user generate-access-token --username ${adminUsername} --raw'"`,
+    { output: OutputMode.Capture },
+  )
+
+  if (!giteaAdminTokenCommand.status.success) {
+    throw new Error('Failed to create gitea admin token')
+  }
+
+
+  return giteaAdminTokenCommand.output
+}
 
 type GithubReposDescriptionsMap = Map<string, string>
 interface GitHubRepoInfoGQLResponse {
