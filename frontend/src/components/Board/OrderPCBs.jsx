@@ -5,7 +5,7 @@ import { Icon } from 'semantic-ui-react'
 
 import styles from './OrderPCBs.module.scss'
 
-const retailerLogosDimensions = { height: 30, width: 100 }
+const serviceLogoDimensions = { height: 29, width: 100 }
 
 const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
@@ -13,6 +13,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
   const pcbShopperUrl = `https://pcbshopper.com/?Width=${boardSpecs.width}&Height=${boardSpecs.height}&Units=mm&Layers=${boardSpecs.layers}&Quantity=1&GetPrices`
   const jlcpcbUrl = `https://cart.jlcpcb.com/quote?fileurl=${zipUrl}&from=kitspace`
+  const pcbgogoUrl = `https://www.pcbgogo.com/pcb-fabrication-quote.html?fileurl=${zipUrl}`
 
   const trackClick = vendor => () => {
     window.plausible('Order PCBs', {
@@ -49,7 +50,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="Aisler logo"
               src="/static/images/aisler.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
 
@@ -64,7 +65,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="PCBWay logo"
               src="/static/images/pcbway.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
 
@@ -79,7 +80,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="JLCPCB logo"
               src="/static/images/jlcpcb.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
 
@@ -92,9 +93,23 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('OSHPark')}
           >
             <Image
-              alt="OSHPARK logo"
+              alt="OSHPark logo"
               src="/static/images/oshpark.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
+            />
+          </a>
+          <a
+            className={styles.PCBMenu__link}
+            href={pcbgogoUrl}
+            rel="nofollow noreferrer"
+            target="_blank"
+            onAuxClick={trackClick('PCBGoGo')}
+            onClick={trackClick('PCBGoGo')}
+          >
+            <Image
+              alt="PCBGoGo logo"
+              src="/static/images/pcbgogo.png"
+              {...serviceLogoDimensions}
             />
           </a>
         </div>
@@ -116,7 +131,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             <Image
               alt="PCBSHOPPER logo"
               src="/static/images/pcbshopper.png"
-              {...retailerLogosDimensions}
+              {...serviceLogoDimensions}
             />
           </a>
         </div>
