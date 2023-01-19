@@ -5,7 +5,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
-import { ReplicationEvent, Row } from 'postgres'
+import { ReplicationEvent } from 'postgres'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import * as giteaDBImported from '../../src/giteaDB.js'
@@ -61,33 +61,39 @@ vi.mock('../../src/meili.js', () => {
   meiliIndex.search.mockReturnValue(Promise.resolve(searchResponse))
   return { meiliIndex }
 })
-type GiteaDB = MockProxy<typeof giteaDBImported> & {
-  addRepoCallback?: (row: Row | null, info: ReplicationEvent) => Promise<void>
-}
+type GiteaDBMock = MockProxy<typeof giteaDBImported>
 
 vi.mock('../../src/giteaDB.js', () => {
-  const giteaDB: GiteaDB = mock<GiteaDB>()
+  const giteaDB = mock<GiteaDBMock>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
   giteaDB.subscribeToRepoEvents.mockReturnValue(
     Promise.resolve({ unsubscribe: () => {} }),
   )
-  giteaDB.subscribeToRepoEvents.mockImplementation((_, callback) => {
-    giteaDB.addRepoCallback = callback
-    return Promise.resolve({ unsubscribe: () => {} })
-  })
   giteaDB.getAllRepoInfo.mockReturnValue(Promise.resolve([]))
+
   return giteaDB
 })
 
-const subscribeToRepoReplicationEvent: ReplicationEvent = {
+async function dispatchRepoEvent(
+  giteaDB: GiteaDBMock,
+  repoInfo: giteaDBImported.RepoInfo,
+  event: ReplicationEvent,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for (const [_, callback] of giteaDB.subscribeToRepoEvents.mock.calls) {
+    await callback(repoInfo, event)
+  }
+}
+
+const repoEventFixture: ReplicationEvent = {
   command: 'update',
   relation: null,
   old: null,
   key: null,
 }
 
-const giteaDB = giteaDBImported as GiteaDB
+const giteaDB = giteaDBImported as GiteaDBMock
 
 describe(
   'gitea projects functionality',
@@ -127,7 +133,7 @@ describe(
           'kitspace/ruler.git',
         )}`
 
-        await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
+        await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
         const files = [
           'kitspace-yaml.json',
@@ -181,7 +187,7 @@ describe(
         'kitspace-forks/diy_particle_detector.git',
       )}`
 
-      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const repoRoot = path.join(
         DATA_DIR,
@@ -237,7 +243,7 @@ describe(
         'kitspace-test-repos/tinyogx360.git',
       )}`
 
-      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const files = [
         'kitspace-yaml.json',
@@ -286,7 +292,7 @@ describe(
         'kitspace-test-repos/spaces-in-kitspace-data-paths.git',
       )}`
 
-      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const projectName = 'aux-ps-cs'
       const files = [
@@ -335,7 +341,7 @@ describe(
         'kitspace-test-repos/rover.git',
       )}`
 
-      await giteaDB.addRepoCallback(repoInfo, subscribeToRepoReplicationEvent)
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const projectName = 'open-source-rover-shield'
 
