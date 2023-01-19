@@ -32,7 +32,7 @@ export async function getRepoInfo(
   ownerName: string,
   repoName: string,
 ): Promise<RepoInfo | undefined> {
-  const rows = await sql<RepoInfo[]>`
+  const rows = await sql<Array<RepoInfo>>`
       SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
@@ -40,8 +40,8 @@ export async function getRepoInfo(
   return rows[0]
 }
 
-export async function getAllReposInfo(): Promise<RepoInfo[]> {
-  const rows = await sql<RepoInfo[]>`
+export async function getAllRepoInfo(): Promise<Array<RepoInfo>> {
+  const rows = await sql<Array<RepoInfo>>`
       SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
         FROM repository`
 

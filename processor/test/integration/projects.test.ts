@@ -76,7 +76,7 @@ vi.mock('../../src/giteaDB.js', () => {
     giteaDB.addRepoCallback = callback
     return Promise.resolve({ unsubscribe: () => {} })
   })
-  giteaDB.getAllReposInfo.mockReturnValue(Promise.resolve([]))
+  giteaDB.getAllRepoInfo.mockReturnValue(Promise.resolve([]))
   return giteaDB
 })
 

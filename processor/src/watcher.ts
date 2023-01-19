@@ -71,7 +71,7 @@ async function addToQueues(giteaRepo: giteaDB.RepoInfo, repoDir: string) {
 }
 
 async function addAllReposToQueuesOnStartUp(repoDir: string) {
-  const repos = await giteaDB.getAllReposInfo()
+  const repos = await giteaDB.getAllRepoInfo()
   for (const repo of repos) {
     await addToQueues(repo, repoDir)
   }

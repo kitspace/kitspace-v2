@@ -28,6 +28,12 @@
         "variables": true
       }
     ],
+    "@typescript-eslint/array-type": [
+      "error",
+      {
+        "default": "generic"
+      }
+    ],
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/naming-convention": "off",
     "@typescript-eslint/no-floating-promises": "error",
