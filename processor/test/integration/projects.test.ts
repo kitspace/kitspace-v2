@@ -61,10 +61,11 @@ vi.mock('../../src/meili.js', () => {
   meiliIndex.search.mockReturnValue(Promise.resolve(searchResponse))
   return { meiliIndex }
 })
+
 type GiteaDBMock = MockProxy<typeof giteaDBImported>
 
 vi.mock('../../src/giteaDB.js', () => {
-  const giteaDB = mock<GiteaDBMock>()
+  const giteaDB: GiteaDBMock = mock<typeof giteaDBImported>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
   giteaDB.subscribeToRepoEvents.mockReturnValue(
