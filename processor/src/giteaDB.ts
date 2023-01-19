@@ -85,24 +85,14 @@ export async function waitForRepoMigration(repoId: string): Promise<void> {
 }
 
 /**
- * Subscribe to repository deletions.
+ * Subscribe to `insert`, `update`, `delete`, or `all` operations on the `repository` table.
+ * @param callback - the callback will be called for4 each row that had an operation performed on it.
  */
-export async function subscribeToRepoDeletions(
-  callback: (row: Row | null, info: ReplicationEvent) => void,
-): Promise<SubscriptionHandle> {
-  return sql.subscribe('delete:repository', callback)
-}
-
-/**
- * Subscribe to all events on the repository table.
- * the callback will be called.
- * @param callback
- * @returns
- */
-export async function subscribeToRepo(
+export async function subscribeToRepoEvents(
+  operation: Operation,
   callback: (row: Row | null, info: ReplicationEvent) => Promise<void>,
 ): Promise<SubscriptionHandle> {
-  return sql.subscribe('*:repository', callback)
+  return sql.subscribe(`${operation}:repository`, callback)
 }
 
 /**
@@ -133,6 +123,14 @@ export interface RepoInfo {
 
 enum TaskType {
   Migration = 0,
+}
+
+export enum Operation {
+  // https://github.com/porsager/postgres#operation-------schema--table--primary_key
+  Insert = 'insert',
+  Update = 'update',
+  Delete = 'delete',
+  All = '*',
 }
 
 enum MigrationStatus {

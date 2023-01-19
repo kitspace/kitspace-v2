@@ -77,7 +77,7 @@ function getReadmeAsText(readmeHTML) {
  * search index documents accordingly.
  */
 export function continuallySyncDeletions(): Promise<SubscriptionHandle> {
-  return giteaDB.subscribeToRepoDeletions(row => {
+  return giteaDB.subscribeToRepoEvents(giteaDB.Operation.Delete, async row => {
     meiliIndex
       .search('', {
         filter: `repoId = ${row.id}`,

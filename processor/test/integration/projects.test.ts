@@ -69,10 +69,10 @@ vi.mock('../../src/giteaDB.js', () => {
   const giteaDB: GiteaDB = mock<GiteaDB>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
-  giteaDB.subscribeToRepoDeletions.mockReturnValue(
+  giteaDB.subscribeToRepoEvents.mockReturnValue(
     Promise.resolve({ unsubscribe: () => {} }),
   )
-  giteaDB.subscribeToRepo.mockImplementation(callback => {
+  giteaDB.subscribeToRepoEvents.mockImplementation((_, callback) => {
     giteaDB.addRepoCallback = callback
     return Promise.resolve({ unsubscribe: () => {} })
   })

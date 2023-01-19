@@ -6,7 +6,8 @@ export async function watch(repoDir: string) {
   await addAllReposToQueuesOnStartUp(repoDir)
   const reposBeingQueued = new Set<string>()
 
-  const { unsubscribe } = await giteaDB.subscribeToRepo(
+  const { unsubscribe } = await giteaDB.subscribeToRepoEvents(
+    giteaDB.Operation.All,
     async (repo: giteaDB.RepoInfo, info) => {
       if (info.command === 'delete') {
         // We don't subscribe to repo deletions.
