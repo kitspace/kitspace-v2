@@ -81,7 +81,6 @@ async function dispatchRepoEvent(
   repoInfo: giteaDBImported.RepoInfo,
   event: ReplicationEvent,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_, callback] of giteaDB.subscribeToRepoEvents.mock.calls) {
     await callback(repoInfo, event)
   }
