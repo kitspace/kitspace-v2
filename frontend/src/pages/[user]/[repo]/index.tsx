@@ -90,7 +90,7 @@ interface ProjectGridProps {
 }
 
 const PageContent = ({ parentProject, searchParams }: ProjectGridProps) => {
-  const { data: projects } = useSWR(searchParams, searchFetcher, {
+  const { data: projects = [] } = useSWR(searchParams, searchFetcher, {
     refreshInterval: 1000,
   })
   const isProcessing = projects.length === 0
