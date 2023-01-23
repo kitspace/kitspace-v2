@@ -2,36 +2,30 @@
 
 set -Eeuo pipefail
 
-# This healthcheck tests all the web services reachability from the docker
-# network (`http://<service>`) and for external server access
+# This healthcheck tests all the web services reachability 
+# for external server access
 # (`https://<service>.$KITSPACE_DOMAIN`) in production and staging envrionments.
-# If one of the services is unreachable it will reload nginx. If reloading
-# nginx fails it exits marks the container as unhealthy.
+# If one of the services is unreachable it will report it and reload nginx. If reloading
+# nginx fails it exits marks the container as unhealthy reports the failure to sentry.
 
 healthcheck() {
-    # Make sure the hitting domain name returns kitspace.org and .gitea subdomain returns gitea.kitspace.org
-    test_reachability "http://frontend:3000" "Kitspace" || reload_nginx "frontend"
-    test_reachability "http://gitea:3000" "Gitea"  || reload_nginx "gitea"
-    test_reachability "http://meilisearch:7700" "Meilisearch" || reload_nginx "meilisearch"
-
-    # Run the previous two checks for the domain name if it's not kitspace.test
+    # Maeke sure that each service is reachable from external domain.s
     if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
-        test_reachability "https://$KITSPACE_DOMAIN" "Kitspace" || reload_nginx "The website"
-        test_reachability "https://gitea.$KITSPACE_DOMAIN" "Gitea" || reload_nginx "gitea external"
-        test_reachability "https://meilisearch.$KITSPACE_DOMAIN" "Meilisearch" || reload_nginx "meilisearch external"
+        test_reachability "https://$KITSPACE_DOMAIN" "Kitspace" || report_healthcheck_failure "frontend is unreachable" || reload_nginx
+        test_reachability "https://gitea.$KITSPACE_DOMAIN" "Gitea" || report_healthcheck_failure "gitea is unreachable" || reload_nginx
+        test_reachability "https://meilisearch.$KITSPACE_DOMAIN" "Meilisearch" || report_healthcheck_failure "meilisearch is unreachable" || reload_nginx
     fi
 }
 
 reload_nginx() {
-    echo "$1 is unreachable!"
     echo "Reloading nginx!"
     # We try to reload nginx first, if this fails we mark the container as unhealthy
-    nginx -s reload || report_healthcheck_failure "$1"
+    nginx -s reload || report_healthcheck_failure "failed to reload nginx"
 }
 
 report_healthcheck_failure() {
     echo "Healthcheck failed!"
-    sentry-cli send-event -m "Reachability healthcheck failed: "$1" is unreachable" \
+    sentry-cli send-event -m "Reachability healthcheck failed: $1" \
         --env "$SENTRY_ENVIRONMENT" \
         --release "$SENTRY_RELEASE" \
         --tag "container:nginx" \
