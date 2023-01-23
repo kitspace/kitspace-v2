@@ -61,7 +61,7 @@ describe('Syncing a project behavior validation', () => {
       )
   })
 
-  it.skip('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
+  it('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
     const { username, email, password } = getFakeUser()
 
     const repoName = 'ArduTouch'
@@ -86,7 +86,7 @@ describe('Syncing a project behavior validation', () => {
     cy.get('[data-cy=project-description]').should('contain', 'ARDUTOUCH ')
   })
 
-  it.skip('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
+  it('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
     const { username, email, password } = getFakeUser()
 
     const repoName = 'CH330_Hardware_without_summary'
@@ -118,7 +118,7 @@ describe('Syncing a project behavior validation', () => {
     )
   })
 
-  it.skip('should escape and render project description correctly', () => {
+  it('should escape and render project description correctly', () => {
     const { username, email, password } = getFakeUser()
 
     const repoName = 'LED-Zappelin'
