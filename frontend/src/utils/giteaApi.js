@@ -163,34 +163,6 @@ export const deleteRepo = async (repo, apiToken) => {
 }
 
 /**
- * Get list of files in a gitea repo.
- * @param repo {string}
- * @param branch {string=}
- * @returns {Promise<Array|null>}
- */
-export const getRepoFiles = async (repo, branch = 'master') => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=${branch}`
-  const res = await fetch(endpoint, {
-    method: 'GET',
-    mode,
-    credentials,
-    headers,
-  })
-
-  if (res.ok) {
-    const body = await res.json()
-
-    // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
-    // Check if it returned repo details and replace it with an empty array.
-    if (body.hasOwnProperty('owner')) {
-      return []
-    }
-    return body
-  }
-  return []
-}
-
-/**
  * Get repo details
  * @param fullname
  * @returns {Promise<Object|null>}
@@ -205,18 +177,6 @@ export const getRepo = async fullname => {
     headers,
   })
   return res.ok ? res.json() : null
-}
-
-/**
- * get the files in repo's default branch
- * @param repo {string}
- * @returns {Promise<Array|null>}
- */
-export const getDefaultBranchFiles = async repo => {
-  const repoDetails = await getRepo(repo)
-  const { default_branch: defaultBranch } = repoDetails
-
-  return getRepoFiles(repo, defaultBranch)
 }
 
 /**
@@ -307,31 +267,6 @@ export const canCommit = async (repo, username, apiToken) => {
   return repoOwner === username || isCollaborator(repo, username, apiToken)
 }
 
-export const searchRepos = async (q, sort = 'updated', order = 'desc') => {
-  const endpoint = `${giteaApiUrl}/repos/search?sort=${sort}&order=${order}${
-    q ? `&q=${q}` : ''
-  }`
-
-  const res = await fetch(endpoint, {
-    method: 'GET',
-    credentials,
-    mode,
-    headers,
-  })
-
-  if (res.ok) {
-    const body = await res.json()
-    return body.data
-  }
-  return []
-}
-
-/**
- * Get all repos
- * @returns {Promise<[Object]>}
- */
-export const getAllRepos = () => searchRepos()
-
 /**
  * Search all repos
  * @param q{string=}: search query, leave undefined to return all repos
@@ -339,43 +274,6 @@ export const getAllRepos = () => searchRepos()
  * @param order{string}
  * @returns {Promise<[Object]>}
  */
-
-/**
- *
- * @param {string} repo repo fullname
- * @param {string} path file path
- * @returns {Promise<string>} file's raw content or empty string if the file doesn't exist.
- */
-export const getFileRawContent = async (repo, path) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/raw/${path}`
-
-  const res = await fetch(endpoint, {
-    method: 'GET',
-    credentials,
-    mode,
-    headers,
-  })
-
-  return res.ok ? res.blob().then(b => b.text()) : ''
-}
-
-/**
- * Get the repos owned by a user.
- * @param username{string}
- * @returns {Promise<[Object]>}
- */
-export const getUserRepos = async username => {
-  const endpoint = `${giteaApiUrl}/users/${username}/repos`
-
-  const res = await fetch(endpoint, {
-    method: 'GET',
-    credentials,
-    mode,
-    headers,
-  })
-
-  return res.ok ? res.json() : []
-}
 
 /**
  * get a file in gitea repo
@@ -427,19 +325,6 @@ export const updateFile = async (repo, path, content, user, apiToken) => {
   })
 
   return res.ok
-}
-
-export const renderMarkdown = async markdown => {
-  const endpoint = `${giteaApiUrl}/markdown/raw`
-
-  const res = await fetch(endpoint, {
-    method: 'Post',
-    mode,
-    headers,
-    body: markdown,
-  })
-
-  return res.ok ? res.blob().then(b => b.text()) : ''
 }
 
 /**
