@@ -32,12 +32,20 @@ export async function getRepoInfo(
   ownerName: string,
   repoName: string,
 ): Promise<RepoInfo | undefined> {
-  const rows = await sql<RepoInfo[]>`
+  const rows = await sql<Array<RepoInfo>>`
       SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
 
   return rows[0]
+}
+
+export async function getAllRepoInfo(): Promise<Array<RepoInfo>> {
+  const rows = await sql<Array<RepoInfo>>`
+      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
+        FROM repository`
+
+  return rows
 }
 
 /**
@@ -77,12 +85,14 @@ export async function waitForRepoMigration(repoId: string): Promise<void> {
 }
 
 /**
- * Subscribe to repository deletions.
+ * Subscribe to `insert`, `update`, `delete`, or `all` operations on the `repository` table.
+ * @param callback - the callback will be called for4 each row that had an operation performed on it.
  */
-export async function subscribeToRepoDeletions(
-  callback: (row: Row | null, info: ReplicationEvent) => void,
+export async function subscribeToRepoEvents(
+  operation: Operation,
+  callback: (row: Row | null, info: ReplicationEvent) => Promise<void>,
 ): Promise<SubscriptionHandle> {
-  return sql.subscribe('delete:repository', callback)
+  return sql.subscribe(`${operation}:repository`, callback)
 }
 
 /**
@@ -113,6 +123,14 @@ export interface RepoInfo {
 
 enum TaskType {
   Migration = 0,
+}
+
+export enum Operation {
+  // https://github.com/porsager/postgres#operation-------schema--table--primary_key
+  Insert = 'insert',
+  Update = 'update',
+  Delete = 'delete',
+  All = '*',
 }
 
 enum MigrationStatus {

@@ -3,12 +3,14 @@ import bullmq from 'bullmq'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { DATA_DIR } from './env.js'
-import { JobData } from './job.js'
-import { getKitspaceYaml } from './kitspaceYaml.js'
-import { log } from './log.js'
-import redisConnection from './redisConnection.js'
-import { sh } from './shell.js'
 import { exists } from './utils.js'
+import { JobData } from './job.js'
+import { KitspaceYaml, getKitspaceYaml } from './kitspaceYaml.js'
+import { log } from './log.js'
+import { sh } from './shell.js'
+import * as s3 from './s3.js'
+import redisConnection from './redisConnection.js'
+import { meiliIndex } from './meili.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
@@ -17,6 +19,11 @@ const defaultJobOptions: bullmq.JobsOptions = {
   removeOnComplete: { age: 3600 },
   // keep the last 5000 failed jobs
   removeOnFail: { count: 5000 },
+  attempts: 3,
+  backoff: {
+    type: 'exponential',
+    delay: 1000,
+  },
 }
 
 const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
@@ -24,7 +31,7 @@ const writeKitspaceYamlQueue = new bullmq.Queue('writeKitspaceYaml', {
   defaultJobOptions,
 })
 
-const projectQueues = []
+const projectQueues: Array<bullmq.Queue> = []
 const processPCBQueue = new bullmq.Queue('processPCB', {
   connection: redisConnection,
   defaultJobOptions,
@@ -43,10 +50,10 @@ const processIBOMQueue = new bullmq.Queue('processIBOM', {
 })
 projectQueues.push(processIBOMQueue)
 
-function createJobs(jobData: JobData) {
+async function createJobs(jobData: JobData) {
   const jobId = jobData.outputDir
   for (const q of projectQueues) {
-    q.add('projectAPI', jobData, { jobId })
+    await q.add('projectAPI', jobData, { jobId })
   }
 }
 
@@ -75,16 +82,21 @@ export async function addProjectToQueues({
   const hash = await getGitHash(inputDir)
   const outputDir = path.join(DATA_DIR, 'files', ownerName, repoName, hash)
 
-  await fs.mkdir(outputDir, { recursive: true })
-
   const kitspaceYamlArray = await getKitspaceYaml(inputDir)
+
+  if (await alreadyProcessed(outputDir, kitspaceYamlArray, giteaId, hash)) {
+    // Early return if the project is already in S3 and indexed
+    return
+  }
+
+  await fs.mkdir(outputDir, { recursive: true })
 
   for (const kitspaceYaml of kitspaceYamlArray) {
     const projectOutputDir = path.join(outputDir, kitspaceYaml.name)
 
     kitspaceYaml.summary = kitspaceYaml.summary || repoDescription
 
-    createJobs({
+    await createJobs({
       defaultBranch,
       subprojectName: kitspaceYaml.name,
       giteaId,
@@ -146,4 +158,32 @@ async function sync(gitDir, checkoutDir) {
       done()
     })
     .then(() => log.debug('Released sync lock for ', gitDir))
+}
+
+/**
+ * Checks if a version has been processed: the assets are in s3 and the hash is in the search index.
+ *
+ * @param s3BasePath - The base path for the version.
+ */
+async function alreadyProcessed(
+  s3BasePath: string,
+  kitspaceYamlArray: Array<KitspaceYaml>,
+  repoId: string,
+  gitHash: string,
+) {
+  const searchIndexResults = await meiliIndex.search('', {
+    filter: `(repoId = ${repoId}) AND (gitHash = ${gitHash})`,
+  })
+
+  if (searchIndexResults.hits.length !== kitspaceYamlArray.length) {
+    return false
+  }
+
+  const reports = await Promise.all(
+    kitspaceYamlArray.map(async kitspaceYaml =>
+      s3.exists(path.join(s3BasePath, kitspaceYaml.name, 'processor-report.json')),
+    ),
+  )
+  const allReportsExist = reports.every(r => r)
+  return allReportsExist
 }

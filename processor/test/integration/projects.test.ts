@@ -5,6 +5,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
+import { ReplicationEvent } from 'postgres'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
 import { DATA_DIR } from '../../src/env.js'
 import * as giteaDBImported from '../../src/giteaDB.js'
@@ -61,19 +62,38 @@ vi.mock('../../src/meili.js', () => {
   return { meiliIndex }
 })
 
-type GiteaDB = typeof giteaDBImported
+type GiteaDBMock = MockProxy<typeof giteaDBImported>
 
 vi.mock('../../src/giteaDB.js', () => {
-  const giteaDB: MockProxy<GiteaDB> = mock<GiteaDB>()
+  const giteaDB: GiteaDBMock = mock<typeof giteaDBImported>()
   giteaDB.waitForNonEmpty.mockReturnValue(Promise.resolve())
   giteaDB.waitForRepoMigration.mockReturnValue(Promise.resolve())
-  giteaDB.subscribeToRepoDeletions.mockReturnValue(
+  giteaDB.subscribeToRepoEvents.mockReturnValue(
     Promise.resolve({ unsubscribe: () => {} }),
   )
+  giteaDB.getAllRepoInfo.mockReturnValue(Promise.resolve([]))
+
   return giteaDB
 })
 
-const giteaDB = giteaDBImported as MockProxy<GiteaDB>
+async function dispatchRepoEvent(
+  giteaDB: GiteaDBMock,
+  repoInfo: giteaDBImported.RepoInfo,
+  event: ReplicationEvent,
+) {
+  for (const [_, callback] of giteaDB.subscribeToRepoEvents.mock.calls) {
+    await callback(repoInfo, event)
+  }
+}
+
+const repoEventFixture: ReplicationEvent = {
+  command: 'update',
+  relation: null,
+  old: null,
+  key: null,
+}
+
+const giteaDB = giteaDBImported as GiteaDBMock
 
 describe(
   'gitea projects functionality',
@@ -82,7 +102,7 @@ describe(
     beforeEach(async function () {
       await sh`mkdir -p ${tmpDir}`
       await sh`mkdir -p ${repoDir}`
-      app = createApp(repoDir)
+      app = await createApp(repoDir)
     })
 
     it('creates app', async function () {
@@ -102,6 +122,7 @@ describe(
           description: '',
         }
         giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
+
         // first we reset HEAD/master to an exact version of the ruler repo
         // so future changes of the repo don't affect this test
         const tmpBare = path.join(tmpDir, 'ruler.git')
@@ -111,6 +132,8 @@ describe(
           repoDir,
           'kitspace/ruler.git',
         )}`
+
+        await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
         const files = [
           'kitspace-yaml.json',
@@ -163,6 +186,8 @@ describe(
         repoDir,
         'kitspace-forks/diy_particle_detector.git',
       )}`
+
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const repoRoot = path.join(
         DATA_DIR,
@@ -218,6 +243,8 @@ describe(
         'kitspace-test-repos/tinyogx360.git',
       )}`
 
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
+
       const files = [
         'kitspace-yaml.json',
         `_/tinyogx360-${hash.slice(0, 7)}-gerbers.zip`,
@@ -252,6 +279,7 @@ describe(
         name: 'spaces-in-kitspace-data-paths',
         description: '',
       }
+
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
       // first we reset HEAD/master to an exact version of the repo
       // so future changes of the repo don't affect this test
@@ -263,6 +291,8 @@ describe(
         repoDir,
         'kitspace-test-repos/spaces-in-kitspace-data-paths.git',
       )}`
+
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const projectName = 'aux-ps-cs'
       const files = [
@@ -298,6 +328,7 @@ describe(
         name: 'rover',
         description: '',
       }
+
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
       // first we reset HEAD/master to an exact version of the repo
       // so future changes of the repo don't affect this test
@@ -309,6 +340,8 @@ describe(
         repoDir,
         'kitspace-test-repos/rover.git',
       )}`
+
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
 
       const projectName = 'open-source-rover-shield'
 
