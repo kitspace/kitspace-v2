@@ -7,11 +7,11 @@ describe('Navbar search', () => {
     // Visit homepage
     cy.visit('/')
     // Write query term in the search field
-    cy.get('#nav [data-cy=search-field] > input').type(queryTerm)
+    cy.get('nav [data-cy=search-field] > input').type(queryTerm)
     // The URL shouldn't change before clicking on `Search`
     cy.url().should('equal', `${Cypress.config().baseUrl}/`)
     // Press enter
-    cy.get('#nav [data-cy=search-form]').submit()
+    cy.get('nav [data-cy=search-form]').submit()
     // Should redirect to the search page
     cy.url().should('include', `/search?q=${encodeURI(queryTerm)}`)
   })
@@ -41,9 +41,9 @@ describe('Navbar search', () => {
 
     cy.visit('/')
     // Write query term in the search field
-    cy.get('#nav [data-cy=search-field] > input').type(repoName)
+    cy.get('nav [data-cy=search-field] > input').type(repoName)
     // Press enter
-    cy.get('#nav [data-cy=search-form]').submit()
+    cy.get('nav [data-cy=search-form]').submit()
     // Should redirect to the search page
     cy.url().should('include', `/search?q=${encodeURI(repoName)}`)
     cy.get('[data-cy=project-card]').should('have.length.gte', 1)
@@ -126,8 +126,8 @@ describe('/search route', () => {
   it('should redirect to /search when search box is cleared', () => {
     cy.visit('search?q=query')
     // Clear the search form and press enter
-    cy.get('#nav [data-cy=search-field] > input').clear()
-    cy.get('#nav [data-cy=search-form]').submit()
+    cy.get('nav [data-cy=search-field] > input').clear()
+    cy.get('nav [data-cy=search-form]').submit()
     cy.url().should('equal', `${Cypress.config().baseUrl}/search?q=`)
   })
 })
