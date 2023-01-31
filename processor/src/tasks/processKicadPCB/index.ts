@@ -64,9 +64,9 @@ async function processKicadPCB(
         }),
       )
 
-    // Only plot gerbers if there's no `gerbers` key in kitspace.yaml.
+    // Only plot gerbers if there's no `gerbers` key in kitspace.yaml or if it's a compressed archive.
     let gerbers = []
-    if (kitspaceYaml.gerbers == null) {
+    if (kitspaceYaml.gerbers == null || isCompressedArchive(kitspaceYaml.gerbers)) {
       gerbers = await plotKicadGerbers(kicadPcbFile, tmpDir)
     }
 
@@ -104,6 +104,10 @@ async function plotKicadLayoutSvg(
   await fs.mkdir(tmpSvgFolder)
   await sh`${plot_kicad_pcb} svg ${kicadPcbFile} ${tmpSvgFolder} ${layoutSvgPath}`
   await s3.uploadFile(layoutSvgPath, 'image/svg+xml')
+}
+
+function isCompressedArchive(file: string) {
+  return file.endsWith('.zip') || file.endsWith('.tar.gz')
 }
 
 export default processKicadPCB

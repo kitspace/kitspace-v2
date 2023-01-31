@@ -359,6 +359,52 @@ describe(
       assert(topHash === topHashExpected, "hash of top.png doesn't match expected")
     })
 
+    it('plot gerbers if the `gerbers` path is archive', async function () {
+      const repoInfo: giteaDBImported.RepoInfo = {
+        id: '1',
+        is_mirror: true,
+        is_empty: false,
+        owner_name: 'kitspace-test-repos',
+        default_branch: 'main',
+        original_url: 'https://github.com/kitspace-test-repos/The-Open-Book',
+        name: 'the-open-book',
+        description: '',
+      }
+
+      giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
+      // first we reset HEAD/master to an exact version of the repo
+      // so future changes of the repo don't affect this test
+      const hash = 'ffd5be064b6db3cff5ef8a93c00232e580ce704c'
+      const tmpBare = path.join(tmpDir, 'kitspace-test-repos/the-open-book.git')
+      await sh`git clone --bare https://github.com/kitspace-test-repos/The-Open-Book ${tmpBare}`
+      await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
+      await sh`git clone --bare ${tmpBare} ${path.join(
+        repoDir,
+        'kitspace-test-repos/the-open-book.git',
+      )}`
+
+      await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
+
+      const projectName = 'Open-Book-Abridged'
+
+      const files = [...standardProjectFiles.map(f => path.join(projectName, f))]
+
+      await waitForDone({ projectName })
+
+      for (const f of files) {
+        const p = path.join(
+          DATA_DIR,
+          `files/kitspace-test-repos/the-open-book/${hash}/${f}`,
+        )
+        expect(s3.exists).toHaveBeenCalledWith(p)
+        expect(s3.uploadFileContents).toHaveBeenCalledWith(
+          p,
+          expect.anything(),
+          expect.anything(),
+        )
+      }
+    })
+
     afterEach(async function () {
       await app.stop()
       await sh`rm -rf ${tmpDir}`
