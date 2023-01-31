@@ -17,7 +17,7 @@ beforeAll(() => {
   vi.mock('next/router', () => require('next-router-mock'))
 })
 
-it('removes the copy on submitting a search query', async () => {
+it('removes the intro text on submitting a search query', async () => {
   // IPhone 12 Pro, for testing the mobile view
   window.innerWidth = 390
   window.innerHeight = 844
