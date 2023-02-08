@@ -1,4 +1,4 @@
-version: '2'
+version: '2.3'
 
 services:
   frontend:
@@ -52,6 +52,9 @@ services:
       - KITSPACE_SCHEME=${KITSPACE_SCHEME}
       - KITSPACE_EXTERNAL_PORT=${KITSPACE_EXTERNAL_PORT}
       - KITSPACE_ROBOTS_TXT=${KITSPACE_ROBOTS_TXT}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - SENTRY_RELEASE=${SENTRY_RELEASE}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT}
     depends_on:
       - frontend
       - gitea
@@ -59,6 +62,13 @@ services:
       - meilisearch
     ports:
       - '${KITSPACE_DEV_PORT}:80'
+    healthcheck:
+      test: ["CMD", "reachability_healthcheck"]
+      interval: 1m
+      timeout: 1m
+      # If any of the services is unreachable for 4 minutes, mark the container as unhealthy.
+      retries: 4
+      start_period: 2m
 
   processor:
     environment:
