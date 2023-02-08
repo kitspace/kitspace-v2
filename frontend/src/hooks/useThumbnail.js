@@ -1,9 +1,9 @@
 import useSWR from 'swr'
 import getConfig from 'next/config'
 
-const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
+import { fetcher } from './s3HeadFetcher'
 
-const fetcher = (...args) => fetch(...args, { method: 'HEAD' }).then(r => r.ok)
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
 const useThumbnail = (repoFullName, projectName) => {
   const img = `${repoFullName}/HEAD/${projectName}/images/top-large.png`
