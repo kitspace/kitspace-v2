@@ -6,7 +6,9 @@ import { useSearchQuery } from '@contexts/SearchContext'
 import UseForm from '@hooks/useForm'
 import SearchFormModel from '@models/SearchFrom'
 
-const SearchBar = () => {
+import styles from './SearchBar.module.scss'
+
+const SearchBar = ({ className }: SearchBarProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { form, onChange, formatErrorPrompt, populate } = UseForm(SearchFormModel)
   const { push } = useRouter()
@@ -39,10 +41,13 @@ const SearchBar = () => {
     <Form data-cy="search-form" onSubmit={onSubmit}>
       <Form.Field
         fluid
+        autoComplete="off"
+        className={className}
         control={Input}
         data-cy="search-field"
         error={form.query !== '' && formatErrorPrompt('query')}
         icon={isLoading ? <LoadingIcon /> : <SearchIcon />}
+        id="search-field"
         name="query"
         placeholder="Search for projects"
         value={form.query ?? ''}
@@ -52,7 +57,13 @@ const SearchBar = () => {
   )
 }
 
-const LoadingIcon = () => <Icon loading name="spinner" />
-const SearchIcon = () => <Icon name="search" />
+const LoadingIcon = () => (
+  <Icon loading className={styles.searchFieldIcon} name="spinner" />
+)
+const SearchIcon = () => <Icon className={styles.searchFieldIcon} name="search" />
 
 export default SearchBar
+
+interface SearchBarProps {
+  className?: string
+}

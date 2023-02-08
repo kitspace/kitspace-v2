@@ -58,5 +58,5 @@ export const useLazySearch = (params: SearchParams) => {
     }
   }, [isReachingLimit, setSize])
 
-  return { projects: data?.flat(), intersectionObserverRef: ref }
+  return { projects: data?.flat() ?? [], intersectionObserverRef: ref }
 }

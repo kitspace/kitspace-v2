@@ -11,10 +11,10 @@ import styles from './index.module.scss'
 
 const NavBar = () => {
   return (
-    <div className={styles.titleBar} id="nav">
+    <nav className={styles.titleBar}>
       <BigBar />
       <SmallBar />
-    </div>
+    </nav>
   )
 }
 

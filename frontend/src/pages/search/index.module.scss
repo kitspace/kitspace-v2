@@ -1,3 +1,6 @@
+@import '../../components/colors.scss';
+@import '../../components/breakpoint.scss';
+
 .searchFormGroup {
   display: grid !important;
   grid-template-columns: 4fr 1fr;
@@ -18,4 +21,39 @@
 .noMatching {
   text-align: center;
   padding-top: 20vh;
+}
+
+.mobileSearchBar {
+  display: none;
+}
+
+@include breakpoint(mobile_menu) {
+  .mobileSearchBar {
+    display: block;
+    max-width: min(600px, 90%);
+    height: 60px;
+    border: 1px solid $lightlightgray;
+    margin: 0 auto !important;
+    margin-bottom: 48px !important;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+}
+
+.introTextContainer {
+  margin: 48px auto;
+  width: min(700px, 90%);
+}
+
+@include breakpoint(mobile_menu) {
+  .introTextContainer {
+    margin-top: 0;
+  }
+}
+
+.introText {
+  background-color: #fafafa;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: left;
 }

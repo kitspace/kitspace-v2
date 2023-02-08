@@ -12,7 +12,7 @@
       @content;
     }
   } @else if $point == mobile_menu {
-    @media (max-width: 755px) {
+    @media (max-width: 830px) {
       @content;
     }
   }
