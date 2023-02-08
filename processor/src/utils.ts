@@ -59,7 +59,9 @@ export function findKicadSchematic(inputDir, files, kitspaceYaml) {
 }
 
 export function isRelativeUrl(uri: string) {
-  return !uri.match(/^https?:\/\//)
+  // We can't use `[a-z0-9]*:` for matching mailto, and others, because
+  // a `:` in the path part of the url will also match.
+  return !uri.match(/^[a-z0-9]*?:\/\/|^(mailto|tel|sms|magnet):/)
 }
 
 export function normalizeRelativeUrl(url: string, rootFolder: string) {
