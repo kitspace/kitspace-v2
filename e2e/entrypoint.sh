@@ -6,7 +6,7 @@ if [[ -z $GITHUB_TOKEN ]]; then
     # The tests are running locally.
     npx wait-on http://kitspace.test:3000 && cypress run -b chrome
 else
-    escaped_commit_info=$(python3 -c "import shlex; print(shlex.quote('''$COMMIT_INFO_MESSAGE'''))")
+    escaped_commit_info=$(python3 -c "import shlex; print(shlex.quote('''$COMMIT_INFO_MESSAGE'''.split('\n')[0]))")
     echo $escaped_commit_info
     # The tests are running in CI.
     npx wait-on http://kitspace.test:3000 && cypress run --parallel --record -k $CYPRESS_RECORD_KEY \
