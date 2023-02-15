@@ -18,13 +18,3 @@
   align-items: center;
   justify-content: center;
 }
-
-.optionColumn > div {
-  width: 100%;
-}
-
-.divider {
-  @media (max-width: 767px) {
-    max-height: 10px !important;
-  }
-}

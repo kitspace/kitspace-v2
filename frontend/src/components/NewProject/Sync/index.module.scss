@@ -3,9 +3,16 @@
   max-height: 37px;
   flex-grow: 1;
   margin-bottom: 20px;
-  max-width: 400px;
+  margin: auto !important;
+  padding: 0 !important;
 }
 
 .syncButton {
-  margin-left: 20px !important;
+  margin: auto !important;
+  padding: 0 !important;
+}
+
+.syncFormFields {
+  display: flex;
+  gap: 1em;
 }
