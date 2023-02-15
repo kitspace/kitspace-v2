@@ -21,13 +21,6 @@ export const slugifiedNameFromFiles = files => {
 }
 
 /**
- * Get the content of A DataURL as a blob
- * @param base64{string}
- * @returns {Promise<Promise<Blob>>}
- */
-export const b64toBlob = base64 => fetch(base64).then(res => res.blob())
-
-/**
  * Get the repo name from its url
  * !if `url` is invalid the form validation would have caught it
  * @param url
@@ -61,21 +54,6 @@ export const projectNameFromPath = projectPath => {
   // In case if there's a query string remove it
   return pathWithQuery.split('?')[0]
 }
-
-/**
- * A promise based file reader, reads a file as DataURL{string}
- * @param file
- * @returns {Promise<string>}
- */
-export const readFileContent = file =>
-  new Promise(resolve => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const content = reader.result
-      resolve(content)
-    }
-    reader.readAsDataURL(file)
-  })
 
 /**
  * Convert Megabytes to bytes
