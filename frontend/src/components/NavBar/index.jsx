@@ -73,7 +73,10 @@ const SmallBar = () => (
 const AddProjectButton = () => {
   return (
     <Menu.Item data-cy="add-project">
-      <Link passHref href="/projects/new">
+      <Link
+        passHref
+        href="https://github.com/kitspace/kitspace-v2#adding-your-project"
+      >
         <Button icon as="a" color="green" id="add_project" labelPosition="left">
           <Icon name="plus" />
           Add a project
