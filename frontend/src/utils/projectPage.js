@@ -1,5 +1,3 @@
-import { updateFile, uploadFile } from '@utils/giteaApi'
-
 /**
  *
  * @param {string} assetsPath
@@ -84,53 +82,4 @@ export const getIsProcessingDone = async rootAssetPath => {
 export const hasInteractiveBom = async assetsPath => {
   const res = await fetch(`${assetsPath}/interactive_bom.json`, { method: 'HEAD' })
   return res.ok
-}
-
-/**
- * Update the contents of kitspace.yaml if it exists or create it.
- * @param {string} selectedFile the path of the file
- * @param {string} kitspaceYAML the contents of `kitspace.yml` as JSON
- * @param {'gerbers' | 'bom' | 'readme'} assetName
- * @param {string} projectFullname
- * @param {object} user
- * @param {string} apiToken
- * @param {boolean} kitspaceYAMLExists
- * @returns {Promise<boolean} : whether the update was successful or not.
- */
-export const submitKitspaceYaml = async (
-  selectedFile,
-  kitspaceYAML,
-  assetName,
-  projectFullname,
-  user,
-  apiToken,
-  kitspaceYAMLExists,
-) => {
-  /**
-   * From any gerber file, the path for the gerbers dir can be specified.
-   * For readme, and bom only a single file can be selected
-   */
-  const { path } = selectedFile
-  const basePath = path.split('/')[0]
-  const _kitspaceYAML = JSON.parse(JSON.stringify(kitspaceYAML))
-  _kitspaceYAML[assetName] = basePath
-
-  const newKitspaceYAML = yaml.dump(_kitspaceYAML)
-
-  if (kitspaceYAMLExists) {
-    return updateFile(
-      projectFullname,
-      'kitspace.yaml',
-      newKitspaceYAML,
-      user,
-      apiToken,
-    )
-  }
-  return uploadFile(
-    projectFullname,
-    'kitspace.yaml',
-    newKitspaceYAML,
-    user,
-    apiToken,
-  )
 }

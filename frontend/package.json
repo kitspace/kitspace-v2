@@ -20,7 +20,6 @@
     "meilisearch": "^0.25.1",
     "morgan": "^1.10.0",
     "next": "^12.1.6",
-    "node-fetch": "2",
     "prop-types": "^15.7.2",
     "raw-loader": "^4.0.0",
     "react": "^17.0.2",

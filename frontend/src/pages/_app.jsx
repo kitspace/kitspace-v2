@@ -30,7 +30,6 @@ import 'semantic-ui-css/components/dimmer.min.css'
 import 'semantic-ui-css/components/table.min.css'
 import 'semantic-ui-css/components/progress.min.css'
 
-import AuthProvider from '@contexts/AuthContext'
 import './_app.scss'
 
 if (typeof window !== 'undefined') {
@@ -42,7 +41,7 @@ if (typeof window !== 'undefined') {
     }
 }
 
-function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
+function KitspaceApp({ Component, pageProps, isStaticFallback }) {
   const setStaticFallback = isStaticFallback ? (
     <script
       // using dangerouslySetInnerHTML to avoid browser parsing errors
@@ -57,11 +56,11 @@ function KitspaceApp({ Component, pageProps, session, isStaticFallback }) {
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
-    <AuthProvider initialSession={session}>
+    <>
       <Head>{setStaticFallback}</Head>
       <Component {...pageProps} />
       {isStaticFallback ? <ErrorMessage /> : null}
-    </AuthProvider>
+    </>
   )
 }
 
@@ -69,13 +68,9 @@ KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
 
   const { isStaticFallback } = appContext.ctx.query
-  const session =
-    appContext.ctx?.req?.session ??
-    JSON.parse(window?.sessionStorage.getItem('session'))
 
   return {
     ...appProps,
-    session,
     isStaticFallback,
   }
 }

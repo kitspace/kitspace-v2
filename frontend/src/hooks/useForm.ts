@@ -1,9 +1,7 @@
-import { useState, useContext, useCallback, useEffect } from 'react'
-import { AuthContext } from '@contexts/AuthContext'
+import { useState, useCallback, useEffect } from 'react'
 import { Schema } from 'joi'
 
 export default function UseForm(schema: Schema, validateOnBlur?: boolean) {
-  const { csrf } = useContext(AuthContext)
   const [form, setForm] = useState<any>({})
   const [formValidationErrors, setFormValidationErrors] = useState<any>([])
   /*
@@ -19,13 +17,11 @@ export default function UseForm(schema: Schema, validateOnBlur?: boolean) {
 
     if (isCheckBox) {
       setForm(prevForm => ({
-        _csrf: csrf,
         ...prevForm,
         [data.name]: data.checked,
       }))
     } else {
       setForm(prevForm => ({
-        _csrf: csrf,
         ...prevForm,
         [event.target.name]: data.value,
       }))
@@ -50,10 +46,10 @@ export default function UseForm(schema: Schema, validateOnBlur?: boolean) {
      */
     (data, predicate = true) => {
       if (predicate) {
-        setForm({ _csrf: csrf, ...data })
+        setForm(data)
       }
     },
-    [csrf],
+    [],
   )
 
   const isValid = Object.keys(formValidationErrors).length === 0
