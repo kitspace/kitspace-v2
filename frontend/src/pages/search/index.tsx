@@ -64,7 +64,7 @@ const PageContent = () => {
       {projects.length === 0 ? (
         <p className={styles.noMatching} data-cy="cards-grid">
           Sorry, no result.{' '}
-          <Link href="/projects/new">
+          <Link href="https://github.com/kitspace/kitspace#adding-your-project">
             <a>Add your project!</a>
           </Link>
         </p>
