@@ -66,8 +66,17 @@ Cypress.Commands.add('importRepo', (remoteUrl, repoName, user) => {
   cy.createGiteaUser(user).then(giteaUser => {
     cy.mirrorRepo(remoteUrl, repoName, giteaUser)
   })
-  cy.waitForStatusCode(
-    `http://gitea.kitspace.test:3000/${user.username}/${repoName}`,
+
+  cy.waitUntil(
+    () =>
+      cy
+        .request({
+          url: `http://gitea.kitspace.test:3000/api/v1/repos/${user.username}/${repoName}`,
+          method: 'GET',
+          failOnStatusCode: false,
+        })
+        .then(response => response.body.empty !== false),
+    { timeout: 60_000, interval: 1000 },
   )
 })
 

@@ -12,7 +12,7 @@ healthcheck() {
     # Maeke sure that each service is reachable from external domain.s
     if [ "$KITSPACE_DOMAIN" != "kitspace.test" ]; then
         test_reachability "https://$KITSPACE_DOMAIN" "Kitspace" || report_healthcheck_failure "frontend is unreachable" || reload_nginx
-        test_reachability "https://gitea.$KITSPACE_DOMAIN" "Gitea" || report_healthcheck_failure "gitea is unreachable" || reload_nginx
+        test_reachability "https://gitea.$KITSPACE_DOMAIN/api/v1/settings/ui" "gitea" || report_healthcheck_failure "gitea is unreachable" || reload_nginx
         test_reachability "https://meilisearch.$KITSPACE_DOMAIN" "Meilisearch" || report_healthcheck_failure "meilisearch is unreachable" || reload_nginx
     fi
 }
