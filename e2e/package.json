@@ -1,8 +1,8 @@
 {
   "name": "kitspace-e2e",
   "scripts": {
-    "e2e": "npx cypress run",
-    "gui": "npx cypress open",
+    "e2e": "yarn cypress run",
+    "gui": "yarn cypress open",
     "fmt": "prettier '*.json' cypress/ --write",
     "lint": "eslint cypress/"
   },
@@ -13,6 +13,7 @@
     "cypress-fail-fast": "^3.3.0",
     "cypress-image-snapshot": "^4.0.1",
     "cypress-terminal-report": "^3.4.1",
+    "cypress-wait-until": "^1.7.2",
     "eslint": ">=7.0.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-import-resolver-alias": "^1.1.2",

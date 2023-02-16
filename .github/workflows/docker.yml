@@ -318,9 +318,28 @@ jobs:
         run: |
           scripts/install_gitea.sh
 
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
       - name: Pre e2e
+        env:
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
         shell: bash
-        run: scripts/pre_e2e.sh
+        run: |
+          scripts/generate_e2e_fixtures.sh
+
+          # start gitea so we can generate the admin token required for e2e
+          docker-compose -f docker-compose.yml -f docker-compose.deploy.yml up -d
+          until docker logs kitspace_gitea_1 | grep -q 'ORM engine initialization successful' ; do sleep 3s; done
+          token="$(deno run --allow-env --allow-net --allow-run ./scripts/importBoardsTxt.ts --tokenOnly)"
+          docker-compose stop
+
+          echo "CYPRESS_GITEA_ADMIN_TOKEN=${token}" >> $GITHUB_ENV
 
       - name: e2e
         timeout-minutes: 40

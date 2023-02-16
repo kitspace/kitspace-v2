@@ -328,29 +328,36 @@ We configure our staging servers using [Ansible](https://docs.ansible.com/ansibl
 
 ## Running Integration Tests
 
-1. Make sure the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the "Set Up" steps. You can use one of the following options.
+Make sure that:
+1. the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the "Set Up" steps. You can use one of the following options.
+2. test fixtures are generated: `scripts/generate_e2e_fixtures.sh`
+3. npm packages are installed: `yarn --cwd e2e` (when running the tests outside of docker).
 
-### Run the tests in a docker container
 
+> Note: The GITEA_ADMIN_TOKEN is needed when because the Gitea service is hidden and inaccessible to other containers.
+
+### 1. Run the tests in a docker container
 ```console
+export CYPRESS_GITEA_ADMIN_TOKEN="$(deno run --allow-env --allow-net --allow-run ./scripts/importBoardsTxt.ts --tokenOnly)"
 docker-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.e2e.yml up e2e
 ```
+##
 
-### Without docker
 
+
+### 2. Without docker
 ```console
-cd e2e
-yarn
-yarn e2e
+export CYPRESS_GITEA_ADMIN_TOKEN="$(deno run --allow-env --allow-net --allow-run ./scripts/importBoardsTxt.ts --tokenOnly)"
+yarn --cwd e2e e2e
 ```
 
-### GUI
-
+### 3. GUI
 ```console
-cd e2e
-yarn
-yarn gui
+export CYPRESS_GITEA_ADMIN_TOKEN="$(deno run --allow-env --allow-net --allow-run ./scripts/importBoardsTxt.ts --tokenOnly)"
+yarn --cwd e2e gui
 ```
+
+
 
 ### Recording new visual tests:
 

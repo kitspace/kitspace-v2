@@ -10,28 +10,17 @@ describe('IBOM page', () => {
   })
 
   it('should redirect to project page (multi project)', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     const multiProjectsNames = ['alpha-spectrometer', 'electron-detector']
     const multiProjectsRepoName = 'DIY_particle_detector'
     const syncedRepoUrlMultiProjects =
       'https://github.com/kitspace-test-repos/DIY_particle_detector'
 
-    /* Migrate the multiproject repo */
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 120_000 }).as('projectCards')
 
@@ -39,7 +28,7 @@ describe('IBOM page', () => {
 
     // Go to IBOM page for a subproject
     const subProjectName = multiProjectsNames[0]
-    cy.visit(`${username}/${multiProjectsRepoName}/${subProjectName}/IBOM`)
+    cy.visit(`${user.username}/${multiProjectsRepoName}/${subProjectName}/IBOM`)
 
     // Click on the title
     cy.get('#title').click()
@@ -47,36 +36,26 @@ describe('IBOM page', () => {
     // It should redirect to the subproject page
     cy.url({ timeout: 20_000 }).should(
       'eq',
-      `${
-        Cypress.config().baseUrl
-      }/${username}/${multiProjectsRepoName}/${subProjectName}`,
+      `${Cypress.config().baseUrl}/${
+        user.username
+      }/${multiProjectsRepoName}/${subProjectName}`,
     )
   })
 
   it('should redirect to the project page (normal project)', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    /* Migrate the normal repo */
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
     const normalRepoName = 'CH330_Hardware'
+    cy.importRepo(syncedRepoUrl, normalRepoName, user)
 
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
-
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
+    cy.forceVisit(`/${user.username}/${normalRepoName}`)
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     // Go to IBOM page for a single (not multi) project
     cy.get('[data-cy=ibom]').should('be.visible')
-    cy.visit(`${username}/${normalRepoName}/_/IBOM`)
+    cy.visit(`${user.username}/${normalRepoName}/_/IBOM`)
 
     // Click on the title
     cy.get('#title').click()
@@ -84,24 +63,20 @@ describe('IBOM page', () => {
     // It should redirect to the project page
     cy.url({ timeout: 20_000 }).should(
       'eq',
-      `${Cypress.config().baseUrl}/${username}/${normalRepoName}`,
+      `${Cypress.config().baseUrl}/${user.username}/${normalRepoName}`,
     )
   })
 
   it('should not render `Assembly Guide` button for projects with `ibom-enabled: false', () => {
-    const { username, email, password } = getFakeUser()
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
+    const user = getFakeUser()
     /* Migrate a repo with `omit-ibom` set to `true` */
-    cy.forceVisit('/projects/new')
+    const repoName = 'solarbird_shenzen_rdy'
     const IBOMDisabledRepoURL =
       'https://github.com/kitspace-test-repos/solarbird_shenzen_rdy'
-    const repoName = 'solarbird_shenzen_rdy'
-    cy.get('[data-cy=sync-field]').type(IBOMDisabledRepoURL)
-    cy.get('button').contains('Sync').click()
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.importRepo(IBOMDisabledRepoURL, repoName, user)
+
+    cy.forceVisit(`/${user.username}/${repoName}`)
+    cy.url({ timeout: 60_000 }).should('contain', `${user.username}/${repoName}`)
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 100_000 }).should('be.visible')
     // The ibom button shouldn't get rendered for this project.

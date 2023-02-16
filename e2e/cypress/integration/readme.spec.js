@@ -10,24 +10,15 @@ describe('Relative README images URLs normalization', () => {
   })
 
   it('handles readme images starting with `/`', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'CH330_Hardware'
-    const syncedRepoUrl =
-      'https://github.com/kitspace-test-repos/CH330_Hardware'
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
 
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.visit(`${user.username}/${repoName}`)
 
     cy.get('[data-cy=readme-img]', { timeout: 60_000 })
       .should('have.attr', 'src')
@@ -43,27 +34,19 @@ describe('Relative README images URLs normalization', () => {
   })
 
   it('handles readmes in folders', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'readmes-in-folders'
     const syncedRepoUrl =
       'https://github.com/kitspace-test-repos/readmes-in-folders'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.visit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.visit(`${user.username}/${repoName}`)
     cy.get('[data-cy=project-card]', { timeout: 20_000 }).should('have.length', 2)
 
-    cy.visit(`/${username}/${repoName}/project_2`)
+    cy.visit(`/${user.username}/${repoName}/project_2`)
     cy.get('[data-cy=readme]').within(() => {
       cy.get('img').each($img => {
         // checks for naturalWidth/naturalHeight are not working
@@ -79,27 +62,19 @@ describe('Relative README images URLs normalization', () => {
   })
 
   it('redirects relative urls to original git service', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'readmes-in-folders'
     const syncedRepoUrl =
       'https://github.com/kitspace-test-repos/readmes-in-folders'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.visit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.visit(`${user.username}/${repoName}`)
     cy.get('[data-cy=project-card]', { timeout: 20_000 }).should('have.length', 2)
 
-    cy.visit(`/${username}/${repoName}/project_1`)
+    cy.visit(`/${user.username}/${repoName}/project_1`)
 
     cy.get('[data-cy=readme]').within(() => {
       cy.get('a').each($a => {
@@ -111,24 +86,17 @@ describe('Relative README images URLs normalization', () => {
 
 describe('Readme style', () => {
   it('should auto link readme and summary links', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'readme-and-summary-auto-link'
     const syncedRepoUrl =
       'https://github.com/kitspace-test-repos/readme-and-summary-auto-link'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.visit(`/${user.username}/${repoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
@@ -150,23 +118,16 @@ describe('Readme style', () => {
   })
 
   it('renders :emoji: in readme and project description', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'ogx360'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/ogx360'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.visit(`/${user.username}/${repoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
@@ -176,23 +137,16 @@ describe('Readme style', () => {
   })
 
   it('preserves URLs for GitHub Actions badges', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'ogx360'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/ogx360'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.visit(`/${user.username}/${repoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 

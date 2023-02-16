@@ -1,12 +1,9 @@
-import React, { useContext } from 'react'
-import { bool } from 'prop-types'
+import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
-import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
-import { UserMenuItems, UserDropDownMenu } from './UserMenu'
 import styles from './index.module.scss'
 import logoSvg from './logo.svg'
 
@@ -44,7 +41,6 @@ const BigBar = () => (
       <Menu inverted pointing secondary>
         <AddProjectButton />
         <ContactMenu />
-        <UserControllerButton />
       </Menu>
     </div>
   </>
@@ -66,7 +62,6 @@ const SmallBar = () => (
       }
     >
       <Menu inverted vertical className={styles.smallMenu}>
-        <UserControllerButton smallNavBar />
         <AddProjectButton />
         <SiteMenuItems />
         <SocialMenuItems />
@@ -173,45 +168,5 @@ const ContactMenu = () => (
     </Menu>
   </Popup>
 )
-
-/**
- * Log in button if the user is unauthenticated, user menu otherwise.
- */
-const UserControllerButton = ({ smallNavBar }) => {
-  const { user } = useContext(AuthContext)
-
-  if (user != null) {
-    if (smallNavBar) {
-      return <UserMenuItems />
-    }
-
-    return <UserDropDownMenu />
-  }
-
-  return <LogInButton />
-}
-
-const LogInButton = () => {
-  const { asPath } = useRouter()
-
-  const href = { pathname: '/login' }
-  if (!asPath.startsWith('/login')) {
-    href.query = { redirect: asPath }
-  }
-
-  return (
-    <Menu.Item className={styles.LogInButton}>
-      <Link passHref href={href}>
-        <Button as="a" color="green" id="login">
-          Login
-        </Button>
-      </Link>
-    </Menu.Item>
-  )
-}
-
-UserControllerButton.propTypes = {
-  smallNavBar: bool,
-}
 
 export default NavBar

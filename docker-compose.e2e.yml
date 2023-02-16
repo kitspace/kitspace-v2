@@ -22,6 +22,7 @@ services:
       - COMMIT_INFO_SHA=${COMMIT_INFO_SHA}
       - COMMIT_INFO_TIMESTAMP=${COMMIT_INFO_TIMESTAMP}
       - COMMIT_INFO_BRANCH=${COMMIT_INFO_BRANCH}
+      - CYPRESS_GITEA_ADMIN_TOKEN=${CYPRESS_GITEA_ADMIN_TOKEN}
     depends_on:
       - nginx
     working_dir: /e2e
