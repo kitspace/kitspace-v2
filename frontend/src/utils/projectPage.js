@@ -134,12 +134,3 @@ export const submitKitspaceYaml = async (
     apiToken,
   )
 }
-
-/**
- *
- * @param {string} assetsPath url for project assets.
- * @returns {string} url for assets processing status.
- */
-export const getStatusPath = assetsPath => {
-  return assetsPath.replace(/\/files\//, '/status/')
-}

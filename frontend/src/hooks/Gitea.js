@@ -40,26 +40,6 @@ const fetcher = url =>
   }).then(r => r.json())
 
 /**
- * A hook to get repo details
- * @param fullname{string}
- * @param swrOpts{swrOptions}
- * @returns {{repo: Object, isLoading: boolean, isError: boolean, mutate: function}}
- */
-export const useRepo = (fullname, swrOpts = {}) => {
-  const endpoint = `${giteaApiUrl}/repos/${fullname}`
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
-
-  const notFound = data?.message === 'Not Found'
-
-  return {
-    repo: data,
-    isLoading: !(data || error),
-    isError: error || notFound,
-    mutate,
-  }
-}
-
-/**
  * A hook to get the files in the default branch of a repo
  * @param repo{string}
  * @param swrOpts{swrOptions}
@@ -76,37 +56,6 @@ export const useDefaultBranchFiles = (repo, swrOpts = {}) => {
     mutate,
   }
 }
-
-/**
- * A hook to get the files in any branch of a repo
- * @param repo{string}
- * @param branch{string}
- * @param swrOpts{swrOptions}
- * @returns {{isLoading: boolean, isError: boolean, files: [], mutate?: function}}
- */
-export const useRepoFiles = (repo, branch = 'master', swrOpts = {}) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents?ref=${branch}`
-
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
-
-  // For some reason if the repo is empty the gitea api returns the repo details instead of an empty array!
-  // Check if it returned repo details and replace it with an empty array.
-
-  if (data?.hasOwnProperty('owner')) {
-    return {
-      files: [],
-      isLoading: !(data || error),
-      isError: error,
-    }
-  }
-  return {
-    files: data,
-    isLoading: !(data || error),
-    isError: error,
-    mutate,
-  }
-}
-
 /**
  * A hook to get the migration status of a repo
  * @param repoId{string}

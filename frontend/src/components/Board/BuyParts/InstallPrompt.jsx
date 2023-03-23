@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-import BrowserVersion from 'browser-version'
 import { Icon, Message } from 'semantic-ui-react'
 import { func, string } from 'prop-types'
 
+import BrowserVersion from '@utils/getBrowserVersion'
 import styles from './InstallPrompt.module.scss'
 
 export const install1ClickBOM = () => {
