@@ -44,30 +44,6 @@ export const createRepo = async (name, description, apiToken) => {
 }
 
 /**
- * Update a repo with new fields
- * @param repo {string}
- * @param updateFields{Object}
- * @param apiToken {string}
- * @returns {Promise<boolean>}
- */
-export const updateRepo = async (repo, updateFields, apiToken) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}`
-
-  const res = await fetch(endpoint, {
-    method: 'PATCH',
-    credentials,
-    mode,
-    headers: {
-      ...headers,
-      Authorization: `token ${apiToken}`,
-    },
-    body: JSON.stringify(updateFields),
-  })
-
-  return res.ok
-}
-
-/**
  * Get the repo name from its url
  * @param url
  * @returns {string}

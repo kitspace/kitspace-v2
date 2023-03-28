@@ -166,33 +166,30 @@ const Sync = ({ setUserOp }) => {
         style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
       >
         <p>Import an existing Git repository</p>
-        <div>
-          <Form>
-            <Form.Group inline>
-              <Form.Field
-                fluid
-                className={styles.urlInput}
-                control={Input}
-                data-cy="sync-field"
-                name="url"
-                placeholder={`e.g., ${remoteRepoPlaceHolder}`}
-                value={form.url || ''}
-                onChange={onChange}
-              />
-              <div className={styles.syncButton}>
-                <Form.Field
-                  color="green"
-                  content="Sync"
-                  control={Button}
-                  disabled={loading || form.url == null}
-                  icon="sync"
-                  loading={loading}
-                  onClick={handleClick}
-                />
-              </div>
-            </Form.Group>
-          </Form>
-        </div>
+        <Form>
+          <Form.Group inline className={styles.syncFormFields}>
+            <Form.Field
+              fluid
+              className={styles.urlInput}
+              control={Input}
+              data-cy="sync-field"
+              name="url"
+              placeholder={`e.g., ${remoteRepoPlaceHolder}`}
+              value={form.url || ''}
+              onChange={onChange}
+            />
+            <Form.Field
+              className={styles.syncButton}
+              color="green"
+              content="Sync"
+              control={Button}
+              disabled={loading || form.url == null}
+              icon="sync"
+              loading={loading}
+              onClick={handleClick}
+            />
+          </Form.Group>
+        </Form>
         {!isEmpty(message) ? (
           <Message
             color={message.color}

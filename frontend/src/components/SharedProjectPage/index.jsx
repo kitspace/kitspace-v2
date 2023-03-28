@@ -87,7 +87,6 @@ const SharedProjectPage = props => {
         {...props}
         assetPath={`${props.rootAssetPath}/${props.projectName}`}
         description={props.description}
-        owner={props.username}
         previewOnly={props.isSynced}
       />
     </Page>

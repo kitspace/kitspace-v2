@@ -40,23 +40,6 @@ const fetcher = url =>
   }).then(r => r.json())
 
 /**
- * A hook to get the files in the default branch of a repo
- * @param repo{string}
- * @param swrOpts{swrOptions}
- * @returns {{isLoading: boolean, isError: boolean, files: Object[], mutate: function}}
- */
-export const useDefaultBranchFiles = (repo, swrOpts = {}) => {
-  const endpoint = `${giteaApiUrl}/repos/${repo}/contents`
-  const { data, error, mutate } = useSWR(endpoint, fetcher, swrOpts)
-
-  return {
-    files: data || [],
-    isLoading: !(data || error),
-    isError: error,
-    mutate,
-  }
-}
-/**
  * A hook to get the migration status of a repo
  * @param repoId{string}
  * @param shouldFetch{boolean}
