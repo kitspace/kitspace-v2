@@ -64,7 +64,7 @@ const repoProcessingFlow = new FlowProducer({ connection: redisConnection })
 async function createJobs(jobData: RepoJobData) {
   const jobId = jobData.outputDir
 
-  const childrenJobs = jobData.kitspaceYamlArray
+  const childJobs = jobData.kitspaceYamlArray
     .map(kitspaceYaml => {
       const projectOutputDir = path.join(jobData.outputDir, kitspaceYaml.name)
       kitspaceYaml.summary = kitspaceYaml.summary || jobData.repoDescription
@@ -85,12 +85,20 @@ async function createJobs(jobData: RepoJobData) {
     .flat()
 
   await repoProcessingFlow.add({
-    children: childrenJobs,
+    children: childJobs,
     data: jobData,
     name: 'projectAPI',
-    // We have to use unique jobId for the cleanup job, whenever we recreate it;
-    // There are case where the repo gets re-cloned and if we use the same jobId
-    // the cleanup job will be ignore.
+    /*
+     * We have to use a unique jobId for the cleanup job, whenever we recreate it;
+     * There are cases where the repo gets re-cloned (the processor clones the repo again)
+     * and if we use the same jobId the cleanup job will be ignored.
+     * An example of this is when the processing fails (for three times),
+     * the cleanup job will get created, whenever the processor gets restarted (for whatever reason)
+     * it will process the repo again (all repos are processed on startup according to
+     * the rules implemented in `alreadyProcessed`).
+     * If the jobId is still in redis it won't run the cleanup job.
+     * So we timestamp it to make sure it's unique for each time the repo gets cloned.
+     */
     opts: { jobId: `${jobId}-${Date.now()}` },
     queueName: cleanUpQueue.name,
   })
