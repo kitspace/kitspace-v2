@@ -2,7 +2,7 @@ import globule from 'globule'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import url from 'node:url'
-import { Job, JobData } from '../../job.js'
+import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { sh } from '../../shell.js'
 import { findKicadPcbFile } from '../../utils.js'
@@ -20,7 +20,7 @@ async function processKicadPCB(
     kitspaceYaml = {},
     outputDir,
     tmpDir,
-  }: ProcessKicadPcbData & Partial<JobData>,
+  }: ProcessKicadPcbData & Partial<ProjectJobData>,
 ) {
   const layoutSvgPath = path.join(outputDir, 'images/layout.svg')
 

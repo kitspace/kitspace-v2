@@ -1,7 +1,7 @@
 import globule from 'globule'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import { Job, JobData } from '../../job.js'
+import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { renderMarkdown } from './renderMarkdown.js'
 
@@ -17,7 +17,7 @@ async function processReadme(
     repoName,
     originalUrl,
     defaultBranch,
-  }: Partial<JobData>,
+  }: Partial<ProjectJobData>,
 ) {
   const readmePath = path.join(outputDir, 'readme.html')
 

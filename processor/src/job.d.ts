@@ -1,16 +1,22 @@
 import { Job as BullMQJob } from 'bullmq'
 import { KitspaceYaml } from './kitspaceYaml'
 
-export interface JobData {
-  giteaId: string | null
-  kitspaceYaml: KitspaceYaml
-  originalUrl: string
+export interface RepoJobData {
   defaultBranch: string
-  ownerName: string
-  repoName: string
+  giteaId: string | null
   hash: string
   inputDir: string
+  kitspaceYamlArray: Array<KitspaceYaml>
+  originalUrl: string
   outputDir: string
+  ownerName: string
+  repoName: string
+  repoDescription: string
+}
+
+export interface ProjectJobData
+  extends Omit<RepoJobData, 'kitspaceYamlArray' | 'repoDescription'> {
+  kitspaceYaml: KitspaceYaml
   subprojectName: string
 }
 
@@ -22,6 +28,6 @@ export interface JobProgress {
 }
 
 export interface Job extends BullMQJob {
-  data: JobData
+  data: ProjectJobData
   updateProgress(jobProgress: JobProgress): Promise<void>
 }

@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import { SubscriptionHandle } from 'postgres'
 import * as giteaDB from '../giteaDB.js'
-import { Job, JobData } from '../job.js'
+import { Job, ProjectJobData } from '../job.js'
 import { log } from '../log.js'
 import { meiliIndex } from '../meili.js'
 
@@ -27,7 +27,7 @@ export default async function addToSearch(
     repoName,
     hash,
     readmeHTML,
-  }: AddToSearchData & Partial<JobData>,
+  }: AddToSearchData & Partial<ProjectJobData>,
 ) {
   // A document identifier must be of type integer or string,
   // composed only of alphanumeric characters (a-z A-Z 0-9), hyphens (-), and underscores (_).

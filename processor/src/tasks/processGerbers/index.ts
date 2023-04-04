@@ -2,7 +2,7 @@ import globule from 'globule'
 import Jszip from 'jszip'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { Job, JobData } from '../../job.js'
+import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { sh } from '../../shell.js'
 import boardBuilder from './board_builder.js'
@@ -39,7 +39,7 @@ export default async function processGerbers(
     subprojectName,
     plottedGerbers,
     hash,
-  }: ProcessGerbersData & Partial<JobData>,
+  }: ProcessGerbersData & Partial<ProjectJobData>,
 ) {
   const zipVersion = hash.slice(0, 7)
   const zipFileName = `${
