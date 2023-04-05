@@ -5,8 +5,9 @@ const next = require('next')
 const fetch = require('node-fetch')
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
+const hostname = process.env.KITSPACE_DOMAIN
 
-const app = next({ dev, port })
+const app = next({ dev, port, hostname })
 const nextHandler = app.getRequestHandler()
 
 main().catch(e => {

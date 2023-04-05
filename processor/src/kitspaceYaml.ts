@@ -63,7 +63,7 @@ export async function getKitspaceYaml(
     const obj = jsYaml.load(yamlContents)
     input = kitspaceYamlInput.parse(obj)
   } catch (e) {
-    log.warn('Could not parse Kitspace YAML file:', e)
+    log.warn(`Could not parse Kitspace YAML file for ${inputDir}: `, e)
     // return the default
     return [kitspaceYaml.parse({ name: '_' })]
   }

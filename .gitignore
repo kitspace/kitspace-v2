@@ -8,3 +8,6 @@ nginx/default.conf
 
 #python
 __pycache__/
+
+# deno output
+importBoardsTxt
