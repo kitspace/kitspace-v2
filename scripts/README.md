@@ -11,7 +11,7 @@ Usage: importBoardsTxt [options]
       --tokenOnly: Only generate the admin token and exit.
       --help: Show this help
 ```
-### To generate `adminToken` run `create_gitea_admin_token.sh`
+### Generating `adminToken`
 This is useful if you want to run the script on a remote gitea instance (not localhost:3333)
 ```console
 $ ./scripts/importBoardsTxt.ts --tokenOnly
