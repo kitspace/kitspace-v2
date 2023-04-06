@@ -18,7 +18,6 @@ RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
 WORKDIR /app
 COPY . .
 RUN pip3 install -r requirements.txt
-RUN npm install --global yarn
 RUN yarn install
 RUN yarn tsc
 RUN yarn cp-assets
