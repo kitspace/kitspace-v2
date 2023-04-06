@@ -43,7 +43,7 @@ if ext == '.brd':
     shutil.rmtree(tmpdir, ignore_errors=True)
 
 
-config = Config(version)
+config = Config(version, ".")
 config.open_browser = False
 config.bom_name_format = 'interactive_bom'
 config.include_tracks = True
