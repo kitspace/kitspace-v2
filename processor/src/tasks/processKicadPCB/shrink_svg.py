@@ -16,14 +16,9 @@ def merge_bbox(left: Box, right: Box) -> Box:
     return tuple([f(l, r) for l, r, f in zip(left, right, [min, max, min, max])])  #
 
 
-def ki2mm(val: int) -> float:
-    return val / 1000.0
-
-
-def shrink_svg(svg: ET.ElementTree, margin: int) -> None:
+def shrink_svg(svg: ET.ElementTree, margin_mm: float) -> None:
     """
-    Shrink the SVG canvas to the size of the drawing. Add margin in
-    KiCAD units.
+    Shrink the SVG canvas to the size of the drawing. Add margin in millimeters.
     """
     root = svg.getroot()
     # not sure why we need to do `tostring` and then `fromstring` here but
@@ -36,14 +31,14 @@ def shrink_svg(svg: ET.ElementTree, margin: int) -> None:
     for x in paths:
         bbox = merge_bbox(bbox, x.bbox())
     bbox = list(bbox)
-    bbox[0] -= int(margin)
-    bbox[1] += int(margin)
-    bbox[2] -= int(margin)
-    bbox[3] += int(margin)
+    bbox[0] -= margin_mm
+    bbox[1] += margin_mm
+    bbox[2] -= margin_mm
+    bbox[3] += margin_mm
 
     root.set(
         "viewBox",
         "{} {} {} {}".format(bbox[0], bbox[2], bbox[1] - bbox[0], bbox[3] - bbox[2]),
     )
-    root.set("width", str(ki2mm(int(bbox[1] - bbox[0]))) + "mm")
-    root.set("height", str(ki2mm(int(bbox[3] - bbox[2]))) + "mm")
+    root.set("width", str(bbox[1] - bbox[0]) + "mm")
+    root.set("height", str(bbox[3] - bbox[2]) + "mm")
