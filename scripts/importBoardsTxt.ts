@@ -6,11 +6,12 @@ import { exec, OutputMode } from 'https://deno.land/x/exec@0.0.5/mod.ts'
 import { parse } from 'https://deno.land/std@0.119.0/flags/mod.ts'
 import * as path from 'https://deno.land/std@0.167.0/path/mod.ts'
 import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
+import shuffle from "https://deno.land/x/shuffle@v1.0.1/mod.ts"
 
 const flags = parse(Deno.args, {
   string: ['giteaUrl', 'adminToken', 'githubToken'],
-  boolean: ['help', 'tokenOnly'],
-  default: { numberOfRepos: 150, giteaUrl: 'http://localhost:3333' },
+  boolean: ['help', 'tokenOnly', 'shuffle'],
+  default: { numberOfRepos: 150, giteaUrl: 'http://localhost:3333', shuffle: true },
 })
 
 if (flags.help || !(flags.githubToken || flags.tokenOnly)) {
@@ -21,6 +22,7 @@ if (flags.help || !(flags.githubToken || flags.tokenOnly)) {
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
       --numberOfRepos: Number of repositories to import (default: 1000)
       --tokenOnly: Only generate the admin token and exit.
+      --shuffle: Shuffle the boards.txt file before importing (default: true)
       --help: Show this help
   `)
   Deno.exit(0)
@@ -44,9 +46,12 @@ const headers = {
 
 async function main() {
   const registryBoards = await getRegistryBoards()
-  const boards = (await getBoardsTxt())
+  let boards = (await getBoardsTxt())
     .filter(url => !registryBoards.includes(url))
     .slice(0, flags.numberOfRepos)
+  if (flags.shuffle) {
+    boards = shuffle(boards)
+  }
   const GithubReposDescriptions = await getAllGithubReposDescriptions(boards)
 
   const progress = new ProgressBar({

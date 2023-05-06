@@ -9,6 +9,7 @@ Usage: importBoardsTxt [options]
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
       --numberOfRepos: Number of repositories to import (default: 1000)
       --tokenOnly: Only generate the admin token and exit.
+      --shuffle: Shuffle the boards.txt file before importing (default: true)
       --help: Show this help
 ```
 ### Generating `adminToken`
