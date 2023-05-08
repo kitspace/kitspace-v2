@@ -9,6 +9,11 @@ server {
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
+    location /loaderio-36f9bbea17b4dfa82be8705438d1a376.txt {
+        add_header Content-Type text/plain;
+        return 200 "loaderio-36f9bbea17b4dfa82be8705438d1a376\n";
+    }
+
     location / {
         proxy_http_version     1.1;
         proxy_set_header       Upgrade $http_upgrade;
