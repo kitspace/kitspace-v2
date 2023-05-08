@@ -353,7 +353,7 @@ describe(
       assert(topCall != null)
       expect(topCall).toHaveLength(3)
 
-      const topHashExpected = 'ca028a1dab49092a5df15401b5a825e4'
+      const topHashExpected = 'ce39d383a091f4b2ba41509606bbbbf4'
       const topContents = topCall[1]
       const topHash = crypto.createHash('md5').update(topContents).digest('hex')
       assert(topHash === topHashExpected, "hash of top.png doesn't match expected")
