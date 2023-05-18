@@ -36,11 +36,12 @@ jobs:
         id: sha
         shell: bash
         run: |
-          echo "::set-output name=frontend_sha_short::$(git log --format=%h -n1 frontend/)"
-          echo "::set-output name=processor_sha_short::$(git log --format=%h -n1 processor/)"
-          echo "::set-output name=nginx_sha_short::$(git log --format=%h -n1 nginx/)"
-          echo "::set-output name=gitea_sha_short::$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )"
+          echo "frontend_sha_short=$(git log --format=%h -n1 frontend/)" >> $GITHUB_OUTPUT
+          echo "processor_sha_short=$(git log --format=%h -n1 processor/)" >> $GITHUB_OUTPUT
+          echo "nginx_sha_short=$(git log --format=%h -n1 nginx/)" >> $GITHUB_OUTPUT
+          echo "gitea_sha_short=$( git submodule foreach 'echo "$sha1"' \
+            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )" \
+            >> $GITHUB_OUTPUT
 
       - name: Create e2e matrix
         # For master run e2e across all browsers otherwise, run it only in chrome
@@ -50,10 +51,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" == "refs/heads/master" ]];
           then
-            echo "::set-output name=matrix::{\"browser\":[\"chrome\", \"edge\", \"electron\"],\"containers\":[1,2,3]}"
+            matrix='{"browser":["chrome", "edge", "electron"],"containers":[1,2,3]}'
           else
-            echo "::set-output name=matrix::{\"browser\":[\"chrome\"],\"containers\":[1,2,3]}"
+            matrix='{"browser":["chrome"],"containers":[1,2,3]}'
           fi
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT";
+
 
   build:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
@@ -81,7 +84,7 @@ jobs:
             gitea)
               sha_short="${{ needs.get_version.outputs.gitea_sha_short }}";;
           esac
-          echo "::set-output name=sha_short::${sha_short}"
+          echo "sha_short=${sha_short}" >> $GITHUB_OUTPUT
 
       - name: Check for ${{ matrix.service }} image
         id: check_for_image
@@ -95,7 +98,7 @@ jobs:
             then image_exists='true'
             else image_exists='false'
           fi
-          echo "::set-output name=image_exists::${image_exists}"
+          echo "image_exists=${image_exists}" >> $GITHUB_OUTPUT
 
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -122,7 +125,7 @@ jobs:
       # to avoid being rate-limited on pulls
       - name: Login to hub.docker.com
         if: steps.check_for_image.outputs.image_exists == 'false'
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PAT }}
@@ -164,10 +167,6 @@ jobs:
         if: ${{ github.ref == 'refs/heads/review' }}
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
 
-      - name: Get branch name
-        id: branch
-        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
-
       - name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
@@ -207,7 +206,7 @@ jobs:
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master' >> $GITHUB_ENV;;
           esac
 
-      - name: Deploy to ${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
+      - name: Deploy to ${{ github.ref_name }}.staging.kitspace.dev
         id: deploy_to_staging
         uses: kitspace/docker-remote-deployment-action@master
         env:
@@ -218,13 +217,13 @@ jobs:
           MEILI_MASTER_KEY: '${{ secrets.STAGING_MEILI_MASTER_KEY }}'
           REDIS_PASSWORD: '${{ secrets.STAGING_REDIS_PASSWORD }}'
           KITSPACE_PROCESSOR_REMOTE_API_TOKENS: '${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}'
-          KITSPACE_DOMAIN: '${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev'
+          KITSPACE_DOMAIN: '${{ github.ref_name }}.staging.kitspace.dev'
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
           KITSPACE_EXTERNAL_PORT: ''
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: 'kaspar@kitspace.org'
-          COMPOSE_PROJECT_NAME: 'kitspace-${{ steps.branch.outputs.short_ref }}'
+          COMPOSE_PROJECT_NAME: 'kitspace-${{ github.ref_name }}'
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
@@ -239,7 +238,7 @@ jobs:
           SENTRY_ENVIRONMENT: staging
           SENTRY_RELEASE: '${{ github.sha }}'
         with:
-          remote_docker_host: deploy@${{ steps.branch.outputs.short_ref }}.staging.kitspace.dev
+          remote_docker_host: deploy@${{ github.ref_name }}.staging.kitspace.dev
           ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
           stack_file_name: docker-compose.yml,docker-compose.deploy.yml
@@ -287,10 +286,10 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.get_version.outputs.matrix) }}
     steps:
-      - name: Setup Node 14
-        uses: actions/setup-node@v2
+      - name: Setup Node 16
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: Check out the repo
         uses: actions/checkout@v2
