@@ -9,7 +9,7 @@ server {
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
-    location /loaderio-36f9bbea17b4dfa82be8705438d1a376.txt {
+    location /loaderio-54d446086bd11991e7d5d2ae7db9d36e.txt {
         add_header Content-Type text/plain;
         return 200 "loaderio-54d446086bd11991e7d5d2ae7db9d36e";
     }
