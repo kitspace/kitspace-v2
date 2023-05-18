@@ -11,7 +11,7 @@ server {
 
     location /loaderio-36f9bbea17b4dfa82be8705438d1a376.txt {
         add_header Content-Type text/plain;
-        return 200 "loaderio-36f9bbea17b4dfa82be8705438d1a376\n";
+        return 200 "loaderio-36f9bbea17b4dfa82be8705438d1a376";
     }
 
     location / {
