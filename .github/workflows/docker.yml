@@ -15,11 +15,11 @@ jobs:
     name: Get git version
     runs-on: ubuntu-20.04
     outputs:
-      frontend_sha_short: ${{ steps.sha.outputs.frontend_sha_short }}
-      processor_sha_short: ${{ steps.sha.outputs.processor_sha_short }}
-      nginx_sha_short: ${{ steps.sha.outputs.nginx_sha_short }}
-      gitea_sha_short: ${{ steps.sha.outputs.gitea_sha_short }}
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      frontend_sha: ${{ steps.get_sha.outputs.frontend_sha }}
+      processor_sha: ${{ steps.get_sha.outputs.processor_sha }}
+      nginx_sha: ${{ steps.get_sha.outputs.nginx_sha }}
+      gitea_sha: ${{ steps.get_sha.outputs.gitea_sha }}
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -33,19 +33,17 @@ jobs:
           fetch-depth: 0
 
       - name: Get commit SHA
-        id: sha
+        id: get_sha
         shell: bash
         run: |
-          echo "frontend_sha_short=$(git log --format=%h -n1 frontend/)" >> $GITHUB_OUTPUT
-          echo "processor_sha_short=$(git log --format=%h -n1 processor/)" >> $GITHUB_OUTPUT
-          echo "nginx_sha_short=$(git log --format=%h -n1 nginx/)" >> $GITHUB_OUTPUT
-          echo "gitea_sha_short=$( git submodule foreach 'echo "$sha1"' \
-            | sed -n "/gitea/{N; p}" | sed '2q;d'| xargs git rev-parse --short )" \
-            >> $GITHUB_OUTPUT
+          echo "frontend_sha=$(git log --format=%H -n1 frontend/)" >> $GITHUB_OUTPUT
+          echo "processor_sha=$(git log --format=%H -n1 processor/)" >> $GITHUB_OUTPUT
+          echo "nginx_sha=$(git log --format=%H -n1 nginx/)" >> $GITHUB_OUTPUT
+          echo "gitea_sha=$(git log --format=%H -n1 gitea/)" >> $GITHUB_OUTPUT
 
       - name: Create e2e matrix
         # For master run e2e across all browsers otherwise, run it only in chrome
-        id: set-matrix
+        id: set_matrix
         # Run e2e across all tests on `push` event to the `master` branch (merging another branch into master triggers push too).
         # Run e2e in chrome only otherwise.
         run: |
@@ -71,27 +69,27 @@ jobs:
 
     steps:
       - name: Set SHA output
-        id: sha
+        id: set_sha
         shell: bash
         run: |
           case '${{ matrix.service }}' in
             frontend)
-              sha_short="${{ needs.get_version.outputs.frontend_sha_short }}";;
+              sha="${{ needs.get_version.outputs.frontend_sha }}";;
             processor)
-              sha_short="${{ needs.get_version.outputs.processor_sha_short }}";;
+              sha="${{ needs.get_version.outputs.processor_sha }}";;
             nginx)
-              sha_short="${{ needs.get_version.outputs.nginx_sha_short }}";;
+              sha="${{ needs.get_version.outputs.nginx_sha }}";;
             gitea)
-              sha_short="${{ needs.get_version.outputs.gitea_sha_short }}";;
+              sha="${{ needs.get_version.outputs.gitea_sha }}";;
           esac
-          echo "sha_short=${sha_short}" >> $GITHUB_OUTPUT
+          echo "sha=${sha}" >> $GITHUB_OUTPUT
 
       - name: Check for ${{ matrix.service }} image
         id: check_for_image
         shell: bash
         run: |
           if [ "$(curl \
-           https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.sha.outputs.sha_short }} \
+           https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.set_sha.outputs.sha }} \
            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             | jq .errors)" == "null" ];
@@ -138,7 +136,7 @@ jobs:
           context: ./${{ matrix.service }}
           file: ./${{ matrix.service }}/Dockerfile
           push: true
-          tags: ghcr.io/kitspace/${{ matrix.service }}:${{ steps.sha.outputs.sha_short }}
+          tags: ghcr.io/kitspace/${{ matrix.service }}:${{ steps.set_sha.outputs.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -224,10 +222,10 @@ jobs:
           CERTBOT_ENABLED: 'true'
           CERTBOT_EMAIL: 'kaspar@kitspace.org'
           COMPOSE_PROJECT_NAME: 'kitspace-${{ github.ref_name }}'
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
           # The maximum allowable file size that can be uploaded to gitea or the processor
           MAX_FILE_SIZE: '6M'
@@ -313,10 +311,10 @@ jobs:
         shell: bash
         timeout-minutes: 5
         env:
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
         run: |
           scripts/install_gitea.sh
 
@@ -330,10 +328,10 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha_short }}'
-          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha_short }}'
-          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha_short }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha_short }}'
+          FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
+          PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
+          NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
+          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
           browser: ${{ matrix.browser }}
           group: ${{ matrix.browser }}
           BUILD_ID: '${{ github.run_id }}-${{ github.run_attempt }}'
@@ -364,16 +362,16 @@ jobs:
         run: |
           case '${{ matrix.service }}' in
             frontend)
-              sha_short='${{ needs.get_version.outputs.frontend_sha_short }}';;
+              sha='${{ needs.get_version.outputs.frontend_sha }}';;
             processor)
-              sha_short='${{ needs.get_version.outputs.processor_sha_short }}';;
+              sha='${{ needs.get_version.outputs.processor_sha }}';;
             nginx)
-              sha_short='${{ needs.get_version.outputs.nginx_sha_short }}';;
+              sha='${{ needs.get_version.outputs.nginx_sha }}';;
             gitea)
-              sha_short='${{ needs.get_version.outputs.gitea_sha_short }}';;
+              sha='${{ needs.get_version.outputs.gitea_sha }}';;
           esac
           curl \
-            "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha_short}" \
+            "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha}" \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
             -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
             > manifest.json
