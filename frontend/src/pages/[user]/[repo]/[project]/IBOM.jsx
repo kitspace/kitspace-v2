@@ -15,7 +15,7 @@ export const getServerSideProps = async ({ params }) => {
   const repoFullName = `${params.user}/${params.repo}`
 
   const res = await fetch(
-    `${assetUrl}/files/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
+    `${assetUrl}/${repoFullName}/HEAD/${params.project}/interactive_bom.json`,
   )
 
   if (!res.ok) {

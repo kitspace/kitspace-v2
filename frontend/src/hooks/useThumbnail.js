@@ -7,7 +7,7 @@ const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 
 const useThumbnail = (repoFullName, projectName) => {
   const img = `${repoFullName}/HEAD/${projectName}/images/top-large.png`
-  const src = `${assetUrl}/files/${img}`
+  const src = `${assetUrl}/${img}`
   const { data, error } = useSWR(src, fetcher)
   return {
     src,

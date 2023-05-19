@@ -9,6 +9,7 @@ services:
     environment:
       - LOG_LEVEL=${KITSPACE_PROCESSOR_LOG_LEVEL}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - KITSPACE_PROCESSOR_ASSET_VERSION=v0-test
     volumes:
       - ./processor:/app
     command: /bin/bash --verbose -c 'yarn install && yarn test'

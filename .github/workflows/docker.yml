@@ -55,7 +55,6 @@ jobs:
           fi
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT";
 
-
   build:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
     name: Build image
@@ -215,6 +214,7 @@ jobs:
           MEILI_MASTER_KEY: '${{ secrets.STAGING_MEILI_MASTER_KEY }}'
           REDIS_PASSWORD: '${{ secrets.STAGING_REDIS_PASSWORD }}'
           KITSPACE_PROCESSOR_REMOTE_API_TOKENS: '${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}'
+          KITSPACE_PROCESSOR_ASSET_VERSION: v1
           KITSPACE_DOMAIN: '${{ github.ref_name }}.staging.kitspace.dev'
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'

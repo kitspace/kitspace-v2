@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock, MockProxy } from 'vitest-mock-extended'
 import { ReplicationEvent } from 'postgres'
 import { createApp, KitspaceProcessorApp } from '../../src/app.js'
-import { DATA_DIR } from '../../src/env.js'
+import { DATA_DIR, PROCESSOR_ASSET_VERSION } from '../../src/env.js'
 import * as giteaDBImported from '../../src/giteaDB.js'
 import * as s3Imported from '../../src/s3.js'
 import { sh } from '../../src/shell.js'
@@ -145,7 +145,11 @@ describe(
         await waitForDone({ projectName: '_' })
 
         for (const f of files) {
-          const p = path.join(DATA_DIR, `files/kitspace/ruler/${hash}/${f}`)
+          const p = path.join(
+            DATA_DIR,
+            PROCESSOR_ASSET_VERSION,
+            `kitspace/ruler/${hash}/${f}`,
+          )
           expect(s3.exists).toHaveBeenCalledWith(p)
           expect(s3.uploadFileContents).toHaveBeenCalledWith(
             p,
@@ -191,7 +195,8 @@ describe(
 
       const repoRoot = path.join(
         DATA_DIR,
-        'files/kitspace-forks/diy_particle_detector',
+        PROCESSOR_ASSET_VERSION,
+        'kitspace-forks/diy_particle_detector',
         hash,
       )
 
@@ -256,7 +261,8 @@ describe(
       for (const f of files) {
         const p = path.join(
           DATA_DIR,
-          `files/kitspace-test-repos/tinyogx360/${hash}/${f}`,
+          PROCESSOR_ASSET_VERSION,
+          `kitspace-test-repos/tinyogx360/${hash}/${f}`,
         )
         expect(s3.exists).toHaveBeenCalledWith(p)
         expect(s3.uploadFileContents).toHaveBeenCalledWith(
@@ -306,7 +312,8 @@ describe(
       for (const f of files) {
         const p = path.join(
           DATA_DIR,
-          `files/kitspace-test-repos/spaces-in-kitspace-data-paths/${hash}/${f}`,
+          PROCESSOR_ASSET_VERSION,
+          `kitspace-test-repos/spaces-in-kitspace-data-paths/${hash}/${f}`,
         )
         expect(s3.exists).toHaveBeenCalledWith(p)
         expect(s3.uploadFileContents).toHaveBeenCalledWith(
@@ -394,7 +401,8 @@ describe(
       for (const f of files) {
         const p = path.join(
           DATA_DIR,
-          `files/kitspace-test-repos/the-open-book/${hash}/${f}`,
+          PROCESSOR_ASSET_VERSION,
+          `kitspace-test-repos/the-open-book/${hash}/${f}`,
         )
         expect(s3.exists).toHaveBeenCalledWith(p)
         expect(s3.uploadFileContents).toHaveBeenCalledWith(

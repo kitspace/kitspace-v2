@@ -133,7 +133,7 @@ const getYamlArray = (
   repoName: string,
 ): Promise<YamlArray | null> => {
   const repoFullName = `${username}/${repoName}`
-  const rootAssetPath = `${assetUrl}/files/${repoFullName}/HEAD`
+  const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
   const getYaml = async () => {
     const [ignored, arr] = await getKitspaceYamlArray(rootAssetPath)
     return arr

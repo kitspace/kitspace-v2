@@ -9,7 +9,7 @@ beforeAll(() => {
     default: () => ({
       publicRuntimeConfig: {
         KITSPACE_GITEA_URL: 'https://gitea.kitspace.test',
-        KITSPACE_ASSET_URL: 'https://exmaple.s3.amazonaws.com/',
+        KITSPACE_ASSET_URL: 'https://example.s3.amazonaws.com/',
       },
     }),
   }))
