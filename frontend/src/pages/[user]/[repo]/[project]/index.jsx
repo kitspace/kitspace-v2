@@ -24,7 +24,7 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
 
   const repoFullName = `${username}/${repoName}`
 
-  const rootAssetPath = `${assetUrl}/files/${repoFullName}/HEAD`
+  const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
   const assetPath = `${rootAssetPath}/${projectName}`
   const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 

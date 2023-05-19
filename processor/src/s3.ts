@@ -196,7 +196,7 @@ function useGzip(contentType: MimeType): boolean {
 }
 
 function getHeadPath(x) {
-  // path is: files/user/project/${hash}/file so we replace the hash with "HEAD"
+  // path is: v1/user/project/${hash}/file so we replace the hash with "HEAD"
   const p = x.split('/')
   p[3] = 'HEAD'
   return p.join('/')

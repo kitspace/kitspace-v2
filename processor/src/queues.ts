@@ -2,7 +2,7 @@ import AsyncLock from 'async-lock'
 import bullmq, { FlowProducer } from 'bullmq'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { DATA_DIR } from './env.js'
+import { DATA_DIR, PROCESSOR_ASSET_VERSION } from './env.js'
 import { exists } from './utils.js'
 import { ProjectJobData, RepoJobData } from './job.js'
 import { KitspaceYaml, getKitspaceYaml } from './kitspaceYaml.js'
@@ -127,7 +127,13 @@ export async function addProjectToQueues({
   await sync(gitDir, inputDir)
 
   const hash = await getGitHash(inputDir)
-  const outputDir = path.join(DATA_DIR, 'files', ownerName, repoName, hash)
+  const outputDir = path.join(
+    DATA_DIR,
+    PROCESSOR_ASSET_VERSION,
+    ownerName,
+    repoName,
+    hash,
+  )
 
   const kitspaceYamlArray = await getKitspaceYaml(inputDir)
 

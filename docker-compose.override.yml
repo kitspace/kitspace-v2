@@ -8,7 +8,7 @@ services:
       target: git-installed
     environment:
       - NODE_ENV=development
-      - 'KITSPACE_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000'
+      - 'KITSPACE_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000/${KITSPACE_PROCESSOR_ASSET_VERSION}'
     ports:
       - '1234:3000'
       - '9229:9229'

@@ -27,3 +27,9 @@ export const USE_LOCAL_MINIO = process.env.USE_LOCAL_MINIO === 'true'
 export const MEILI_MASTER_KEY = process.env.MEILI_MASTER_KEY
 
 export const LOG_LEVEL = process.env.LOG_LEVEL
+
+if (process.env.KITSPACE_PROCESSOR_ASSET_VERSION == null) {
+  throw Error('KITSPACE_PROCESSOR_ASSET_VERSION env variable is missing')
+}
+
+export const PROCESSOR_ASSET_VERSION = process.env.KITSPACE_PROCESSOR_ASSET_VERSION
