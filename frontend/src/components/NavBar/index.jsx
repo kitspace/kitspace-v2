@@ -88,10 +88,8 @@ const AddProjectButton = () => {
 
 const SiteMenuItems = () => {
   const { pathname } = useRouter()
-  const isProjectRoute =
-    pathname === '/' ||
-    pathname === '/search' ||
-    RegExp('^/projects/').test(pathname)
+  const isSearchRoute = pathname === '/' || pathname === '/search'
+  const isProjectRoute = isSearchRoute || RegExp('^/projects/').test(pathname)
 
   return (
     <>
@@ -111,9 +109,11 @@ const SiteMenuItems = () => {
           1-click BOM
         </Menu.Item>
       </Link>
-      <Menu.Item className={styles.SearchBarContainer}>
-        <SearchBar />
-      </Menu.Item>
+      {isSearchRoute ? null : (
+        <Menu.Item className={styles.SearchBarContainer}>
+          <SearchBar />
+        </Menu.Item>
+      )}
     </>
   )
 }
