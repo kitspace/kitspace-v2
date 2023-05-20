@@ -77,5 +77,13 @@ module.exports = async phase => {
         },
       ]
     },
+    async rewrites() {
+      return [
+        {
+          source: '/',
+          destination: '/search',
+        },
+      ]
+    },
   }
 }
