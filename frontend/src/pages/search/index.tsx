@@ -32,7 +32,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   const hits = await searchFetcher(searchParams)
   const props: SearchPageProps = {
     swrFallback: {
-      // unstable_serialize is clever enough to turn our key getter function into the right string key
+      // unstable_serialize is clever enough to turn our key getter function
+      // into the right string key
       [unstable_serialize(makeSWRKeyGetter(searchParams))]: [hits],
     },
     initialQuery: query,
@@ -59,7 +60,7 @@ const PageContent = () => {
 
   return (
     <>
-      <SearchBar className={styles.mobileSearchBar} />
+      <SearchBar className={styles.bigSearchBar} />
       {query === '' && <IntroText />}
       {projects.length === 0 ? (
         <p className={styles.noMatching} data-cy="cards-grid">
