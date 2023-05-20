@@ -23,6 +23,18 @@ const Head = ({ title, description, url, ogImage }) => (
       sizes="180x180"
     />
     <link
+      href="/icons/favicon-96x96.png"
+      rel="icon"
+      sizes="96x96"
+      type="image/png"
+    />
+    <link
+      href="/icons/favicon-48x48.png"
+      rel="icon"
+      sizes="48x48"
+      type="image/png"
+    />
+    <link
       href="/icons/favicon-32x32.png"
       rel="icon"
       sizes="32x32"
