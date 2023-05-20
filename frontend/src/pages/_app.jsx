@@ -31,6 +31,7 @@ import 'semantic-ui-css/components/table.min.css'
 import 'semantic-ui-css/components/progress.min.css'
 
 import './_app.scss'
+import SearchProvider from '@contexts/SearchContext'
 
 if (typeof window !== 'undefined') {
   window.plausible =
@@ -41,7 +42,7 @@ if (typeof window !== 'undefined') {
     }
 }
 
-function KitspaceApp({ Component, pageProps, isStaticFallback }) {
+function KitspaceApp({ Component, pageProps, isStaticFallback, initialQuery }) {
   const setStaticFallback = isStaticFallback ? (
     <script
       // using dangerouslySetInnerHTML to avoid browser parsing errors
@@ -56,22 +57,23 @@ function KitspaceApp({ Component, pageProps, isStaticFallback }) {
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
   return (
-    <>
+    <SearchProvider initialQuery={initialQuery}>
       <Head>{setStaticFallback}</Head>
       <Component {...pageProps} />
       {isStaticFallback ? <ErrorMessage /> : null}
-    </>
+    </SearchProvider>
   )
 }
 
 KitspaceApp.getInitialProps = async appContext => {
   const appProps = await App.getInitialProps(appContext)
 
-  const { isStaticFallback } = appContext.ctx.query
+  const { isStaticFallback, q } = appContext.ctx.query
 
   return {
     ...appProps,
     isStaticFallback,
+    initialQuery: q,
   }
 }
 
@@ -93,6 +95,7 @@ KitspaceApp.propTypes = {
   Component: func.isRequired,
   pageProps: object.isRequired,
   isStaticFallback: bool,
+  initialQuery: string,
   session: shape({ csrf: string.isRequired, user: object, ApiToken: string }),
 }
 

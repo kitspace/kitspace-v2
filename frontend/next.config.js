@@ -81,7 +81,7 @@ module.exports = async phase => {
       return [
         {
           source: '/',
-          destination: '/search',
+          destination: '/search?q=',
         },
       ]
     },

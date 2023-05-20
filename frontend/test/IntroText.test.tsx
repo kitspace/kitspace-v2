@@ -22,7 +22,7 @@ it('removes the intro text on submitting a search query', async () => {
   window.innerWidth = 390
   window.innerHeight = 844
 
-  const screen = render(<Search initialQuery="" swrFallback={{}} />)
+  const screen = render(<Search swrFallback={{}} />)
   const searchInput = screen.getAllByPlaceholderText(
     'Search for projects',
   )[0] as HTMLInputElement
