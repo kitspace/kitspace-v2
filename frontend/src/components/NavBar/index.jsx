@@ -8,6 +8,7 @@ import { AuthContext } from '@contexts/AuthContext'
 import SearchBar from './SearchBar'
 import { UserMenuItems, UserDropDownMenu } from './UserMenu'
 import styles from './index.module.scss'
+import logoSvg from './logo.svg'
 
 const NavBar = () => {
   return (
@@ -24,7 +25,7 @@ const Logo = () => {
       <a>
         {/* using next/image here causes it to blink on page transitions in firefox */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="logo" className={styles.logoImg} src="/static/logo.svg" />
+        <img alt="logo" className={styles.logoImg} src={logoSvg.src} />
       </a>
     </Link>
   )

@@ -76,34 +76,5 @@ module.exports = async phase => {
         },
       ]
     },
-    async headers() {
-      return [
-        {
-          // Cache the logo for a month
-          source: '/static/logo.svg',
-          headers: [
-            {
-              key: 'Cache-Control',
-              value: 'public, max-age=2592000, immutable',
-            },
-          ],
-        },
-      ]
-    },
-    webpack(config) {
-      config.module.rules.push({
-        test: /\.(png|svg)$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 8192,
-            publicPath: '/_next/static/',
-            outputPath: 'static/',
-            name: '[name].[ext]',
-          },
-        },
-      })
-      return config
-    },
   }
 }
