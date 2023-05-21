@@ -74,6 +74,11 @@ module.exports = async phase => {
           destination: '/:user/:repo*',
           permanent: true,
         },
+        {
+          source: '/:user/:repo/:project/1-click-BOM.tsv',
+          destination: `${process.env.KITSPACE_ASSET_URL}/:user/:repo/HEAD/:project/1-click-BOM.tsv`,
+          permanent: false,
+        },
       ]
     },
   }
