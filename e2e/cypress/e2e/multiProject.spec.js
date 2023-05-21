@@ -84,8 +84,8 @@ describe('Render project cards', () => {
     cy.visit('/')
 
     // Search for the project
-    cy.get('nav [data-cy=search-field] > input').type(user.username)
-    cy.get('nav [data-cy=search-form]').submit()
+    cy.get('[data-cy=search-field] > input').type(user.username)
+    cy.get('[data-cy=search-form]').submit()
 
     // Click on a subproject project card
     cy.get('[data-cy=project-card]')
@@ -188,8 +188,8 @@ describe('Multi project page', () => {
     const multiProjectName = multiProjectsNames[0]
     cy.visit('/')
     // Search for the project
-    cy.get('nav [data-cy=search-field] > input').type(user.username)
-    cy.get('nav [data-cy=search-form]').submit()
+    cy.get('[data-cy=search-field] > input').type(user.username)
+    cy.get('[data-cy=search-form]').submit()
 
     // Click on a multiproject project card
     cy.get('[data-cy=project-card]')
