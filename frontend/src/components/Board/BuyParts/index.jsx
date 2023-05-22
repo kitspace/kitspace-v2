@@ -136,7 +136,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       ) : (
         <NoPurchasableParts />
       )}
-      <Bom attached length={lines.length} parts={parts} tsv={linesToTsv()} />
+      <Bom length={lines.length} parts={parts} tsv={linesToTsv()} />
     </div>
   )
 }
@@ -267,8 +267,8 @@ const RetailerButton = ({
   )
 }
 
-const StoreIcon = ({ retailer, disabled }) => {
-  const imgHref = `/static/images/${retailer}${disabled ? '-grey' : ''}.ico`
+const StoreIcon = ({ retailer }) => {
+  const imgHref = `/distributor_icons/${retailer.toLowerCase()}.png`
   return (
     /*
      * Styling this as a Next Image is unnecessarily complicated.
@@ -313,11 +313,6 @@ RetailerButton.defaultProps = {
 
 StoreIcon.propTypes = {
   retailer: string.isRequired,
-  disabled: bool,
-}
-
-StoreIcon.defaultProps = {
-  disabled: false,
 }
 
 export default BuyParts
