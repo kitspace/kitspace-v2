@@ -32,7 +32,7 @@ const BomBuilder = () => (
       A demo of all the features of the beta version
     </h2>
     <LiteYouTube
-      videoid="U7GB7RV1VzE"
+      videoid="2poJVSSmSos"
       videotitle="A demo of all the features of the beta version"
     />
   </Page>
