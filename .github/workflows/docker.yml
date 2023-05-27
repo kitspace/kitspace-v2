@@ -91,8 +91,8 @@ jobs:
           if [ "$(curl \
            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ steps.set_sha.outputs.sha }} \
            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-           -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-            | jq .errors)" == "null" ];
+           -H 'Accept: application/vnd.oci.image.index.v1+json' \
+            | jq .errors)" == 'null' ];
             then image_exists='true'
             else image_exists='false'
           fi
@@ -373,10 +373,12 @@ jobs:
           curl \
             "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha}" \
             -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+            -H 'Accept: application/vnd.oci.image.index.v1+json' \
             > manifest.json
-          curl -X PUT \
-            https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ github.ref_name }} \
-            -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
-            -H "Content-Type: application/vnd.docker.distribution.manifest.v2+json" \
-            -d '@manifest.json'
+          cat manifest.json
+          [ "$(cat manifest.json | jq .errors)" == 'null' ] && \
+            curl -X PUT \
+              https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${{ github.ref_name }} \
+              -H "Authorization: Bearer $(echo '${{ secrets.GITHUB_TOKEN }}' | base64)"  \
+              -H "Content-Type: application/vnd.oci.image.index.v1+json" \
+              -d '@manifest.json'
