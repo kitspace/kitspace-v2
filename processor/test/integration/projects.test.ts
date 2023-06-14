@@ -360,12 +360,18 @@ describe(
       assert(topCall != null)
       expect(topCall).toHaveLength(3)
 
-      const topHashExpected = 'ce39d383a091f4b2ba41509606bbbbf4'
+      // using multiple hashes as we are getting different hashes in different
+      // contexts, e.g. dev laptop vs CI. both of these seem to be hashes for
+      // the correct image.
+      const expectedHashes = [
+        '5f4d115dd22bdd3d25e0aefd44774a92',
+        'ce39d383a091f4b2ba41509606bbbbf4',
+      ]
       const topContents = topCall[1]
       const topHash = crypto.createHash('md5').update(topContents).digest('hex')
       assert(
-        topHash === topHashExpected,
-        `hash of top.png doesn't match expected. topHash=${topHash} !== topHashExpected=${topHashExpected}`,
+        expectedHashes.includes(topHash),
+        `hash of top.png doesn't match expected. ${topHash} not in ${expectedHashes}`,
       )
     })
 
