@@ -10,13 +10,31 @@ import styles from './index.module.scss'
 
 const BuyParts = ({ projectFullName, lines, parts }) => {
   const [extensionPresence, setExtensionPresence] = useState('unknown')
-  // it's needed to fix the extension integration.
-  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-  const [buyParts, setBuyParts] = useState(null)
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
   const [adding, setAdding] = useState({})
+
+  const buyParts = distributor => {
+    window.plausible('Buy Parts', {
+      props: {
+        project: projectFullName,
+        vendor: distributor,
+        multiplier: mult,
+      },
+    })
+    window.postMessage(
+      {
+        from: 'page',
+        message: 'quickAddToCart',
+        value: {
+          retailer: distributor,
+          multiplier: mult,
+        },
+      },
+      '*',
+    )
+  }
 
   const retailerList = OneClickBom.getRetailers()
   const retailerButtons = retailerList
@@ -35,8 +53,9 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
           <RetailerButton
             key={name}
             adding={adding[name]}
-            buyParts={() => install1ClickBOM()}
+            buyParts={() => buyParts(name)}
             extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
+            install1ClickBOM={install1ClickBOM}
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -59,28 +78,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
         if (event.data.from === 'extension') {
           setExtensionPresence('present')
           switch (event.data.message) {
-            case 'register':
-              setBuyParts(retailer => {
-                window.plausible('Buy Parts', {
-                  props: {
-                    project: projectFullName,
-                    vendor: retailer,
-                    multiplier: mult,
-                  },
-                })
-                window.postMessage(
-                  {
-                    from: 'page',
-                    message: 'quickAddToCart',
-                    value: {
-                      retailer,
-                      multiplier: mult,
-                    },
-                  },
-                  '*',
-                )
-              })
-              break
             case 'updateAddingState':
               setAdding(event.data.value)
               break
@@ -91,7 +88,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       },
       false,
     )
-  }, [mult, projectFullName])
+  }, [])
 
   useEffect(() => {
     const multi = buyMultiplier
@@ -210,6 +207,7 @@ const AdjustQuantity = ({
 const RetailerButton = ({
   name,
   buyParts,
+  install1ClickBOM,
   extensionPresence,
   numberOfLines,
   totalLines,
@@ -224,7 +222,7 @@ const RetailerButton = ({
       if (form) {
         form.submit()
       } else {
-        buyParts()
+        install1ClickBOM()
       }
     }
   }
@@ -301,6 +299,7 @@ AdjustQuantity.propTypes = {
 RetailerButton.propTypes = {
   name: string.isRequired,
   buyParts: func.isRequired,
+  install1ClickBOM: func.isRequired,
   extensionPresence: string.isRequired,
   numberOfLines: number.isRequired,
   totalLines: number.isRequired,

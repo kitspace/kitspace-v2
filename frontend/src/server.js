@@ -25,6 +25,14 @@ async function main() {
     server.use(morgan('tiny'))
   }
 
+  server.get('/:user/:repo/:project/1-click-BOM.tsv', (req, res) => {
+    const { user, repo, project } = req.params
+    return res.redirect(
+      307,
+      `${process.env.KITSPACE_ASSET_URL}/${user}/${repo}/HEAD/${project}/1-click-BOM.tsv`,
+    )
+  })
+
   server.all('*', async (req, res, next) => {
     req.session = await fetch('http://gitea:3000/user/kitspace/session', {
       headers: { ...req.headers, accept: 'application/json' },
