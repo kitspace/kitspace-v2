@@ -187,6 +187,7 @@ async function sync(gitDir, checkoutDir) {
         if (registryHash != null) {
           // no need to pull if we aren't going to use the latest commit
           done()
+          return
         }
 
         log.debug('Pulling updates for', gitDir)
