@@ -184,7 +184,7 @@ async function sync(gitDir, checkoutDir) {
       const registryHash = getRegistryHash(gitDir)
 
       if (await exists(checkoutDir)) {
-        if (registryHash) {
+        if (registryHash != null) {
           // no need to pull if we aren't going to use the latest commit
           done()
         }
@@ -209,7 +209,7 @@ async function sync(gitDir, checkoutDir) {
           }
         })
         log.debug('Cloned into', checkoutDir)
-        if (registryHash) {
+        if (registryHash != null) {
           await sh`cd ${checkoutDir} && git checkout ${registryHash}`
             .then(() => log.debug(`reset ${gitDir} to ${registryHash}`))
             .catch(err => {
@@ -267,7 +267,7 @@ function getRegistryHash(localGitDir: string) {
     .split('/')
     .slice(-2)
     .join('/')
-    .replace('.git', '')
+    .replace(/\.git$/, '')
   const registryBoard = registryBoards.find(b => b.repo.includes(repoFullName))
 
   return registryBoard ? registryBoard.hash : null
