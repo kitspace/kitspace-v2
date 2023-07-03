@@ -2,15 +2,15 @@ import React from 'react'
 import NextHead from 'next/head'
 import { string } from 'prop-types'
 
-const Head = ({ title, description, url, ogImage }) => (
+const Head = ({ title, ogDescription, url, ogImage }) => (
   <NextHead>
     <meta charSet="UTF-8" />
     <title>{title}</title>
-    <meta content={description} name="description" />
+    <meta content={ogDescription} name="description" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta content={url} property="og:url" />
     <meta content={title} property="og:title" />
-    <meta content={description} property="og:description" />
+    <meta content={ogDescription} property="og:description" />
     <meta content={url} name="twitter:site" />
     <meta content="summary_large_image" name="twitter:card" />
     <meta content={ogImage} name="twitter:image" />
@@ -54,7 +54,7 @@ const Head = ({ title, description, url, ogImage }) => (
 )
 
 Head.propTypes = {
-  description: string,
+  ogDescription: string,
   ogImage: string,
   title: string,
   url: string,

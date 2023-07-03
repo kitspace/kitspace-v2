@@ -82,14 +82,14 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
       username,
       projectName,
       repoName,
-      isNew: query.create === 'true',
       gerberInfoExists,
       bomInfoExists,
       readmeExists: readme !== null,
       kitspaceYAMLExists,
       boardShowcaseAssetsExist: gerberInfoExists,
       finishedProcessing,
-      description: kitspaceYAML.summary,
+      ogDescription: kitspaceYAML.summary,
+      description: kitspaceYAML.rendered_summary,
       originalUrl: repo?.original_url,
     }
   }

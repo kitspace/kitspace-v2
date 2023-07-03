@@ -33,6 +33,7 @@ module.exports = async phase => {
     // we use nginx to compress so we turn off next.js gzip compression
     compress: false,
     publicRuntimeConfig: {
+      KITSPACE_DOMAIN: process.env.KITSPACE_DOMAIN,
       KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
       KITSPACE_ASSET_URL: process.env.KITSPACE_ASSET_URL,
       KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,
