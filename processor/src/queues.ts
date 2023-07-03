@@ -1,6 +1,7 @@
 import AsyncLock from 'async-lock'
 import bullmq, { FlowProducer } from 'bullmq'
 import fs from 'node:fs/promises'
+import fetch from 'node-fetch'
 import path from 'node:path'
 import { DATA_DIR, PROCESSOR_ASSET_VERSION } from './env.js'
 import { exists } from './utils.js'
@@ -180,7 +181,15 @@ async function sync(gitDir, checkoutDir) {
     .acquire(gitDir, async done => {
       log.info('Acquired sync lock for ', gitDir)
 
+      const registryHash = getRegistryHash(gitDir)
+
       if (await exists(checkoutDir)) {
+        if (registryHash != null) {
+          // no need to pull if we aren't going to use the latest commit
+          done()
+          return
+        }
+
         log.debug('Pulling updates for', gitDir)
         await sh`cd ${checkoutDir} && git pull`.catch(err => {
           // repos with no branches yet will create this error
@@ -201,6 +210,15 @@ async function sync(gitDir, checkoutDir) {
           }
         })
         log.debug('Cloned into', checkoutDir)
+        if (registryHash != null) {
+          await sh`cd ${checkoutDir} && git checkout ${registryHash}`
+            .then(() => log.debug(`reset ${gitDir} to ${registryHash}`))
+            .catch(err => {
+              log.error(
+                new Error(`failed to reset ${gitDir} to ${registryHash}: ${err}`),
+              )
+            })
+        }
       }
       done()
     })
@@ -233,4 +251,30 @@ async function alreadyProcessed(
   )
   const allReportsExist = reports.every(r => r)
   return allReportsExist
+}
+
+async function getRegistryBoards() {
+  const url =
+    'https://raw.githubusercontent.com/kitspace/kitspace/master/registry.json'
+  const response = await fetch(url)
+  const boards = (await response.json()) as Array<RegistryBoard>
+  return boards
+}
+
+const registryBoards = await getRegistryBoards()
+
+function getRegistryHash(localGitDir: string) {
+  const repoFullName = localGitDir
+    .split('/')
+    .slice(-2)
+    .join('/')
+    .replace(/\.git$/, '')
+  const registryBoard = registryBoards.find(b => b.repo.includes(repoFullName))
+
+  return registryBoard ? registryBoard.hash : null
+}
+
+interface RegistryBoard {
+  repo: string
+  hash: string
 }

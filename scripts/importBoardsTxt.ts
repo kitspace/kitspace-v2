@@ -45,12 +45,10 @@ const headers = {
 }
 
 async function main() {
-  const registryBoards = await getRegistryBoards()
   let boards = (await getBoardsTxt())
-    .filter(url => !registryBoards.includes(url))
-    .slice(0, flags.numberOfRepos)
   if (flags.shuffle) {
     boards = shuffle(boards)
+      .slice(0, flags.numberOfRepos)
   }
   const GithubReposDescriptions = await getAllGithubReposDescriptions(boards)
 
@@ -74,13 +72,6 @@ async function getBoardsTxt() {
   return text.split('\n').filter(Boolean)
 }
 
-async function getRegistryBoards() {
-  const url =
-    'https://raw.githubusercontent.com/kitspace/kitspace/master/registry.json'
-  const response = await fetch(url)
-  const boards = (await response.json()) as RegistryBoard[]
-  return boards.map(board => board.repo)
-}
 
 async function importRepo(
   url: string,

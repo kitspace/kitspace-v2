@@ -115,7 +115,7 @@ describe(
           id: '1',
           is_mirror: true,
           is_empty: false,
-          owner_name: 'kitspace',
+          owner_name: 'kitspace-test',
           default_branch: 'master',
           original_url: 'https://github.com/kitspace/ruler',
           name: 'ruler',
@@ -130,7 +130,7 @@ describe(
         await sh`cd ${tmpBare} && git update-ref HEAD ${hash}`
         await sh`git clone --bare ${tmpBare} ${path.join(
           repoDir,
-          'kitspace/ruler.git',
+          'kitspace-test/ruler.git',
         )}`
 
         await dispatchRepoEvent(giteaDB, repoInfo, repoEventFixture)
@@ -148,7 +148,7 @@ describe(
           const p = path.join(
             DATA_DIR,
             PROCESSOR_ASSET_VERSION,
-            `kitspace/ruler/${hash}/${f}`,
+            `kitspace-test/ruler/${hash}/${f}`,
           )
           expect(s3.exists).toHaveBeenCalledWith(p)
           expect(s3.uploadFileContents).toHaveBeenCalledWith(
