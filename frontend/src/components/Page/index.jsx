@@ -30,7 +30,7 @@ const Page = ({ title, initialQuery, contentFullSize, children }) => {
 }
 
 Page.propTypes = {
-  title: string.isRequired,
+  title: string,
   initialQuery: string,
   contentFullSize: bool,
   children: node.isRequired,

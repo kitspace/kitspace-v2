@@ -60,7 +60,8 @@ async function renderKitspaceYamlSummaries(kitspaceYamlArray: Array<KitspaceYaml
   return Promise.all(
     kitspaceYamlArray.map(async yml => ({
       ...yml,
-      summary: await renderSummary(yml.summary),
+      summary: yml.summary,
+      rendered_summary: await renderSummary(yml.summary),
     })),
   )
 }

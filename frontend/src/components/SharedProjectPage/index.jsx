@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react'
+import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import { Loader, Message } from 'semantic-ui-react'
+import { bool, object, string } from 'prop-types'
 
 import Page from '@components/Page'
+import Head from '@components/Head'
 import { useMigrationStatus } from '@hooks/Gitea'
-import PageElements from './elements'
 import useProcessingStatus from '@hooks/useProcessingStatus'
-import { bool, object, string } from 'prop-types'
+import PageElements from './elements'
+
+const { KITSPACE_DOMAIN } = getConfig().publicRuntimeConfig
 
 const SharedProjectPage = props => {
   const { reload } = useRouter()
@@ -72,7 +76,13 @@ const SharedProjectPage = props => {
   }
 
   return (
-    <Page title={title}>
+    <Page>
+      <Head
+        ogDescription={props.ogDescription}
+        ogImage={`${props.rootAssetPath}/${props.projectName}/images/top-with-background.png`}
+        title={title}
+        url={`https://${KITSPACE_DOMAIN}/${props.username}/${props.repoName}`}
+      />
       {props.isSynced && props.hasUploadPermission ? (
         <Message color="yellow" data-cy="sync-msg">
           <Message.Header>A synced repository!</Message.Header>
@@ -96,6 +106,7 @@ const SharedProjectPage = props => {
 SharedProjectPage.propTypes = {
   rootAssetPath: string.isRequired,
   description: string.isRequired,
+  ogDescription: string.isRequired,
   repoName: string.isRequired,
   projectName: string.isRequired,
   projectFullname: string.isRequired,
