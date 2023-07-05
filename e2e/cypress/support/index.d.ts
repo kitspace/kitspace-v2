@@ -27,7 +27,7 @@ declare namespace Cypress {
      * @example
      * cy.signIn(username, password)
      */
-   signIn(username: string, password: string): Chainable<any>
+    signIn(username: string, password: string): Chainable<any>
   }
 
   interface Chainable<Subject> {
@@ -59,7 +59,7 @@ declare namespace Cypress {
      * @param newProject if the project is new wait for `@create` and `@upload`.
      * cy.get('.dropzone').dropFile(file, 'example.txt')
      */
-      dropFiles(files, fileNames: string[], username: string, newProject=true): Chainable<any>
+    dropFiles(files, fileNames: string[], username: string, newProject: boolean): Chainable<any>
   }
 
   interface Chainable<Subject> {
@@ -69,5 +69,15 @@ declare namespace Cypress {
      * @param timeout number of milliseconds
      */
     forceVisit(path: string, timeout: number): Chainable<any>
+  }
+
+  interface Chainable<Subject> {
+    /**
+     * Import a repo from a url
+     * @param remoteUrl
+     * @param repoName
+     * @param user
+     */
+    importRepo(remoteUrl: string, repoName: string, user: any): Chainable<any>
   }
 }

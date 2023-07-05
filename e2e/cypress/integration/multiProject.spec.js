@@ -17,22 +17,13 @@ describe('Render project cards', () => {
   })
 
   it('should render a card for each multiproject', () => {
-    const { username, email, password } = getFakeUser()
-
+    const user = getFakeUser()
     const repoName = syncedRepoUrlMultiProjects.split('/').slice(-1).toString()
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the multiproject repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.forceVisit(`/${user.username}/${repoName}`)
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -40,7 +31,7 @@ describe('Render project cards', () => {
     )
 
     // should render a card for each multiproject
-    cy.visit(`/${username}`)
+    cy.visit(`/${user.username}`)
 
     multiProjectsNames.forEach(name => {
       cy.get('[data-cy=project-card]').contains(name)
@@ -48,38 +39,26 @@ describe('Render project cards', () => {
   })
 
   it('should display card thumbnail', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     // Migrate the multiproject repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
       multiProjectsNames.length,
     )
-    /* Migrate the normal repo */
-    cy.forceVisit('/projects/new')
+    // Migrate the normal repo
+    cy.importRepo(syncedRepoUrl, normalRepoName, user)
 
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.forceVisit(`/${user.username}/${normalRepoName}`)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${normalRepoName}`)
+    // Wait for the repo to finish processing, by checking the visibility of info-bar.
+    cy.get('[data-cy=info-bar]', { timeout: 100_000 }).should('be.visible')
 
-    cy.visit(`/${username}`)
+    cy.visit(`/${user.username}`)
     // There should be 3 cards = 2 form multiprojects + 1 normal project
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -88,23 +67,13 @@ describe('Render project cards', () => {
   })
 
   it('should redirect to the multi project page', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     /* Migrate the multiproject repo */
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -115,45 +84,34 @@ describe('Render project cards', () => {
     cy.visit('/')
 
     // Search for the project
-    cy.get('nav [data-cy=search-field] > input').type(username)
+    cy.get('nav [data-cy=search-field] > input').type(user.username)
     cy.get('nav [data-cy=search-form]').submit()
 
     // Click on a subproject project card
     cy.get('[data-cy=project-card]').within(() => {
-      cy.contains(username)
+      cy.contains(user.username)
       cy.contains(multiProjectName).click({ force: true })
     })
 
-    // Should redirect to the `[username]/[projectName]/[multiProject]`
+    // Should redirect to the `[user.username]/[projectName]/[multiProject]`
     cy.url({ timeout: 20_000 }).should(
       'contain',
-      `${username}/${multiProjectsRepoName}/${multiProjectName}`,
+      `${user.username}/${multiProjectsRepoName}/${multiProjectName}`,
     )
   })
 
   it('should handle subproject names with URL invalid characters', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
+    const user = getFakeUser()
     const projectWithInvalidCharsURL =
       'https://github.com/kitspace-test-repos/open-visual-stimulator'
     const projectWithInvalidCharsName = 'open-visual-stimulator'
     const numberOfSubProjects = 4
 
     /* Migrate the multiproject repo */
-    cy.get('[data-cy=sync-field]').type(projectWithInvalidCharsURL)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(projectWithInvalidCharsURL, projectWithInvalidCharsName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 120_000 }).should(
-      'contain',
-      `${username}/${projectWithInvalidCharsName}`,
-    )
+    cy.forceVisit(`/${user.username}/${projectWithInvalidCharsName}`)
+
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).should(
       'have.length',
@@ -175,22 +133,12 @@ describe('Multi project page', () => {
   })
 
   it('should render the page components', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     // Migrate the multiproject repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    cy.url({ timeout: 60_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 60_000 }).as('projectCards')
 
@@ -201,12 +149,11 @@ describe('Multi project page', () => {
     cy.get('@projectCards').contains(subProjectName).click()
     cy.url({ timeout: 20_000 }).should(
       'contain',
-      `${username}/${multiProjectsRepoName}/${subProjectName}`,
+      `${user.username}/${multiProjectsRepoName}/${subProjectName}`,
     )
 
     // Different page elements should be visible.
     const pageComponents = [
-      'sync-msg',
       'info-bar',
       'board-showcase',
       'board-showcase-top',
@@ -224,22 +171,12 @@ describe('Multi project page', () => {
   })
 
   it('should render the details from multi project in kitspace.yaml', () => {
-    const { username, email, password } = getFakeUser()
-
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     // Migrate the multiproject repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    cy.url({ timeout: 10_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 120_000 }).should(
       'have.length',
@@ -249,17 +186,17 @@ describe('Multi project page', () => {
     const multiProjectName = multiProjectsNames[0]
     cy.visit('/')
     // Search for the project
-    cy.get('nav [data-cy=search-field] > input').type(username)
+    cy.get('nav [data-cy=search-field] > input').type(user.username)
     cy.get('nav [data-cy=search-form]').submit()
 
     // Click on a multiproject project card
     cy.get('[data-cy=project-card]').within(() => {
-      cy.contains(username)
+      cy.contains(user.username)
       cy.contains(multiProjectName).click({ force: true })
     })
     cy.url({ timeout: 20_000 }).should(
       'contain',
-      `${username}/${multiProjectsRepoName}/${multiProjectName}`,
+      `${user.username}/${multiProjectsRepoName}/${multiProjectName}`,
     )
     // The info bar should have the correct title.
     cy.get('[data-cy=project-title]').should('have.text', multiProjectName)

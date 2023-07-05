@@ -10,27 +10,16 @@ describe('Legacy redirects', () => {
   })
 
   it('should redirect `/boards/*/user/project/*` to `/user/project/*`', () => {
-    const { username, email, password } = getFakeUser()
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
+    const user = getFakeUser()
 
     const multiProjectsRepoName = 'DIY_particle_detector'
     const multiProjectsNames = ['alpha-spectrometer', 'electron-detector']
     const syncedRepoUrlMultiProjects =
       'https://github.com/kitspace-test-repos/DIY_particle_detector'
-
     /* Migrate the multiproject repo */
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 120_000 }).as('projectCards')
 
@@ -38,38 +27,27 @@ describe('Legacy redirects', () => {
 
     /* Legacy redirect */
     cy.visit(
-      `/boards/github.com/${username}/${multiProjectsRepoName}/${multiProjectsNames[0]}`,
+      `/boards/github.com/${user.username}/${multiProjectsRepoName}/${multiProjectsNames[0]}`,
     )
     cy.url().should(
       'eq',
-      `${Cypress.config().baseUrl}/${username}/${multiProjectsRepoName}/${
+      `${Cypress.config().baseUrl}/${user.username}/${multiProjectsRepoName}/${
         multiProjectsNames[0]
       }`,
     )
   })
 
   it('should redirect `/interactive_bom/?*/user/project*` to `/user/project/IBOM`', () => {
-    const { username, email, password } = getFakeUser()
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
+    const user = getFakeUser()
     const multiProjectsRepoName = 'DIY_particle_detector'
     const multiProjectsNames = ['alpha-spectrometer', 'electron-detector']
     const syncedRepoUrlMultiProjects =
       'https://github.com/kitspace-test-repos/DIY_particle_detector'
 
     /* Migrate the multiproject repo */
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrlMultiProjects)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrlMultiProjects, multiProjectsRepoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should(
-      'contain',
-      `${username}/${multiProjectsRepoName}`,
-    )
+    cy.forceVisit(`/${user.username}/${multiProjectsRepoName}`)
     // Wait for the repo to finish processing, by checking the visibility sub projects cards.
     cy.get('[data-cy=project-card]', { timeout: 120_000 }).as('projectCards')
 
@@ -77,11 +55,11 @@ describe('Legacy redirects', () => {
 
     /* Legacy redirect */
     cy.visit(
-      `/interactive_bom/?github.com/${username}/${multiProjectsRepoName}/${multiProjectsNames[0]}`,
+      `/interactive_bom/?github.com/${user.username}/${multiProjectsRepoName}/${multiProjectsNames[0]}`,
     )
     cy.url().should(
       'eq',
-      `${Cypress.config().baseUrl}/${username}/${multiProjectsRepoName}/${
+      `${Cypress.config().baseUrl}/${user.username}/${multiProjectsRepoName}/${
         multiProjectsNames[0]
       }/IBOM`,
     )

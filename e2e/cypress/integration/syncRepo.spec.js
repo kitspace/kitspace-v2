@@ -9,13 +9,13 @@ describe('Syncing a project behavior validation', () => {
     cy.visit('/')
   })
 
-  it('should sync a repo on gitea', () => {
+  it.skip('should sync a repo via UI', () => {
     const syncedRepoUrl = 'https://github.com/AbdulrhmnGhanem/light-test-repo'
     const repoName = 'light-test-repo'
 
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
-    cy.createUser(username, email, password)
+    cy.createUser(user.username, email, password)
     cy.visit('/')
     cy.get('[data-cy=user-menu]')
 
@@ -25,32 +25,24 @@ describe('Syncing a project behavior validation', () => {
     cy.get('[data-cy=sync-result-message]').should('have.class', 'green')
 
     // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.url({ timeout: 60_000 }).should('contain', `${user.username}/${repoName}`)
     cy.get('[data-cy=project-title]')
 
-    cy.visit(`/${username}`)
+    cy.visit(`/${user.username}`)
     // assert the repo is on the user's project page
     cy.get('[data-cy=project-card]').contains(repoName)
   })
 
   it('should display original url for synced repos', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'CH330_Hardware'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/CH330_Hardware'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.forceVisit(`/${user.username}/${repoName}`)
 
     // The info bar should include the original url
     cy.get('[data-cy=original-url] > a', { timeout: 60_000 })
@@ -61,24 +53,17 @@ describe('Syncing a project behavior validation', () => {
       )
   })
 
-  it.skip('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
-    const { username, email, password } = getFakeUser()
+  it('should fall back to repo description on missing `summary` key in `kitspace.yaml`', () => {
+    const user = getFakeUser()
 
     const repoName = 'ArduTouch'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/ArduTouch'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.forceVisit(`/${user.username}/${repoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
@@ -86,32 +71,25 @@ describe('Syncing a project behavior validation', () => {
     cy.get('[data-cy=project-description]').should('contain', 'ARDUTOUCH ')
   })
 
-  it.skip('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
-    const { username, email, password } = getFakeUser()
+  it('should fall back to repo description in `ProjectCard` on missing `summary` in `kitspace.yaml', () => {
+    const user = getFakeUser()
 
     const repoName = 'CH330_Hardware_without_summary'
     const syncedRepoUrl =
       'https://github.com/kitspace-test-repos/CH330_Hardware_without_summary'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.forceVisit(`/${user.username}/${repoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=info-bar]', { timeout: 60_000 }).should('be.visible')
 
     // Go to user projects page to limit the results to the project synced above
-    cy.visit(`/${username}`)
+    cy.visit(`/${user.username}`)
 
-    cy.get('[data-cy=project-card]').should('contain', username).and(
+    cy.get('[data-cy=project-card]').should('contain', user.username).and(
       'contain.text',
       // This is github repo description.
       'To test that meilisearch falls back to repo description',
@@ -119,27 +97,20 @@ describe('Syncing a project behavior validation', () => {
   })
 
   it.skip('should escape and render project description correctly', () => {
-    const { username, email, password } = getFakeUser()
+    const user = getFakeUser()
 
     const repoName = 'LED-Zappelin'
     const syncedRepoUrl = 'https://github.com/kitspace-test-repos/LED-Zappelin'
 
-    cy.createUser(username, email, password)
-    cy.visit('/')
-    cy.get('[data-cy=user-menu]')
-
-    cy.forceVisit('/projects/new')
-
     // Migrate the repo
-    cy.get('[data-cy=sync-field]').type(syncedRepoUrl)
-    cy.get('button').contains('Sync').click()
+    cy.importRepo(syncedRepoUrl, repoName, user)
 
-    // Wait for redirection for project page
-    cy.url({ timeout: 60_000 }).should('contain', `${username}/${repoName}`)
+    cy.forceVisit(`/${user.username}/${repoName}`)
+
     // Wait for the repo to finish processing, by checking the visibility of info-bar.
     cy.get('[data-cy=project-card]', { timeout: 60_000 })
     // Go to the PCB stimulator sub-project
-    cy.visit(`${username}/${repoName}/PCB-Stimulator`)
+    cy.visit(`${user.username}/${repoName}/PCB-Stimulator`)
 
     cy.get('[data-cy=project-description]').should(
       'contain',

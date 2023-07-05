@@ -1,3 +1,5 @@
+import 'cypress-wait-until'
+
 const signUpEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_up'
 const signInEndpoint = 'http://gitea.kitspace.test:3000/user/kitspace/sign_in'
 
@@ -59,3 +61,104 @@ Cypress.Commands.add('forceVisit', (path, timeout) => {
   cy.visit('/', { timeout })
   cy.window().then(win => win.open(path, '_self'))
 })
+
+Cypress.Commands.add('importRepo', (remoteUrl, repoName, user) => {
+  cy.createGiteaUser(user).then(giteaUser => {
+    cy.mirrorRepo(remoteUrl, repoName, giteaUser)
+  })
+  cy.waitForStatusCode(
+    `http://gitea.kitspace.test:3000/${user.username}/${repoName}`,
+  )
+})
+
+Cypress.Commands.add('mirrorRepo', (remoteRepo, repoName, user) => {
+  const endpoint = 'http://gitea.kitspace.test:3000/api/v1/repos/migrate'
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `token ${Cypress.env('GITEA_ADMIN_TOKEN')}`,
+  }
+
+  const giteaOptions = {
+    clone_addr: remoteRepo,
+    uid: user.id,
+    repo_name: repoName,
+    mirror: true,
+    wiki: false,
+    private: false,
+    pull_requests: false,
+    releases: true,
+    issues: false,
+    service: 'github',
+  }
+
+  cy.request({
+    url: endpoint,
+    method: 'POST',
+    headers,
+    body: JSON.stringify(giteaOptions),
+    failOnStatusCode: false,
+  }).then(response => {
+    if (!response.status === 201) {
+      throw new Error('Failed to mirror repo')
+    }
+  })
+})
+
+Cypress.Commands.add('createGiteaUser', user => {
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `token ${Cypress.env('GITEA_ADMIN_TOKEN')}`,
+  }
+
+  const url = 'http://gitea.kitspace.test:3000/api/v1/admin/users'
+
+  // check if the user already exists
+  cy.request({
+    url: `http://gitea.kitspace.test:3000/api/v1/users/${user.username}`,
+    method: 'GET',
+    headers,
+    failOnStatusCode: false,
+  }).then(response => {
+    if (response.status === 200) {
+      return response.body
+    }
+    // if the user doesn't exist, create a new user and return the user object.
+    return cy
+      .request({
+        url,
+        method: 'POST',
+        headers,
+        body: JSON.stringify(user),
+        failOnStatusCode: false,
+      })
+      .then(response => {
+        if (response.status !== 201) {
+          throw new Error('Failed to create user')
+        }
+        return response.body
+      })
+  })
+})
+
+Cypress.Commands.add(
+  'waitForStatusCode',
+  (url, timeout = 60_000, interval = 1000) => {
+    cy.log(`Waiting for HTTP request to ${url} to return status 200...`)
+
+    cy.waitUntil(
+      () => {
+        return cy
+          .request({ url, method: 'GET', failOnStatusCode: false })
+          .its('status')
+          .then(status => {
+            if (status === 200) {
+              return true
+            }
+            cy.log(`Got status ${status}, retrying...`)
+            return false
+          })
+      },
+      { timeout, interval },
+    )
+  },
+)
