@@ -1,4 +1,5 @@
 import { watch } from './watcher.js'
+import { checkPartInfoHealth } from './healthChecks.js'
 import { createWorkers } from './workers.js'
 
 export interface KitspaceProcessorApp {
@@ -13,6 +14,8 @@ export async function createApp(repoDir: string): Promise<KitspaceProcessorApp> 
       await Promise.all(this.cleanup.map(cleanupFunction => cleanupFunction()))
     },
   }
+
+  await checkPartInfoHealth()
 
   const unwatch = await watch(repoDir)
   app.cleanup.push(unwatch)
