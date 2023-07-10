@@ -15,7 +15,7 @@ import redisConnection from './redisConnection.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
-  // we update progress on jobs asynchonously when the task promise may have already been
+  // we update progress on jobs asynchronously when the task promise may have already been
   // completed so we should never remove completed jobs right away as it will cause errors
   removeOnComplete: { age: 3600 },
   // keep the last 5000 failed jobs
@@ -140,6 +140,9 @@ export async function addProjectToQueues({
 
   if (await alreadyProcessed(outputDir, kitspaceYamlArray, giteaId, hash)) {
     // Early return if the project is already in S3 and indexed
+    fs.rm(inputDir, { recursive: true }).catch(err =>
+      log.error(`failed to clean up ${inputDir}: ${err}`),
+    )
     return
   }
 
