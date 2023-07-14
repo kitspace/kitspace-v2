@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
-import { Loader, Message } from 'semantic-ui-react'
+import { Loader } from 'semantic-ui-react'
 import { bool, object, string } from 'prop-types'
 
 import Page from '@components/Page'
@@ -83,16 +83,6 @@ const SharedProjectPage = props => {
         title={title}
         url={`https://${KITSPACE_DOMAIN}/${props.username}/${props.repoName}`}
       />
-      {props.isSynced && props.hasUploadPermission ? (
-        <Message color="yellow" data-cy="sync-msg">
-          <Message.Header>A synced repository!</Message.Header>
-          <Message.Content>
-            <p>Files uploading isn&apos;t supported for synced repositories.</p>
-            Please commit files to the original git repository and it will be synced
-            automatically.
-          </Message.Content>
-        </Message>
-      ) : null}
       <PageElements
         {...props}
         assetPath={`${props.rootAssetPath}/${props.projectName}`}
@@ -115,7 +105,6 @@ SharedProjectPage.propTypes = {
   isEmpty: bool.isRequired,
   finishedProcessing: bool.isRequired,
   isSynced: bool.isRequired,
-  hasUploadPermission: bool.isRequired,
 }
 
 export default SharedProjectPage

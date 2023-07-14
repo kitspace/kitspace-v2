@@ -11,14 +11,12 @@ import Readme from '@components/Board/Readme'
 const PageElements = ({
   assetPath,
   repoName,
-  hasUploadPermission,
   hasIBOM,
   kitspaceYAML,
   bomInfo,
   zipUrl,
   readme,
   boardSpecs,
-  previewOnly,
   description,
   projectName,
   projectFullname,
@@ -28,18 +26,6 @@ const PageElements = ({
   readmeExists,
   boardShowcaseAssetsExist,
 }) => {
-  const AssetPlaceholderWithUploadPermissions = ({ asset }) => (
-    <AssetPlaceholder
-      asset={asset}
-      hasUploadPermission={hasUploadPermission}
-      previewOnly={previewOnly}
-    />
-  )
-
-  AssetPlaceholderWithUploadPermissions.propTypes = {
-    asset: string.isRequired,
-  }
-
   return (
     <>
       <InfoBar
@@ -59,7 +45,7 @@ const PageElements = ({
             />
           </>
         ) : (
-          <AssetPlaceholderWithUploadPermissions asset="board" />
+          <AssetPlaceholder asset="board" />
         )}
       </div>
       <div>
@@ -70,7 +56,7 @@ const PageElements = ({
             zipUrl={zipUrl}
           />
         ) : (
-          <AssetPlaceholderWithUploadPermissions asset="gerber files" />
+          <AssetPlaceholder asset="gerber files" />
         )}
         {bomInfoExists ? (
           <BuyParts
@@ -79,28 +65,22 @@ const PageElements = ({
             projectFullName={projectFullname}
           />
         ) : (
-          <AssetPlaceholderWithUploadPermissions asset="bill of materials" />
+          <AssetPlaceholder asset="bill of materials" />
         )}
       </div>
       <div>
         {readmeExists ? (
           <Readme renderedReadme={readme} />
         ) : (
-          <AssetPlaceholderWithUploadPermissions asset="README" />
+          <AssetPlaceholder asset="README" />
         )}
       </div>
     </>
   )
 }
 
-const AssetPlaceholder = ({ asset, hasUploadPermission, previewOnly }) => {
+const AssetPlaceholder = ({ asset }) => {
   let message = `No ${asset} files were found`
-
-  if (hasUploadPermission && previewOnly) {
-    message += ', commit files to the original repo and it will be synced'
-  } else if (hasUploadPermission && !previewOnly) {
-    message += ', upload some'
-  }
 
   return (
     <div
@@ -122,13 +102,10 @@ const AssetPlaceholder = ({ asset, hasUploadPermission, previewOnly }) => {
 
 AssetPlaceholder.propTypes = {
   asset: string.isRequired,
-  hasUploadPermission: bool.isRequired,
-  previewOnly: bool.isRequired,
 }
 
 PageElements.propTypes = {
   assetPath: string.isRequired,
-  hasUploadPermission: bool.isRequired,
   hasIBOM: bool.isRequired,
   kitspaceYAML: shape({
     summary: string,

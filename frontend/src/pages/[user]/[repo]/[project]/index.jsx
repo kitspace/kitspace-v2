@@ -2,7 +2,7 @@ import React from 'react'
 import { bool } from 'prop-types'
 import getConfig from 'next/config'
 
-import { canCommit, getRepo, repoExists } from '@utils/giteaApi'
+import { getRepo, repoExists } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
@@ -19,14 +19,13 @@ const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
 const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
-MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => {
+MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
   const { user: username, repo: repoName, project: projectName } = query
 
   const repoFullName = `${username}/${repoName}`
 
   const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
   const assetPath = `${rootAssetPath}/${projectName}`
-  const session = req?.session ?? JSON.parse(sessionStorage.getItem('session'))
 
   const exists = await repoExists(repoFullName)
   if (exists) {
@@ -38,7 +37,6 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
       [kitspaceYAMLExists, kitspaceYamlArray],
       finishedProcessing,
       hasIBOM,
-      hasUploadPermission,
     ] = await Promise.all([
       getRepo(repoFullName),
       getReadme(assetPath),
@@ -47,8 +45,6 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
       getKitspaceYamlArray(rootAssetPath),
       getIsProcessingDone(rootAssetPath),
       hasInteractiveBom(assetPath),
-      // The repo owner and collaborators can upload files.
-      canCommit(repoFullName, session.user?.username, session.apiToken),
     ])
 
     const kitspaceYAML = kitspaceYamlArray.find(p => p.name === projectName)
@@ -68,7 +64,6 @@ MultiProjectPage.getInitialProps = async ({ query, req = null, res = null }) => 
       rootAssetPath,
       repo,
       projectFullname: repoFullName,
-      hasUploadPermission,
       hasIBOM,
       kitspaceYAML,
       zipUrl,
