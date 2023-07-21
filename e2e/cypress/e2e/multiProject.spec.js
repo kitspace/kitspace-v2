@@ -88,10 +88,12 @@ describe('Render project cards', () => {
     cy.get('nav [data-cy=search-form]').submit()
 
     // Click on a subproject project card
-    cy.get('[data-cy=project-card]').within(() => {
-      cy.contains(user.username)
-      cy.contains(multiProjectName).click({ force: true })
-    })
+    cy.get('[data-cy=project-card]')
+      .first()
+      .within(() => {
+        cy.contains(user.username)
+        cy.contains(multiProjectName).click({ force: true })
+      })
 
     // Should redirect to the `[user.username]/[projectName]/[multiProject]`
     cy.url({ timeout: 20_000 }).should(
@@ -190,10 +192,12 @@ describe('Multi project page', () => {
     cy.get('nav [data-cy=search-form]').submit()
 
     // Click on a multiproject project card
-    cy.get('[data-cy=project-card]').within(() => {
-      cy.contains(user.username)
-      cy.contains(multiProjectName).click({ force: true })
-    })
+    cy.get('[data-cy=project-card]')
+      .first()
+      .within(() => {
+        cy.contains(user.username)
+        cy.contains(multiProjectName).click({ force: true })
+      })
     cy.url({ timeout: 20_000 }).should(
       'contain',
       `${user.username}/${multiProjectsRepoName}/${multiProjectName}`,
