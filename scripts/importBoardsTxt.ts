@@ -45,11 +45,11 @@ const headers = {
 }
 
 async function main() {
-  let boards = (await getBoardsTxt())
+  let boards = await getBoardsTxt()
   if (flags.shuffle) {
     boards = shuffle(boards)
-      .slice(0, flags.numberOfRepos)
   }
+  boards = boards.slice(0, flags.numberOfRepos)
   const GithubReposDescriptions = await getAllGithubReposDescriptions(boards)
 
   const progress = new ProgressBar({
