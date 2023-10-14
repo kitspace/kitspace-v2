@@ -146,7 +146,7 @@ jobs:
   deploy:
     if: ${{ github.event_name == 'push' }}
     name: Deploy to staging
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: staging
     needs:
       - get_version
@@ -205,7 +205,6 @@ jobs:
 
       - name: Deploy to ${{ github.ref_name }}.staging.kitspace.dev
         id: deploy_to_staging
-        uses: kitspace/docker-remote-deployment-action@master
         env:
           POSTGRES_PASSWORD: '${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}'
           POSTGRES_READONLY_USER_PASSWORD: '${{ secrets.STAGING_POSTGRES_READONLY_PASSWORD }}'
@@ -235,12 +234,14 @@ jobs:
           SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'
           SENTRY_ENVIRONMENT: staging
           SENTRY_RELEASE: '${{ github.sha }}'
-        with:
-          remote_docker_host: deploy@${{ github.ref_name }}.staging.kitspace.dev
-          ssh_private_key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
-          ssh_public_key: ${{ secrets.STAGING_SSH_PUBLIC_KEY }}
-          stack_file_name: docker-compose.yml,docker-compose.deploy.yml
-          args: up -d
+        run: |
+          mkdir -p ~/.ssh
+          echo -e '${{ secrets.STAGING_SSH_PRIVATE_KEY }}' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan '${{ github.ref_name }}.staging.kitspace.dev' >> ~/.ssh/known_hosts
+          docker context create staging --docker 'host=ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev'
+          docker context use staging
+          docker-compose -f docker-compose.yml -f docker-compose.deploy.yml --host='ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev' up -d
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}

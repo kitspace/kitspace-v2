@@ -6,7 +6,7 @@ import { exec, OutputMode } from 'https://deno.land/x/exec@0.0.5/mod.ts'
 import { parse } from 'https://deno.land/std@0.119.0/flags/mod.ts'
 import * as path from 'https://deno.land/std@0.167.0/path/mod.ts'
 import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
-import shuffle from "https://deno.land/x/shuffle@v1.0.1/mod.ts"
+import shuffle from 'https://deno.land/x/shuffle@v1.0.1/mod.ts'
 
 const flags = parse(Deno.args, {
   string: ['giteaUrl', 'adminToken', 'githubToken'],
@@ -14,8 +14,7 @@ const flags = parse(Deno.args, {
   default: { numberOfRepos: 150, giteaUrl: 'http://localhost:3333', shuffle: true },
 })
 
-if (flags.help || !(flags.githubToken || flags.tokenOnly)) {
-  console.log(`Usage: importBoardsTxt [options]
+const HELP_TEXT = `Usage: importBoardsTxt [options]
     options:
       --giteaUrl: Gitea URL (default: http://localhost:3333)
       --adminToken: Gitea admin API token (default: generated automatically)
@@ -24,8 +23,16 @@ if (flags.help || !(flags.githubToken || flags.tokenOnly)) {
       --tokenOnly: Only generate the admin token and exit.
       --shuffle: Shuffle the boards.txt file before importing (default: true)
       --help: Show this help
-  `)
+  `
+
+if (flags.help) {
+  console.log(HELP_TEXT)
   Deno.exit(0)
+}
+
+if (!flags.githubToken && !flags.tokenOnly) {
+  console.error('Error: No github token provided.')
+  Deno.exit(1)
 }
 
 if (!flags.adminToken) {
@@ -71,7 +78,6 @@ async function getBoardsTxt() {
   const text = await response.text()
   return text.split('\n').filter(Boolean)
 }
-
 
 async function importRepo(
   url: string,
@@ -177,12 +183,12 @@ async function getAllGithubReposDescriptions(
   const query = `
   query {
     ${reposOwnerAndName.map(
-    ([owner, name], index) => `
+      ([owner, name], index) => `
     r${index}: repository(owner: "${owner}", name: "${name}") {
       fullName: nameWithOwner
       description
     }`,
-  )}
+    )}
   }
   `
   const { data: reposInfo }: GitHubRepoInfoGQLResponse = await fetch(
@@ -299,7 +305,6 @@ async function generateGiteaAdminToken() {
   if (!giteaAdminTokenCommand.status.success) {
     throw new Error('Failed to create gitea admin token')
   }
-
 
   return giteaAdminTokenCommand.output
 }
