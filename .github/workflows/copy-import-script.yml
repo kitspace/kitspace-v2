@@ -24,13 +24,10 @@ jobs:
         run: deno compile --allow-env --allow-net --allow-run --target x86_64-unknown-linux-gnu --output target/importBoardsTxt scripts/importBoardsTxt.ts -- --githubToken ${{ secrets.IMPORT_SCRIPT_ACCESS_TOKEN }}
 
       - name: Copy the script to host
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ github.ref_name }}.staging.kitspace.dev
-          username: deploy
-          key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
-          source: 'target'
-          target: '/home/deploy'
+        run: |
+          echo -e '${{ secrets.STAGING_SSH_PRIVATE_KEY }}' > key-file
+          chmod 600 key-file
+          rsync --archive --compress --update --delete --recursive -e 'ssh -i key-file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' target/ 'deploy@${{ github.ref_name }}.staging.kitspace.dev:target'
 
       - name: Make the script executable on host
         uses: appleboy/ssh-action@master
