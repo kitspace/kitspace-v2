@@ -3,7 +3,6 @@ import { string, bool, node } from 'prop-types'
 
 import Head from '@components/Head'
 import NavBar from '@components/NavBar'
-import SearchProvider from '@contexts/SearchContext'
 import styles from './index.module.scss'
 
 const Content = ({ contentFullSize, children }) => {
@@ -19,13 +18,13 @@ const Container = ({ contentFullSize, children }) => (
   </main>
 )
 
-const Page = ({ title, initialQuery, contentFullSize, children }) => {
+const Page = ({ title, contentFullSize, children }) => {
   return (
-    <SearchProvider initialQuery={initialQuery}>
+    <>
       <Head title={title} />
       <NavBar />
       <Content contentFullSize={contentFullSize}>{children}</Content>
-    </SearchProvider>
+    </>
   )
 }
 
