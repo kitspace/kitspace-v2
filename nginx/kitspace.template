@@ -4,7 +4,7 @@ server {
 
     server_name @KITSPACE_DOMAIN;
 
-    location /robots.txt {
+    location = /robots.txt {
         add_header Content-Type text/plain;
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
@@ -35,12 +35,14 @@ server {
 
     server_name gitea.@KITSPACE_DOMAIN;
 
-    location /robots.txt {
+    location = /robots.txt {
         add_header Content-Type text/plain;
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
 
-    location ^~ / {
+    # Proxy api, and raw content requests to gitea, otherwise return 404.
+    # The raw content is for readme images.
+    location ~ ^/(api|[^/]+/[^/]+/raw)/ {
         proxy_set_header           Host                               $http_host;
         proxy_set_header           X-Real-IP                          $remote_addr;
         proxy_set_header           X-Forwarded-For                    $proxy_add_x_forwarded_for;
@@ -59,6 +61,10 @@ server {
         }
         proxy_pass http://gitea:3000;
     }
+
+    location ~ / {
+        return 404;
+    }
 }
 
 server {
@@ -67,7 +73,7 @@ server {
 
     server_name meilisearch.@KITSPACE_DOMAIN;
 
-    location /robots.txt {
+    location = /robots.txt {
         add_header Content-Type text/plain;
         return 200 "@KITSPACE_ROBOTS_TXT";
     }
