@@ -194,7 +194,9 @@ async function sync(gitDir, checkoutDir) {
         }
 
         log.debug('Pulling updates for', gitDir)
-        await sh`cd ${checkoutDir} && git pull`.catch(err => {
+        try {
+          await sh`cd ${checkoutDir} && git pull`
+        } catch (err) {
           // repos with no branches yet will create this error
           if (
             err.stderr ===
@@ -202,16 +204,21 @@ async function sync(gitDir, checkoutDir) {
           ) {
             log.warn('repo without any branches', checkoutDir)
             done()
+            return
           }
           done(err)
-        })
+          return
+        }
       } else {
         log.debug('Cloning ', gitDir)
-        await sh`git clone ${gitDir} ${checkoutDir}`.catch(err => {
+        try {
+          await sh`git clone ${gitDir} ${checkoutDir}`
+        } catch (err) {
           if (err.stderr) {
             done(err)
+            return
           }
-        })
+        }
         log.debug('Cloned into', checkoutDir)
         if (registryHash != null) {
           await sh`cd ${checkoutDir} && git checkout ${registryHash}`
