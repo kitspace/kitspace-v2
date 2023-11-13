@@ -361,9 +361,10 @@ describe(
       expect(topCall).toHaveLength(3)
 
       // using multiple hashes as we are getting different hashes in different
-      // contexts, e.g. dev laptop vs CI. both of these seem to be hashes for
+      // contexts, e.g. dev laptop vs CI. all of these seem to be hashes for
       // the correct image.
       const expectedHashes = [
+        '6126e8c168eaae96d2e1abb28643113e',
         '5f4d115dd22bdd3d25e0aefd44774a92',
         'ce39d383a091f4b2ba41509606bbbbf4',
       ]
