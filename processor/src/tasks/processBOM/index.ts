@@ -69,7 +69,12 @@ async function processBOM(
     }
     bom.tsv = oneClickBom.writeTSV(bom.lines)
 
-    bom.parts = await getPartinfo(bom.lines)
+    try {
+      bom.parts = await getPartinfo(bom.lines)
+    } catch (e) {
+      log.error(e)
+      bom.parts = []
+    }
 
     const info = { bom, inputFile: path.relative(inputDir, bomInputPath) }
     await Promise.all([

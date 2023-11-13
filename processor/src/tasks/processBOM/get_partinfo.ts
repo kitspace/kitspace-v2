@@ -35,7 +35,7 @@ function post(mpn) {
         mpn,
       },
     })
-    .timeout(60000)
+    .timeout(5000)
     .then(res => res.body.data.part)
 }
 
