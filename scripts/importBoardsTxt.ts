@@ -158,8 +158,12 @@ async function mirrorRepo(
   })
 
   if (!response.ok) {
+    let message = 'Unknown error'
+    try {
+      message = (await response.json()).message
+    } catch (e) {}
     throw new Error(
-      `Failed to mirror ${remoteRepo} to ${user.username}/${repoName}`,
+      `Failed to mirror ${remoteRepo} to ${user.username}/${repoName}: ${response.status}: ${message}`,
     )
   }
 }
