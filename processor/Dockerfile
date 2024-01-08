@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV GIT_DISCOVERY_ACROSS_FILESYSTEM 1
 
 RUN apt-get update && apt-get install -qq -y software-properties-common curl
 RUN add-apt-repository -y ppa:kicad/kicad-7.0-releases
