@@ -13,7 +13,8 @@ export async function checkPartInfoHealth() {
     },
   })
   if (res.status !== 200) {
-    throw new Error(`${endpoint} health check failed with status ${res.status}`)
+    log.error(`${endpoint} health check failed with status ${res.status}`)
+    // throw new Error(`${endpoint} health check failed with status ${res.status}`)
   } else {
     log.debug(`${endpoint} health check passed`)
   }
