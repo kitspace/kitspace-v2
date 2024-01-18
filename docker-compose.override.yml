@@ -20,16 +20,11 @@ services:
     command: /bin/sh --verbose -c 'yarn install && yarn dev'
 
   gitea:
-    build:
-      context: gitea
-      dockerfile: Dockerfile.gitea.dev
     ports:
       - '3333:3000'
       - '2222:22'
     volumes:
       - ./gitea:/go/src/code.gitea.io/gitea
-    # => gitea/docker/root/usr/bin/kitspace_dev_entrypoint
-    entrypoint: ['/usr/bin/kitspace_dev_entrypoint']
 
   postgres:
     ports:

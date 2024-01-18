@@ -75,7 +75,7 @@ Cypress.Commands.add('importRepo', (remoteUrl, repoName, user) => {
           method: 'GET',
           failOnStatusCode: false,
         })
-        .then(response => response.body.empty !== false),
+        .then(response => response.body.empty === false),
     { timeout: 60_000, interval: 1000 },
   )
 })
