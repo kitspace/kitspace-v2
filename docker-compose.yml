@@ -26,6 +26,9 @@ services:
       - GITEA__database__USER=gitea
       - GITEA__security__INTERNAL_TOKEN=${GITEA_INTERNAL_TOKEN}
       - GITEA__session__PROVIDER=db
+      - GITEA__cron__ENABLED=true
+      - GITEA__cron__RUN_AT_START=true
+      - GITEA__cron__NOTICE_ON_SUCCESS=true
     volumes:
       - gitea-data:/data
       - /etc/timezone:/etc/timezone:ro

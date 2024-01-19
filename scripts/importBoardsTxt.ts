@@ -138,6 +138,7 @@ async function mirrorRepo(
     uid: user.id,
     repo_name: repoName,
     mirror: true,
+    mirror_interval: "10m",
     wiki: false,
     private: false,
     pull_requests: false,
