@@ -161,7 +161,7 @@ async function mirrorRepo(
     let message = 'Unknown error'
     try {
       message = (await response.json()).message
-    } catch (e) {}
+    } catch (e) { }
     throw new Error(
       `Failed to mirror ${remoteRepo} to ${user.username}/${repoName}: ${response.status}: ${message}`,
     )
@@ -187,12 +187,12 @@ async function getAllGithubReposDescriptions(
   const query = `
   query {
     ${reposOwnerAndName.map(
-      ([owner, name], index) => `
+    ([owner, name], index) => `
     r${index}: repository(owner: "${owner}", name: "${name}") {
       fullName: nameWithOwner
       description
     }`,
-    )}
+  )}
   }
   `
   const { data: reposInfo }: GitHubRepoInfoGQLResponse = await fetch(
@@ -302,7 +302,7 @@ async function generateGiteaAdminToken() {
   }
 
   const giteaAdminTokenCommand = await exec(
-    `bash -c "docker exec --user git ${getGiteaContainerCommand.output} /bin/sh -c 'gitea admin user generate-access-token --username ${adminUsername} --raw'"`,
+    `bash -c "docker exec --user git ${getGiteaContainerCommand.output} /bin/sh -c 'gitea admin user generate-access-token --username ${adminUsername} --raw --scopes write:admin,write:repository,read:admin,read:user'"`,
     { output: OutputMode.Capture },
   )
 
@@ -310,7 +310,7 @@ async function generateGiteaAdminToken() {
     throw new Error('Failed to create gitea admin token')
   }
 
-  return giteaAdminTokenCommand.output
+  return giteaAdminTokenCommand.output.split('\n').at(-1)
 }
 
 type GithubReposDescriptionsMap = Map<string, string>

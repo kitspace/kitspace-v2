@@ -8,7 +8,6 @@ services:
     restart: always
 
   gitea:
-    image: ghcr.io/kitspace/gitea${GITEA_DEPLOY_IMAGE_TAG}
     command: /usr/bin/entrypoint
     restart: always
     ports:
