@@ -1,4 +1,4 @@
-FROM cypress/included:12.3.0
+FROM cypress/included:13.7.3
 
 # Install testing dependencies
 RUN apt-get install --no-install-recommends -y python3
