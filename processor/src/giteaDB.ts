@@ -67,21 +67,12 @@ export async function waitForNonEmpty(repoId: string): Promise<void> {
  */
 export async function waitForRepoMigration(repoId: string): Promise<void> {
   const rows =
-    await sql`SELECT EXISTS (SELECT 1 FROM task WHERE repo_id=${repoId} AND
-        type=${TaskType.Migration} AND status=${MigrationStatus.Done})`
+    await sql`SELECT EXISTS (SELECT 1 FROM mirror WHERE repo_id=${repoId})`
 
   if (rows[0]?.exists) {
     return
   }
-
-  await once(
-    'update:task',
-    row =>
-      row.repo_id === repoId &&
-      row.type === TaskType.Migration &&
-      row.status === MigrationStatus.Done &&
-      row.default_branch !== '',
-  )
+  await once('update:mirror', row => row.repo_id === repoId)
 }
 
 /**
@@ -121,18 +112,10 @@ export interface RepoInfo {
   description: string
 }
 
-enum TaskType {
-  Migration = 0,
-}
-
 export enum Operation {
   // https://github.com/porsager/postgres#operation-------schema--table--primary_key
   Insert = 'insert',
   Update = 'update',
   Delete = 'delete',
   All = '*',
-}
-
-enum MigrationStatus {
-  Done = 4,
 }
