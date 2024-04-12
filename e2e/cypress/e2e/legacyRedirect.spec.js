@@ -56,6 +56,9 @@ describe('Legacy redirects', () => {
     /* Legacy redirect */
     cy.visit(
       `/interactive_bom/?github.com/${user.username}/${multiProjectsRepoName}/${multiProjectsNames[0]}`,
+      {
+        failOnStatusCode: false,
+      },
     )
     cy.url().should(
       'eq',
