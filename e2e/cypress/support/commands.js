@@ -106,6 +106,7 @@ Cypress.Commands.add('mirrorRepo', (remoteRepo, repoName, user) => {
     headers,
     body: JSON.stringify(giteaOptions),
     failOnStatusCode: false,
+    timeout: 60_000,
   }).then(response => {
     if (!response.status === 201) {
       throw new Error('Failed to mirror repo')
