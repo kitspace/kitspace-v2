@@ -1,6 +1,5 @@
 import React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 
 import Page from '@components/Page'
 
@@ -30,11 +29,7 @@ const OneClickBom = () => (
       1-click BOM is a browser extension that fills your shopping carts for you on
       sites like Digikey and Mouser. It lets you simply click on the &quot;buy
       parts&quot; links on Kitspace to get the right parts. You can also use it
-      directly with your own spreadsheets or with our{' '}
-      <Link href="/bom-builder">
-        <a>BOM Builder</a>
-      </Link>{' '}
-      tool.
+      directly with your own spreadsheet.
     </p>
     <p>
       <a href="https://github.com/kitspace/1clickBOM#readme">
