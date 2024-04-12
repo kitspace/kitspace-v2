@@ -106,11 +106,6 @@ const SiteMenuItems = () => {
           Projects
         </Menu.Item>
       </Link>
-      <Link passHref href="/bom-builder">
-        <Menu.Item active={pathname === '/bom-builder'} as="a">
-          BOM Builder
-        </Menu.Item>
-      </Link>
       <Link passHref href="/1-click-bom">
         <Menu.Item active={pathname === '/1-click-bom'} as="a">
           1-click BOM

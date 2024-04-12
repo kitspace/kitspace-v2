@@ -75,6 +75,11 @@ module.exports = async phase => {
           destination: '/:user/:repo*',
           permanent: true,
         },
+        {
+          source: '/bom-builder',
+          destination: 'https://github.com/kitspace/bom-builder',
+          permanent: false,
+        },
       ]
     },
   }
