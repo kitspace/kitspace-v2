@@ -28,6 +28,10 @@ describe('IBOM page', () => {
 
     // Go to IBOM page for a subproject
     const subProjectName = multiProjectsNames[0]
+
+    cy.waitForStatusCode(
+      `${user.username}/${multiProjectsRepoName}/${subProjectName}/IBOM`,
+    )
     cy.visit(`${user.username}/${multiProjectsRepoName}/${subProjectName}/IBOM`)
 
     // Click on the title
