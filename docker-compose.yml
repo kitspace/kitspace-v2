@@ -13,7 +13,7 @@ services:
       - gitea
 
   gitea:
-    image: gitea/gitea:1.21
+    image: gitea/gitea:1.20
     environment:
       - ROOT_URL=${KITSPACE_SCHEME}://gitea.${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/
       - USER_UID=1000
