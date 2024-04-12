@@ -5,7 +5,7 @@ ENV GIT_DISCOVERY_ACROSS_FILESYSTEM 1
 
 RUN apt-get update && apt-get install -qq -y software-properties-common curl
 RUN add-apt-repository -y ppa:kicad/kicad-7.0-releases
-RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+RUN curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
