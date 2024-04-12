@@ -4,7 +4,6 @@ import path from 'node:path'
 import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { exists } from '../../utils.js'
-import getPartinfo from './get_partinfo.js'
 import { log } from '../../log.js'
 
 export const outputFiles = ['1-click-BOM.tsv', 'bom-info.json'] as const
@@ -69,12 +68,8 @@ async function processBOM(
     }
     bom.tsv = oneClickBom.writeTSV(bom.lines)
 
-    try {
-      bom.parts = await getPartinfo(bom.lines)
-    } catch (e) {
-      log.error(e)
-      bom.parts = []
-    }
+    // we don't have a partinfo service anymore, hopefully one day again
+    bom.parts = []
 
     const info = { bom, inputFile: path.relative(inputDir, bomInputPath) }
     await Promise.all([
