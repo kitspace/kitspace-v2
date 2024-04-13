@@ -181,7 +181,7 @@ async function getGitHash(checkoutDir: string) {
 const lock = new AsyncLock()
 async function sync(gitDir, checkoutDir) {
   await lock
-    .acquire(gitDir, async done => {
+    .acquire(gitDir, async () => {
       log.info('Acquired sync lock for ', gitDir)
 
       const registryHash = getRegistryHash(gitDir)
@@ -189,7 +189,6 @@ async function sync(gitDir, checkoutDir) {
       if (await exists(checkoutDir)) {
         if (registryHash != null) {
           // no need to pull if we aren't going to use the latest commit
-          done()
           return
         }
 
@@ -203,11 +202,7 @@ async function sync(gitDir, checkoutDir) {
             "Your configuration specifies to merge with the ref 'refs/heads/master'\nfrom the remote, but no such ref was fetched.\n"
           ) {
             log.warn('repo without any branches', checkoutDir)
-            done()
-            return
           }
-          done(err)
-          return
         }
       } else {
         log.debug('Cloning ', gitDir)
@@ -215,7 +210,6 @@ async function sync(gitDir, checkoutDir) {
           await sh`git clone ${gitDir} ${checkoutDir}`
         } catch (err) {
           if (err.stderr) {
-            done(err)
             return
           }
         }
@@ -230,7 +224,6 @@ async function sync(gitDir, checkoutDir) {
             })
         }
       }
-      done()
     })
     .then(() => log.debug('Released sync lock for ', gitDir))
 }
