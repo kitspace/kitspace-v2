@@ -64,6 +64,11 @@ const SearchInput = () => {
       placeholder="Search for projects"
       value={query ?? ''}
       onChange={handleChange}
+      onKeyDown={e => {
+        if (e.key === 'Enter') {
+          e.target.blur()
+        }
+      }}
     />
   )
 }
