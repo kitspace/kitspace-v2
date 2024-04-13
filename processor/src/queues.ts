@@ -125,7 +125,12 @@ export async function addProjectToQueues({
 }: AddProjectToQueueData) {
   const inputDir = path.join(DATA_DIR, 'checkout', ownerName, repoName)
 
-  await sync(gitDir, inputDir)
+  try {
+    await sync(gitDir, inputDir)
+  } catch (e) {
+    log.warn('Released lock for', gitDir, 'after error:', e)
+    return
+  }
 
   const hash = await getGitHash(inputDir)
   const outputDir = path.join(
@@ -226,7 +231,6 @@ async function sync(gitDir, checkoutDir) {
       }
     })
     .then(() => log.debug('Released lock for ', gitDir))
-    .catch(e => log.warn('Released lock for', gitDir, 'after error:', e))
 }
 
 /**
