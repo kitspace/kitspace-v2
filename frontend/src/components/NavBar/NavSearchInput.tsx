@@ -1,44 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { Form, Icon, Input } from 'semantic-ui-react'
 
 import { useSearchQuery } from '@contexts/SearchContext'
-import UseForm from '@hooks/useForm'
-import SearchFormModel from '@models/SearchFrom'
 
 const NavSearchInput = () => {
-  const { form, onChange, formatErrorPrompt } = UseForm(SearchFormModel)
   const { push } = useRouter()
-  const { updateQuery } = useSearchQuery()
+  const { query: sessionQuery, updateQuery: updateSessionQuery } = useSearchQuery()
+  const [query, setQuery] = useState(sessionQuery)
 
-  const handleSubmit = value => {
-    updateQuery(value)
-    const path = `/search?q=${encodeURIComponent(value)}`
+  const handleSubmit = () => {
+    updateSessionQuery(query)
+    const path = `/search?q=${encodeURIComponent(query)}`
     push(path)
   }
 
   return (
-    <Form data-cy="search-form" onSubmit={e => handleSubmit(e.target[0]?.value)}>
+    <Form data-cy="search-form" onSubmit={handleSubmit}>
       <Form.Field
         fluid
         autoComplete="off"
         control={Input}
         data-cy="search-field"
-        error={form.query !== '' && formatErrorPrompt('query')}
         icon={
           <Icon
             circular
-            disabled={!form.query}
-            link={!!form.query}
+            disabled={!query}
+            link={!!query}
             name="search"
-            onClick={() => handleSubmit(form.query)}
+            onClick={handleSubmit}
           />
         }
         id="search-field"
         name="query"
         placeholder="Search for projects"
-        value={form.query ?? ''}
-        onChange={onChange}
+        value={query ?? ''}
+        onChange={e => setQuery(e.target.value)}
       />
     </Form>
   )
