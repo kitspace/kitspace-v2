@@ -282,6 +282,8 @@ docker-compose restart frontend
 
 This is a NodeJS program that processes all the assets and uploads them to an AWS S3 compatible service (in development we use Minio). As with the frontend, changing dependencies requires you to restart the development container.
 
+You can run the processor test-suite, including integration tests by running `scripts/test_processor.sh`.
+
 ## Auto Deploys
 
 This repo auto deploys the `master` branch (whether e2e tests pass or not) to our staging server.
@@ -319,7 +321,7 @@ to  try and reproduce the issue locally.
 
 We configure our staging servers using [Ansible](https://docs.ansible.com/ansible/latest/index.html). Our playbooks and roles are in the [ansible](ansible/) directory.
 
-## Running Integration Tests
+## Running End-to-End Tests
 
 Make sure that:
 1. the frontend is being served at [http://kitspace.test:3000](http://kitspace.test:3000); by following the "Set Up" steps. You can use one of the following options.
