@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { Form, Icon, Input } from 'semantic-ui-react'
 import { useDebounceCallback } from 'usehooks-ts'
@@ -52,11 +52,6 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
         control={Input}
         data-cy="search-field"
         error={form.query !== '' && formatErrorPrompt('query')}
-        id="search-field"
-        name="query"
-        placeholder="Search for projects"
-        value={form.query ?? ''}
-        onChange={handleChange}
         icon={
           isInstant ? (
             form.query ? (
@@ -78,6 +73,11 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
             }
           )
         }
+        id="search-field"
+        name="query"
+        placeholder="Search for projects"
+        value={form.query ?? ''}
+        onChange={handleChange}
       />
     </Form>
   )
