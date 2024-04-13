@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
-import SearchInput from '@components/SearchInput'
+import NavSearchInput from './NavSearchInput'
 import styles from './index.module.scss'
 import logoSvg from './logo.svg'
 import { useSearchQuery } from '@contexts/SearchContext'
@@ -107,7 +107,7 @@ const SiteMenuItems = () => {
       </Link>
       {isSearchRoute ? null : (
         <Menu.Item className={styles.SearchBarContainer}>
-          <SearchInput />
+          <NavSearchInput />
         </Menu.Item>
       )}
     </>

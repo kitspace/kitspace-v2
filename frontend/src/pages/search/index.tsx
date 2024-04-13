@@ -57,7 +57,7 @@ const PageContent = () => {
 
   return (
     <>
-      <SearchInput isInstant className={styles.bigSearchBar} />
+      <SearchInput />
       {query === '' && <IntroText />}
       {projects.length === 0 ? (
         <p className={styles.noMatching} data-cy="cards-grid">

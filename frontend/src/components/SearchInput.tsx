@@ -9,9 +9,9 @@ import SearchFormModel from '@models/SearchFrom'
 
 import styles from './SearchInput.module.scss'
 
-const SearchInput = ({ className, isInstant }: SearchInputProps) => {
+const SearchInput = () => {
   const { form, onChange, formatErrorPrompt, populate } = UseForm(SearchFormModel)
-  const { push, replace } = useRouter()
+  const { replace } = useRouter()
   const { updateQuery, query } = useSearchQuery()
 
   useEffect(() => {
@@ -20,14 +20,8 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
 
   const handleSubmit = value => {
     updateQuery(value)
-
     const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
-
-    if (isInstant) {
-      replace(path)
-    } else {
-      push(path)
-    }
+    replace(path)
   }
 
   const debouncedSubmit = useDebounceCallback(
@@ -35,12 +29,10 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
     300,
   )
 
-  const handleChange = (event, ...args) => {
-    onChange(event, ...args)
-    if (isInstant !== undefined) {
-      debouncedSubmit.cancel()
-      debouncedSubmit(event)
-    }
+  const handleChange = (event, target) => {
+    onChange(event, target)
+    debouncedSubmit.cancel()
+    debouncedSubmit(event)
   }
 
   return (
@@ -48,29 +40,20 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
       <Form.Field
         fluid
         autoComplete="off"
-        className={className}
+        className={styles.searchInput}
         control={Input}
         data-cy="search-field"
         error={form.query !== '' && formatErrorPrompt('query')}
         icon={
-          isInstant ? (
-            form.query ? (
-              {
-                style: { marginRight: 7 },
-                name: 'close',
-                link: true,
-                onClick: () => handleSubmit(''),
-              }
-            ) : (
-              <Icon className={styles.searchFieldIcon} name="search" />
-            )
+          form.query ? (
+            <Icon
+              link
+              className={styles.searchIcon}
+              name="close"
+              onClick={() => handleSubmit('')}
+            />
           ) : (
-            {
-              name: 'search',
-              circular: true,
-              link: true,
-              onClick: () => handleSubmit(form.query),
-            }
+            <Icon className={styles.searchIcon} name="search" />
           )
         }
         id="search-field"
@@ -84,8 +67,3 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
 }
 
 export default SearchInput
-
-interface SearchInputProps {
-  className?: string
-  isInstant?: boolean
-}
