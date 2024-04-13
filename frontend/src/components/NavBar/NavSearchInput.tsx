@@ -6,11 +6,11 @@ import { useSearchQuery } from '@contexts/SearchContext'
 
 const NavSearchInput = () => {
   const { push } = useRouter()
-  const { query: sessionQuery, updateQuery: updateSessionQuery } = useSearchQuery()
-  const [query, setQuery] = useState(sessionQuery)
+  const { query: contextQuery, updateQuery: updateContextQuery } = useSearchQuery()
+  const [query, setQuery] = useState(contextQuery)
 
   const handleSubmit = () => {
-    updateSessionQuery(query)
+    updateContextQuery(query)
     const path = `/search?q=${encodeURIComponent(query)}`
     push(path)
   }
