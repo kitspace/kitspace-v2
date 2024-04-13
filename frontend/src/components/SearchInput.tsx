@@ -28,9 +28,8 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
    ** from other paths it will actually redirect to `/search` which is the desired behavior.
    ** see https://nextjs.org/docs/routing/shallow-routing#caveats.
    */
-  const handleSubmit = event => {
+  const handleSubmit = value => {
     setIsLoading(true)
-    const value = event.target.value || event.target[0]?.value || ''
     updateQuery(value)
 
     push(`/search?q=${encodeURIComponent(value)}`, undefined, {
@@ -41,7 +40,7 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
     )
   }
 
-  const debouncedSubmit = useDebounceCallback(handleSubmit, 300)
+  const debouncedSubmit = useDebounceCallback((event) => handleSubmit(event.target.value), 300)
 
   const handleChange = (event, ...args) => {
     onChange(event, ...args)
@@ -52,7 +51,7 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
   }
 
   return (
-    <Form data-cy="search-form" onSubmit={handleSubmit}>
+    <Form data-cy="search-form" onSubmit={e => handleSubmit(e.target[0].value)}>
       <Form.Field
         fluid
         autoComplete="off"
@@ -60,12 +59,23 @@ const SearchInput = ({ className, isInstant }: SearchInputProps) => {
         control={Input}
         data-cy="search-field"
         error={form.query !== '' && formatErrorPrompt('query')}
-        icon={isLoading ? <LoadingIcon /> : <SearchIcon />}
         id="search-field"
         name="query"
         placeholder="Search for projects"
         value={form.query ?? ''}
         onChange={handleChange}
+        icon={
+          isInstant ? (
+            <SearchIcon />
+          ) : (
+            {
+              name: 'search',
+              circular: true,
+              link: true,
+              onClick: () => handleSubmit(form.query),
+            }
+          )
+        }
       />
     </Form>
   )
