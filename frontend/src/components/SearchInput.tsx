@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { Form, Icon, Input } from 'semantic-ui-react'
+import { useDebounceCallback } from 'usehooks-ts'
 
 import { useSearchQuery } from '@contexts/SearchContext'
 import UseForm from '@hooks/useForm'
 import SearchFormModel from '@models/SearchFrom'
 
-import styles from './NavBarSearchInput.module.scss'
+import styles from './SearchInput.module.scss'
 
-const NavBarSearchInput = ({ className }: SearchBarProps) => {
+const SearchInput = ({ className, isInstant }: SearchInputProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { form, onChange, formatErrorPrompt, populate } = UseForm(SearchFormModel)
   const { push } = useRouter()
@@ -27,18 +28,31 @@ const NavBarSearchInput = ({ className }: SearchBarProps) => {
    ** from other paths it will actually redirect to `/search` which is the desired behavior.
    ** see https://nextjs.org/docs/routing/shallow-routing#caveats.
    */
-  const onSubmit = () => {
+  const handleSubmit = event => {
     setIsLoading(true)
-    updateQuery(form.query)
+    const value = event.target.value || event.target[0]?.value || ''
+    updateQuery(value)
 
-    push(`/search?q=${form.query}`, undefined, { shallow: true }).then(() =>
+    push(`/search?q=${encodeURIComponent(value)}`, undefined, {
+      shallow: true,
+    }).then(() =>
       // When redirection finishes, replace the loading icon with the search one.
       setIsLoading(false),
     )
   }
 
+  const debouncedSubmit = useDebounceCallback(handleSubmit, 300)
+
+  const handleChange = (event, ...args) => {
+    onChange(event, ...args)
+    if (isInstant !== undefined) {
+      debouncedSubmit.cancel()
+      debouncedSubmit(event)
+    }
+  }
+
   return (
-    <Form data-cy="search-form" onSubmit={onSubmit}>
+    <Form data-cy="search-form" onSubmit={handleSubmit}>
       <Form.Field
         fluid
         autoComplete="off"
@@ -51,7 +65,7 @@ const NavBarSearchInput = ({ className }: SearchBarProps) => {
         name="query"
         placeholder="Search for projects"
         value={form.query ?? ''}
-        onChange={onChange}
+        onChange={handleChange}
       />
     </Form>
   )
@@ -62,8 +76,9 @@ const LoadingIcon = () => (
 )
 const SearchIcon = () => <Icon className={styles.searchFieldIcon} name="search" />
 
-export default NavBarSearchInput
+export default SearchInput
 
-interface SearchBarProps {
+interface SearchInputProps {
   className?: string
+  isInstant?: boolean
 }
