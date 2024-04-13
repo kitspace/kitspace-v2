@@ -12,7 +12,7 @@ import {
   useLazySearch,
 } from '@hooks/useLazySearch'
 import ProjectCardGrid from '@components/ProjectCardGrid'
-import SearchBar from '@components/NavBar/SearchBar'
+import NavBarSearchInput from '@components/NavBar/NavBarSearchInput'
 import { useSearchQuery } from '@contexts/SearchContext'
 
 import styles from './index.module.scss'
@@ -58,7 +58,7 @@ const PageContent = () => {
 
   return (
     <>
-      <SearchBar className={styles.bigSearchBar} />
+      <NavBarSearchInput className={styles.bigSearchBar} />
       {query === '' && <IntroText />}
       {projects.length === 0 ? (
         <p className={styles.noMatching} data-cy="cards-grid">

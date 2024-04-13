@@ -6,9 +6,9 @@ import { useSearchQuery } from '@contexts/SearchContext'
 import UseForm from '@hooks/useForm'
 import SearchFormModel from '@models/SearchFrom'
 
-import styles from './SearchBar.module.scss'
+import styles from './NavBarSearchInput.module.scss'
 
-const SearchBar = ({ className }: SearchBarProps) => {
+const NavBarSearchInput = ({ className }: SearchBarProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { form, onChange, formatErrorPrompt, populate } = UseForm(SearchFormModel)
   const { push } = useRouter()
@@ -62,7 +62,7 @@ const LoadingIcon = () => (
 )
 const SearchIcon = () => <Icon className={styles.searchFieldIcon} name="search" />
 
-export default SearchBar
+export default NavBarSearchInput
 
 interface SearchBarProps {
   className?: string
