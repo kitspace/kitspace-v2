@@ -1,6 +1,5 @@
 import React from 'react'
 import { GetServerSideProps } from 'next'
-import Link from 'next/link'
 import { SWRConfig } from 'swr'
 import { unstable_serialize } from 'swr/infinite'
 
@@ -62,10 +61,7 @@ const PageContent = () => {
       {query === '' && <IntroText />}
       {projects.length === 0 ? (
         <p className={styles.noMatching} data-cy="cards-grid">
-          Sorry, no result.{' '}
-          <Link href="https://github.com/kitspace/kitspace#adding-your-project">
-            <a>Add your project!</a>
-          </Link>
+          {query ? `Sorry, no result for "${query}"` : 'No projects added yet.'}
         </p>
       ) : (
         <ProjectCardGrid
