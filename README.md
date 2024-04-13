@@ -278,12 +278,6 @@ cd ..
 docker-compose restart frontend
 ```
 
-## Gitea
-
-This is built from a git submodule of [our fork of Gitea](https://github.com/kitspace/gitea).
-
-When it first builds the docker container it builds the whole Gitea project (`make clean-all build`). When you restart the container it recompiles only the backend and doesn't recompile unchanged files (`make backend`).
-
 ## Processor
 
 This is a NodeJS program that processes all the assets and uploads them to an AWS S3 compatible service (in development we use Minio). As with the frontend, changing dependencies requires you to restart the development container.
@@ -311,7 +305,6 @@ When you notice issues in CI e2e or staging which you can't reproduce with the d
 FRONTEND_DEPLOY_IMAGE_TAG=:kaspar-dev
 PROCESSOR_DEPLOY_IMAGE_TAG=:kaspar-dev
 NGINX_DEPLOY_IMAGE_TAG=:kaspar-dev
-GITEA_DEPLOY_IMAGE_TAG=:kaspar-dev
 ```
 
 and 

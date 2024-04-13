@@ -18,7 +18,6 @@ jobs:
       frontend_sha: ${{ steps.get_sha.outputs.frontend_sha }}
       processor_sha: ${{ steps.get_sha.outputs.processor_sha }}
       nginx_sha: ${{ steps.get_sha.outputs.nginx_sha }}
-      gitea_sha: ${{ steps.get_sha.outputs.gitea_sha }}
       matrix: ${{ steps.set_matrix.outputs.matrix }}
     steps:
       - name: Check out the repo
@@ -39,7 +38,6 @@ jobs:
           echo "frontend_sha=$(git log --format=%H -n1 frontend/)" >> $GITHUB_OUTPUT
           echo "processor_sha=$(git log --format=%H -n1 processor/)" >> $GITHUB_OUTPUT
           echo "nginx_sha=$(git log --format=%H -n1 nginx/)" >> $GITHUB_OUTPUT
-          echo "gitea_sha=$(git log --format=%H -n1 gitea/)" >> $GITHUB_OUTPUT
 
       - name: Create e2e matrix
         # For master run e2e across all browsers otherwise, run it only in chrome
@@ -64,7 +62,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        service: [frontend, processor, nginx, gitea]
+        service: [frontend, processor, nginx]
 
     steps:
       - name: Set SHA output
@@ -78,8 +76,6 @@ jobs:
               sha="${{ needs.get_version.outputs.processor_sha }}";;
             nginx)
               sha="${{ needs.get_version.outputs.nginx_sha }}";;
-            gitea)
-              sha="${{ needs.get_version.outputs.gitea_sha }}";;
           esac
           echo "sha=${sha}" >> $GITHUB_OUTPUT
 
@@ -224,7 +220,6 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
           KITSPACE_PROCESSOR_LOG_LEVEL: debug
           # The maximum allowable file size that can be uploaded to gitea or the processor
           MAX_FILE_SIZE: '6M'
@@ -315,7 +310,6 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
         run: |
           scripts/install_gitea.sh
 
@@ -329,7 +323,6 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
         shell: bash
         run: |
           scripts/generate_e2e_fixtures.sh
@@ -351,7 +344,6 @@ jobs:
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
           NGINX_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.nginx_sha }}'
-          GITEA_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.gitea_sha }}'
           browser: ${{ matrix.browser }}
           group: ${{ matrix.browser }}
           BUILD_ID: '${{ github.run_id }}-${{ github.run_attempt }}'
@@ -375,7 +367,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [frontend, processor, nginx, gitea]
+        service: [frontend, processor, nginx]
 
     steps:
       - name: Tag '${{ matrix.service }}:${{ github.ref_name }}'
@@ -387,8 +379,6 @@ jobs:
               sha='${{ needs.get_version.outputs.processor_sha }}';;
             nginx)
               sha='${{ needs.get_version.outputs.nginx_sha }}';;
-            gitea)
-              sha='${{ needs.get_version.outputs.gitea_sha }}';;
           esac
           curl \
             "https://ghcr.io/v2/kitspace/${{ matrix.service }}/manifests/${sha}" \
