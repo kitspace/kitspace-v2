@@ -182,7 +182,7 @@ const lock = new AsyncLock()
 async function sync(gitDir, checkoutDir) {
   await lock
     .acquire(gitDir, async () => {
-      log.info('Acquired sync lock for ', gitDir)
+      log.info('Acquired lock for ', gitDir)
 
       const registryHash = getRegistryHash(gitDir)
 
@@ -225,7 +225,8 @@ async function sync(gitDir, checkoutDir) {
         }
       }
     })
-    .then(() => log.debug('Released sync lock for ', gitDir))
+    .then(() => log.debug('Released lock for ', gitDir))
+    .catch(e => log.warning('Released lock after for', gitDir, 'after error:', e))
 }
 
 /**
