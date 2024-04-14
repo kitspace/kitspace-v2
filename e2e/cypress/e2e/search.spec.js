@@ -1,19 +1,15 @@
 import { getFakeUser } from '../support/getFakeUser'
 
-describe('Navbar search', () => {
-  it('should redirect to /search when search is submitted', () => {
+describe('Search', () => {
+  it('should rewrite url to /search', () => {
     const queryTerm = 'awesome project'
 
     // Visit homepage
     cy.visit('/')
     // Write query term in the search field
     cy.get('[data-cy=search-field] > input').type(queryTerm)
-    // The URL shouldn't change before clicking on `Search`
-    cy.url().should('equal', `${Cypress.config().baseUrl}/`)
-    // Press enter
-    cy.get('[data-cy=search-form]').submit()
-    // Should redirect to the search page
-    cy.url().should('include', `/search?q=${encodeURI(queryTerm)}`)
+    // Should rewrite url to the search page
+    cy.url().should('include', `/search?q=${encodeURIComponent(queryTerm)}`)
   })
 
   it('should display project card on submitting search form', () => {

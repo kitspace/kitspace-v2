@@ -20,16 +20,22 @@ const SearchInput = () => {
   }
 
   useEffect(() => {
-    if (Array.isArray(routerQuery.q)) {
-      throw new Error(`Unexpected query: ${routerQuery.q}`)
+    if (routerQuery.q !== query) {
+      if (Array.isArray(routerQuery.q)) {
+        throw new Error(`Unexpected query: ${routerQuery.q}`)
+      }
+      setQuery(routerQuery.q)
+      updateContextQuery(routerQuery.q)
     }
-    setQuery(routerQuery.q)
-    updateContextQuery(routerQuery.q)
-  }, [routerQuery.q, updateContextQuery])
+    // We don't want to depend on `query` because it would be locked to the
+    // `routerQuery.q`. We just want to update `query` when `routerQuery.q`
+    // changes because of navigation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routerQuery.q])
 
   const debouncedSubmit = useDebounceCallback(
     event => handleSubmit(event.target.value),
-    300,
+    500,
   )
 
   const handleChange = event => {
