@@ -1,47 +1,39 @@
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon, Input } from 'semantic-ui-react'
-import { useDebounceCallback } from 'usehooks-ts'
 
 import { useSearchQuery } from '@contexts/SearchContext'
+import debounce from 'lodash.debounce'
 
 import styles from './SearchInput.module.scss'
+import { useRouter } from 'next/router'
 
 const SearchInput = () => {
-  const { replace, query: routerQuery } = useRouter()
-  const { updateQuery: updateContextQuery } = useSearchQuery()
-
-  const [query, setQuery] = useState(routerQuery.q)
-
-  const handleSubmit = value => {
-    updateContextQuery(value)
-    const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
-    replace(path, undefined, { shallow: true })
-  }
+  const {
+    replace,
+    query: { q: routerQuery },
+  } = useRouter()
+  const { updateQuery: updateContextQuery, query: contextQuery } = useSearchQuery()
+  const [inputQuery, setInputQuery] = useState(contextQuery)
 
   useEffect(() => {
-    if (routerQuery.q !== query) {
-      if (Array.isArray(routerQuery.q)) {
-        throw new Error(`Unexpected query: ${routerQuery.q}`)
-      }
-      setQuery(routerQuery.q)
-      updateContextQuery(routerQuery.q)
+    if (routerQuery !== inputQuery) {
+      setInputQuery(routerQuery as string)
+      updateContextQuery(routerQuery as string)
     }
-    // We don't want to depend on `query` because it would be locked to the
-    // `routerQuery.q`. We just want to update `query` when `routerQuery.q`
+    // We don't want to depend on `inputQuery` because it would be locked to the
+    // `routerQuery`. We just want to update `inputQuery` when `routerQuery`
     // changes because of navigation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routerQuery.q])
+  }, [routerQuery])
 
-  const debouncedSubmit = useDebounceCallback(
-    event => handleSubmit(event.target.value),
-    500,
-  )
+  const debouncedSubmit = useRef(debounce(value => updateContextQuery(value), 100))
 
-  const handleChange = event => {
-    setQuery(event.target.value)
-    debouncedSubmit.cancel()
-    debouncedSubmit(event)
+  const handleChange = (value: string) => {
+    debouncedSubmit.current.cancel()
+    setInputQuery(value)
+    debouncedSubmit.current(value)
+    const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
+    replace(path, undefined, { shallow: true })
   }
 
   return (
@@ -51,14 +43,13 @@ const SearchInput = () => {
       className={styles.searchInput}
       data-cy="search-field"
       icon={
-        query ? (
+        inputQuery ? (
           <Icon
             link
             className={styles.searchIcon}
             name="delete"
             onClick={() => {
-              setQuery('')
-              handleSubmit('')
+              handleChange('')
             }}
           />
         ) : (
@@ -68,8 +59,8 @@ const SearchInput = () => {
       id="search-field"
       name="query"
       placeholder="Search for projects"
-      value={query ?? ''}
-      onChange={handleChange}
+      value={inputQuery}
+      onChange={e => handleChange(e.target.value)}
       onKeyDown={e => {
         if (e.key === 'Enter') {
           e.target.blur()
