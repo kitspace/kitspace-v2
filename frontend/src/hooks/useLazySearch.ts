@@ -49,12 +49,12 @@ export const searchFetcher = async ({
  * Get projects from MeiliSearch lazily.
  */
 export const useLazySearch = (params: SearchParams) => {
-  const [projects, setProjects] = useState([])
-  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
   const { data, setSize, isLoading } = useSWRInfinite(
     makeSWRKeyGetter(params),
     searchFetcher,
   )
+  const [projects, setProjects] = useState(data?.flat() ?? [])
+  const [ref, isReachingLimit] = useInView({ triggerOnce: true })
 
   useEffect(() => {
     if (isReachingLimit) {
