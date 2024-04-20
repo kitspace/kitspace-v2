@@ -132,45 +132,49 @@ export async function addProjectToQueues({
     return
   }
 
-  const hash = await getGitHash(inputDir)
-  const outputDir = path.join(
-    DATA_DIR,
-    PROCESSOR_ASSET_VERSION,
-    ownerName,
-    repoName,
-    hash,
-  )
-
-  const kitspaceYamlArray = await getKitspaceYaml(inputDir)
-
-  if (await alreadyProcessed(outputDir, kitspaceYamlArray, giteaId, hash)) {
-    // Early return if the project is already in S3 and indexed
-    fs.rm(inputDir, { recursive: true }).catch(err =>
-      log.error(`failed to clean up ${inputDir}: ${err}`),
+  try {
+    const hash = await getGitHash(inputDir)
+    const outputDir = path.join(
+      DATA_DIR,
+      PROCESSOR_ASSET_VERSION,
+      ownerName,
+      repoName,
+      hash,
     )
-    return
+
+    const kitspaceYamlArray = await getKitspaceYaml(inputDir)
+
+    if (await alreadyProcessed(outputDir, kitspaceYamlArray, giteaId, hash)) {
+      // Early return if the project is already in S3 and indexed
+      fs.rm(inputDir, { recursive: true }).catch(err =>
+        log.error(`failed to clean up ${inputDir}: ${err}`),
+      )
+      return
+    }
+
+    await fs.mkdir(outputDir, { recursive: true })
+
+    await createJobs({
+      defaultBranch,
+      giteaId,
+      hash,
+      inputDir,
+      kitspaceYamlArray,
+      originalUrl,
+      outputDir,
+      ownerName,
+      repoDescription,
+      repoName,
+    })
+
+    await writeKitspaceYamlQueue.add(
+      'projectAPI',
+      { kitspaceYamlArray, outputDir },
+      { jobId: outputDir },
+    )
+  } catch (e) {
+    log.error(e)
   }
-
-  await fs.mkdir(outputDir, { recursive: true })
-
-  await createJobs({
-    defaultBranch,
-    giteaId,
-    hash,
-    inputDir,
-    kitspaceYamlArray,
-    originalUrl,
-    outputDir,
-    ownerName,
-    repoDescription,
-    repoName,
-  })
-
-  await writeKitspaceYamlQueue.add(
-    'projectAPI',
-    { kitspaceYamlArray, outputDir },
-    { jobId: outputDir },
-  )
 }
 
 export async function stopQueues() {
