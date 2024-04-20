@@ -85,7 +85,6 @@ describe('Render project cards', () => {
 
     // Search for the project
     cy.get('[data-cy=search-field] > input').type(user.username)
-    cy.get('[data-cy=search-form]').submit()
 
     // Click on a subproject project card
     cy.get('[data-cy=project-card]')
@@ -189,7 +188,6 @@ describe('Multi project page', () => {
     cy.visit('/')
     // Search for the project
     cy.get('[data-cy=search-field] > input').type(user.username)
-    cy.get('[data-cy=search-form]').submit()
 
     // Click on a multiproject project card
     cy.get('[data-cy=project-card]')
