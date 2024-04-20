@@ -73,6 +73,8 @@ services:
       # If any of the services is unreachable for 4 minutes, mark the container as unhealthy.
       retries: 4
       start_period: 2m
+    volumes:
+      - nginx-conf:/etc/nginx
 
   processor:
     environment:
@@ -117,3 +119,4 @@ volumes:
   postgres-data: null
   processor-data: null
   meilisearch-data: null
+  nginx-conf: null

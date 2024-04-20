@@ -26,7 +26,7 @@ services:
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
       - 'USE_LOCAL_MINIO=false'
     volumes:
-      - /etc/letsencrypt
+      - nginx-letsencrypt:/etc/letsencrypt
     restart: always
 
   processor:
@@ -43,3 +43,6 @@ services:
     environment:
       - MEILI_ENV=production
     restart: always
+
+volumes:
+  nginx-letsencrypt: null
