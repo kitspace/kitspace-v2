@@ -13,11 +13,11 @@ jobs:
   lint_processor:
     runs-on: ubuntu-20.04
     steps:
-      - name: Setup Node 16
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
-      - uses: actions/checkout@v3
+          node-version: '20'
+      - uses: actions/checkout@v4
       - run: 'yarn install'
       - run: 'yarn lint --max-warnings 0'
       - run: 'yarn tsc'

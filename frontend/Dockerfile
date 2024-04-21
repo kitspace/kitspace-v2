@@ -1,4 +1,4 @@
-FROM node:16-alpine AS base
+FROM node:20-alpine AS base
 WORKDIR /app
 
 FROM base AS git-installed

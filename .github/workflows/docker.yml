@@ -21,7 +21,7 @@ jobs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # check out the pull-request when triggered by "pull_request_target",
           # when triggered on "push" this is empty and checks out the branch
@@ -94,7 +94,7 @@ jobs:
           echo "image_exists=${image_exists}" >> $GITHUB_OUTPUT
 
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: steps.check_for_image.outputs.image_exists == 'false'
         with:
           # check out the pull-request when triggered by "pull_request_target",
@@ -149,7 +149,7 @@ jobs:
       - build
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           # 0 means fetch all commits, which we need for "review" branch deploy
@@ -256,7 +256,7 @@ jobs:
     steps:
       - name: Check out the repo
         # https://github.com/getsentry/action-release#troubleshooting
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
           fetch-depth: 0
@@ -280,13 +280,13 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.get_version.outputs.matrix) }}
     steps:
-      - name: Setup Node 16
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # check out the pull-request when triggered by "pull_request_target",
           # when triggered on "push" this is empty and checks out the branch
