@@ -19,7 +19,7 @@ jobs:
 
       - run: mkdir target
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Compile the script
         run: deno compile --allow-env --allow-net --allow-run --target x86_64-unknown-linux-gnu --output target/importBoardsTxt scripts/importBoardsTxt.ts --githubToken ${{ secrets.IMPORT_SCRIPT_ACCESS_TOKEN }}
 
