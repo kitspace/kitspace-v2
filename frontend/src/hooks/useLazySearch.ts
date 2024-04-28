@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { useInView } from 'react-intersection-observer'
 import { Filter } from 'meilisearch'
@@ -49,8 +49,12 @@ export const searchFetcher = async ({
  * Get projects from MeiliSearch lazily.
  */
 export const useLazySearch = (params: SearchParams) => {
+  const { data, setSize, isLoading } = useSWRInfinite(
+    makeSWRKeyGetter(params),
+    searchFetcher,
+  )
+  const [projects, setProjects] = useState(data?.flat() ?? [])
   const [ref, isReachingLimit] = useInView({ triggerOnce: true })
-  const { data, setSize } = useSWRInfinite(makeSWRKeyGetter(params), searchFetcher)
 
   useEffect(() => {
     if (isReachingLimit) {
@@ -58,5 +62,11 @@ export const useLazySearch = (params: SearchParams) => {
     }
   }, [isReachingLimit, setSize])
 
-  return { projects: data?.flat() ?? [], intersectionObserverRef: ref }
+  useEffect(() => {
+    if (!isLoading) {
+      setProjects(data?.flat() ?? [])
+    }
+  }, [data, isLoading])
+
+  return { projects, intersectionObserverRef: ref, isLoading }
 }

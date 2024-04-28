@@ -1,5 +1,5 @@
-import { useRouter } from 'next/router'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect } from 'react'
+import { useSessionStorage } from 'usehooks-ts'
 
 const SearchContext = createContext<SearchContext | null>({
   query: '',
@@ -7,30 +7,13 @@ const SearchContext = createContext<SearchContext | null>({
 })
 
 const SearchProvider = ({ children, initialQuery }: SearchProviderProps) => {
-  const [query, setQuery] = useState(initialQuery)
-
-  const {
-    query: { q },
-    events,
-  } = useRouter()
+  const [query, setQuery] = useSessionStorage('searchQuery', initialQuery)
 
   useEffect(() => {
-    if (q == null) {
-      setQuery('')
+    if (initialQuery != null) {
+      setQuery(initialQuery)
     }
-  }, [q])
-
-  events?.on('routeChangeComplete', (url: string) => {
-    /*
-     * Handle history navigation by update the search query in the context when the url changes.
-     * We read the query parameter from the url instead of using the router query
-     * because the router query gets updated asynchronously.
-     */
-    const latestQuery = new URLSearchParams(url.split('?')[1]).get('q')
-    if (latestQuery != null) {
-      setQuery(latestQuery)
-    }
-  })
+  }, [initialQuery])
 
   return (
     <SearchContext.Provider value={{ query, updateQuery: setQuery }}>

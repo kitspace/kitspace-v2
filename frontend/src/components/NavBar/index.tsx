@@ -3,9 +3,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
 
-import SearchBar from './SearchBar'
+import NavSearchInput from './NavSearchInput'
 import styles from './index.module.scss'
 import logoSvg from './logo.svg'
+import { useSearchQuery } from '@contexts/SearchContext'
 
 const NavBar = () => {
   return (
@@ -88,21 +89,14 @@ const AddProjectButton = () => {
 
 const SiteMenuItems = () => {
   const { pathname } = useRouter()
-  const isProjectRoute =
-    pathname === '/' ||
-    pathname === '/search' ||
-    RegExp('^/projects/').test(pathname)
+  const isSearchRoute = pathname === '/' || pathname === '/search'
+  const isProjectRoute = isSearchRoute
 
+  const { query } = useSearchQuery()
   return (
     <>
-      <Link passHref href="/">
-        <Menu.Item
-          active={isProjectRoute}
-          as="a"
-          // Add a separation line after user specific actions.
-          className={styles.projects}
-          href="/"
-        >
+      <Link passHref href={query ? `/search?q=${encodeURIComponent(query)}` : '/'}>
+        <Menu.Item active={isProjectRoute} as="a" className={styles.projects}>
           Projects
         </Menu.Item>
       </Link>
@@ -111,9 +105,11 @@ const SiteMenuItems = () => {
           1-click BOM
         </Menu.Item>
       </Link>
-      <Menu.Item className={styles.SearchBarContainer}>
-        <SearchBar />
-      </Menu.Item>
+      {isSearchRoute ? null : (
+        <Menu.Item className={styles.SearchBarContainer}>
+          <NavSearchInput />
+        </Menu.Item>
+      )}
     </>
   )
 }

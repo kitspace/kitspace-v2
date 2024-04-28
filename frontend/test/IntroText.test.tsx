@@ -1,8 +1,9 @@
 import { afterEach, beforeAll, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react'
 import Search from '@pages/search'
+import SearchProvider from '@contexts/SearchContext'
 
-import CopyFixture from './fixtures/Copy.json'
+import IntroFixture from './fixtures/Intro.json'
 
 beforeAll(() => {
   vi.mock('next/config', () => ({
@@ -22,22 +23,26 @@ it('removes the intro text on submitting a search query', async () => {
   window.innerWidth = 390
   window.innerHeight = 844
 
-  const screen = render(<Search initialQuery="" swrFallback={{}} />)
+  const screen = render(
+    <SearchProvider initialQuery="">
+      <Search swrFallback={{}} />
+    </SearchProvider>,
+  )
   const searchInput = screen.getAllByPlaceholderText(
     'Search for projects',
   )[0] as HTMLInputElement
 
-  const copy = screen.getByText(CopyFixture.CopyText)
+  const copy = screen.getByText(IntroFixture.Text)
   // The copy should be visible
   expect(copy).toBeTruthy()
 
   //Submit a search query
-  fireEvent.change(searchInput, { target: { value: 'de' } })
+  fireEvent.change(searchInput, { target: { value: 'foo' } })
   fireEvent.submit(searchInput)
 
   // The copy should be removed
   await waitFor(() => {
-    expect(screen.queryByText(CopyFixture.CopyText)).toBeFalsy()
+    expect(screen.queryByText(IntroFixture.Text)).toBeFalsy()
   })
 })
 
