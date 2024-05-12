@@ -23,9 +23,8 @@ const Newsletter = () => (
         <a href="mailto:info@kitspace.org">info@kitspace.org</a> instead.
       </p>
       <Form
-        action="POST"
+        action="https://buttondown.email/api/emails/embed-subscribe/kitspace"
         className={styles.emailForm}
-        data-netlify="true"
         method="POST"
         name="newsletter"
       >
