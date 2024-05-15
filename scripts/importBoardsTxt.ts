@@ -52,7 +52,8 @@ const headers = {
 }
 
 async function main() {
-  let boards = await getBoardsTxt()
+  let boards = ["https://github.com/GlasgowEmbedded/glasgow"]
+
   if (flags.shuffle) {
     boards = shuffle(boards)
   }
