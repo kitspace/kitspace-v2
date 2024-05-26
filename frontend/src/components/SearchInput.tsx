@@ -27,13 +27,19 @@ const SearchInput = () => {
   }, [routerQuery])
 
   const debouncedSubmit = useRef(debounce(value => updateContextQuery(value), 100))
+  const debouncedUpdateUrl = useRef(
+    debounce(value => {
+      const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
+      replace(path, undefined, { shallow: true })
+    }, 1000),
+  )
 
   const handleChange = (value: string) => {
     debouncedSubmit.current.cancel()
+    debouncedUpdateUrl.current.cancel()
     setInputQuery(value)
     debouncedSubmit.current(value)
-    const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
-    replace(path, undefined, { shallow: true })
+    debouncedUpdateUrl.current(value)
   }
 
   return (
