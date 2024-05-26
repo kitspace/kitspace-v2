@@ -68,7 +68,7 @@ module.exports = async phase => {
         // legacy custom redirects https://github.com/kitspace/kitspace/blob/master/src/_redirects
         {
           source: '/jelly',
-          destination: '/monostable/jelly',
+          destination: '/kitspace/jelly',
           permanent: false,
         },
         {
@@ -89,13 +89,13 @@ module.exports = async phase => {
         {
           source:
             '/boards/github.com/ozel/diy_particle_detector/diy%20alpha%20spectrometer',
-          destination: '/ozel/diy_particle_detector/alpha-spectrometer',
+          destination: '/ozel/DIY_particle_detector/alpha-spectrometer',
           permanent: false,
         },
         {
           source:
             '/boards/github.com/ozel/diy_particle_detector/diy%20electron%20detector',
-          destination: '/ozel/diy_particle_detector/electron-detector',
+          destination: '/ozel/DIY_particle_detector/electron-detector',
           permanent: false,
         },
         {
@@ -109,14 +109,15 @@ module.exports = async phase => {
           permanent: false,
         },
         {
-          source: '/boards/gitlab.com/bath_open_instrumentation_group/sangaboard/',
+          source:
+            '/boards/gitlab.com/bath_open_instrumentation_group/sangaboard/:splat*',
           destination:
-            '/bath_open_instrumentation_group/sangaboard/sangaboard_v0.3/',
+            '/bath_open_instrumentation_group/sangaboard/sangaboard_v0.3/:splat*',
           permanent: false,
         },
         {
-          source: '/boards/github.com/joeycastillo/the-open-book/',
-          destination: '/joeycastillo/the-open-book/ebook-wing/',
+          source: '/boards/github.com/joeycastillo/the-open-book',
+          destination: '/joeycastillo/The-Open-Book/Open-Book-Abridged',
           permanent: false,
         },
         {
@@ -142,7 +143,7 @@ module.exports = async phase => {
         },
         {
           source: '/boards/gitlab.com/openflexure/ofm-illumination/',
-          destination: '/openflexure/openflexure-phase-contrast-illumination/',
+          destination: '/openflexure/openflexure-phase-contrast-illumination',
           permanent: false,
         },
         {
@@ -165,22 +166,22 @@ module.exports = async phase => {
         },
         {
           source: '/boards/github.com/Open-Gamma-Project/SiPM-Carrier-Board/',
-          destination: '/opengammaproject/microfc-sipm-carrier-board/',
+          destination: '/OpenGammaProject/MicroFC-SiPM-Carrier-Board/',
           permanent: false,
         },
         {
           source: '/boards/github.com/open-gamma-project/sipm-carrier-board/',
-          destination: '/opengammaproject/microfc-sipm-carrier-board/',
+          destination: '/OpenGammaProject/MicroFC-SiPM-Carrier-Board/',
           permanent: false,
         },
         {
           source: '/boards/github.com/Open-Gamma-Project/:splat*',
-          destination: '/opengammaproject/:splat*',
+          destination: '/OpenGammaProject/:splat*',
           permanent: false,
         },
         {
           source: '/boards/github.com/open-gamma-project/:splat*',
-          destination: '/opengammaproject/:splat*',
+          destination: '/OpenGammaProject/:splat*',
           permanent: false,
         },
         {
