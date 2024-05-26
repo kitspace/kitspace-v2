@@ -65,6 +65,129 @@ module.exports = async phase => {
       // we use "_" as the project name when there is only one project but we
       // don't want it to appear in the URL of the project page
       return [
+        // legacy custom redirects https://github.com/kitspace/kitspace/blob/master/src/_redirects
+        {
+          source: '/jelly',
+          destination: '/monostable/jelly',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/prometheus-science/:splat*',
+          destination: '/amchagas/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/kitnic-forks/:splat*',
+          destination: '/kitspace-forks/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/monostable/:splat*',
+          destination: '/kitspace/:splat*',
+          permanent: false,
+        },
+        {
+          source:
+            '/boards/github.com/ozel/diy_particle_detector/diy%20alpha%20spectrometer',
+          destination: '/ozel/diy_particle_detector/alpha-spectrometer',
+          permanent: false,
+        },
+        {
+          source:
+            '/boards/github.com/ozel/diy_particle_detector/diy%20electron%20detector',
+          destination: '/ozel/diy_particle_detector/electron-detector',
+          permanent: false,
+        },
+        {
+          source: '/oshcamp2016',
+          destination: 'https://monostable.co.uk/presentations/oshcamp2016-kitnic',
+          permanent: false,
+        },
+        {
+          source: '/fosdem2017',
+          destination: 'https://monostable.co.uk/presentations/fosdem2017-kitnic',
+          permanent: false,
+        },
+        {
+          source: '/boards/gitlab.com/bath_open_instrumentation_group/sangaboard/',
+          destination:
+            '/bath_open_instrumentation_group/sangaboard/sangaboard_v0.3/',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/joeycastillo/the-open-book/',
+          destination: '/joeycastillo/the-open-book/ebook-wing/',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/aleksas/interferometer',
+          destination: 'https://github.com/aleksas/interferometer',
+          permanent: false,
+        },
+        {
+          source: '/boards/gitlab.com/drid/f800gs-led-turn-signal/',
+          destination:
+            '/drid/f800gs-led-turn-signal/f800gs_led_turn_signal_dual_row/',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/isobianin/BeeHive/:splat*',
+          destination: '/BeeHive-org/BeeHive/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/BeeHive-org/BeeHive/boards/:splat*',
+          destination: '/BeeHive-org/BeeHive/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/gitlab.com/openflexure/ofm-illumination/',
+          destination: '/openflexure/openflexure-phase-contrast-illumination/',
+          permanent: false,
+        },
+        {
+          source:
+            '/boards/gitlab.com/openflexure/openflexure-constant-current-illumination/',
+          destination:
+            '/openflexure/openflexure-constant-current-illumination/ofm_cc_illumination_single',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/beehive-org/beehive/boards/peltier',
+          destination:
+            'https://github.com/BeeHive-org/BeeHive/tree/master/hardware/archive/peltier',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/jan--henrik/:splat*',
+          destination: 'jana-marie/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/Open-Gamma-Project/SiPM-Carrier-Board/',
+          destination: '/opengammaproject/microfc-sipm-carrier-board/',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/open-gamma-project/sipm-carrier-board/',
+          destination: '/opengammaproject/microfc-sipm-carrier-board/',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/Open-Gamma-Project/:splat*',
+          destination: '/opengammaproject/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/open-gamma-project/:splat*',
+          destination: '/opengammaproject/:splat*',
+          permanent: false,
+        },
+        {
+          source: '/boards/github.com/bschwind/key-ripper/',
+          destination: '/bschwind/key-ripper/key-ripper/',
+          permanent: false,
+        },
         {
           source: '/:user/:repo/_',
           destination: '/:user/:repo',
