@@ -62,8 +62,6 @@ module.exports = async phase => {
       domains: imageDomains,
     },
     async redirects() {
-      // we use "_" as the project name when there is only one project but we
-      // don't want it to appear in the URL of the project page
       return [
         // legacy custom redirects https://github.com/kitspace/kitspace/blob/master/src/_redirects
         {
@@ -189,7 +187,10 @@ module.exports = async phase => {
           destination: '/bschwind/key-ripper/key-ripper/',
           permanent: true,
         },
+        // end legacy custom redirects
         {
+          // we use "_" as the project name when there is only one project but we
+          // don't want it to appear in the URL of the project page
           source: '/:user/:repo/_',
           destination: '/:user/:repo',
           permanent: true,
