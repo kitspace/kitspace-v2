@@ -62,10 +62,135 @@ module.exports = async phase => {
       domains: imageDomains,
     },
     async redirects() {
-      // we use "_" as the project name when there is only one project but we
-      // don't want it to appear in the URL of the project page
       return [
+        // legacy custom redirects https://github.com/kitspace/kitspace/blob/master/src/_redirects
         {
+          source: '/jelly',
+          destination: '/kitspace/jelly',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/prometheus-science/:splat*',
+          destination: '/amchagas/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/kitnic-forks/:splat*',
+          destination: '/kitspace-forks/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/monostable/:splat*',
+          destination: '/kitspace/:splat*',
+          permanent: true,
+        },
+        {
+          source:
+            '/boards/github.com/ozel/diy_particle_detector/diy%20alpha%20spectrometer',
+          destination: '/ozel/DIY_particle_detector/alpha-spectrometer',
+          permanent: true,
+        },
+        {
+          source:
+            '/boards/github.com/ozel/diy_particle_detector/diy%20electron%20detector',
+          destination: '/ozel/DIY_particle_detector/electron-detector',
+          permanent: true,
+        },
+        {
+          source: '/oshcamp2016',
+          destination: 'https://monostable.co.uk/presentations/oshcamp2016-kitnic',
+          permanent: true,
+        },
+        {
+          source: '/fosdem2017',
+          destination: 'https://monostable.co.uk/presentations/fosdem2017-kitnic',
+          permanent: true,
+        },
+        {
+          source:
+            '/boards/gitlab.com/bath_open_instrumentation_group/sangaboard/:splat*',
+          destination:
+            '/bath_open_instrumentation_group/sangaboard/sangaboard_v0.3/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/joeycastillo/the-open-book',
+          destination: '/joeycastillo/The-Open-Book/Open-Book-Abridged',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/aleksas/interferometer',
+          destination: 'https://github.com/aleksas/interferometer',
+          permanent: true,
+        },
+        {
+          source: '/boards/gitlab.com/drid/f800gs-led-turn-signal/',
+          destination:
+            '/drid/f800gs-led-turn-signal/f800gs_led_turn_signal_dual_row/',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/isobianin/BeeHive/:splat*',
+          destination: '/BeeHive-org/BeeHive/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/BeeHive-org/BeeHive/boards/:splat*',
+          destination: '/BeeHive-org/BeeHive/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/gitlab.com/openflexure/ofm-illumination/',
+          destination: '/openflexure/openflexure-phase-contrast-illumination',
+          permanent: true,
+        },
+        {
+          source:
+            '/boards/gitlab.com/openflexure/openflexure-constant-current-illumination/',
+          destination:
+            '/openflexure/openflexure-constant-current-illumination/ofm_cc_illumination_single',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/beehive-org/beehive/boards/peltier',
+          destination:
+            'https://github.com/BeeHive-org/BeeHive/tree/master/hardware/archive/peltier',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/jan--henrik/:splat*',
+          destination: 'jana-marie/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/Open-Gamma-Project/SiPM-Carrier-Board/',
+          destination: '/OpenGammaProject/MicroFC-SiPM-Carrier-Board/',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/open-gamma-project/sipm-carrier-board/',
+          destination: '/OpenGammaProject/MicroFC-SiPM-Carrier-Board/',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/Open-Gamma-Project/:splat*',
+          destination: '/OpenGammaProject/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/open-gamma-project/:splat*',
+          destination: '/OpenGammaProject/:splat*',
+          permanent: true,
+        },
+        {
+          source: '/boards/github.com/bschwind/key-ripper/',
+          destination: '/bschwind/key-ripper/key-ripper/',
+          permanent: true,
+        },
+        // end legacy custom redirects
+        {
+          // we use "_" as the project name when there is only one project but we
+          // don't want it to appear in the URL of the project page
           source: '/:user/:repo/_',
           destination: '/:user/:repo',
           permanent: true,
