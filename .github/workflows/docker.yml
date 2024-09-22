@@ -236,7 +236,7 @@ jobs:
           ssh-keyscan '${{ github.ref_name }}.staging.kitspace.dev' >> ~/.ssh/known_hosts
           docker context create staging --docker 'host=ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev'
           docker context use staging
-          docker compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml --host='ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev' up -d
+          docker compose --compatibility --host='ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev' -f docker-compose.yml -f docker-compose.deploy.yml up -d
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
