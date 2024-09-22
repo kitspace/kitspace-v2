@@ -142,7 +142,7 @@ jobs:
   deploy:
     if: ${{ github.event_name == 'push' }}
     name: Deploy to staging
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: staging
     needs:
       - get_version
@@ -236,7 +236,7 @@ jobs:
           ssh-keyscan '${{ github.ref_name }}.staging.kitspace.dev' >> ~/.ssh/known_hosts
           docker context create staging --docker 'host=ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev'
           docker context use staging
-          docker-compose -f docker-compose.yml -f docker-compose.deploy.yml --host='ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev' up -d
+          docker compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml --host='ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev' up -d
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
@@ -328,10 +328,10 @@ jobs:
           scripts/generate_e2e_fixtures.sh
 
           # start gitea so we can generate the admin token required for e2e
-          docker-compose -f docker-compose.yml -f docker-compose.deploy.yml up -d
+          docker compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml up -d
           until docker logs kitspace_gitea_1 | grep -q 'ORM engine initialization successful' ; do sleep 3s; done
           token="$(deno run --allow-env --allow-net --allow-run ./scripts/importBoardsTxt.ts --tokenOnly)"
-          docker-compose stop
+          docker compose stop
 
           echo "CYPRESS_GITEA_ADMIN_TOKEN=${token}" >> $GITHUB_ENV
 
@@ -354,13 +354,13 @@ jobs:
           COMMIT_INFO_TIMESTAMP: '${{ github.event.head_commit.timestamp }}'
           COMMIT_INFO_BRANCH: '${{ github.ref_name || github.head_ref }}'
         run: |
-          docker-compose -f docker-compose.yml -f docker-compose.deploy.yml -f docker-compose.e2e.yml up \
+          docker compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml -f docker-compose.e2e.yml up \
             --abort-on-container-exit --exit-code-from e2e
 
   tag_docker_images:
     if: ${{ github.event_name == 'push' }}
     name: Tag with branch name
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs:
       - get_version
       - build
