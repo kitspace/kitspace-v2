@@ -11,7 +11,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "1-click-bom-minimal": "https://github.com/kitspace/npm-1-click-bom-minimal",
-    "express": "^4.19.2",
+    "express": "^4.20.0",
     "file-loader": "^6.0.0",
     "highlight.js": "^11.6.0",
     "lodash": "^4.17.21",
