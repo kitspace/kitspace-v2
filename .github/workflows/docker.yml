@@ -142,7 +142,7 @@ jobs:
   deploy:
     if: ${{ github.event_name == 'push' }}
     name: Deploy to staging
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     environment: staging
     needs:
       - get_version
@@ -360,7 +360,7 @@ jobs:
   tag_docker_images:
     if: ${{ github.event_name == 'push' }}
     name: Tag with branch name
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     needs:
       - get_version
       - build
