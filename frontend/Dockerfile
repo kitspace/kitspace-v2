@@ -24,8 +24,8 @@ RUN yarn --frozen-lockfile
 FROM base AS production
 
 ENV NODE_ENV=production
-# give the node user read-only permissions
-ARG PERMISSION=644
+# give the node user read and execute permissions
+ARG PERMISSION=755
 COPY --chmod=${PERMISSION} --from=build /deps/node_modules/ node_modules/
 COPY --chmod=${PERMISSION} package.json .
 COPY --chmod=${PERMISSION} next.config.js .
