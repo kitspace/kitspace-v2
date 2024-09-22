@@ -12,7 +12,7 @@ else
     npx wait-on http://kitspace.test:3000 && cypress run --parallel --record -k $CYPRESS_RECORD_KEY \
         -b $browser --group $group --ci-build-id $BUILD_ID \
         -e COMMIT_INFO_BRANCH=$COMMIT_INFO_BRANCH \
-        -e COMMIT_INFO_MESSAGE=$escaped_commit_info \
+        -e COMMIT_INFO_MESSAGE="${escaped_commit_info}" \
         -e COMMIT_INFO_EMAIL=$COMMIT_INFO_EMAIL \
         -e COMMIT_INFO_AUTHOR=$COMMIT_INFO_AUTHOR \
         -e COMMIT_INFO_SHA=$COMMIT_INFO_SHA \
