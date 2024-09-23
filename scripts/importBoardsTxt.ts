@@ -299,7 +299,8 @@ async function generateGiteaAdminToken() {
   )
 
   if (!giteaAdminCommand.status.success) {
-    throw new Error('Failed to create gitea admin user')
+    console.error(giteaAdminCommand.output)
+    throw new Error("Failed to create gitea admin user")
   }
 
   const giteaAdminTokenCommand = await exec(
@@ -308,7 +309,8 @@ async function generateGiteaAdminToken() {
   )
 
   if (!giteaAdminTokenCommand.status.success) {
-    throw new Error('Failed to create gitea admin token')
+    console.error(giteaAdminTokenCommand.output)
+    throw new Error("Failed to create gitea admin token")
   }
 
   return giteaAdminTokenCommand.output.split('\n').at(-1)
