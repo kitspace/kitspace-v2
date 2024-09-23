@@ -31,8 +31,18 @@ const SearchInput = () => {
     debounce(value => {
       const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
       replace(path, undefined, { shallow: true })
-    }, 1000),
+    }, 500),
   )
+
+  // Cancel on component dismount
+  useEffect(() => {
+    return () => {
+      // I don't understand what react / eslint wants us to do in this case:
+      // the ref doesn't actually change.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      debouncedUpdateUrl.current.cancel()
+    }
+  }, [])
 
   const handleChange = (value: string) => {
     debouncedSubmit.current.cancel()
