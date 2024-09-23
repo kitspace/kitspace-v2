@@ -13,4 +13,4 @@ jobs:
         with:
           submodules: 'recursive'
       - run: cp .env.example .env
-      - run: docker-compose -f docker-compose.test-processor.yml run --rm processor
+      - run: docker compose --compatibility -f docker-compose.test-processor.yml run --rm processor
