@@ -30,5 +30,7 @@ RUN addgroup --gid 1000 node && \
     mkdir /data /gitea-data && \
     chown -R node /data /gitea-data
 
+RUN git config --global --add safe.directory '*'
+
 USER node
 CMD ["node", "dist/src/main.js"]
