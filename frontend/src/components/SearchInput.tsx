@@ -27,13 +27,29 @@ const SearchInput = () => {
   }, [routerQuery])
 
   const debouncedSubmit = useRef(debounce(value => updateContextQuery(value), 100))
+  const debouncedUpdateUrl = useRef(
+    debounce(value => {
+      const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
+      replace(path, undefined, { shallow: true })
+    }, 500),
+  )
+
+  // Cancel on component dismount
+  useEffect(() => {
+    return () => {
+      // I don't understand what react / eslint wants us to do in this case:
+      // the ref doesn't actually change.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      debouncedUpdateUrl.current.cancel()
+    }
+  }, [])
 
   const handleChange = (value: string) => {
     debouncedSubmit.current.cancel()
+    debouncedUpdateUrl.current.cancel()
     setInputQuery(value)
     debouncedSubmit.current(value)
-    const path = value ? `/search?q=${encodeURIComponent(value)}` : '/'
-    replace(path, undefined, { shallow: true })
+    debouncedUpdateUrl.current(value)
   }
 
   return (

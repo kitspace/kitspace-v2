@@ -189,6 +189,8 @@ describe('Multi project page', () => {
     // Search for the project
     cy.get('[data-cy=search-field] > input').type(user.username)
 
+    cy.wait(1000)
+
     // Click on a multiproject project card
     cy.get('[data-cy=project-card]')
       .first()

@@ -218,6 +218,7 @@ async function sync(gitDir, checkoutDir) {
         try {
           await sh`git clone ${gitDir} ${checkoutDir}`
         } catch (err) {
+          log.error(err)
           if (err.stderr) {
             return
           }
