@@ -4,7 +4,7 @@ services:
     image: ghcr.io/kitspace/frontend${FRONTEND_DEPLOY_IMAGE_TAG}
     environment:
       - NODE_ENV=production
-      - 'KITSPACE_ASSET_URL=https://${S3_PROCESSOR_BUCKET_NAME}.s3.amazonaws.com/${KITSPACE_PROCESSOR_ASSET_VERSION}'
+      - 'KITSPACE_ASSET_URL=https://processor-cdn.${KITSPACE_DOMAIN}/${KITSPACE_PROCESSOR_ASSET_VERSION}'
     restart: always
 
   gitea:
