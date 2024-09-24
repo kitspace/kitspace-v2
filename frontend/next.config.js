@@ -23,23 +23,27 @@ module.exports = async phase => {
     imageDomains = [
       // TODO: use a wildcard when https://github.com/vercel/next.js/pull/27345 get merged
       `gitea.${process.env.KITSPACE_DOMAIN}`,
-      new URL(process.env.KITSPACE_ASSET_URL).hostname,
+      new URL(process.env.KITSPACE_PROCESSOR_ASSET_URL).hostname,
       'github.com',
       'raw.githubusercontent.com',
       'secure.gravatar.com',
     ]
   }
-  return {
+  /**
+   * @type {import('next').NextConfig}
+   */
+  const nextConfig = {
     // we use nginx to compress so we turn off next.js gzip compression
     compress: false,
     publicRuntimeConfig: {
       KITSPACE_DOMAIN: process.env.KITSPACE_DOMAIN,
       KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
-      KITSPACE_ASSET_URL: process.env.KITSPACE_ASSET_URL,
+      KITSPACE_PROCESSOR_ASSET_URL: process.env.KITSPACE_PROCESSOR_ASSET_URL,
       KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,
       MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
       meiliApiKey: meiliSearchOnlyKey.key,
     },
+    assetPrefix: process.env.KITSPACE_FRONTEND_ASSET_URL,
     eslint: {
       ignoreDuringBuilds: true,
     },
@@ -216,4 +220,5 @@ module.exports = async phase => {
       ]
     },
   }
+  return nextConfig
 }

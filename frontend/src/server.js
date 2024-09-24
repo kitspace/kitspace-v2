@@ -28,7 +28,7 @@ async function main() {
     const { user, repo, project } = req.params
     return res.redirect(
       307,
-      `${process.env.KITSPACE_ASSET_URL}/${user}/${repo}/HEAD/${project}/1-click-BOM.tsv`,
+      `${process.env.KITSPACE_PROCESSOR_ASSET_URL}/${user}/${repo}/HEAD/${project}/1-click-BOM.tsv`,
     )
   })
 

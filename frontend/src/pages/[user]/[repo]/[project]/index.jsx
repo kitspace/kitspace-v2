@@ -14,7 +14,7 @@ import {
 import SharedProjectPage from '@components/SharedProjectPage'
 import Custom404 from '@pages/404'
 
-const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
 
 const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
