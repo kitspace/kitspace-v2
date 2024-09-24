@@ -39,6 +39,8 @@ const ProjectCard = ({
         <div ref={intersectionObserverRef} className={styles.thumbnail}>
           {isLoading || isError ? null : (
             <Image
+              // we are not using the next `Image` magic in order to simplify our CDN setup
+              unoptimized
               alt={`Render of PCB of ${nameOnCard}`}
               data-cy="project-card-thumbnail"
               height={180}

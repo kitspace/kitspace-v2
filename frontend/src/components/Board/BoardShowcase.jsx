@@ -46,11 +46,14 @@ const BoardShowcase = ({ assetPath }) => {
               >
                 {isLoading || isError ? null : (
                   <Image
-                    {...dimensions}
+                    // we are not using the next `Image` magic in order to simplify our CDN setup
+                    // svgs are not optimized anyway so this is actually a no-op
+                    unoptimized
                     alt="PCB top view"
                     data-cy="board-showcase-top"
                     objectFit="contain"
                     src={top}
+                    {...dimensions}
                   />
                 )}
               </div>
@@ -64,11 +67,14 @@ const BoardShowcase = ({ assetPath }) => {
               >
                 {isLoading || isError ? null : (
                   <Image
-                    {...dimensions}
+                    // we are not using the next `Image` magic in order to simplify our CDN setup
+                    // svgs are not optimized anyway so this is actually a no-op
+                    unoptimized
                     alt="PCB bottom view"
                     data-cy="board-showcase-bottom"
                     objectFit="contain"
                     src={bottom}
+                    {...dimensions}
                   />
                 )}
               </div>

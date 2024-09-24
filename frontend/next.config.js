@@ -33,6 +33,7 @@ module.exports = async phase => {
     publicRuntimeConfig: {
       KITSPACE_DOMAIN: process.env.KITSPACE_DOMAIN,
       KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
+      KITSPACE_FRONTEND_ASSET_URL: process.env.KITSPACE_FRONTEND_ASSET_URL,
       KITSPACE_PROCESSOR_ASSET_URL: process.env.KITSPACE_PROCESSOR_ASSET_URL,
       KITSPACE_MEILISEARCH_URL: process.env.KITSPACE_MEILISEARCH_URL,
       MAX_FILE_SIZE: process.env.MAX_FILE_SIZE,
