@@ -4,7 +4,7 @@ import path from 'path'
 import IBOM from '@components/Board/IBOM'
 import getConfig from 'next/config'
 
-const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
 
 export const getServerSideProps = async ({ params }) => {
   const IBOMHtml = await fs.readFile(

@@ -13,7 +13,7 @@ import ErrorPage from '@pages/_error'
 import Page from '@components/Page'
 import ProjectPage from './[project]'
 
-const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_ASSET_URL
+const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
 
 interface RepoPageProps {
   errorCode?: number

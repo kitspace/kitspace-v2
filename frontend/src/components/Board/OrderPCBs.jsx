@@ -1,4 +1,4 @@
-import React from 'react'
+import getConfig from 'next/config'
 import Image from 'next/image'
 import { object, string } from 'prop-types'
 import { Icon } from 'semantic-ui-react'
@@ -6,6 +6,9 @@ import { Icon } from 'semantic-ui-react'
 import styles from './OrderPCBs.module.scss'
 
 const serviceLogoDimensions = { height: 29, width: 100 }
+
+const frontendAssetUrl =
+  getConfig().publicRuntimeConfig.KITSPACE_FRONTEND_ASSET_URL || ''
 
 const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
@@ -48,8 +51,9 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('Aisler')}
           >
             <Image
+              unoptimized
               alt="Aisler logo"
-              src="/static/images/aisler.png"
+              src={`${frontendAssetUrl}/static/images/aisler.png`}
               {...serviceLogoDimensions}
             />
           </a>
@@ -63,8 +67,9 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('PCBWay')}
           >
             <Image
+              unoptimized
               alt="PCBWay logo"
-              src="/static/images/pcbway.png"
+              src={`${frontendAssetUrl}/static/images/pcbway.png`}
               {...serviceLogoDimensions}
             />
           </a>
@@ -78,8 +83,9 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('JLCPCB')}
           >
             <Image
+              unoptimized
               alt="JLCPCB logo"
-              src="/static/images/jlcpcb.png"
+              src={`${frontendAssetUrl}/static/images/jlcpcb.png`}
               {...serviceLogoDimensions}
             />
           </a>
@@ -93,8 +99,9 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('OSHPark')}
           >
             <Image
+              unoptimized
               alt="OSHPark logo"
-              src="/static/images/oshpark.png"
+              src={`${frontendAssetUrl}/static/images/oshpark.png`}
               {...serviceLogoDimensions}
             />
           </a>
@@ -107,8 +114,9 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('PCBGoGo')}
           >
             <Image
+              unoptimized
               alt="PCBGoGo logo"
-              src="/static/images/pcbgogo.png"
+              src={`${frontendAssetUrl}/static/images/pcbgogo.png`}
               {...serviceLogoDimensions}
             />
           </a>
@@ -129,6 +137,7 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
             onClick={trackClick('PCBShopper')}
           >
             <Image
+              unoptimized
               alt="PCBSHOPPER logo"
               src="/static/images/pcbshopper.png"
               {...serviceLogoDimensions}

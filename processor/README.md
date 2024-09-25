@@ -51,3 +51,5 @@ remove the bucket. E.g.:
 ```
 ssh deploy@review.staging.kitspace.dev 'aws s3 rm s3://kitspace-staging-review --recursive'
 ```
+
+You also need to purge the Bunny CDN cache via the bunny.net Dashboard. 

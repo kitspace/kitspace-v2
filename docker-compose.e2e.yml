@@ -3,7 +3,9 @@ version: '2.3'
 services:
   frontend:
     environment:
-      - 'KITSPACE_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000/${KITSPACE_PROCESSOR_ASSET_VERSION}'
+      - 'KITSPACE_PROCESSOR_ASSET_URL=http://processor-bucket.kitspace-minio.test:3000/${KITSPACE_PROCESSOR_ASSET_VERSION}'
+      # blank means it will use '/' i.e. the next.js server
+      - 'KITSPACE_FRONTEND_ASSET_URL='
     volumes:
       - /etc/hosts:/etc/hosts:ro
 
