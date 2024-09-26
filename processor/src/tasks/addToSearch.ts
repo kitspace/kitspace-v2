@@ -55,14 +55,18 @@ export default async function addToSearch(
 
   await meiliIndex.addDocuments([document])
 
-  // if there are any lingering docs with an old gitHash then the multi project
-  // was renamed (so they were not over-written with new gitHash above), so we
+  // if there are any lingering docs with an old gitHash then it's possible a multi project
+  // was renamed (and thus the document was not over-written with new gitHash above), so we
   // delete them.
-  const renamedMultis = await meiliIndex.search('', {
-    filter: `(repoId = ${giteaId}) AND (gitHash != ${hash})`,
+  // this has a lot of potential issues, we should handle multi repos as one and get rid of this in the future
+  const staleMultis = await meiliIndex.search('', {
+    filter: `(repoId = ${giteaId}) AND (id != ${searchId}) AND (gitHash != ${hash})`,
   })
-  if (renamedMultis.hits.length > 0) {
-    const docIds = renamedMultis.hits.map(x => x.id)
+  if (staleMultis.hits.length > 0) {
+    const docIds = staleMultis.hits.map(x => x.id)
+    log.debug(
+      `meilisearch: deleting possibly stale documents: ${docIds.join(', ')}`,
+    )
     await meiliIndex.deleteDocuments(docIds)
   }
 }
