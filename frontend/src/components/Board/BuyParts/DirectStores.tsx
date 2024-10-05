@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
 
-import { array, number } from 'prop-types'
 import DigikeyData from '1-click-bom-minimal/lib/data/digikey.json'
 import FarnellData from '1-click-bom-minimal/lib/data/farnell.json'
 import countriesData from '1-click-bom-minimal/lib/data/countries.json'
 
-const DirectStores = ({ items, multiplier }) => {
+const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
   const [countryCode, setCountryCode] = useState('Other')
   const [digikeyParts, setDigikeyParts] = useState([])
   const [farnellParts, setFarnellParts] = useState([])
@@ -132,8 +131,8 @@ const DirectStores = ({ items, multiplier }) => {
   )
 }
 
-DirectStores.propTypes = {
-  items: array.isRequired,
-  multiplier: number.isRequired,
+interface DirectStoresProps {
+  items: Array<any>
+  multiplier: number
 }
 export default DirectStores
