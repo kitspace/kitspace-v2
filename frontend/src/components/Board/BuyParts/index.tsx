@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { array, bool, func, number, string } from 'prop-types'
 import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
 
 import Bom from './Bom'
-import InstallPrompt, { install1ClickBOM } from './InstallPrompt'
 import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
-const BuyParts = ({ projectFullName, lines, parts }) => {
-  const [extensionPresence, setExtensionPresence] = useState('unknown')
+const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
-  const [adding, setAdding] = useState({})
 
   const buyParts = distributor => {
     window.plausible('Buy Parts', {
@@ -23,17 +19,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
         multiplier: mult,
       },
     })
-    window.postMessage(
-      {
-        from: 'page',
-        message: 'quickAddToCart',
-        value: {
-          retailer: distributor,
-          multiplier: mult,
-        },
-      },
-      '*',
-    )
   }
 
   const retailerList = OneClickBom.getRetailers()
@@ -52,10 +37,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
         return (
           <RetailerButton
             key={name}
-            adding={adding[name]}
             buyParts={() => buyParts(name)}
-            extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
-            install1ClickBOM={install1ClickBOM}
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -66,29 +48,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       return null
     })
     .filter(l => l != null)
-
-  useEffect(() => {
-    // extension communication
-    window.addEventListener(
-      'message',
-      event => {
-        if (event.source !== window) {
-          return
-        }
-        if (event.data.from === 'extension') {
-          setExtensionPresence('present')
-          switch (event.data.message) {
-            case 'updateAddingState':
-              setAdding(event.data.value)
-              break
-            default:
-              break
-          }
-        }
-      },
-      false,
-    )
-  }, [])
 
   useEffect(() => {
     const multi = buyMultiplier
@@ -110,6 +69,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
     return OneClickBom.writeTSV(linesMult)
   }
   const hasPurchasableParts = retailerButtons.length !== 0
+
   return (
     <div className={styles.BuyParts} data-cy="buy-parts">
       <Header as="h3" attached="top" textAlign="center">
@@ -118,7 +78,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       </Header>
       {hasPurchasableParts ? (
         <>
-          <InstallPrompt extensionPresence={extensionPresence} />
           <AdjustQuantity
             buyAddPercent={buyAddPercent}
             buyMultiplier={buyMultiplier}
@@ -156,7 +115,7 @@ const AdjustQuantity = ({
   setBuyMultiplier,
   buyAddPercent,
   setBuyAddPercent,
-}) => (
+}: AdjustQuantityProps) => (
   <Segment attached className={styles.AdjustQuantity} textAlign="center">
     Adjust quantity:
     <Icon className={styles.AdjustQuantityIcon} name="delete" />
@@ -207,26 +166,11 @@ const AdjustQuantity = ({
 const RetailerButton = ({
   name,
   buyParts,
-  install1ClickBOM,
-  extensionPresence,
   numberOfLines,
   totalLines,
   numberOfParts,
-  adding,
-}) => {
-  let onClick = buyParts
-  // if the extension is not here fallback to direct submissions
-  if (extensionPresence !== 'present' && typeof document !== 'undefined') {
-    onClick = () => {
-      const form = document.getElementById(`${name}Form`)
-      if (form) {
-        form.submit()
-      } else {
-        install1ClickBOM()
-      }
-    }
-  }
-  const color = numberOfLines === totalLines ? 'green' : 'pink'
+}: RetailerButtonProps) => {
+  const color = 'green'
   return (
     <Button
       className={`${styles.retailerButton} ${styles[color]}`}
@@ -259,13 +203,12 @@ const RetailerButton = ({
         ),
       }}
       labelPosition="right"
-      loading={adding}
-      onClick={onClick}
+      onClick={buyParts}
     />
   )
 }
 
-const StoreIcon = ({ retailer }) => {
+const StoreIcon = ({ retailer }: StoreIconProps) => {
   const imgHref = `/distributor_icons/${retailer.toLowerCase()}.png`
   return (
     /*
@@ -283,35 +226,29 @@ const StoreIcon = ({ retailer }) => {
   )
 }
 
-BuyParts.propTypes = {
-  projectFullName: string.isRequired,
-  lines: array.isRequired,
-  parts: array.isRequired,
+interface BuyPartsProps {
+  projectFullName: string
+  lines: Array<any>
+  parts: Array<any>
 }
 
-AdjustQuantity.propTypes = {
-  buyMultiplier: number.isRequired,
-  setBuyMultiplier: func.isRequired,
-  buyAddPercent: number.isRequired,
-  setBuyAddPercent: func.isRequired,
+interface AdjustQuantityProps {
+  buyMultiplier: number
+  setBuyMultiplier: (v: number) => void
+  buyAddPercent: number
+  setBuyAddPercent: (v: number) => void
 }
 
-RetailerButton.propTypes = {
-  name: string.isRequired,
-  buyParts: func.isRequired,
-  install1ClickBOM: func.isRequired,
-  extensionPresence: string.isRequired,
-  numberOfLines: number.isRequired,
-  totalLines: number.isRequired,
-  numberOfParts: number.isRequired,
-  adding: bool,
-}
-RetailerButton.defaultProps = {
-  adding: false,
+interface RetailerButtonProps {
+  name: string
+  buyParts: () => void
+  numberOfLines: number
+  totalLines: number
+  numberOfParts: number
 }
 
-StoreIcon.propTypes = {
-  retailer: string.isRequired,
+interface StoreIconProps {
+  retailer: string
 }
 
 export default BuyParts

@@ -46,6 +46,16 @@ it('still displays BuyParts if there are no purchasable parts', () => {
   expect(BomRowsCollapsed).toHaveLength(63)
 })
 
+it.skip('downloads `kitspace-bom.csv` on click', async () => {
+  render(
+    <BuyParts
+      lines={fixture.purchasableParts.lines}
+      parts={fixture.purchasableParts.parts}
+      projectFullName="username/name"
+    />,
+  )
+})
+
 afterEach(() => {
   cleanup()
   fetchMock.resetMocks()
