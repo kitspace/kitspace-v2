@@ -11,19 +11,34 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
 
-  const buyParts = distributor => {
+  const downloadBom = (retailer: string) => {
     window.plausible('Buy Parts', {
       props: {
         project: projectFullName,
-        vendor: distributor,
+        vendor: retailer,
         multiplier: mult,
       },
     })
+
+    const data = [
+      ['Reference', 'Quantity', 'Distributor'],
+      [1, 2, 3],
+    ]
+    const csvContent = data.map(e => e.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document
+      .getElementById(`retailer-${retailer}`)
+      .closest('a').parentElement
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${retailer}-kitspace-bom.csv`)
+    link.click()
   }
 
-  const retailerList = OneClickBom.getRetailers()
+  const retailerList: Array<string> = OneClickBom.getRetailers()
   const retailerButtons = retailerList
-    .map(name => {
+    .map((name: string): React.ReactElement | null => {
       const [numberOfLines, numberOfParts] = lines.reduce(
         ([numOfLines, numOfParts], line) => {
           if (line.retailers[name]) {
@@ -37,7 +52,7 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
         return (
           <RetailerButton
             key={name}
-            buyParts={() => buyParts(name)}
+            downloadBom={() => downloadBom(name)}
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -165,7 +180,7 @@ const AdjustQuantity = ({
 
 const RetailerButton = ({
   name,
-  buyParts,
+  downloadBom,
   numberOfLines,
   totalLines,
   numberOfParts,
@@ -173,6 +188,7 @@ const RetailerButton = ({
   const color = 'green'
   return (
     <Button
+      as={'a'}
       className={`${styles.retailerButton} ${styles[color]}`}
       color={color}
       content={
@@ -182,10 +198,10 @@ const RetailerButton = ({
         </div>
       }
       label={{
-        as: 'a',
         className: `${styles.retailerLabel} ${styles[color]} `,
         content: (
           <div
+            id={`retailer-${name}`}
             style={{
               width: '100%',
               display: 'flex',
@@ -203,7 +219,7 @@ const RetailerButton = ({
         ),
       }}
       labelPosition="right"
-      onClick={buyParts}
+      onClick={downloadBom}
     />
   )
 }
@@ -241,7 +257,7 @@ interface AdjustQuantityProps {
 
 interface RetailerButtonProps {
   name: string
-  buyParts: () => void
+  downloadBom: () => void
   numberOfLines: number
   totalLines: number
   numberOfParts: number
