@@ -24,37 +24,22 @@ const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
     [items, multiplier],
   )
 
-  const getLocation = async () => {
-    const usedCountryCodes = Object.keys(countriesData).map(
-      key => countriesData[key],
-    )
-    const freegeoipEndpoint = 'https://freegeoip.kitspace.org'
-
-    try {
-      const res = await fetch(freegeoipEndpoint)
-      const body = await res.json()
-      const { country_code: code } = body
-      if (code === 'GB') {
-        return 'UK'
-      }
-      if (usedCountryCodes.indexOf(code) < 0) {
-        return 'Other'
-      }
-      return code
-    } catch (err) {
-      console.error(err)
-      return 'Other'
-    }
-  }
-
   useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
     if (typeof window !== 'undefined') {
-      getLocation().then(code => setCountryCode(code))
+      getLocation(signal).then(code => {
+        if (code && !signal.aborted) {
+          setCountryCode(code)
+        }
+      })
     }
-
     setDigikeyParts(getParts('Digikey'))
     setFarnellParts(getParts('Farnell'))
     setNewarkParts(getParts('Newark'))
+    return () => {
+      abortController.abort()
+    }
   }, [getParts])
 
   const tildeDelimiter = part => `${part.sku}~${part.quantity}`
@@ -129,6 +114,29 @@ const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
       ]}
     </span>
   )
+}
+
+const getLocation = async (signal: AbortSignal) => {
+  const usedCountryCodes = Object.keys(countriesData).map(key => countriesData[key])
+  const freegeoipEndpoint = 'https://freegeoip.kitspace.org'
+
+  try {
+    const res = await fetch(freegeoipEndpoint, { signal })
+    const body = await res.json()
+    const { country_code: code } = body
+    if (code === 'GB') {
+      return 'UK'
+    }
+    if (usedCountryCodes.indexOf(code) < 0) {
+      return 'Other'
+    }
+    return code
+  } catch (err) {
+    if (!signal.aborted) {
+      console.error(err)
+    }
+    return 'Other'
+  }
 }
 
 interface DirectStoresProps {
