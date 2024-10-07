@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
 import BuyParts from '@components/Board/BuyParts'
@@ -46,7 +46,16 @@ it('still displays BuyParts if there are no purchasable parts', () => {
   expect(BomRowsCollapsed).toHaveLength(63)
 })
 
-it.skip('downloads `kitspace-bom.csv` on click', async () => {
+it('downloads `kitspace-bom.csv` on click', async () => {
+  const mockPlausible = vi.fn()
+  window.plausible = mockPlausible // Mocking plausible method
+
+  // Mock the createObjectURL and link click functionality
+  const mockCreateObjectURL = vi
+    .spyOn(URL, 'createObjectURL')
+    .mockReturnValue('mocked-url')
+  const mockClick = vi.fn()
+
   render(
     <BuyParts
       lines={fixture.purchasableParts.lines}
@@ -54,6 +63,41 @@ it.skip('downloads `kitspace-bom.csv` on click', async () => {
       projectFullName="username/name"
     />,
   )
+
+  const storeButton = screen.getAllByRole('button').at(-1)
+
+  // Mock anchor element and simulate the CSV download behavior
+  const mockLinkElement = {
+    setAttribute: vi.fn(),
+    click: mockClick,
+  }
+  const mockGetElementById = vi.spyOn(document, 'getElementById').mockReturnValue({
+    closest: vi.fn().mockReturnValue({
+      parentElement: mockLinkElement,
+    }),
+  } as unknown as HTMLElement)
+
+  // Simulate button click
+  storeButton.click()
+
+  expect(mockPlausible).toHaveBeenCalledWith('Buy Parts', {
+    props: {
+      project: 'username/name',
+      vendor: expect.any(String),
+      multiplier: expect.any(Number),
+    },
+  })
+  expect(mockCreateObjectURL).toHaveBeenCalledOnce() // Check if the URL was created
+  expect(mockLinkElement.setAttribute).toHaveBeenCalledWith('href', 'mocked-url')
+  expect(mockLinkElement.setAttribute).toHaveBeenCalledWith(
+    'download',
+    expect.stringContaining('kitspace-bom.csv'),
+  )
+  expect(mockClick).toHaveBeenCalledOnce() // Check if the link click was triggered
+
+  // cleanup
+  mockCreateObjectURL.mockRestore()
+  mockGetElementById.mockRestore()
 })
 
 afterEach(() => {
