@@ -20,17 +20,12 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
       },
     })
 
-    const data = [
-      ['Reference', 'Quantity', 'Distributor'],
-      [1, 2, 3],
-    ]
-    const csvContent = data.map(e => e.join(',')).join('\n')
+    const data = rsBom(lines, mult, buyAddPercent)
+    const csvContent = `${data.map(e => e.join(',')).join('\n')}\n`
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
 
-    const link = document
-      .getElementById(`retailer-${retailer}`)
-      .closest('a').parentElement
+    const link = document.getElementById(`retailer-${retailer}`).closest('a')
     link.setAttribute('href', url)
     link.setAttribute('download', `${retailer}-kitspace-bom.csv`)
     link.click()
@@ -240,6 +235,49 @@ const StoreIcon = ({ retailer }: StoreIconProps) => {
       src={imgHref}
     />
   )
+}
+
+type rsRow = [string, string, string, string, string, string]
+
+const rsBom = (lines: Array<any>, multiplier: number, addPercent: number) => {
+  const bom: Array<rsRow> = [
+    [
+      'Product Number',
+      'Brand',
+      'MPN',
+      'Description',
+      'Quantity',
+      'Customer Part Number',
+    ],
+  ]
+
+  for (const line of lines) {
+    if (line.retailers?.RS) {
+      const row: rsRow = [
+        line.retailers.RS,
+        line.partNumbers?.[0]?.manufacturer,
+        line.partNumbers?.[0]?.part,
+        line.description,
+        calculateQuantity(line.quantity, multiplier, addPercent).toString(),
+        line.row,
+      ]
+      bom.push(row)
+    }
+  }
+
+  return bom
+}
+
+export const calculateQuantity = (
+  quantity: number,
+  multiplier: number,
+  addPercent: number,
+) => {
+  let newQuantity = Math.ceil(quantity * multiplier)
+  if (addPercent > 0) {
+    newQuantity += Math.ceil(newQuantity * (addPercent / 100))
+  }
+  return newQuantity
 }
 
 interface BuyPartsProps {
