@@ -1,6 +1,7 @@
 @import '../../breakpoint.scss';
 
 .notSelectable {
+  -webkit-user-select: none;
   user-select: none;
   cursor: default;
 }
