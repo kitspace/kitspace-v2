@@ -19,9 +19,9 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
         multiplier: mult,
       },
     })
-
-    const data = rsBom(lines, mult, buyAddPercent)
-    const csvContent = `${data.map(e => e.join(',')).join('\n')}\n`
+    const csvContent = `${csvBom(lines, mult, buyAddPercent, retailer)
+      .map((e: Array<string>) => e.join(','))
+      .join('\n')}\n`
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
 
@@ -237,9 +237,7 @@ const StoreIcon = ({ retailer }: StoreIconProps) => {
   )
 }
 
-type rsRow = [string, string, string, string, string, string]
-
-const rsBom = (lines: Array<any>, multiplier: number, addPercent: number) => {
+const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
   const bom: Array<rsRow> = [
     [
       'Product Number',
@@ -266,6 +264,39 @@ const rsBom = (lines: Array<any>, multiplier: number, addPercent: number) => {
   }
 
   return bom
+}
+
+const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
+  const bom: Array<farnellRow> = [['Part Number', 'Quantity', 'Line Note']]
+  for (const line of lines) {
+    if (line.retailers?.Farnell) {
+      const row: farnellRow = [
+        line.retailers.Farnell,
+        calculateQuantity(line.quantity, multiplier, addPercent).toString(),
+        line.description,
+      ]
+      bom.push(row)
+    }
+  }
+  return bom
+}
+
+const csvBom = (
+  lines: Array<Line>,
+  multiplier: number,
+  addPercent: number,
+  retailer: string,
+) => {
+  switch (retailer) {
+    case 'RS':
+      return rsBom(lines, multiplier, addPercent)
+    // Newark and Farnell have the same file format.
+    case 'Newark':
+    case 'Farnell':
+      return farnellBom(lines, multiplier, addPercent)
+    default:
+      throw new Error(`Unknown retailer: ${retailer}`)
+  }
 }
 
 export const calculateQuantity = (
@@ -303,6 +334,17 @@ interface RetailerButtonProps {
 
 interface StoreIconProps {
   retailer: string
+}
+
+type rsRow = [string, string, string, string, string, string]
+type farnellRow = [string, string, string]
+
+type Line = {
+  retailers: { RS: string; Farnell: string }
+  partNumbers: Array<{ manufacturer: string; part: string }>
+  description: string
+  quantity: number
+  row: string
 }
 
 export default BuyParts
