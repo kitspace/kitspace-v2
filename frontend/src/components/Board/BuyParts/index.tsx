@@ -1,44 +1,39 @@
 import React, { useEffect, useState } from 'react'
-import { array, bool, func, number, string } from 'prop-types'
 import OneClickBom from '1-click-bom-minimal'
 import { Header, Icon, Segment, Input, Button } from 'semantic-ui-react'
 
 import Bom from './Bom'
-import InstallPrompt, { install1ClickBOM } from './InstallPrompt'
 import DirectStores from './DirectStores'
 import styles from './index.module.scss'
 
-const BuyParts = ({ projectFullName, lines, parts }) => {
-  const [extensionPresence, setExtensionPresence] = useState('unknown')
+const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   const [buyMultiplier, setBuyMultiplier] = useState(1)
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
-  const [adding, setAdding] = useState({})
 
-  const buyParts = distributor => {
+  const downloadBom = (retailer: string) => {
     window.plausible('Buy Parts', {
       props: {
         project: projectFullName,
-        vendor: distributor,
+        vendor: retailer,
         multiplier: mult,
       },
     })
-    window.postMessage(
-      {
-        from: 'page',
-        message: 'quickAddToCart',
-        value: {
-          retailer: distributor,
-          multiplier: mult,
-        },
-      },
-      '*',
-    )
+    const csvContent = `${csvBom(lines, mult, buyAddPercent, retailer)
+      .map((e: Array<string>) => e.join(','))
+      .join('\n')}\n`
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.getElementById(`retailer-${retailer}`).closest('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${retailer}-kitspace-bom.csv`)
+    link.click()
   }
 
-  const retailerList = OneClickBom.getRetailers()
+  const retailerList: Array<string> = OneClickBom.getRetailers()
   const retailerButtons = retailerList
-    .map(name => {
+    .map((name: string): React.ReactElement | null => {
       const [numberOfLines, numberOfParts] = lines.reduce(
         ([numOfLines, numOfParts], line) => {
           if (line.retailers[name]) {
@@ -52,10 +47,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
         return (
           <RetailerButton
             key={name}
-            adding={adding[name]}
-            buyParts={() => buyParts(name)}
-            extensionPresence={name === 'Digikey' ? 'absent' : extensionPresence}
-            install1ClickBOM={install1ClickBOM}
+            downloadBom={() => downloadBom(name)}
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -66,29 +58,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       return null
     })
     .filter(l => l != null)
-
-  useEffect(() => {
-    // extension communication
-    window.addEventListener(
-      'message',
-      event => {
-        if (event.source !== window) {
-          return
-        }
-        if (event.data.from === 'extension') {
-          setExtensionPresence('present')
-          switch (event.data.message) {
-            case 'updateAddingState':
-              setAdding(event.data.value)
-              break
-            default:
-              break
-          }
-        }
-      },
-      false,
-    )
-  }, [])
 
   useEffect(() => {
     const multi = buyMultiplier
@@ -110,6 +79,7 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
     return OneClickBom.writeTSV(linesMult)
   }
   const hasPurchasableParts = retailerButtons.length !== 0
+
   return (
     <div className={styles.BuyParts} data-cy="buy-parts">
       <Header as="h3" attached="top" textAlign="center">
@@ -118,7 +88,6 @@ const BuyParts = ({ projectFullName, lines, parts }) => {
       </Header>
       {hasPurchasableParts ? (
         <>
-          <InstallPrompt extensionPresence={extensionPresence} />
           <AdjustQuantity
             buyAddPercent={buyAddPercent}
             buyMultiplier={buyMultiplier}
@@ -156,7 +125,7 @@ const AdjustQuantity = ({
   setBuyMultiplier,
   buyAddPercent,
   setBuyAddPercent,
-}) => (
+}: AdjustQuantityProps) => (
   <Segment attached className={styles.AdjustQuantity} textAlign="center">
     Adjust quantity:
     <Icon className={styles.AdjustQuantityIcon} name="delete" />
@@ -206,29 +175,15 @@ const AdjustQuantity = ({
 
 const RetailerButton = ({
   name,
-  buyParts,
-  install1ClickBOM,
-  extensionPresence,
+  downloadBom,
   numberOfLines,
   totalLines,
   numberOfParts,
-  adding,
-}) => {
-  let onClick = buyParts
-  // if the extension is not here fallback to direct submissions
-  if (extensionPresence !== 'present' && typeof document !== 'undefined') {
-    onClick = () => {
-      const form = document.getElementById(`${name}Form`)
-      if (form) {
-        form.submit()
-      } else {
-        install1ClickBOM()
-      }
-    }
-  }
-  const color = numberOfLines === totalLines ? 'green' : 'pink'
+}: RetailerButtonProps) => {
+  const color = 'green'
   return (
     <Button
+      as={'a'}
       className={`${styles.retailerButton} ${styles[color]}`}
       color={color}
       content={
@@ -238,10 +193,10 @@ const RetailerButton = ({
         </div>
       }
       label={{
-        as: 'a',
         className: `${styles.retailerLabel} ${styles[color]} `,
         content: (
           <div
+            id={`retailer-${name}`}
             style={{
               width: '100%',
               display: 'flex',
@@ -259,13 +214,12 @@ const RetailerButton = ({
         ),
       }}
       labelPosition="right"
-      loading={adding}
-      onClick={onClick}
+      onClick={downloadBom}
     />
   )
 }
 
-const StoreIcon = ({ retailer }) => {
+const StoreIcon = ({ retailer }: StoreIconProps) => {
   const imgHref = `/distributor_icons/${retailer.toLowerCase()}.png`
   return (
     /*
@@ -283,35 +237,114 @@ const StoreIcon = ({ retailer }) => {
   )
 }
 
-BuyParts.propTypes = {
-  projectFullName: string.isRequired,
-  lines: array.isRequired,
-  parts: array.isRequired,
+const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
+  const bom: Array<rsRow> = [
+    [
+      'Product Number',
+      'Brand',
+      'MPN',
+      'Description',
+      'Quantity',
+      'Customer Part Number',
+    ],
+  ]
+
+  for (const line of lines) {
+    if (line.retailers?.RS) {
+      const row: rsRow = [
+        line.retailers.RS,
+        line.partNumbers?.[0]?.manufacturer,
+        line.partNumbers?.[0]?.part,
+        line.description,
+        calculateQuantity(line.quantity, multiplier, addPercent).toString(),
+        line.row,
+      ]
+      bom.push(row)
+    }
+  }
+
+  return bom
 }
 
-AdjustQuantity.propTypes = {
-  buyMultiplier: number.isRequired,
-  setBuyMultiplier: func.isRequired,
-  buyAddPercent: number.isRequired,
-  setBuyAddPercent: func.isRequired,
+const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
+  const bom: Array<farnellRow> = [['Part Number', 'Quantity', 'Line Note']]
+  for (const line of lines) {
+    if (line.retailers?.Farnell) {
+      const row: farnellRow = [
+        line.retailers.Farnell,
+        calculateQuantity(line.quantity, multiplier, addPercent).toString(),
+        line.description,
+      ]
+      bom.push(row)
+    }
+  }
+  return bom
 }
 
-RetailerButton.propTypes = {
-  name: string.isRequired,
-  buyParts: func.isRequired,
-  install1ClickBOM: func.isRequired,
-  extensionPresence: string.isRequired,
-  numberOfLines: number.isRequired,
-  totalLines: number.isRequired,
-  numberOfParts: number.isRequired,
-  adding: bool,
-}
-RetailerButton.defaultProps = {
-  adding: false,
+const csvBom = (
+  lines: Array<Line>,
+  multiplier: number,
+  addPercent: number,
+  retailer: string,
+) => {
+  switch (retailer) {
+    case 'RS':
+      return rsBom(lines, multiplier, addPercent)
+    // Newark and Farnell have the same file format.
+    case 'Newark':
+    case 'Farnell':
+      return farnellBom(lines, multiplier, addPercent)
+    default:
+      throw new Error(`Unknown retailer: ${retailer}`)
+  }
 }
 
-StoreIcon.propTypes = {
-  retailer: string.isRequired,
+export const calculateQuantity = (
+  quantity: number,
+  multiplier: number,
+  addPercent: number,
+) => {
+  let newQuantity = Math.ceil(quantity * multiplier)
+  if (addPercent > 0) {
+    newQuantity += Math.ceil(newQuantity * (addPercent / 100))
+  }
+  return newQuantity
+}
+
+interface BuyPartsProps {
+  projectFullName: string
+  lines: Array<any>
+  parts: Array<any>
+}
+
+interface AdjustQuantityProps {
+  buyMultiplier: number
+  setBuyMultiplier: (v: number) => void
+  buyAddPercent: number
+  setBuyAddPercent: (v: number) => void
+}
+
+interface RetailerButtonProps {
+  name: string
+  downloadBom: () => void
+  numberOfLines: number
+  totalLines: number
+  numberOfParts: number
+}
+
+interface StoreIconProps {
+  retailer: string
+}
+
+type rsRow = [string, string, string, string, string, string]
+type farnellRow = [string, string, string]
+
+type Line = {
+  retailers: { RS: string; Farnell: string }
+  partNumbers: Array<{ manufacturer: string; part: string }>
+  description: string
+  quantity: number
+  row: string
 }
 
 export default BuyParts
