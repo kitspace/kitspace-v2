@@ -11,7 +11,7 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   const [mult, setMult] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
 
-  const downloadBom = (retailer: string) => {
+  const downloadBom = (retailer: Retailer) => {
     window.plausible('Buy Parts', {
       props: {
         project: projectFullName,
@@ -47,7 +47,7 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
         return (
           <RetailerButton
             key={name}
-            downloadBom={() => downloadBom(name)}
+            downloadBom={() => downloadBom(name as Retailer)}
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -269,9 +269,9 @@ const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
 const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
   const bom: Array<farnellRow> = [['Part Number', 'Quantity', 'Line Note']]
   for (const line of lines) {
-    if (line.retailers?.Farnell) {
+    if (line.retailers.Farnell || line.retailers.Newark) {
       const row: farnellRow = [
-        line.retailers.Farnell,
+        line.retailers.Farnell || line.retailers.Newark,
         calculateQuantity(line.quantity, multiplier, addPercent).toString(),
         line.description,
       ]
@@ -281,11 +281,68 @@ const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) 
   return bom
 }
 
+const mouserBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
+  const bom: Array<mouserRow> = [
+    [
+      'Mouser Part Number',
+      'Mfr Part Number',
+      'Mfr Name',
+      'Description',
+      'Quantity',
+      'Customer Part Number',
+    ],
+  ]
+
+  for (const line of lines) {
+    if (line.retailers?.Mouser) {
+      const row: mouserRow = [
+        line.retailers.Mouser,
+        line.partNumbers?.[0]?.manufacturer,
+        line.partNumbers?.[0]?.part,
+        line.description,
+        calculateQuantity(line.quantity, multiplier, addPercent).toString(),
+        line.row,
+      ]
+      bom.push(row)
+    }
+  }
+
+  return bom
+}
+
+const lcscBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
+  const bom: Array<lcscRow> = [
+    [
+      'Quantity',
+      'LCSC Part Number',
+      'Manufacturer',
+      'Manufacturer Part Number',
+      'Description',
+      'Customer Part Number',
+    ],
+  ]
+
+  for (const line of lines) {
+    const row: lcscRow = [
+      calculateQuantity(line.quantity, multiplier, addPercent).toString(),
+      line.retailers?.LCSC,
+      line.partNumbers?.[0]?.manufacturer,
+      line.partNumbers?.[0]?.part,
+      line.description,
+      line.row,
+    ]
+    bom.push(row)
+  }
+
+  return bom
+}
+type Retailer = 'RS' | 'Newark' | 'Farnell' | 'Mouser' | 'LCSC'
+
 const csvBom = (
   lines: Array<Line>,
   multiplier: number,
   addPercent: number,
-  retailer: string,
+  retailer: Retailer,
 ) => {
   switch (retailer) {
     case 'RS':
@@ -294,6 +351,10 @@ const csvBom = (
     case 'Newark':
     case 'Farnell':
       return farnellBom(lines, multiplier, addPercent)
+    case 'Mouser':
+      return mouserBom(lines, multiplier, addPercent)
+    case 'LCSC':
+      return lcscBom(lines, multiplier, addPercent)
     default:
       throw new Error(`Unknown retailer: ${retailer}`)
   }
@@ -336,11 +397,19 @@ interface StoreIconProps {
   retailer: string
 }
 
-type rsRow = [string, string, string, string, string, string]
 type farnellRow = [string, string, string]
+type rsRow = [string, string, string, string, string, string]
+type lcscRow = [string, string, string, string, string, string]
+type mouserRow = [string, string, string, string, string, string]
 
 type Line = {
-  retailers: { RS: string; Farnell: string }
+  retailers: {
+    RS: string
+    Farnell: string
+    Newark: string
+    LCSC: string
+    Mouser: string
+  }
   partNumbers: Array<{ manufacturer: string; part: string }>
   description: string
   quantity: number

@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react'
 
 import DigikeyData from '1-click-bom-minimal/lib/data/digikey.json'
-import FarnellData from '1-click-bom-minimal/lib/data/farnell.json'
 import countriesData from '1-click-bom-minimal/lib/data/countries.json'
 
 const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
   const [countryCode, setCountryCode] = useState('Other')
   const [digikeyParts, setDigikeyParts] = useState([])
-  const [farnellParts, setFarnellParts] = useState([])
-  const [newarkParts, setNewarkParts] = useState([])
 
   const getParts = useCallback(
     retailer =>
@@ -35,14 +32,10 @@ const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
       })
     }
     setDigikeyParts(getParts('Digikey'))
-    setFarnellParts(getParts('Farnell'))
-    setNewarkParts(getParts('Newark'))
     return () => {
       abortController.abort()
     }
   }, [getParts])
-
-  const tildeDelimiter = part => `${part.sku}~${part.quantity}`
 
   const digikeyPartRenderer = (part, index) => {
     index += 1
@@ -70,50 +63,7 @@ const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
     )
   }
 
-  const farnell = (code, parts) => {
-    const site = FarnellData.sites[FarnellData.lookup[code]]
-    const queryString = parts.map(tildeDelimiter).join('~')
-    return (
-      <form
-        key="FarnellForm"
-        action={`https${site}/jsp/extlink.jsp`}
-        id="FarnellForm"
-        method="GET"
-        target="_blank"
-      >
-        <input name="CMP" type="hidden" value="ref_kitnic" />
-        <input name="action" type="hidden" value="buy" />
-        <input name="product" type="hidden" value={queryString} />
-      </form>
-    )
-  }
-
-  const newark = parts => {
-    const queryString = parts.map(tildeDelimiter).join('~')
-    return (
-      <form
-        key="NewarkForm"
-        action="https://www.newark.com/jsp/extlink.jsp"
-        id="NewarkForm"
-        method="GET"
-        target="_blank"
-      >
-        <input name="CMP" type="hidden" value="ref_kitnic" />
-        <input name="action" type="hidden" value="buy" />
-        <input name="product" type="hidden" value={queryString} />
-      </form>
-    )
-  }
-
-  return (
-    <span>
-      {[
-        digikey(countryCode, digikeyParts),
-        farnell(countryCode, farnellParts),
-        newark(newarkParts),
-      ]}
-    </span>
-  )
+  return <span>{[digikey(countryCode, digikeyParts)]}</span>
 }
 
 const getLocation = async (signal: AbortSignal) => {
