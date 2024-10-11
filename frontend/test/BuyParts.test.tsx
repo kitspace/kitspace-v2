@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, expect, it } from 'vitest'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
-import BuyParts from '@components/Board/BuyParts'
+import BuyParts, { calculateQuantity } from '@components/Board/BuyParts'
 import fixture from './fixtures/BuyParts.json'
 
 beforeEach(() => {
@@ -44,6 +44,79 @@ it('still displays BuyParts if there are no purchasable parts', () => {
   screen.getAllByRole('table')[1].click()
   const BomRowsCollapsed = screen.getAllByRole('row')
   expect(BomRowsCollapsed).toHaveLength(63)
+})
+
+it('tracks bom download', async () => {
+  const mockPlausible = vi.fn()
+  window.plausible = mockPlausible
+
+  render(
+    <BuyParts
+      lines={fixture.purchasableParts.lines}
+      parts={fixture.purchasableParts.parts}
+      projectFullName="username/name"
+    />,
+  )
+  const storeButton = screen.getAllByRole('button').at(-1)
+  storeButton.click()
+
+  expect(mockPlausible).toHaveBeenCalledWith('Buy Parts', {
+    props: {
+      project: 'username/name',
+      vendor: expect.any(String),
+      multiplier: expect.any(Number),
+    },
+  })
+})
+
+it('downloads `kitspace-bom.csv` on click', async () => {
+  // Mock the createObjectURL and link click functionality
+  const mockCreateObjectURL = vi
+    .spyOn(URL, 'createObjectURL')
+    .mockReturnValue('mocked-url')
+  const mockClick = vi.fn()
+
+  render(
+    <BuyParts
+      lines={fixture.purchasableParts.lines}
+      parts={fixture.purchasableParts.parts}
+      projectFullName="username/name"
+    />,
+  )
+
+  // Mock anchor element and simulate the CSV download behavior
+  const mockLinkElement = {
+    setAttribute: vi.fn(),
+    click: mockClick,
+  }
+  const mockElementWithId = document.createElement('div')
+  mockElementWithId.closest = vi.fn().mockReturnValue(mockLinkElement)
+
+  const mockGetElementById = vi
+    .spyOn(document, 'getElementById')
+    .mockReturnValue(mockElementWithId)
+
+  const storeButton = screen.getAllByRole('button').at(-1)
+  storeButton.click()
+
+  expect(mockCreateObjectURL).toHaveBeenCalledOnce()
+  expect(mockLinkElement.setAttribute).toHaveBeenCalledWith('href', 'mocked-url')
+  expect(mockLinkElement.setAttribute).toHaveBeenCalledWith(
+    'download',
+    expect.stringContaining('kitspace-bom.csv'),
+  )
+  expect(mockClick).toHaveBeenCalledOnce()
+
+  // cleanup
+  mockCreateObjectURL.mockRestore()
+  mockGetElementById.mockRestore()
+})
+
+it('calculates the order quantity', () => {
+  expect(calculateQuantity(1, 1, 0)).toBe(1)
+  expect(calculateQuantity(10, 2, 0)).toBe(20)
+  expect(calculateQuantity(10, 2, 10)).toBe(22)
+  expect(calculateQuantity(1, 1, 10)).toBe(2)
 })
 
 afterEach(() => {
