@@ -43,13 +43,13 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }: ExpandBomProps) => {
     ) : null
 
   return (
-    <div style={{ paddingLeft: 1, paddingRight: 1 }}>
+    <div className={`${styles.expandWrapper}`}>
       <Table
         celled
         singleLine
         unstackable
         attached="bottom"
-        className={styles.expandBomTable}
+        className={styles.expandTable}
         style={{
           borderTop: 0,
           cursor: 'pointer',
@@ -58,7 +58,7 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }: ExpandBomProps) => {
       >
         <tbody>
           {summary}
-          <tr style={{ borderTop: 0 }}>
+          <tr className={`${styles.expandTableRow}`}>
             <Table.Cell key="collapse cell" textAlign="center">
               <Icon name={collapsed ? 'eye' : 'arrow up'} />
               {collapsed ? 'View all' : 'Hide'}

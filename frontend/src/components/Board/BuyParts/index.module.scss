@@ -4,6 +4,7 @@
   -webkit-user-select: none;
   user-select: none;
   cursor: default;
+  margin-left: 5px;
 }
 
 .BuyParts {
@@ -50,6 +51,12 @@
 
   button.retailerButton {
     min-width: 110px;
+  }
+
+  .retailerLabelContent {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
   }
 
   .retailerButton.pink {

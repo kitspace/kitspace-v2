@@ -8,27 +8,24 @@ import styles from './index.module.scss'
 
 const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   const [buyMultiplier, setBuyMultiplier] = useState(1)
-  const [mult, setMult] = useState(1)
+  const [multiplier, setMultiplier] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
 
-  const downloadBom = (retailer: Retailer) => {
+  const getBom = (retailer: Retailer) => {
     window.plausible('Buy Parts', {
       props: {
         project: projectFullName,
         vendor: retailer,
-        multiplier: mult,
+        multiplier: multiplier,
       },
     })
-    const csvContent = `${csvBom(lines, mult, buyAddPercent, retailer)
-      .map((e: Array<string>) => e.join(','))
-      .join('\n')}\n`
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
 
-    const link = document.getElementById(`retailer-${retailer}`).closest('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', `${retailer}-kitspace-bom.csv`)
-    link.click()
+    if (retailer === 'Digikey') {
+      redirectToStore(retailer)
+      return
+    }
+
+    downloadBomCSV({ lines, multiplier, buyAddPercent, retailer })
   }
 
   const retailerList: Array<string> = OneClickBom.getRetailers()
@@ -37,17 +34,21 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
       const [numberOfLines, numberOfParts] = lines.reduce(
         ([numOfLines, numOfParts], line) => {
           if (line.retailers[name]) {
-            return [numOfLines + 1, numOfParts + Math.ceil(mult * line.quantity)]
+            return [
+              numOfLines + 1,
+              numOfParts + Math.ceil(multiplier * line.quantity),
+            ]
           }
           return [numOfLines, numOfParts]
         },
         [0, 0],
       )
+
       if (numberOfLines > 0) {
         return (
           <RetailerButton
             key={name}
-            downloadBom={() => downloadBom(name as Retailer)}
+            downloadBom={() => getBom(name as Retailer)}
             name={name}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
@@ -62,19 +63,19 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   useEffect(() => {
     const multi = buyMultiplier
     if (Number.isNaN(multi) || multi < 1) {
-      setMult(1)
+      setMultiplier(1)
     }
     const percent = buyAddPercent
     if (Number.isNaN(percent) || percent < 1) {
-      setMult(0)
+      setMultiplier(0)
     }
-    setMult(multi + multi * (percent / 100))
+    setMultiplier(multi + multi * (percent / 100))
   }, [buyMultiplier, buyAddPercent])
 
   const linesToTsv = () => {
     const linesMult = lines.map(line => ({
       ...line,
-      quantity: Math.ceil(line.quantity * mult),
+      quantity: Math.ceil(line.quantity * multiplier),
     }))
     return OneClickBom.writeTSV(linesMult)
   }
@@ -97,7 +98,7 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
           <Segment attached className={styles.buttonSegment}>
             {retailerButtons}
           </Segment>
-          <DirectStores items={lines} multiplier={mult} />
+          <DirectStores items={lines} multiplier={multiplier} />
         </>
       ) : (
         <NoPurchasableParts />
@@ -167,9 +168,7 @@ const AdjustQuantity = ({
         setBuyAddPercent(v)
       }}
     />
-    <span className={styles.notSelectable} style={{ marginLeft: 5 }}>
-      %
-    </span>
+    <span className={styles.notSelectable}>%</span>
   </Segment>
 )
 
@@ -195,14 +194,7 @@ const RetailerButton = ({
       label={{
         className: `${styles.retailerLabel} ${styles[color]} `,
         content: (
-          <div
-            id={`retailer-${name}`}
-            style={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
+          <div className={`${styles.retailerLabelContent}`} id={`retailer-${name}`}>
             <div>
               {numberOfLines}/{totalLines} lines ({numberOfParts} parts)
             </div>
@@ -336,7 +328,7 @@ const lcscBom = (lines: Array<Line>, multiplier: number, addPercent: number) => 
 
   return bom
 }
-type Retailer = 'RS' | 'Newark' | 'Farnell' | 'Mouser' | 'LCSC'
+type Retailer = 'RS' | 'Newark' | 'Farnell' | 'Mouser' | 'LCSC' | 'Digikey'
 
 const csvBom = (
   lines: Array<Line>,
@@ -370,6 +362,31 @@ export const calculateQuantity = (
     newQuantity += Math.ceil(newQuantity * (addPercent / 100))
   }
   return newQuantity
+}
+
+function downloadBomCSV({ lines, multiplier, buyAddPercent, retailer }: Order) {
+  const csvContent = `${csvBom(lines, multiplier, buyAddPercent, retailer)
+    .map((e: Array<string>) => e.join(','))
+    .join('\n')}\n`
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+
+  const link = document.getElementById(`retailer-${retailer}`).closest('a')
+  link.setAttribute('href', url)
+  link.setAttribute('download', `${retailer}-kitspace-bom.csv`)
+  link.click()
+}
+
+function redirectToStore(retailer: Retailer) {
+  const form = document.getElementById(`${retailer}Form`) as HTMLFormElement
+  form.submit()
+}
+
+interface Order {
+  lines: Array<Line>
+  multiplier: number
+  buyAddPercent: number
+  retailer: Retailer
 }
 
 interface BuyPartsProps {
