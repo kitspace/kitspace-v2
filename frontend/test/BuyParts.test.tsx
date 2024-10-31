@@ -21,7 +21,7 @@ it('displays BuyParts', () => {
     />,
   )
   const StoresButtons = screen.getAllByRole('button')
-  expect(StoresButtons).toHaveLength(5)
+  expect(StoresButtons).toHaveLength(6)
 })
 
 it('still displays BuyParts if there are no purchasable parts', () => {
@@ -47,6 +47,7 @@ it('still displays BuyParts if there are no purchasable parts', () => {
 })
 
 it('tracks bom download', async () => {
+  vi.spyOn(URL, 'createObjectURL').mockReturnValue('mocked-url')
   const mockPlausible = vi.fn()
   window.plausible = mockPlausible
 
@@ -110,6 +111,30 @@ it('downloads `kitspace-bom.csv` on click', async () => {
   // cleanup
   mockCreateObjectURL.mockRestore()
   mockGetElementById.mockRestore()
+})
+
+it("redirects to Digikey's website on click", async () => {
+  const mockSubmit = vi.fn()
+  HTMLFormElement.prototype.submit = mockSubmit
+
+  render(
+    <BuyParts
+      lines={fixture.purchasableParts.lines}
+      parts={fixture.purchasableParts.parts}
+      projectFullName="username/name"
+    />,
+  )
+  const storeButtons = screen
+    .getAllByRole('button')
+    .map(button =>
+      button.nextElementSibling.firstElementChild.id.replace('retailer-', ''),
+    )
+  const digikeyButton = screen
+    .getAllByRole('button')
+    .at(storeButtons.indexOf('Digikey'))
+
+  digikeyButton.click()
+  expect(mockSubmit).toHaveBeenCalled()
 })
 
 it('calculates the order quantity', () => {
