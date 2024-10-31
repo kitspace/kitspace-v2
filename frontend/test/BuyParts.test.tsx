@@ -47,7 +47,9 @@ it('still displays BuyParts if there are no purchasable parts', () => {
 })
 
 it('tracks bom download', async () => {
-  vi.spyOn(URL, 'createObjectURL').mockReturnValue('mocked-url')
+  const mockCreateObjectURL = vi
+    .spyOn(URL, 'createObjectURL')
+    .mockReturnValue('mocked-url')
   const mockPlausible = vi.fn()
   window.plausible = mockPlausible
 
@@ -68,14 +70,16 @@ it('tracks bom download', async () => {
       multiplier: expect.any(Number),
     },
   })
+
+  mockCreateObjectURL.mockRestore()
+  mockPlausible.mockRestore()
 })
 
-it('downloads `kitspace-bom.csv` on click', async () => {
+it('downloads `*-kitspace-bom.csv` on click', async () => {
   // Mock the createObjectURL and link click functionality
   const mockCreateObjectURL = vi
     .spyOn(URL, 'createObjectURL')
     .mockReturnValue('mocked-url')
-  const mockClick = vi.fn()
 
   render(
     <BuyParts
@@ -88,7 +92,6 @@ it('downloads `kitspace-bom.csv` on click', async () => {
   // Mock anchor element and simulate the CSV download behavior
   const mockLinkElement = {
     setAttribute: vi.fn(),
-    click: mockClick,
   }
   const mockElementWithId = document.createElement('div')
   mockElementWithId.closest = vi.fn().mockReturnValue(mockLinkElement)
@@ -106,7 +109,6 @@ it('downloads `kitspace-bom.csv` on click', async () => {
     'download',
     expect.stringContaining('kitspace-bom.csv'),
   )
-  expect(mockClick).toHaveBeenCalledOnce()
 
   // cleanup
   mockCreateObjectURL.mockRestore()
@@ -132,6 +134,7 @@ it("redirects to Digikey's website on click", async () => {
   const digikeyButton = screen
     .getAllByRole('button')
     .at(storeButtons.indexOf('Digikey'))
+    .closest('a')
 
   digikeyButton.click()
   expect(mockSubmit).toHaveBeenCalled()
