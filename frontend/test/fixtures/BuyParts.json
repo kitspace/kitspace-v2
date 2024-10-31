@@ -3603,249 +3603,236 @@
     ]
   },
   "purchasableParts": {
-    "projectFullName": "tester/CH330_Hardware",
+    "projectFullName": "tester/push-on-hold-off",
     "lines": [
       {
-        "reference": "C1,C2",
-        "quantity": 2,
-        "description": "0.1ÂµF 0603 50V",
+        "reference": "C1",
+        "quantity": 1,
+        "description": "1uF 0603 X5R",
         "partNumbers": [
-          {
-            "part": "06035G104ZAT2A",
-            "manufacturer": "AVX"
-          }
+          { "part": "GRM188R71E224KA88D", "manufacturer": "Murata" },
+          { "part": "C0603C105K8PACTU", "manufacturer": "KEMET" },
+          { "part": "CC0603KRX5R6BB105", "manufacturer": "Yageo" }
         ],
         "retailers": {
-          "Digikey": "311-1344-1-ND",
-          "Mouser": "603CC603KRX7R9BB104",
-          "RS": "1358345",
-          "Newark": "96M1293",
-          "Farnell": "1288255",
-          "LCSC": "",
+          "Digikey": "399-C0603C105K8PAC7867DKR-ND",
+          "Mouser": "603CC603KRX5R6BB105",
+          "RS": "4612708",
+          "Newark": "91R0949",
+          "Farnell": "9402080",
+          "LCSC": "C77051",
           "JLC Assembly": ""
         },
         "row": 1,
         "fitted": true
       },
       {
-        "reference": "D1,D2",
-        "quantity": 2,
-        "description": "LED 0603",
+        "reference": "C2",
+        "quantity": 1,
+        "description": "10uF 0603 X5R",
         "partNumbers": [
-          {
-            "part": "19-217/BHC-ZL1M2RY/3T",
-            "manufacturer": "Everlight"
-          }
+          { "part": "C1608X5R1A106M080AC", "manufacturer": "TDK" },
+          { "part": "06036D106MAT2A", "manufacturer": "AVX" },
+          { "part": "06036D106MAT2A", "manufacturer": "TDK" },
+          { "part": "C1608X5R0J106K080AB", "manufacturer": "TDK" },
+          { "part": "C1608X5R1A106K080AC", "manufacturer": "" }
         ],
         "retailers": {
-          "Digikey": "160-1183-1-ND",
-          "Mouser": "859LTSTC190GKT",
-          "RS": "6910451",
-          "Newark": "68Y1165",
-          "Farnell": "1652108",
-          "LCSC": "",
+          "Digikey": "478-5318-6-ND",
+          "Mouser": "810C1608X5R1A106K",
+          "RS": "7882887P",
+          "Newark": "04X3239",
+          "Farnell": "2211164",
+          "LCSC": "C3877917",
           "JLC Assembly": ""
         },
         "row": 2,
         "fitted": true
       },
       {
-        "reference": "J1",
+        "reference": "C4",
         "quantity": 1,
-        "description": "Micro USB",
-        "partNumbers": [],
+        "description": "0.1uF 0603 X5R",
+        "partNumbers": [
+          { "part": "C0603C104K5RACTU", "manufacturer": "Kemet" },
+          { "part": "GRM033R60J104KE19D", "manufacturer": "Murata" },
+          { "part": "C0603C104K5RACTU", "manufacturer": "KEMET" }
+        ],
         "retailers": {
-          "Digikey": "A97800CT-ND",
-          "Mouser": "57119815681",
-          "RS": "6694645",
-          "Newark": "73M8666",
-          "Farnell": "2751670",
-          "LCSC": "",
+          "Digikey": "490-3167-6-ND",
+          "Mouser": "81GRM033R60J104KE19",
+          "RS": "8015347",
+          "Newark": "72J5992",
+          "Farnell": "1288255",
+          "LCSC": "C127833",
           "JLC Assembly": ""
         },
         "row": 3,
         "fitted": true
       },
       {
-        "reference": "J2",
+        "reference": "D1",
         "quantity": 1,
-        "description": "PinHeader 4 pin",
-        "partNumbers": [],
+        "description": "Diode MiniMELF",
+        "partNumbers": [
+          { "part": "LL4148", "manufacturer": "onsemi" },
+          { "part": "FDLL4148", "manufacturer": "Diotec" },
+          { "part": "LL4148", "manufacturer": "onsemi" },
+          { "part": "LL4148", "manufacturer": "" }
+        ],
         "retailers": {
-          "Digikey": "WM2746-ND",
-          "Mouser": "53822292041",
-          "RS": "6701333",
-          "Newark": "26H2000",
-          "Farnell": "1360132",
-          "LCSC": "",
+          "Digikey": "LL4148FSCT-ND",
+          "Mouser": "512LL4148",
+          "RS": "6708823",
+          "Newark": "14M6003",
+          "Farnell": "2356382",
+          "LCSC": "C3011166",
           "JLC Assembly": ""
         },
         "row": 4,
         "fitted": true
       },
       {
-        "reference": "R1,R2",
+        "reference": "LED1,LED2",
         "quantity": 2,
-        "description": "220R 0603 0.25W",
-        "partNumbers": [],
+        "description": "0603 20mA yellow",
+        "partNumbers": [
+          { "part": "SML-D12Y8WT86", "manufacturer": "Rohm" },
+          { "part": "598-8040-107F", "manufacturer": "Dialight" },
+          { "part": "598-8150-107F", "manufacturer": "Dialight" },
+          { "part": "SML-D12Y8WT86", "manufacturer": "ROHM" }
+        ],
         "retailers": {
-          "Digikey": "P220BYDKR-ND",
-          "Mouser": "",
-          "RS": "8626833",
-          "Newark": "85Y6302",
-          "Farnell": "2335874",
-          "LCSC": "",
+          "Digikey": "350-2032-6-ND",
+          "Mouser": "755SMLD12Y8WT86",
+          "RS": "7008039P",
+          "Newark": "75R0585",
+          "Farnell": "1867104",
+          "LCSC": "C2840179",
           "JLC Assembly": ""
         },
         "row": 5,
         "fitted": true
       },
       {
-        "reference": "U1",
+        "reference": "Q1",
         "quantity": 1,
-        "description": "CH330 SOIC-8",
+        "description": "30V Vds, 3A Id, Dual HEXFET MOSFET",
         "partNumbers": [
-          {
-            "part": "https://lcsc.com/product-detail/USB_CH330N_C108996.html",
-            "manufacturer": ""
-          }
+          { "part": "IRF7309PBF", "manufacturer": "International Rectifier" },
+          { "part": "IRF7309TRPBF", "manufacturer": "Infineon" }
         ],
         "retailers": {
-          "Digikey": "",
-          "Mouser": "",
-          "RS": "",
-          "Newark": "",
-          "Farnell": "",
-          "LCSC": "",
+          "Digikey": "IRF7309PBFTR-ND",
+          "Mouser": "942IRF7309TRPBF",
+          "RS": "8268866",
+          "Newark": "19K8239",
+          "Farnell": "2468006",
+          "LCSC": "C3289674",
           "JLC Assembly": ""
         },
         "row": 6,
         "fitted": true
+      },
+      {
+        "reference": "R1",
+        "quantity": 1,
+        "description": "10k 0603",
+        "partNumbers": [
+          { "part": "CRCW060310K0JNEA", "manufacturer": "Vishay" },
+          { "part": "CRCW060310K0JNEAIF", "manufacturer": "Vishay" }
+        ],
+        "retailers": {
+          "Digikey": "541-10KAQCT-ND",
+          "Mouser": "71CRCW060310K0JNEAI",
+          "RS": "8206928",
+          "Newark": "52K8066",
+          "Farnell": "1739174",
+          "LCSC": "C169103",
+          "JLC Assembly": ""
+        },
+        "row": 7,
+        "fitted": true
+      },
+      {
+        "reference": "R2,R4",
+        "quantity": 2,
+        "description": "100k  0603",
+        "partNumbers": [
+          { "part": "CRCW0603100KJNEA", "manufacturer": "Vishay" },
+          { "part": "CRCW0603100KJNEAIF", "manufacturer": "Vishay" }
+        ],
+        "retailers": {
+          "Digikey": "541-100KAQDKR-ND",
+          "Mouser": "71CRCW0603100KJNAIF",
+          "RS": "8206916P",
+          "Newark": "59M6763",
+          "Farnell": "1692517",
+          "LCSC": "C844723",
+          "JLC Assembly": ""
+        },
+        "row": 8,
+        "fitted": true
+      },
+      {
+        "reference": "R3",
+        "quantity": 1,
+        "description": "300k  0603",
+        "partNumbers": [
+          { "part": "CRCW0603300KFKEA", "manufacturer": "Vishay" },
+          { "part": "RC0603JR-07300KL", "manufacturer": "Yageo" }
+        ],
+        "retailers": {
+          "Digikey": "311-300KGRCT-ND",
+          "Mouser": "603RC0603JR07300KL",
+          "RS": "6790178",
+          "Newark": "52K8409",
+          "Farnell": "3495948",
+          "LCSC": "C844772",
+          "JLC Assembly": ""
+        },
+        "row": 9,
+        "fitted": true
+      },
+      {
+        "reference": "R5, R6",
+        "quantity": 2,
+        "description": "1k 0603",
+        "partNumbers": [{ "part": "RC0805FR-071KL", "manufacturer": "Yageo" }],
+        "retailers": {
+          "Digikey": "311-1.00KCRDKR-ND",
+          "Mouser": "603RC0805FR071KL",
+          "RS": "6183583",
+          "Newark": "82K7536",
+          "Farnell": "9237496",
+          "LCSC": "C95781",
+          "JLC Assembly": ""
+        },
+        "row": 10,
+        "fitted": true
+      },
+      {
+        "reference": "SW1",
+        "quantity": 1,
+        "description": "Tactile switch",
+        "partNumbers": [
+          { "part": "FSM2JSMA", "manufacturer": "TE Connectivity" },
+          { "part": "2-1437565-7", "manufacturer": "" }
+        ],
+        "retailers": {
+          "Digikey": "450-1130-ND",
+          "Mouser": "506FSM2JSMA",
+          "RS": "4791491P",
+          "Newark": "92F2864",
+          "Farnell": "3801287",
+          "LCSC": "C7193797",
+          "JLC Assembly": ""
+        },
+        "row": 11,
+        "fitted": true
       }
     ],
-    "parts": [
-      {
-        "mpn": {
-          "manufacturer": "KYOCERA AVX",
-          "part": "06035G104ZAT2A"
-        },
-        "datasheet": "http://datasheet.octopart.com/06035G104ZAT2A-AVX-datasheet-8445862.pdf",
-        "description": "Capacitor; Ceramic; Cap 0.1uF; Tol -20; +80%; Vol-Rtg 50 VDC; SMT; 0603; Y5V; Tape&Reel",
-        "image": {
-          "url": "https://sigma.octopart.com/145596980/image/AVX-06035G104ZAT2A.jpg",
-          "credit_string": "RS Components",
-          "credit_url": "http://www.rs-components.com"
-        },
-        "specs": [
-          {
-            "key": "capacitance",
-            "name": "Capacitance",
-            "value": "100 nF"
-          },
-          {
-            "key": "case_package",
-            "name": "Case/Package",
-            "value": "0603"
-          },
-          {
-            "key": "dielectric_characteristic",
-            "name": "Dielectric Characteristic",
-            "value": "Y5V"
-          },
-          {
-            "key": "capacitance_tolerance",
-            "name": "Capacitance Tolerance",
-            "value": "+80/-20%"
-          },
-          {
-            "key": "voltage_rating_dc",
-            "name": "Voltage Rating (DC)",
-            "value": "50.0 V"
-          },
-          {
-            "key": "pin_count",
-            "name": "Number of Pins",
-            "value": "2"
-          },
-          {
-            "key": "case_package_si",
-            "name": "Case/Package (SI)",
-            "value": "1608"
-          },
-          {
-            "key": "lead_free_status",
-            "name": "Lead-Free Status",
-            "value": "Lead Free"
-          },
-          {
-            "key": "packaging",
-            "name": "Packaging",
-            "value": "Cut Tape (CT)"
-          },
-          {
-            "key": "size_length",
-            "name": "Size-Length",
-            "value": "1.60 mm"
-          },
-          {
-            "key": "size_height",
-            "name": "Size-Height",
-            "value": "860 µm"
-          },
-          {
-            "key": "size_width",
-            "name": "Size-Width",
-            "value": "810 µm"
-          },
-          {
-            "key": "rohs_status",
-            "name": "RoHS",
-            "value": "Compliant"
-          },
-          {
-            "key": "reach_svhc_compliance",
-            "name": "REACH SVHC Compliance",
-            "value": "No SVHC"
-          },
-          {
-            "key": "operating_temperature",
-            "name": "Operating Temperature",
-            "value": "85.0 °C (max)"
-          },
-          {
-            "key": "mounting_style",
-            "name": "Mounting Style",
-            "value": "Surface Mount"
-          }
-        ]
-      },
-      {
-        "mpn": {
-          "manufacturer": "Everlight",
-          "part": "19-217/BHC-ZL1M2RY/3T"
-        },
-        "datasheet": "http://datasheet.octopart.com/19-217-BHC-ZL1M2RY-3T-Everlight-datasheet-65806754.pdf",
-        "description": "LED SMD Top View Uni-Color Blue 468nm 0603 Pkg Ã¸7\"T/R 3k",
-        "image": null,
-        "specs": [
-          {
-            "key": "color",
-            "name": "Color",
-            "value": "Blue"
-          },
-          {
-            "key": "lead_free_status",
-            "name": "Lead-Free Status",
-            "value": "Lead Free"
-          },
-          {
-            "key": "rohs_status",
-            "name": "RoHS",
-            "value": "Compliant"
-          }
-        ]
-      },
-      null
-    ]
+    "parts": [],
+    "tsv": "References\tQty\tDescription\tManufacturer\tMPN\tManufacturer\tMPN\tManufacturer\tMPN\tManufacturer\tMPN\tManufacturer\tMPN\tDigikey\tMouser\tRS\tNewark\tFarnell\tLCSC\tJLC Assembly\nC1\t1\t1uF 0603 X5R\tMurata\tGRM188R71E224KA88D\tKEMET\tC0603C105K8PACTU\tYageo\tCC0603KRX5R6BB105\t\t\t\t\t399-C0603C105K8PAC7867DKR-ND\t603CC603KRX5R6BB105\t4612708\t91R0949\t9402080\tC77051\t\nC2\t1\t10uF 0603 X5R\tTDK\tC1608X5R1A106M080AC\tAVX\t06036D106MAT2A\tTDK\t06036D106MAT2A\tTDK\tC1608X5R0J106K080AB\t\tC1608X5R1A106K080AC\t478-5318-6-ND\t810C1608X5R1A106K\t7882887P\t04X3239\t2211164\tC3877917\t\nC4\t1\t0.1uF 0603 X5R\tKemet\tC0603C104K5RACTU\tMurata\tGRM033R60J104KE19D\tKEMET\tC0603C104K5RACTU\t\t\t\t\t490-3167-6-ND\t81GRM033R60J104KE19\t8015347\t72J5992\t1288255\tC127833\t\nD1\t1\tDiode MiniMELF\tonsemi\tLL4148\tDiotec\tFDLL4148\tonsemi\tLL4148\t\tLL4148\t\t\tLL4148FSCT-ND\t512LL4148\t6708823\t14M6003\t2356382\tC3011166\t\nLED1,LED2\t2\t0603 20mA yellow\tRohm\tSML-D12Y8WT86\tDialight\t598-8040-107F\tDialight\t598-8150-107F\tROHM\tSML-D12Y8WT86\t\t\t350-2032-6-ND\t755SMLD12Y8WT86\t7008039P\t75R0585\t1867104\tC2840179\t\nQ1\t1\t30V Vds, 3A Id, Dual HEXFET MOSFET\tInternational Rectifier\tIRF7309PBF\tInfineon\tIRF7309TRPBF\t\t\t\t\t\t\tIRF7309PBFTR-ND\t942IRF7309TRPBF\t8268866\t19K8239\t2468006\tC3289674\t\nR1\t1\t10k 0603\tVishay\tCRCW060310K0JNEA\tVishay\tCRCW060310K0JNEAIF\t\t\t\t\t\t\t541-10KAQCT-ND\t71CRCW060310K0JNEAI\t8206928\t52K8066\t1739174\tC169103\t\nR2,R4\t2\t100k  0603\tVishay\tCRCW0603100KJNEA\tVishay\tCRCW0603100KJNEAIF\t\t\t\t\t\t\t541-100KAQDKR-ND\t71CRCW0603100KJNAIF\t8206916P\t59M6763\t1692517\tC844723\t\nR3\t1\t300k  0603\tVishay\tCRCW0603300KFKEA\tYageo\tRC0603JR-07300KL\t\t\t\t\t\t\t311-300KGRCT-ND\t603RC0603JR07300KL\t6790178\t52K8409\t3495948\tC844772\t\nR5, R6\t2\t1k 0603\tYageo\tRC0805FR-071KL\t\t\t\t\t\t\t\t\t311-1.00KCRDKR-ND\t603RC0805FR071KL\t6183583\t82K7536\t9237496\tC95781\t\nSW1\t1\tTactile switch\tTE Connectivity\tFSM2JSMA\t\t2-1437565-7\t\t\t\t\t\t\t450-1130-ND\t506FSM2JSMA\t4791491P\t92F2864\t3801287\tC7193797\t\n"
   }
 }
