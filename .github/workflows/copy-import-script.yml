@@ -27,7 +27,7 @@ jobs:
         run: |
           echo -e '${{ secrets.STAGING_SSH_PRIVATE_KEY }}' > key-file
           chmod 600 key-file
-          rsync --archive --compress --update --delete --recursive -e 'ssh -i key-file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' target/ 'deploy@${{ github.ref_name }}.staging.kitspace.dev:target'
+          rsync --compress -e 'ssh -i key-file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' target/importBoardsTxt 'deploy@${{ github.ref_name }}.staging.kitspace.dev:'
 
       - name: Make the script executable on host
         uses: appleboy/ssh-action@master
@@ -36,4 +36,4 @@ jobs:
           username: deploy
           key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           script: |
-            cd /home/deploy && mv target/importBoardsTxt importBoardsTxt && chmod +x importBoardsTxt && rm -rf target
+            chmod +x importBoardsTxt
