@@ -205,6 +205,11 @@ module.exports = async phase => {
           destination: 'https://github.com/kitspace/bom-builder',
           permanent: false,
         },
+        {
+          source: '/1-click-bom',
+          destination: 'https://github.com/kitspace/1-click-bom',
+          permanent: false,
+        },
       ]
     },
     async rewrites() {
