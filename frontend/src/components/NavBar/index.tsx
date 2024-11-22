@@ -2,6 +2,12 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Button, Icon, Menu, Popup } from 'semantic-ui-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faBluesky,
+  faDiscord,
+  faMastodon,
+} from '@fortawesome/free-brands-svg-icons'
 
 import NavSearchInput from './NavSearchInput'
 import styles from './index.module.scss'
@@ -116,27 +122,41 @@ const SiteMenuItems = () => {
 
 const SocialMenuItems = () => (
   <>
-    <Menu.Item as="a" href="https://riot.im/app/#/room/#kitspace:matrix.org">
+    <Menu.Item as="a" href="https://app.element.io/#/room/#kitspace:matrix.org">
+      Element/Matrix Chat
       <Icon name="chat" />
-      Chat
+    </Menu.Item>
+    <Menu.Item as="a" href="http://discord.gg/nFjDCZqghC">
+      Discord Chat
+      <Icon>
+        <FontAwesomeIcon icon={faDiscord} />
+      </Icon>
     </Menu.Item>
     <Link passHref href="/newsletter">
       <Menu.Item as="a">
-        <Icon name="envelope" />
         Email & Newsletter
+        <Icon name="envelope" />
       </Menu.Item>
     </Link>
-    <Menu.Item as="a" href="https://twitter.com/kitspaceorg">
-      <Icon name="twitter" />
-      Twitter
+    <Menu.Item as="a" href="https://bsky.app/profile/kitspace.org">
+      Bluesky
+      <Icon>
+        <FontAwesomeIcon icon={faBluesky} />
+      </Icon>
+    </Menu.Item>
+    <Menu.Item as="a" href="https://mastodon.social/@kitspace">
+      Mastodon
+      <Icon>
+        <FontAwesomeIcon icon={faMastodon} />
+      </Icon>
     </Menu.Item>
     <Menu.Item as="a" href="https://github.com/kitspace">
-      <Icon name="github" />
       GitHub
+      <Icon name="github" />
     </Menu.Item>
     <Menu.Item as="a" href="https://opencollective.com/kitspace">
-      <Icon name="heart" />
       Donate
+      <Icon name="heart" />
     </Menu.Item>
   </>
 )

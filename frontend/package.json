@@ -11,6 +11,9 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "1-click-bom-minimal": "https://github.com/kitspace/npm-1-click-bom-minimal",
+    "@fortawesome/fontawesome-svg-core": "^6.7.1",
+    "@fortawesome/free-brands-svg-icons": "^6.7.1",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "express": "^4.20.0",
     "file-loader": "^6.0.0",
     "highlight.js": "^11.6.0",
