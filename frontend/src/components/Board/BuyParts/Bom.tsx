@@ -43,7 +43,7 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }: ExpandBomProps) => {
     ) : null
 
   return (
-    <div className={`${styles.expandWrapper}`}>
+    <div className={styles.expandWrapper}>
       <Table
         celled
         singleLine

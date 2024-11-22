@@ -176,7 +176,7 @@ const AdjustQuantity = ({
         setBuyAddPercent(v)
       }}
     />
-    <span className={styles.notSelectable}>%</span>
+    <span className={`${styles.notSelectable} ${styles.addPercent}`}>%</span>
   </Segment>
 )
 
@@ -187,7 +187,7 @@ const RetailerButton = ({
   totalLines,
   numberOfParts,
 }: RetailerButtonProps) => {
-  const color = 'green'
+  const color = numberOfLines === totalLines ? 'green' : 'pink'
   return (
     <Button
       as={'a'}
@@ -388,7 +388,6 @@ function downloadBomCSV({
   const link = document.getElementById(`retailer-${retailer}`).closest('a')
   link.setAttribute('href', url)
   link.setAttribute('download', `${name}-${retailer}-kitspace-bom.csv`)
-  // link.click()
 }
 
 function redirectToStore(retailer: Retailer) {

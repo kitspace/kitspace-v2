@@ -1,9 +1,11 @@
 @import '../../breakpoint.scss';
 
 .notSelectable {
-  -webkit-user-select: none;
   user-select: none;
   cursor: default;
+}
+
+.addPercent {
   margin-left: 5px;
 }
 
