@@ -270,7 +270,7 @@ const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
         line.partNumbers?.[0]?.part,
         line.description,
         calculateQuantity(line.quantity, multiplier, addPercent).toString(),
-        line.row,
+        line.reference,
       ]
       bom.push(row)
     }
@@ -286,7 +286,7 @@ const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) 
       const row: FarnellRow = [
         line.retailers.Farnell || line.retailers.Newark,
         calculateQuantity(line.quantity, multiplier, addPercent).toString(),
-        line.description,
+        line.reference,
       ]
       bom.push(row)
     }
@@ -314,7 +314,7 @@ const mouserBom = (lines: Array<Line>, multiplier: number, addPercent: number) =
         line.partNumbers?.[0]?.manufacturer,
         line.description,
         calculateQuantity(line.quantity, multiplier, addPercent).toString(),
-        line.row,
+        line.reference,
       ]
       bom.push(row)
     }
@@ -342,7 +342,7 @@ const lcscBom = (lines: Array<Line>, multiplier: number, addPercent: number) => 
       line.partNumbers?.[0]?.manufacturer,
       line.partNumbers?.[0]?.part,
       line.description,
-      line.row,
+      line.reference,
     ]
     bom.push(row)
   }
@@ -470,6 +470,7 @@ type Line = {
     LCSC: string
     Mouser: string
   }
+  reference: string
   partNumbers: Array<{ manufacturer: string; part: string }>
   description: string
   quantity: number
