@@ -11,29 +11,6 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
   const [multiplier, setMultiplier] = useState(1)
   const [buyAddPercent, setBuyAddPercent] = useState(0)
 
-  const downloadBomOrRedirectToRetailer = (retailer: Retailer) => {
-    window.plausible('Buy Parts', {
-      props: {
-        project: projectFullName,
-        vendor: retailer,
-        multiplier: multiplier,
-      },
-    })
-
-    if (retailer === 'Digikey') {
-      redirectToStore(retailer)
-      return
-    }
-
-    downloadBomCSV({
-      name: projectFullName.replace('/', '-'),
-      lines,
-      multiplier,
-      buyAddPercent,
-      retailer,
-    })
-  }
-
   const retailerList: Array<string> = OneClickBom.getRetailers()
   const retailerButtons = retailerList
     .map((retailerName: string): React.ReactElement | null => {
@@ -54,13 +31,33 @@ const BuyParts = ({ projectFullName, lines, parts }: BuyPartsProps) => {
         return (
           <RetailerButton
             key={retailerName}
-            downloadBomOrRedirectToRetailer={() =>
-              downloadBomOrRedirectToRetailer(retailerName as Retailer)
-            }
+            icons={retailerName === 'Digikey' ? 'link' : 'download'}
             name={retailerName}
             numberOfLines={numberOfLines}
             numberOfParts={numberOfParts}
             totalLines={lines.length}
+            onClick={() => {
+              window.plausible('Buy Parts', {
+                props: {
+                  project: projectFullName,
+                  vendor: retailerName,
+                  multiplier: multiplier,
+                },
+              })
+
+              if (retailerName === 'Digikey') {
+                redirectToStore(retailerName)
+                return
+              }
+
+              downloadBomCSV({
+                name: projectFullName.replace('/', '-'),
+                lines,
+                multiplier,
+                buyAddPercent,
+                retailer: retailerName as Retailer,
+              })
+            }}
           />
         )
       }
@@ -182,10 +179,11 @@ const AdjustQuantity = ({
 
 const RetailerButton = ({
   name,
-  downloadBomOrRedirectToRetailer,
+  onClick,
   numberOfLines,
   totalLines,
   numberOfParts,
+  icons,
 }: RetailerButtonProps) => {
   const color = numberOfLines === totalLines ? 'green' : 'pink'
   return (
@@ -202,20 +200,35 @@ const RetailerButton = ({
       label={{
         className: `${styles.retailerLabel} ${styles[color]} `,
         content: (
-          <div className={`${styles.retailerLabelContent}`} id={`retailer-${name}`}>
-            <div>
-              {numberOfLines}/{totalLines} lines ({numberOfParts} parts)
+          <>
+            <div
+              className={`${styles.retailerLabelContent}`}
+              id={`retailer-${name}`}
+            >
+              <div>
+                {numberOfLines}/{totalLines} lines ({numberOfParts} parts)
+              </div>
             </div>
-            <div>
-              <Icon name="plus" />
-              <Icon name="shopping basket" />
+            <div className={`${styles.retailerLabelIcons}`}>
+              {icons === 'link' ? (
+                <>
+                  <Icon name="plus" />
+                  <Icon name="shopping basket" />
+                  <Icon name="external square" />
+                </>
+              ) : (
+                <>
+                  <Icon name="file alternate outline" />
+                  <Icon name="download" />
+                </>
+              )}
             </div>
-          </div>
+          </>
         ),
       }}
       labelPosition="right"
-      onClick={downloadBomOrRedirectToRetailer}
-    />
+      onClick={onClick}
+    ></Button>
   )
 }
 
@@ -418,10 +431,11 @@ interface AdjustQuantityProps {
 
 interface RetailerButtonProps {
   name: string
-  downloadBomOrRedirectToRetailer: () => void
+  onClick: () => void
   numberOfLines: number
   totalLines: number
   numberOfParts: number
+  icons: 'link' | 'download'
 }
 
 interface StoreIconProps {
