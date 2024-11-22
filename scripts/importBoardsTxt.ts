@@ -207,6 +207,14 @@ async function getAllGithubReposDescriptions(
       body: JSON.stringify({ query }),
     },
   ).then(res => res.json())
+    .catch(e => {
+      console.error(e)
+      throw new Error('Failed to get github repos descriptions')
+    })
+
+  if (!reposInfo) {
+    throw new Error('reposInfo is empty')
+  }
 
   const repoDescriptionsMap = new Map<string, string>()
   for (const entry of Object.values(reposInfo)) {
