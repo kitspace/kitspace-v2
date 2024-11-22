@@ -251,7 +251,7 @@ const StoreIcon = ({ retailer }: StoreIconProps) => {
 }
 
 const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
-  const bom: Array<rsRow> = [
+  const bom: Array<RsRow> = [
     [
       'Product Number',
       'Brand',
@@ -264,7 +264,7 @@ const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
 
   for (const line of lines) {
     if (line.retailers?.RS) {
-      const row: rsRow = [
+      const row: RsRow = [
         line.retailers.RS,
         line.partNumbers?.[0]?.manufacturer,
         line.partNumbers?.[0]?.part,
@@ -280,10 +280,10 @@ const rsBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
 }
 
 const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
-  const bom: Array<farnellRow> = [['Part Number', 'Quantity', 'Line Note']]
+  const bom: Array<FarnellRow> = [['Part Number', 'Quantity', 'Line Note']]
   for (const line of lines) {
     if (line.retailers.Farnell || line.retailers.Newark) {
-      const row: farnellRow = [
+      const row: FarnellRow = [
         line.retailers.Farnell || line.retailers.Newark,
         calculateQuantity(line.quantity, multiplier, addPercent).toString(),
         line.description,
@@ -295,7 +295,7 @@ const farnellBom = (lines: Array<Line>, multiplier: number, addPercent: number) 
 }
 
 const mouserBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
-  const bom: Array<mouserRow> = [
+  const bom: Array<MouserRow> = [
     [
       'Mouser Part Number',
       'Mfr Part Number',
@@ -308,10 +308,10 @@ const mouserBom = (lines: Array<Line>, multiplier: number, addPercent: number) =
 
   for (const line of lines) {
     if (line.retailers?.Mouser) {
-      const row: mouserRow = [
+      const row: MouserRow = [
         line.retailers.Mouser,
-        line.partNumbers?.[0]?.manufacturer,
         line.partNumbers?.[0]?.part,
+        line.partNumbers?.[0]?.manufacturer,
         line.description,
         calculateQuantity(line.quantity, multiplier, addPercent).toString(),
         line.row,
@@ -324,7 +324,7 @@ const mouserBom = (lines: Array<Line>, multiplier: number, addPercent: number) =
 }
 
 const lcscBom = (lines: Array<Line>, multiplier: number, addPercent: number) => {
-  const bom: Array<lcscRow> = [
+  const bom: Array<LcscRow> = [
     [
       'Quantity',
       'LCSC Part Number',
@@ -336,7 +336,7 @@ const lcscBom = (lines: Array<Line>, multiplier: number, addPercent: number) => 
   ]
 
   for (const line of lines) {
-    const row: lcscRow = [
+    const row: LcscRow = [
       calculateQuantity(line.quantity, multiplier, addPercent).toString(),
       line.retailers?.LCSC,
       line.partNumbers?.[0]?.manufacturer,
@@ -393,7 +393,7 @@ function downloadBomCSV({
   retailer,
 }: Order) {
   const csvContent = `${csvBom(lines, multiplier, buyAddPercent, retailer)
-    .map((e: Array<string>) => e.join(','))
+    .map((e: Array<CsvValue>) => e.map(escapeCsvValue).join(','))
     .join('\n')}\n`
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
@@ -406,6 +406,20 @@ function downloadBomCSV({
 function redirectToStore(retailer: Retailer) {
   const form = document.getElementById(`${retailer}Form`) as HTMLFormElement
   form.submit()
+}
+
+/**
+  Escape a CSV value according to RFC 4180.
+  https://www.ietf.org/rfc/rfc4180.txt
+ */
+function escapeCsvValue(value: string | number | undefined) {
+  if (
+    typeof value === 'string' &&
+    (value.includes(',') || value.includes('"') || value.includes('\n'))
+  ) {
+    return `"${value.replace(/"/g, '""')}"`
+  }
+  return value
 }
 
 interface Order {
@@ -442,10 +456,11 @@ interface StoreIconProps {
   retailer: string
 }
 
-type farnellRow = [string, string, string]
-type rsRow = [string, string, string, string, string, string]
-type lcscRow = [string, string, string, string, string, string]
-type mouserRow = [string, string, string, string, string, string]
+type CsvValue = string | number | undefined
+type FarnellRow = [CsvValue, CsvValue, CsvValue]
+type RsRow = [CsvValue, CsvValue, CsvValue, CsvValue, CsvValue, CsvValue]
+type LcscRow = [CsvValue, CsvValue, CsvValue, CsvValue, CsvValue, CsvValue]
+type MouserRow = [CsvValue, CsvValue, CsvValue, CsvValue, CsvValue, CsvValue]
 
 type Line = {
   retailers: {
