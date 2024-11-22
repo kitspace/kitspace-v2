@@ -138,7 +138,7 @@ async function mirrorRepo(
     uid: user.id,
     repo_name: repoName,
     mirror: true,
-    mirror_interval: "10m",
+    mirror_interval: '10m',
     wiki: false,
     private: false,
     pull_requests: false,
@@ -162,7 +162,7 @@ async function mirrorRepo(
     let message = 'Unknown error'
     try {
       message = (await response.json()).message
-    } catch (e) { }
+    } catch (e) {}
     throw new Error(
       `Failed to mirror ${remoteRepo} to ${user.username}/${repoName}: ${response.status}: ${message}`,
     )
@@ -188,12 +188,12 @@ async function getAllGithubReposDescriptions(
   const query = `
   query {
     ${reposOwnerAndName.map(
-    ([owner, name], index) => `
+      ([owner, name], index) => `
     r${index}: repository(owner: "${owner}", name: "${name}") {
       fullName: nameWithOwner
       description
     }`,
-  )}
+    )}
   }
   `
   const { data: reposInfo }: GitHubRepoInfoGQLResponse = await fetch(
@@ -206,7 +206,8 @@ async function getAllGithubReposDescriptions(
       },
       body: JSON.stringify({ query }),
     },
-  ).then(res => res.json())
+  )
+    .then(res => res.json())
     .catch(e => {
       console.error(e)
       throw new Error('Failed to get github repos descriptions')
@@ -308,7 +309,7 @@ async function generateGiteaAdminToken() {
 
   if (!giteaAdminCommand.status.success) {
     console.error(giteaAdminCommand.output)
-    throw new Error("Failed to create gitea admin user")
+    throw new Error('Failed to create gitea admin user')
   }
 
   const giteaAdminTokenCommand = await exec(
@@ -318,7 +319,7 @@ async function generateGiteaAdminToken() {
 
   if (!giteaAdminTokenCommand.status.success) {
     console.error(giteaAdminTokenCommand.output)
-    throw new Error("Failed to create gitea admin token")
+    throw new Error('Failed to create gitea admin token')
   }
 
   return giteaAdminTokenCommand.output.split('\n').at(-1)
