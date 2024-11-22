@@ -9,7 +9,7 @@ import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
 import shuffle from 'https://deno.land/x/shuffle@v1.0.1/mod.ts'
 
 const flags = parse(Deno.args, {
-  string: ['giteaUrl', 'adminToken', 'githubToken'],
+  string: ['giteaUrl', 'adminToken', 'githubToken', 'filter'],
   boolean: ['help', 'tokenOnly', 'shuffle'],
   default: { numberOfRepos: 150, giteaUrl: 'http://localhost:3333', shuffle: true },
 })
@@ -19,6 +19,7 @@ const HELP_TEXT = `Usage: importBoardsTxt [options]
       --giteaUrl: Gitea URL (default: http://localhost:3333)
       --adminToken: Gitea admin API token (default: generated automatically)
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
+      --filter: Filter the boards.txt file by url before importing (default: none)
       --numberOfRepos: Number of repositories to import (default: 1000)
       --tokenOnly: Only generate the admin token and exit.
       --shuffle: Shuffle the boards.txt file before importing (default: true)
@@ -53,6 +54,10 @@ const headers = {
 
 async function main() {
   let boards = await getBoardsTxt()
+  if (flags.filter) {
+    const filter = new RegExp(flags.filter, 'i')
+    boards = boards.filter(board => filter.test(board))
+  }
   if (flags.shuffle) {
     boards = shuffle(boards)
   }
@@ -73,7 +78,7 @@ await main()
 /***************************************************************/
 async function getBoardsTxt() {
   const url =
-    'https://raw.githubusercontent.com/kitspace/kitspace/master/boards.txt'
+    'https://raw.githubusercontent.com/kitspace/kitspace-v2/master/boards.txt'
   const response = await fetch(url)
   const text = await response.text()
   return text.split('\n').filter(Boolean)
@@ -162,7 +167,7 @@ async function mirrorRepo(
     let message = 'Unknown error'
     try {
       message = (await response.json()).message
-    } catch (e) {}
+    } catch (e) { }
     throw new Error(
       `Failed to mirror ${remoteRepo} to ${user.username}/${repoName}: ${response.status}: ${message}`,
     )
@@ -188,12 +193,12 @@ async function getAllGithubReposDescriptions(
   const query = `
   query {
     ${reposOwnerAndName.map(
-      ([owner, name], index) => `
+    ([owner, name], index) => `
     r${index}: repository(owner: "${owner}", name: "${name}") {
       fullName: nameWithOwner
       description
     }`,
-    )}
+  )}
   }
   `
   const { data: reposInfo }: GitHubRepoInfoGQLResponse = await fetch(
