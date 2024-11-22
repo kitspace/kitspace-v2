@@ -100,11 +100,6 @@ const SiteMenuItems = () => {
           Projects
         </Menu.Item>
       </Link>
-      <Link passHref href="/1-click-bom">
-        <Menu.Item active={pathname === '/1-click-bom'} as="a">
-          1-click BOM
-        </Menu.Item>
-      </Link>
       {isSearchRoute ? null : (
         <Menu.Item className={styles.SearchBarContainer}>
           <NavSearchInput />
