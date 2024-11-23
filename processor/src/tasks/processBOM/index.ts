@@ -39,7 +39,7 @@ async function processBOM(
         bomInputPath = path.join(inputDir, '1-click-bom.csv')
       }
     }
-    const content = await fs.readFile(bomInputPath)
+    const content = await fs.readFile(bomInputPath, { encoding: 'utf-8' })
     const bom = oneClickBom.parse(content, {
       ext: /\.kicad_pcb$/i.test(bomInputPath) ? 'kicad_pcb' : null,
     })
