@@ -99,7 +99,7 @@ resource "bunnynet_pullzone" "processor" {
 resource "bunnynet_pullzone_hostname" "processor-cdn" {
   for_each    = toset(local.environments)
   pullzone    = bunnynet_pullzone.processor[each.value].id
-  name        = "processor-cdn.${each.value}.staging.kitspace.dev"
+  name        = "processor-cdn.${each.value}-3.staging.kitspace.dev"
   tls_enabled = true
   force_ssl   = true
 }
