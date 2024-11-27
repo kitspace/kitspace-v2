@@ -9,9 +9,13 @@ import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
 import shuffle from 'https://deno.land/x/shuffle@v1.0.1/mod.ts'
 
 const flags = parse(Deno.args, {
-  string: ['giteaUrl', 'adminToken', 'githubToken'],
+  string: ['giteaUrl', 'adminToken', 'githubToken', 'filter'],
   boolean: ['help', 'tokenOnly', 'shuffle'],
-  default: { numberOfRepos: 150, giteaUrl: 'http://localhost:3333', shuffle: true },
+  default: {
+    numberOfRepos: 150,
+    giteaUrl: 'http://localhost:3333',
+    shuffle: true,
+  },
 })
 
 const HELP_TEXT = `Usage: importBoardsTxt [options]
@@ -19,6 +23,7 @@ const HELP_TEXT = `Usage: importBoardsTxt [options]
       --giteaUrl: Gitea URL (default: http://localhost:3333)
       --adminToken: Gitea admin API token (default: generated automatically)
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
+      --filter: Filter the boards.txt file by url before importing (default: none)
       --numberOfRepos: Number of repositories to import (default: 1000)
       --tokenOnly: Only generate the admin token and exit.
       --shuffle: Shuffle the boards.txt file before importing (default: true)
@@ -53,6 +58,10 @@ const headers = {
 
 async function main() {
   let boards = await getBoardsTxt()
+  if (flags.filter) {
+    const filter = new RegExp(flags.filter, 'i')
+    boards = boards.filter(board => filter.test(board))
+  }
   if (flags.shuffle) {
     boards = shuffle(boards)
   }
@@ -73,7 +82,7 @@ await main()
 /***************************************************************/
 async function getBoardsTxt() {
   const url =
-    'https://raw.githubusercontent.com/kitspace/kitspace/master/boards.txt'
+    'https://raw.githubusercontent.com/kitspace/kitspace-v2/master/boards.txt'
   const response = await fetch(url)
   const text = await response.text()
   return text.split('\n').filter(Boolean)
@@ -295,7 +304,10 @@ function waitMs(ms: number) {
 async function generateGiteaAdminToken() {
   const adminUsername =
     'importer' + cryptoRandomString({ length: 8, type: 'numeric' })
-  const adminPassword: string = cryptoRandomString({ length: 32, type: 'base64' })
+  const adminPassword: string = cryptoRandomString({
+    length: 32,
+    type: 'base64',
+  })
 
   const getGiteaContainerCommand = await exec(
     `bash -c "docker ps | grep gitea | awk '{print $1}'"`,
