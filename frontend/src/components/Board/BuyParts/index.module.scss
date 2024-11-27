@@ -5,6 +5,10 @@
   cursor: default;
 }
 
+.addPercent {
+  margin-left: 5px;
+}
+
 .BuyParts {
   .storeIcons {
     height: 16px;
@@ -16,6 +20,7 @@
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
+    gap: 2rem;
   }
 
   .buttonText {
@@ -24,6 +29,12 @@
     @include breakpoint(small_width) {
       flex-wrap: wrap;
     }
+  }
+
+  .retailerLabelIcons {
+    margin-left: 10px;
+    color: rgb(85, 85, 85);
+    min-width: 70px;
   }
 
   button.loading {
@@ -49,6 +60,12 @@
 
   button.retailerButton {
     min-width: 110px;
+  }
+
+  .retailerLabelContent {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
   }
 
   .retailerButton.pink {

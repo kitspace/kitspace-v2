@@ -14,4 +14,18 @@
     font-size: 14px !important;
     background-color: white !important;
   }
+
+  .expandWrapper {
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+
+  .expandTable {
+    border-top: 0px;
+    cursor: pointer;
+  }
+
+  .expandTableRow {
+    border-top: 0px;
+  }
 }

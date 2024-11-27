@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Icon, Table } from 'semantic-ui-react'
 import DoubleScrollBar from 'react-double-scrollbar'
 
-import { array, bool, func, number, string } from 'prop-types'
 import styles from './Bom.module.scss'
 import TsvTable from './TsvTable'
 
-const Bom = ({ length, parts, tsv }) => {
+const Bom = ({ length, parts, tsv }: BomProps) => {
   const [diff, setDiff] = useState(0)
   const [collapsed, setCollapsed] = useState(true)
 
@@ -32,7 +31,7 @@ const Bom = ({ length, parts, tsv }) => {
   )
 }
 
-const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
+const ExpandBom = ({ diff, collapsed, setCollapsed }: ExpandBomProps) => {
   const summary =
     diff > 0 && collapsed ? (
       <tr className={styles.expandSummary}>
@@ -44,13 +43,13 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
     ) : null
 
   return (
-    <div style={{ paddingLeft: 1, paddingRight: 1 }}>
+    <div className={styles.expandWrapper}>
       <Table
         celled
         singleLine
         unstackable
         attached="bottom"
-        className={styles.expandBomTable}
+        className={styles.expandTable}
         style={{
           borderTop: 0,
           cursor: 'pointer',
@@ -59,7 +58,7 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
       >
         <tbody>
           {summary}
-          <tr style={{ borderTop: 0 }}>
+          <tr className={`${styles.expandTableRow}`}>
             <Table.Cell key="collapse cell" textAlign="center">
               <Icon name={collapsed ? 'eye' : 'arrow up'} />
               {collapsed ? 'View all' : 'Hide'}
@@ -71,16 +70,16 @@ const ExpandBom = ({ diff, collapsed, setCollapsed }) => {
   )
 }
 
-Bom.propTypes = {
-  length: number.isRequired,
-  parts: array.isRequired,
-  tsv: string.isRequired,
+interface BomProps {
+  length: number
+  parts: Array<any>
+  tsv: string
 }
 
-ExpandBom.propTypes = {
-  diff: number.isRequired,
-  collapsed: bool.isRequired,
-  setCollapsed: func.isRequired,
+interface ExpandBomProps {
+  diff: number
+  collapsed: boolean
+  setCollapsed: (collapsed: boolean) => void
 }
 
 export default Bom
