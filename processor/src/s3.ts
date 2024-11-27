@@ -35,11 +35,11 @@ const bucketName = S3_PROCESSOR_BUCKET_NAME
 
 const s3Client = new S3Client(s3ClientConfig)
 
-try {
-  // check if the bucket exists
-  await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
-} catch (err) {
-  if (USE_LOCAL_MINIO) {
+if (USE_LOCAL_MINIO) {
+  try {
+    // check if the bucket exists
+    await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
+  } catch (err) {
     // in development if it doesn't exist create it
     await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
 
@@ -62,8 +62,6 @@ try {
         Policy: JSON.stringify(publicReadPolicy),
       }),
     )
-  } else {
-    throw err
   }
 }
 
