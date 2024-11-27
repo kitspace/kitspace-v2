@@ -19,8 +19,12 @@ import {
   S3_SECRET_KEY,
   USE_LOCAL_MINIO,
 } from './env.js'
+import { log } from './log.js'
 
 const gzip = util.promisify(zlib.gzip)
+
+log.info(`Using S3 endpoint ${S3_ENDPOINT}`)
+log.info(`Using S3 access key ${S3_ACCESS_KEY}`)
 
 const s3ClientConfig = {
   credentials: {
@@ -34,6 +38,8 @@ const s3ClientConfig = {
 const bucketName = S3_PROCESSOR_BUCKET_NAME
 
 const s3Client = new S3Client(s3ClientConfig)
+
+log.info(`Using S3 bucket ${bucketName}`)
 
 try {
   // check if the bucket exists
