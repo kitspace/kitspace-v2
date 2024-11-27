@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "eu-west-2"
 }
 
 locals {
@@ -68,7 +68,7 @@ resource "aws_s3_bucket_policy" "allow_public_read" {
         Effect    = "Allow",
         Principal = "*",
         Action    = "s3:GetObject",
-        Resource  = "arn:aws:s3:::kitspace-staging-${each.key}-3/*"
+        Resource  = "arn:aws:s3:::kitspace-staging-${each.key}-4/*"
       }
     ]
   })
