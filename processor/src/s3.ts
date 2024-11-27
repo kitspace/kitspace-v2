@@ -3,6 +3,7 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  PutBucketCorsCommand,
   PutBucketPolicyCommand,
   PutObjectCommand,
   S3Client,
@@ -14,17 +15,13 @@ import zlib from 'node:zlib'
 import {
   DATA_DIR,
   S3_ACCESS_KEY,
+  S3_SECRET_KEY,
   S3_ENDPOINT,
   S3_PROCESSOR_BUCKET_NAME,
-  S3_SECRET_KEY,
   USE_LOCAL_MINIO,
 } from './env.js'
-import { log } from './log.js'
 
 const gzip = util.promisify(zlib.gzip)
-
-log.info(`Using S3 endpoint ${S3_ENDPOINT}`)
-log.info(`Using S3 access key ${S3_ACCESS_KEY}`)
 
 const s3ClientConfig = {
   credentials: {
@@ -39,37 +36,49 @@ const bucketName = S3_PROCESSOR_BUCKET_NAME
 
 const s3Client = new S3Client(s3ClientConfig)
 
-log.info(`Using S3 bucket ${bucketName}`)
-
 try {
-  // check if the bucket exists
+  // check if it exists already
   await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
 } catch (err) {
-  if (USE_LOCAL_MINIO) {
-    // in development if it doesn't exist create it
-    await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
+  // if it doesn't exist create it
+  await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
 
-    const publicReadPolicy = {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Effect: 'Allow',
-          Principal: {
-            AWS: ['*'],
-          },
-          Action: ['s3:GetObject'],
-          Resource: [`arn:aws:s3:::${bucketName}/*`],
+  const publicReadPolicy = {
+    Version: '2012-10-17',
+    Statement: [
+      {
+        Effect: 'Allow',
+        Principal: {
+          AWS: ['*'],
         },
-      ],
-    }
+        Action: ['s3:GetObject'],
+        Resource: [`arn:aws:s3:::${bucketName}/*`],
+      },
+    ],
+  }
+  await s3Client.send(
+    new PutBucketPolicyCommand({
+      Bucket: bucketName,
+      Policy: JSON.stringify(publicReadPolicy),
+    }),
+  )
+  // we need cors on all assets, minio doesn't support this command so for
+  // development it's handled in nginx instead
+  if (!USE_LOCAL_MINIO) {
     await s3Client.send(
-      new PutBucketPolicyCommand({
+      new PutBucketCorsCommand({
         Bucket: bucketName,
-        Policy: JSON.stringify(publicReadPolicy),
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedMethods: ['GET', 'HEAD'],
+              AllowedHeaders: ['*'],
+              AllowedOrigins: ['*'],
+            },
+          ],
+        },
       }),
     )
-  } else {
-    throw err
   }
 }
 
