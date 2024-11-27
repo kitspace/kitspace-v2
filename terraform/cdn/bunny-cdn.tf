@@ -88,7 +88,7 @@ resource "bunnynet_pullzone" "processor" {
 
   origin {
     type = "OriginUrl"
-    url  = "https://kitspace-staging-${each.value}-3.s3.amazonaws.com"
+    url  = "https://kitspace-staging-${each.value}-4.s3.amazonaws.com"
   }
 
   routing {
