@@ -321,6 +321,12 @@ to  try and reproduce the issue locally.
 
 We configure our staging servers using [Ansible](https://docs.ansible.com/ansible/latest/index.html). Our playbooks and roles are in the [ansible](ansible/) directory.
 
+
+## Terraform
+
+We configure infrstructure using [Terraform](https://www.terraform.io/). Our terraform files are in the [terraform](terraform/) directory.
+
+
 ## Running End-to-End Tests
 
 Make sure that:
