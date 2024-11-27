@@ -20,7 +20,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
         Action = [
           "s3:ListBucket"
         ]
-        Resource = "arn:aws:s3:::kitspace-staging-${each.value}-3"
+        Resource = "arn:aws:s3:::kitspace-staging-${each.value}-4"
       },
       {
         Effect = "Allow"
@@ -29,7 +29,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
           "s3:GetObject",
           "s3:DeleteObject"
         ]
-        Resource = "arn:aws:s3:::kitspace-staging-${each.value}-3/*"
+        Resource = "arn:aws:s3:::kitspace-staging-${each.value}-4/*"
       }
     ]
   })
@@ -49,8 +49,8 @@ resource "aws_iam_access_key" "s3_user_access_key" {
 output "s3_user_access_keys" {
   value = {
     for env, key in aws_iam_access_key.s3_user_access_key : env => {
-      id          = key.id
-      secret      = key.secret
+      id     = key.id
+      secret = key.secret
     }
   }
   sensitive = true
