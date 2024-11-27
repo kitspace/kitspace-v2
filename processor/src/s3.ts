@@ -15,13 +15,18 @@ import zlib from 'node:zlib'
 import {
   DATA_DIR,
   S3_ACCESS_KEY,
-  S3_SECRET_KEY,
   S3_ENDPOINT,
   S3_PROCESSOR_BUCKET_NAME,
+  S3_SECRET_KEY,
   USE_LOCAL_MINIO,
 } from './env.js'
+import { log } from './log.js'
 
 const gzip = util.promisify(zlib.gzip)
+
+log.info('S3 Processor bucket endpoint', S3_ENDPOINT)
+log.info('S3 Processor bucket access key', S3_ACCESS_KEY)
+log.info('S3 Processor bucket name', S3_PROCESSOR_BUCKET_NAME)
 
 const s3ClientConfig = {
   credentials: {
