@@ -54,7 +54,7 @@ resource "bunnynet_pullzone" "frontend" {
   }
 }
 
-resource "bunnynet_pullzone_hostname" "frontend-cdn" {
+resource "bunnynet_pullzone_hostname" "frontend_cdn" {
   for_each    = toset(local.environments)
   pullzone    = bunnynet_pullzone.frontend[each.value].id
   name        = "frontend-cdn.${each.value}.staging.kitspace.dev"
@@ -88,7 +88,7 @@ resource "bunnynet_pullzone" "processor" {
 
   origin {
     type = "OriginUrl"
-    url  = "https://kitspace-staging-${each.value}.s3.amazonaws.com"
+    url  = "https://kitspace-staging-${each.value}-3.s3.amazonaws.com"
   }
 
   routing {
@@ -96,7 +96,7 @@ resource "bunnynet_pullzone" "processor" {
   }
 }
 
-resource "bunnynet_pullzone_hostname" "processor-cdn" {
+resource "bunnynet_pullzone_hostname" "processor_cdn" {
   for_each    = toset(local.environments)
   pullzone    = bunnynet_pullzone.processor[each.value].id
   name        = "processor-cdn.${each.value}.staging.kitspace.dev"

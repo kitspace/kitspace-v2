@@ -14,5 +14,7 @@ importBoardsTxt
 
 
 # terraform
+.terraform/
 *.tfvars
 *.tfstate
+*.tfstate.backup

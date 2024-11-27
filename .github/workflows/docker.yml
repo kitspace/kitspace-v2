@@ -184,19 +184,19 @@ jobs:
             kaspar-dev)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev-3' >> $GITHUB_ENV;;
             abdo-dev)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_ABDO_DEV }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev-3' >> $GITHUB_ENV;;
             review)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_REVIEW }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review-3' >> $GITHUB_ENV;;
             master)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_MASTER }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-3' >> $GITHUB_ENV;;
           esac
 
       - name: Deploy to ${{ github.ref_name }}.staging.kitspace.dev

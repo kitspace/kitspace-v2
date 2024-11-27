@@ -3,7 +3,6 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
-  PutBucketCorsCommand,
   PutBucketPolicyCommand,
   PutObjectCommand,
   S3Client,
@@ -15,9 +14,9 @@ import zlib from 'node:zlib'
 import {
   DATA_DIR,
   S3_ACCESS_KEY,
-  S3_SECRET_KEY,
   S3_ENDPOINT,
   S3_PROCESSOR_BUCKET_NAME,
+  S3_SECRET_KEY,
   USE_LOCAL_MINIO,
 } from './env.js'
 
@@ -37,48 +36,34 @@ const bucketName = S3_PROCESSOR_BUCKET_NAME
 const s3Client = new S3Client(s3ClientConfig)
 
 try {
-  // check if it exists already
+  // check if the bucket exists
   await s3Client.send(new HeadBucketCommand({ Bucket: bucketName }))
 } catch (err) {
-  // if it doesn't exist create it
-  await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
+  if (USE_LOCAL_MINIO) {
+    // in development if it doesn't exist create it
+    await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }))
 
-  const publicReadPolicy = {
-    Version: '2012-10-17',
-    Statement: [
-      {
-        Effect: 'Allow',
-        Principal: {
-          AWS: ['*'],
+    const publicReadPolicy = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: {
+            AWS: ['*'],
+          },
+          Action: ['s3:GetObject'],
+          Resource: [`arn:aws:s3:::${bucketName}/*`],
         },
-        Action: ['s3:GetObject'],
-        Resource: [`arn:aws:s3:::${bucketName}/*`],
-      },
-    ],
-  }
-  await s3Client.send(
-    new PutBucketPolicyCommand({
-      Bucket: bucketName,
-      Policy: JSON.stringify(publicReadPolicy),
-    }),
-  )
-  // we need cors on all assets, minio doesn't support this command so for
-  // development it's handled in nginx instead
-  if (!USE_LOCAL_MINIO) {
+      ],
+    }
     await s3Client.send(
-      new PutBucketCorsCommand({
+      new PutBucketPolicyCommand({
         Bucket: bucketName,
-        CORSConfiguration: {
-          CORSRules: [
-            {
-              AllowedMethods: ['GET', 'HEAD'],
-              AllowedHeaders: ['*'],
-              AllowedOrigins: ['*'],
-            },
-          ],
-        },
+        Policy: JSON.stringify(publicReadPolicy),
       }),
     )
+  } else {
+    throw err
   }
 }
 
