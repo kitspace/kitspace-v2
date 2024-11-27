@@ -11,3 +11,8 @@ __pycache__/
 
 # deno output
 importBoardsTxt
+
+
+# terraform
+*.tfvars
+*.tfstate
