@@ -33,7 +33,7 @@ const s3ClientConfig = {
     accessKeyId: S3_ACCESS_KEY,
     secretAccessKey: S3_SECRET_KEY,
   },
-  region: 'eu-west-1',
+  region: 'eu-west-2',
   endpoint: S3_ENDPOINT,
   forcePathStyle: true,
 }
