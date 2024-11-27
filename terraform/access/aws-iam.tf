@@ -40,3 +40,18 @@ resource "aws_iam_user_policy_attachment" "s3_policy_attach" {
   user       = aws_iam_user.s3_user[each.key].name
   policy_arn = aws_iam_policy.s3_kitspace_processor_policy[each.key].arn
 }
+
+resource "aws_iam_access_key" "s3_user_access_key" {
+  for_each = toset(local.environments)
+  user     = aws_iam_user.s3_user[each.key].name
+}
+
+output "s3_user_access_keys" {
+  value = {
+    for env, key in aws_iam_access_key.s3_user_access_key : env => {
+      id          = key.id
+      secret      = key.secret
+    }
+  }
+  sensitive = true
+}

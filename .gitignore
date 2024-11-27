@@ -14,7 +14,6 @@ importBoardsTxt
 
 
 # terraform
-.terraform.lock.hcl
 .terraform/
 *.tfvars
 *.tfstate
