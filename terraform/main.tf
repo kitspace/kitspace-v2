@@ -4,8 +4,8 @@ locals {
   ]
 }
 
-module "server" {
-  source      = "./server"
+module "deployment" {
+  source      = "./deployment"
   for_each    = local.branches
   branch_name = each.value
 }
