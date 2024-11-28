@@ -53,7 +53,7 @@ const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
     return (
       <form
         key="DigikeyForm"
-        action={`https${site}/classic/ordering/fastadd.aspx?WT.z_cid=ref_kitnic`}
+        action={`https://www.digikey.com/classic/ordering/fastadd.aspx?WT.z_cid=ref_kitnic`}
         id="DigikeyForm"
         method="POST"
         target="_blank"
