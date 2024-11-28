@@ -1,20 +1,20 @@
-variable "branch_name" {
-  type = string
-}
-
 terraform {
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source                = "hashicorp/aws"
+      configuration_aliases = [aws.ec2_provider]
     }
   }
 }
 
-provider "aws" {
-  region = "eu-west-1"
+
+variable "branch_name" {
+  type = string
 }
 
+
 data "aws_ami" "ubuntu_22_04" {
+  provider = aws.ec2_provider
   # Canonical's AWS account ID
   owners      = ["099720109477"]
   most_recent = true
@@ -30,18 +30,20 @@ data "aws_ami" "ubuntu_22_04" {
 }
 
 resource "aws_instance" "instance" {
+  provider      = aws.ec2_provider
   ami           = data.aws_ami.ubuntu_22_04.id
   instance_type = "t2.medium"
   tags = {
-    "Name" = branch_name
+    "Name" = var.branch_name
   }
 }
 
 # reserved IP
 resource "aws_eip" "instance_ip" {
-  instance = aws_instance.instance[each.value].id
+  provider = aws.ec2_provider
+  instance = aws_instance.instance.id
   tags = {
-    "Name" = branch_name
+    "Name" = var.branch_name
   }
 }
 
