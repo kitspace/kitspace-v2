@@ -1,8 +1,11 @@
 locals {
-  environments = ["kaspar-dev", "abdo-dev", "master", "review"]
+  branches = terraform.workspace == "production" ? ["production"] : [
+    "kaspar-dev", "abdo-dev", "review", "master"
+  ]
 }
 
 module "server" {
-  source = "./server"
-  name   = "kaspar-dev"
+  source      = "./server"
+  for_each    = local.branches
+  branch_name = each.value
 }
