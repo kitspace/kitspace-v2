@@ -38,11 +38,7 @@ resource "bunnynet_dns_zone" "kitspace_zone" {
 
 
 locals {
-  branches = toset(
-    terraform.workspace == "production"
-    ? ["production"]
-    : ["kaspar-dev", "abdo-dev", "review", "master"]
-  )
+  branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
 }
 
 
