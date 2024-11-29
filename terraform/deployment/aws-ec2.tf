@@ -1,37 +1,7 @@
-terraform {
-  required_providers {
-    aws = {
-      source                = "hashicorp/aws"
-      configuration_aliases = [aws.ec2_provider]
-    }
-  }
-}
-
-
-variable "branch_name" {
-  type = string
-}
-
-
-data "aws_ami" "ubuntu_22_04" {
-  provider = aws.ec2_provider
-  # Canonical's AWS account ID
-  owners      = ["099720109477"]
-  most_recent = true
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
 resource "aws_instance" "instance" {
-  provider      = aws.ec2_provider
-  ami           = data.aws_ami.ubuntu_22_04.id
+  provider = aws.ec2_provider
+  # Ubuntu, 22.04 LTS, amd64 jammy image built on 2023-05-16. Owned by Canonical.
+  ami           = "ami-01dd271720c1ba44f"
   instance_type = "t2.medium"
   tags = {
     "Name" = var.branch_name
@@ -45,8 +15,4 @@ resource "aws_eip" "instance_ip" {
   tags = {
     "Name" = var.branch_name
   }
-}
-
-output "ip" {
-  value = aws_eip.instance_ip.public_ip
 }
