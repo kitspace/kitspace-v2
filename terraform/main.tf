@@ -8,6 +8,10 @@ terraform {
       source  = "BunnyWay/bunnynet"
       version = "~> 0.4.0"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
 }
 
@@ -36,6 +40,15 @@ resource "bunnynet_dns_zone" "kitspace_zone" {
   domain = "kitspace.dev"
 }
 
+variable "github_token" {
+  type      = string
+  sensitive = true
+}
+
+provider "github" {
+  token = var.github_token
+  owner = "kitspace"
+}
 
 locals {
   branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])

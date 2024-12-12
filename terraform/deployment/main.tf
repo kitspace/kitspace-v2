@@ -7,6 +7,9 @@ terraform {
     bunnynet = {
       source = "BunnyWay/bunnynet"
     }
+    github = {
+      source = "integrations/github"
+    }
   }
 }
 
