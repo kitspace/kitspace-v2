@@ -15,6 +15,8 @@ terraform {
   }
 }
 
+// ---------------------------------------------------------
+// aws
 
 provider "aws" {
   region = "eu-west-1"
@@ -26,6 +28,8 @@ provider "aws" {
   alias  = "s3_provider"
 }
 
+// ---------------------------------------------------------
+// bunnynet
 
 variable "bunnynet_api_key" {
   type      = string
@@ -40,6 +44,9 @@ resource "bunnynet_dns_zone" "kitspace_zone" {
   domain = "kitspace.dev"
 }
 
+// ---------------------------------------------------------
+// github
+
 variable "github_token" {
   type      = string
   sensitive = true
@@ -49,6 +56,9 @@ provider "github" {
   token = var.github_token
   owner = "kitspace"
 }
+
+// ---------------------------------------------------------
+// deployment
 
 locals {
   branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
