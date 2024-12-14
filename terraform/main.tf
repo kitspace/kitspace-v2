@@ -12,6 +12,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    sentry = {
+      source  = "jianyuan/sentry"
+      version = "~> 0.11.0"
+    }
   }
 }
 
@@ -55,6 +59,18 @@ variable "github_token" {
 provider "github" {
   token = var.github_token
   owner = "kitspace"
+}
+
+// ---------------------------------------------------------
+// sentry
+
+variable "sentry_token" {
+  type      = string
+  sensitive = true
+}
+
+provider "sentry" {
+  token = var.sentry_token
 }
 
 // ---------------------------------------------------------
