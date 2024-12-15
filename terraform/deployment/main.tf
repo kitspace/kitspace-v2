@@ -1,8 +1,7 @@
 terraform {
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      configuration_aliases = [aws.ec2_provider]
+      source = "hashicorp/aws"
     }
     bunnynet = {
       source = "BunnyWay/bunnynet"
