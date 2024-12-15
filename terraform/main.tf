@@ -24,12 +24,6 @@ terraform {
 
 provider "aws" {
   region = "eu-west-1"
-  alias  = "ec2_provider"
-}
-
-provider "aws" {
-  region = "eu-west-2"
-  alias  = "s3_provider"
 }
 
 // ---------------------------------------------------------
@@ -80,13 +74,9 @@ locals {
   branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
 }
 
-
 module "deployment" {
   for_each             = local.branches
   source               = "./deployment"
   branch_name          = each.value
   bunnynet_dns_zone_id = bunnynet_dns_zone.kitspace_zone.id
-  providers = {
-    aws.ec2_provider = aws.ec2_provider
-  }
 }

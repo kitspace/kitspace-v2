@@ -184,19 +184,19 @@ jobs:
             kaspar-dev)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev-4' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev-5' >> $GITHUB_ENV;;
             abdo-dev)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_ABDO_DEV }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev-4' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev-5' >> $GITHUB_ENV;;
             review)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_REVIEW }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review-4' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review-5' >> $GITHUB_ENV;;
             master)
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_MASTER }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-4' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-5' >> $GITHUB_ENV;;
           esac
 
       - name: Deploy to ${{ github.ref_name }}.staging.kitspace.dev
@@ -225,7 +225,7 @@ jobs:
           MAX_FILE_SIZE: '6M'
           MAXIMUM_REPO_MIGRATION_TIME: '300000'
           KITSPACE_ROBOTS_TXT: "User-agent: *\\\\nDisallow: \\/\\\\n"
-          S3_ENDPOINT: https://s3.eu-west-2.amazonaws.com
+          S3_ENDPOINT: https://s3.eu-west-1.amazonaws.com
           SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'
           SENTRY_ENVIRONMENT: staging
           SENTRY_RELEASE: '${{ github.sha }}'

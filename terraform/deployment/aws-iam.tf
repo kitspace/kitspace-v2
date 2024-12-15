@@ -14,7 +14,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
         Action = [
           "s3:ListBucket"
         ]
-        Resource = "arn:aws:s3:::kitspace-staging-${var.branch_name}-4"
+        Resource = "arn:aws:s3:::kitspace-staging-${var.branch_name}-5"
       },
       {
         Effect = "Allow"
@@ -23,7 +23,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
           "s3:GetObject",
           "s3:DeleteObject"
         ]
-        Resource = "arn:aws:s3:::kitspace-staging-${var.branch_name}-4/*"
+        Resource = "arn:aws:s3:::kitspace-staging-${var.branch_name}-5/*"
       }
     ]
   })

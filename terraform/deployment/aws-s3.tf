@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "processor_bucket" {
-  bucket = "kitspace-staging-${var.branch_name}-4"
+  bucket = "kitspace-staging-${var.branch_name}-5"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
@@ -52,7 +52,7 @@ resource "aws_s3_bucket_policy" "allow_public_read" {
         Effect    = "Allow",
         Principal = "*",
         Action    = "s3:GetObject",
-        Resource  = "arn:aws:s3:::kitspace-staging-${var.branch_name}-4/*"
+        Resource  = "arn:aws:s3:::kitspace-staging-${var.branch_name}-5/*"
       }
     ]
   })
