@@ -29,21 +29,39 @@ provider "aws" {
 // ---------------------------------------------------------
 // bunnynet
 
-variable "bunnynet_api_key" {
+variable "bunnynet_staging_api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "bunnynet_production_api_key" {
   type      = string
   sensitive = true
 }
 
 provider "bunnynet" {
-  api_key = var.bunnynet_api_key
+  api_key = var.bunnynet_staging_api_key
+  alias   = "staging"
 }
 
-variable "domain" {
-  type = string
+provider "bunnynet" {
+  api_key = var.bunnynet_production_api_key
+  alias   = "production"
 }
 
-resource "bunnynet_dns_zone" "kitspace_zone" {
-  domain = var.domain
+moved {
+  from = bunnynet_dns_zone.kitspace_zone
+  to   = bunnynet_dns_zone.kitspace_dev_zone
+}
+
+resource "bunnynet_dns_zone" "kitspace_dev_zone" {
+  domain   = "kitspace.dev"
+  provider = bunnynet.staging
+}
+
+resource "bunnynet_dns_zone" "kitspace_org_zone" {
+  domain   = "kitspace.org"
+  provider = bunnynet.production
 }
 
 // ---------------------------------------------------------
@@ -74,15 +92,32 @@ provider "sentry" {
 // ---------------------------------------------------------
 // deployment
 
-
-variable "branches" {
-  type = set(string)
+locals {
+  staging_branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
 }
 
-module "deployment" {
-  for_each             = var.branches
+moved {
+  from = module.deployment
+  to   = module.staging
+}
+
+module "staging" {
+  for_each             = local.staging_branches
   source               = "./deployment"
   branch_name          = each.value
-  bunnynet_dns_zone_id = bunnynet_dns_zone.kitspace_zone.id
-  domain               = var.domain
+  bunnynet_dns_zone_id = bunnynet_dns_zone.kitspace_dev_zone.id
+  domain               = "kitspace.dev"
+  providers = {
+    bunnynet = bunnynet.staging
+  }
+}
+
+module "production" {
+  source               = "./deployment"
+  branch_name          = "production"
+  bunnynet_dns_zone_id = bunnynet_dns_zone.kitspace_org_zone.id
+  domain               = "kitspace.org"
+  providers = {
+    bunnynet = bunnynet.production
+  }
 }
