@@ -1,0 +1,5 @@
+domain           = "kitspace.dev"
+branches         = ["kaspar-dev", "abdo-dev", "review", "master"]
+bunnynet_api_key = ""
+github_token     = ""
+sentry_token     = ""

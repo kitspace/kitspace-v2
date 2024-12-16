@@ -70,12 +70,13 @@ provider "sentry" {
 // ---------------------------------------------------------
 // deployment
 
-locals {
-  branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
+
+variable "branches" {
+  type = set(string)
 }
 
 module "deployment" {
-  for_each             = local.branches
+  for_each             = var.branches
   source               = "./deployment"
   branch_name          = each.value
   bunnynet_dns_zone_id = bunnynet_dns_zone.kitspace_zone.id
