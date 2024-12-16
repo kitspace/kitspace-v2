@@ -4,7 +4,7 @@ variable "bunnynet_dns_zone_id" {
 
 resource "bunnynet_dns_record" "a_wildcard" {
   zone  = var.bunnynet_dns_zone_id
-  name  = "*.${var.branch_name}.staging"
+  name  = var.branch_name == "production" ? "*.test" : "*.${var.branch_name}.staging"
   type  = "A"
   ttl   = 1800
   value = aws_eip.instance_ip.public_ip
@@ -15,7 +15,7 @@ resource "bunnynet_dns_record" "a_wildcard" {
 
 resource "bunnynet_dns_record" "a" {
   zone  = var.bunnynet_dns_zone_id
-  name  = "${var.branch_name}.staging"
+  name  = var.branch_name == "production" ? "test" : "${var.branch_name}.staging"
   type  = "A"
   ttl   = 1800
   value = aws_eip.instance_ip.public_ip
@@ -26,7 +26,7 @@ resource "bunnynet_dns_record" "a" {
 
 resource "bunnynet_dns_record" "frontend_cdn" {
   zone  = var.bunnynet_dns_zone_id
-  name  = "frontend-cdn.${var.branch_name}.staging"
+  name  = var.branch_name == "production" ? "frontend-cdn.test" : "frontend-cdn.${var.branch_name}.staging"
   type  = "CNAME"
   ttl   = 1800
   value = "frontend-${var.branch_name}-kitspace.b-cdn.net"
@@ -38,7 +38,7 @@ resource "bunnynet_dns_record" "frontend_cdn" {
 
 resource "bunnynet_dns_record" "processor_cdn" {
   zone  = var.bunnynet_dns_zone_id
-  name  = "processor-cdn.${var.branch_name}.staging"
+  name  = var.branch_name == "production" ? "processor-cdn.test" : "processor-cdn.${var.branch_name}.staging"
   type  = "CNAME"
   ttl   = 1800
   value = "processor-${var.branch_name}-kitspace.b-cdn.net"

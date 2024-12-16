@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    branches: [master, abdo-dev, kaspar-dev, review]
+    branches: [master, abdo-dev, kaspar-dev, review, production]
   # using "pull_request_target" instead of "pull_request" runs this in the
   # "master" branch context and makes secrets work with external pull requests
   # (incl. dependabot). we check for author_association below so first-time
@@ -139,14 +139,28 @@ jobs:
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'failure'
 
+  get_env:
+    if: ${{ github.event_name == 'push' }}
+    name: Get staging/production env for secrets and Sentry
+    steps:
+      - name: Get env
+        shell: bash
+        run: |
+          if [ "${{ github.ref_name }}" == "production" ]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+          else
+            echo "env=staging" >> $GITHUB_OUTPUT
+          fi
+
   deploy:
     if: ${{ github.event_name == 'push' }}
-    name: Deploy to staging
+    name: Deploy
     runs-on: ubuntu-22.04
-    environment: staging
     needs:
+      - get_env
       - get_version
       - build
+    environment: ${{ needs.get_env.outputs.env }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -160,7 +174,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/review' }}
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'pending'
 
-      - name: Login to ghcr.io
+      - name: Log in to ghcr.io
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -171,7 +185,7 @@ jobs:
         continue-on-error: true
 
       # to avoid being rate-limited on pulls
-      - name: Login to hub.docker.com
+      - name: Log in to hub.docker.com
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
@@ -182,40 +196,52 @@ jobs:
         run: |
           case '${{ github.ref_name }}' in
             kaspar-dev)
+              echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\\\nDisallow: \\/\\\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev-5' >> $GITHUB_ENV;;
             abdo-dev)
+              echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\\\nDisallow: \\/\\\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev-5' >> $GITHUB_ENV;;
             review)
+              echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\\\nDisallow: \\/\\\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review-5' >> $GITHUB_ENV;;
             master)
+              echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\\\nDisallow: \\/\\\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-5' >> $GITHUB_ENV;;
+            production)
+              echo 'KITSPACE_DOMAIN=test.kitspace.org' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\\\nAllow: \\/\\\\n"' >> $GITHUB_ENV
+              echo 'S3_ACCESS_KEY=${{ secrets.PRODUCTION_S3_ACCESS_KEY }}' >> $GITHUB_ENV
+              echo 'S3_SECRET_KEY=${{ secrets.PRODUCTION_STAGING_S3_SECRET_KEY }}' >> $GITHUB_ENV
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-production' >> $GITHUB_ENV;;
           esac
 
-      - name: Deploy to ${{ github.ref_name }}.staging.kitspace.dev
+      - name: Deploy to ${{ env.KITSPACE_DOMAIN }}
         id: deploy_to_staging
         env:
-          POSTGRES_PASSWORD: '${{ secrets.STAGING_POSTGRES_ROOT_PASSWORD }}'
-          POSTGRES_READONLY_USER_PASSWORD: '${{ secrets.STAGING_POSTGRES_READONLY_PASSWORD }}'
-          GITEA_SECRET_KEY: '${{ secrets.STAGING_GITEA_SECRET }}'
-          GITEA_INTERNAL_TOKEN: '${{ secrets.STAGING_GITEA_INTERNAL_TOKEN }}'
-          MEILI_MASTER_KEY: '${{ secrets.STAGING_MEILI_MASTER_KEY }}'
-          REDIS_PASSWORD: '${{ secrets.STAGING_REDIS_PASSWORD }}'
-          KITSPACE_PROCESSOR_REMOTE_API_TOKENS: '${{ secrets.STAGING_KITSPACE_PROCESSOR_REMOTE_API_TOKEN }}'
+          POSTGRES_PASSWORD: '${{ secrets.POSTGRES_ROOT_PASSWORD }}'
+          POSTGRES_READONLY_USER_PASSWORD: '${{ secrets.POSTGRES_READONLY_PASSWORD }}'
+          GITEA_SECRET_KEY: '${{ secrets.GITEA_SECRET_KEY }}'
+          GITEA_INTERNAL_TOKEN: '${{ secrets.GITEA_INTERNAL_TOKEN }}'
+          MEILI_MASTER_KEY: '${{ secrets.MEILI_MASTER_KEY }}'
+          REDIS_PASSWORD: '${{ secrets.REDIS_PASSWORD }}'
           KITSPACE_PROCESSOR_ASSET_VERSION: v1
-          KITSPACE_DOMAIN: '${{ github.ref_name }}.staging.kitspace.dev'
           KITSPACE_SCHEME: https
           KITSPACE_DEV_PORT: '80'
           KITSPACE_EXTERNAL_PORT: ''
           CERTBOT_ENABLED: 'true'
-          CERTBOT_EMAIL: 'kaspar@kitspace.org'
+          CERTBOT_EMAIL: 'certbot@kitspace.org'
           COMPOSE_PROJECT_NAME: 'kitspace-${{ github.ref_name }}'
           FRONTEND_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.frontend_sha }}'
           PROCESSOR_DEPLOY_IMAGE_TAG: ':${{ needs.get_version.outputs.processor_sha }}'
@@ -224,19 +250,19 @@ jobs:
           # The maximum allowable file size that can be uploaded to gitea or the processor
           MAX_FILE_SIZE: '6M'
           MAXIMUM_REPO_MIGRATION_TIME: '300000'
-          KITSPACE_ROBOTS_TXT: "User-agent: *\\\\nDisallow: \\/\\\\n"
           S3_ENDPOINT: https://s3.eu-west-1.amazonaws.com
           SENTRY_DSN: '${{ secrets.SENTRY_DSN }}'
-          SENTRY_ENVIRONMENT: staging
-          SENTRY_RELEASE: '${{ github.sha }}'
+          SENTRY_ENVIRONMENT: ${{ needs.get_env.outputs.env }}
+          SENTRY_RELEASE: '${{ github.ref_name }}:${{ github.sha }}'
         run: |
           mkdir -p ~/.ssh
-          echo -e '${{ secrets.STAGING_SSH_PRIVATE_KEY }}' > ~/.ssh/id_rsa
+          echo -e '${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan '${{ github.ref_name }}.staging.kitspace.dev' >> ~/.ssh/known_hosts
-          docker context create staging --docker 'host=ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev'
-          docker context use staging
-          docker --host='ssh://deploy@${{ github.ref_name }}.staging.kitspace.dev' compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml up -d
+          ssh-keyscan "${KITSPACE_DOMAIN}" >> ~/.ssh/known_hosts
+          docker context create deploy --docker "host=ssh://deploy@${KITSPACE_DOMAIN}"
+          docker context use deploy
+          docker --host="ssh://deploy@${KITSPACE_DOMAIN}" compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml up -d
+          rm -f ~/.ssh/id_rsa
 
       - name: Report "review" deploy failure
         if: ${{ failure() && github.ref == 'refs/heads/review' }}
@@ -245,30 +271,6 @@ jobs:
       - name: Report "review" deploy success
         if: ${{ success() && github.ref == 'refs/heads/review' }}
         run: scripts/report_auto_merge_deploy.py '${{ secrets.GITHUB_TOKEN }}' 'success'
-
-  sentry_release:
-    if: ${{ github.event_name == 'push' && github.ref_name == 'master' }}
-    environment: staging
-    name: Create Sentry release
-    runs-on: ubuntu-20.04
-    needs:
-      - deploy
-    steps:
-      - name: Check out the repo
-        # https://github.com/getsentry/action-release#troubleshooting
-        uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-          fetch-depth: 0
-
-      - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        with:
-          environment: staging
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.STAGING_SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: kitspace
-          SENTRY_PROJECT: nginx
 
   test:
     name: Test E2E

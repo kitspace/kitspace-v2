@@ -1,0 +1,3 @@
+---
+- include_tasks: deploy_user.yml
+- include_tasks: aws_cli.yml
