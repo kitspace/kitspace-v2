@@ -7,13 +7,6 @@
     groups: docker
     append: false
 
-- name: Ensure 'deploy' user's public key is in authorized_keys
-  become: true
-  authorized_key:
-    user: deploy
-    state: present
-    key: "{{ lookup('file', 'deploy.id_rsa.pub') }}"
-
 # Needed for docker-compose --host, from remote
 - name: Ensure sshd is configured with higher `MaxSessions`
   become: true

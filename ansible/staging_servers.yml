@@ -5,5 +5,5 @@
     - master
     - review
   roles:
-    - staging_server
-
+    - server
+    - staging
