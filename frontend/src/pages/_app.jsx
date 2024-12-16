@@ -1,7 +1,7 @@
-import React from 'react'
 import { bool, func, object, shape, string } from 'prop-types'
 
 import App from 'next/app'
+import getConfig from 'next/config'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
 
@@ -30,8 +30,10 @@ import 'semantic-ui-css/components/dimmer.min.css'
 import 'semantic-ui-css/components/table.min.css'
 import 'semantic-ui-css/components/progress.min.css'
 
-import './_app.scss'
 import SearchProvider from '@contexts/SearchContext'
+import './_app.scss'
+
+const domain = getConfig().publicRuntimeConfig.KITSPACE_DOMAIN
 
 if (typeof window !== 'undefined') {
   window.plausible =
@@ -43,7 +45,7 @@ if (typeof window !== 'undefined') {
 }
 
 function KitspaceApp({ Component, pageProps, isStaticFallback, initialQuery }) {
-  const setStaticFallback = isStaticFallback ? (
+  const staticFallbackScript = isStaticFallback ? (
     <script
       // using dangerouslySetInnerHTML to avoid browser parsing errors
       // (could be that these only happen in development mode)
@@ -56,9 +58,20 @@ function KitspaceApp({ Component, pageProps, isStaticFallback, initialQuery }) {
   if (typeof window !== 'undefined') {
     isStaticFallback = isStaticFallback || window.isStaticFallback
   }
+  const plausibleScript =
+    domain === 'kitspace.org' ? (
+      <script
+        defer
+        data-domain={domain}
+        src="https://plausible.io/js/script.outbound-links.js"
+      ></script>
+    ) : null
   return (
     <SearchProvider initialQuery={initialQuery}>
-      <Head>{setStaticFallback}</Head>
+      <Head>
+        {staticFallbackScript}
+        {plausibleScript}
+      </Head>
       <Component {...pageProps} />
       {isStaticFallback ? <ErrorMessage /> : null}
     </SearchProvider>
