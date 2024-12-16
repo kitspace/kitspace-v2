@@ -49,11 +49,6 @@ provider "bunnynet" {
   alias   = "production"
 }
 
-moved {
-  from = bunnynet_dns_zone.kitspace_zone
-  to   = bunnynet_dns_zone.kitspace_dev_zone
-}
-
 resource "bunnynet_dns_zone" "kitspace_dev_zone" {
   domain   = "kitspace.dev"
   provider = bunnynet.staging
@@ -94,11 +89,6 @@ provider "sentry" {
 
 locals {
   staging_branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
-}
-
-moved {
-  from = module.deployment
-  to   = module.staging
 }
 
 module "staging" {
