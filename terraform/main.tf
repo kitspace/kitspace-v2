@@ -84,4 +84,5 @@ module "deployment" {
   source               = "./deployment"
   branch_name          = each.value
   bunnynet_dns_zone_id = bunnynet_dns_zone.kitspace_zone.id
+  domain               = var.domain
 }
