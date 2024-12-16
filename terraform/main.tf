@@ -38,8 +38,12 @@ provider "bunnynet" {
   api_key = var.bunnynet_api_key
 }
 
+variable "domain" {
+  type = string
+}
+
 resource "bunnynet_dns_zone" "kitspace_zone" {
-  domain = "kitspace.dev"
+  domain = var.domain
 }
 
 // ---------------------------------------------------------
