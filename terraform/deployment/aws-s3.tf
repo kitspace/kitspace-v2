@@ -1,10 +1,9 @@
 resource "aws_s3_bucket" "processor_bucket" {
-  bucket = "kitspace-staging-${var.branch_name}-5"
+  bucket = var.branch_name == "production" ? "kitspace-production" : "kitspace-staging-${var.branch_name}-5"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket = aws_s3_bucket.processor_bucket.id
-
+  bucket                  = aws_s3_bucket.processor_bucket.id
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
@@ -22,7 +21,6 @@ resource "aws_s3_bucket_ownership_controls" "ownership" {
 resource "aws_s3_bucket_acl" "frontend_acl" {
   bucket = aws_s3_bucket.processor_bucket.id
   acl    = "public-read"
-
   depends_on = [
     aws_s3_bucket_ownership_controls.ownership,
     aws_s3_bucket_public_access_block.public_access,
@@ -52,7 +50,7 @@ resource "aws_s3_bucket_policy" "allow_public_read" {
         Effect    = "Allow",
         Principal = "*",
         Action    = "s3:GetObject",
-        Resource  = "arn:aws:s3:::kitspace-staging-${var.branch_name}-5/*"
+        Resource  = "arn:aws:s3:::${aws_s3_bucket.processor_bucket.bucket}/*"
       }
     ]
   })
@@ -60,7 +58,6 @@ resource "aws_s3_bucket_policy" "allow_public_read" {
 
 resource "aws_s3_bucket_cors_configuration" "cors" {
   bucket = aws_s3_bucket.processor_bucket.id
-
   cors_rule {
     allowed_headers = ["*"]
     allowed_methods = ["GET", "HEAD"]

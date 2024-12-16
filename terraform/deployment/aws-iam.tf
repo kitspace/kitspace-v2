@@ -1,9 +1,13 @@
+locals {
+  bucket = aws_s3_bucket.processor_bucket.bucket
+}
+
 resource "aws_iam_user" "s3_user" {
-  name = "kitspace-staging-${var.branch_name}-s3-user"
+  name = "${local.bucket}-s3-user"
 }
 
 resource "aws_iam_policy" "s3_kitspace_processor_policy" {
-  name        = "kitspace-staging-${var.branch_name}-s3-policy"
+  name        = "${local.bucket}-s3-policy"
   description = "Policy for processor S3 bucket access"
 
   policy = jsonencode({
@@ -14,7 +18,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
         Action = [
           "s3:ListBucket"
         ]
-        Resource = "arn:aws:s3:::kitspace-staging-${var.branch_name}-5"
+        Resource = "arn:aws:s3:::${local.bucket}"
       },
       {
         Effect = "Allow"
@@ -23,7 +27,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
           "s3:GetObject",
           "s3:DeleteObject"
         ]
-        Resource = "arn:aws:s3:::kitspace-staging-${var.branch_name}-5/*"
+        Resource = "arn:aws:s3:::${local.bucket}/*"
       }
     ]
   })
@@ -36,9 +40,4 @@ resource "aws_iam_user_policy_attachment" "s3_policy_attach" {
 
 resource "aws_iam_access_key" "s3_user_access_key" {
   user = aws_iam_user.s3_user.name
-}
-
-output "s3_user_access_key" {
-  value     = aws_iam_access_key.s3_user_access_key
-  sensitive = true
 }
