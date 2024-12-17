@@ -9,6 +9,7 @@ trap "kill 0" EXIT
 sed \
    -e "s/@MAX_FILE_SIZE/${MAX_FILE_SIZE}/g" \
    -e "s/@KITSPACE_DOMAIN/${KITSPACE_DOMAIN}/g" \
+   -e "s/@KITSPACE_ROBOTS_TXT/${KITSPACE_ROBOTS_TXT}/g" \
    -e "s/@KITSPACE_URL/${KITSPACE_SCHEME}:\\/\\/${KITSPACE_DOMAIN}${KITSPACE_EXTERNAL_PORT}/g" \
    /opt/kitspace.template > /etc/nginx/conf.d/default.conf
 
