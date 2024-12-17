@@ -202,31 +202,31 @@ jobs:
           case '${{ github.ref_name }}' in
             kaspar-dev)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
-              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\nDisallow: /\n"' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\nDisallow: /\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev-5' >> $GITHUB_ENV;;
             abdo-dev)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
-              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\nDisallow: /\n"' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\nDisallow: /\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev-5' >> $GITHUB_ENV;;
             review)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
-              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\nDisallow: /\n"' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\nDisallow: /\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review-5' >> $GITHUB_ENV;;
             master)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
-              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\nDisallow: /\n"' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\nDisallow: /\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-5' >> $GITHUB_ENV;;
             production)
               echo 'KITSPACE_DOMAIN=test.kitspace.org' >> $GITHUB_ENV
-              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\nAllow: /\n"' >> $GITHUB_ENV
+              echo 'KITSPACE_ROBOTS_TXT="User-agent: *\\nAllow: /\\n"' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.PRODUCTION_S3_ACCESS_KEY }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.PRODUCTION_STAGING_S3_SECRET_KEY }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-production' >> $GITHUB_ENV;;
