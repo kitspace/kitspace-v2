@@ -40,13 +40,8 @@ server {
 
     server_name gitea.@KITSPACE_DOMAIN;
 
-    set $block_robots "@BLOCK_ROBOTS";
-
     location = /robots.txt {
         add_header Content-Type text/plain;
-        if ($block_robots = "false") {
-          return 200 "User-Agent: *\nAllow: /\n";
-        }
         return 200 "User-Agent: *\nDisallow: /\n";
     }
 
@@ -83,13 +78,8 @@ server {
 
     server_name meilisearch.@KITSPACE_DOMAIN;
 
-    set $block_robots "@BLOCK_ROBOTS";
-
     location = /robots.txt {
         add_header Content-Type text/plain;
-        if ($block_robots = "false") {
-          return 200 "User-Agent: *\nAllow: /\n";
-        }
         return 200 "User-Agent: *\nDisallow: /\n";
     }
 
