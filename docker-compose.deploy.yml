@@ -25,6 +25,7 @@ services:
       - CERTBOT_DOMAINS=${KITSPACE_DOMAIN},gitea.${KITSPACE_DOMAIN},meilisearch.${KITSPACE_DOMAIN}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
       - 'USE_LOCAL_MINIO=false'
+      - BLOCK_ROBOTS=${BLOCK_ROBOTS}
     volumes:
       - nginx-letsencrypt:/etc/letsencrypt
     restart: always
