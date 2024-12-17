@@ -5,12 +5,6 @@ export const MAXIMUM_REPO_MIGRATION_TIME = parseInt(
   10,
 )
 
-export const REMOTE_API_TOKENS = (process.env.REMOTE_API_TOKENS || '')
-  .split(',')
-  .map(x => x.trim())
-  .filter(x => x)
-  .map(x => `Bearer ${x}`)
-
 export const GITEA_DB_HOST = process.env.GITEA_DB_HOST
 export const GITEA_DB_PORT = parseInt(process.env.GITEA_DB_PORT, 10)
 export const GITEA_DB_USER = process.env.GITEA_DB_USER
