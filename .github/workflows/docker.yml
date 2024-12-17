@@ -142,9 +142,12 @@ jobs:
   get_env:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-22.04
-    name: Get staging/production env for secrets and Sentry
+    name: Get staging/production
+    outputs:
+      env: ${{ steps.set_env.outputs.env }}
     steps:
-      - name: Get env
+      - name: Set the env
+        id: set_env
         shell: bash
         run: |
           if [ "${{ github.ref_name }}" == "production" ]; then
