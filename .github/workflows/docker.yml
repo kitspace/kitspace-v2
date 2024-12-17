@@ -161,7 +161,8 @@ jobs:
       - get_env
       - get_version
       - build
-    environment: staging
+    environment:
+      name: ${{ needs.get_env.outputs.env }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
