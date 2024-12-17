@@ -8,9 +8,29 @@ on:
     branches: [abdo-dev, kaspar-dev, review, master, production]
 
 jobs:
+  get_env:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-22.04
+    name: Get staging/production
+    outputs:
+      env: ${{ steps.set_env.outputs.env }}
+    steps:
+      - name: Set the env
+        id: set_env
+        shell: bash
+        run: |
+          if [ "${{ github.ref_name }}" == "production" ]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+          else
+            echo "env=staging" >> $GITHUB_OUTPUT
+          fi
+
   copy_import_script:
     runs-on: ubuntu-22.04
-    environment: staging
+    environment:
+      name: ${{ needs.get_env.outputs.env }}
+    needs:
+      - get_env
     steps:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
@@ -23,17 +43,18 @@ jobs:
       - name: Compile the script
         run: deno compile --allow-env --allow-net --allow-run --target x86_64-unknown-linux-gnu --output target/importBoardsTxt scripts/importBoardsTxt.ts --githubToken ${{ secrets.IMPORT_SCRIPT_ACCESS_TOKEN }}
 
-      - name: Copy the script to host
+      - name: 'Set domain'
+        id: set_domain
         run: |
-          echo -e '${{ secrets.STAGING_SSH_PRIVATE_KEY }}' > key-file
-          chmod 600 key-file
-          rsync --compress -e 'ssh -i key-file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' target/importBoardsTxt 'deploy@${{ github.ref_name }}.staging.kitspace.dev:'
+          if [ "${{ github.ref_name }}" == "production" ]; then
+            echo 'domain=test.kitspace.org' >> $GITHUB_OUTPUT
+          else
+            echo 'domain=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_OUTPUT
+          fi
 
-      - name: Make the script executable on host
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ github.ref_name }}.staging.kitspace.dev
-          username: deploy
-          key: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
-          script: |
-            chmod +x importBoardsTxt
+      - name: Copy the script to ${{ steps.set_domain.outputs.domain }}
+        run: |
+          echo -e '${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}' > key-file
+          chmod 600 key-file
+          scp -i key-file -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no target/importBoardsTxt 'deploy@${{ steps.set_domain.outputs.domain }}:'
+          rm -f key-file
