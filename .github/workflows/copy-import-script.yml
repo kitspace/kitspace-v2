@@ -5,7 +5,7 @@ on:
     paths:
       - 'scripts/importBoardsTxt.ts'
       - '.github/workflows/copy-import-script.yml'
-    branches: [abdo-dev, kaspar-dev, review, master]
+    branches: [abdo-dev, kaspar-dev, review, master, production]
 
 jobs:
   copy_import_script:
