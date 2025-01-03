@@ -1,11 +1,16 @@
-# Kitspace Using a Gitea Backend
-
-_work in progress_
+# https://kitspace.org
 
 [![Docker workflow status badge](https://github.com/kitspace/kitspace-v2/actions/workflows/docker.yml/badge.svg?branch=master)](https://github.com/kitspace/kitspace-v2/actions/workflows/docker.yml?query=branch%3Amaster)
 [![kitspace-v2](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/d8hk55&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/d8hk55/runs)
 
-Re-writing [Kitspace](https://github.com/kitspace/kitspace) to use [Gitea](https://github.com/go-gitea/gitea) as a Git and authentication service.
+Kitspace is a project sharing site for electronics project. 
+
+> [Watch a 5 minute lightning-talk about Kitspace from the 35th Chaos Communication Congress (35C3)](https://media.ccc.de/v/35c3-9566-lightning_talks_day_2#t=477).
+
+[![video](image_src/35c3_lightning.jpg)](https://media.ccc.de/v/35c3-9566-lightning_talks_day_2#t=477)
+
+
+This is a rewrite for the original [Kitspace](https://github.com/kitspace/kitspace) to use [Gitea](https://github.com/go-gitea/gitea) as a Git and authentication service.
 
 ## Goals
 
