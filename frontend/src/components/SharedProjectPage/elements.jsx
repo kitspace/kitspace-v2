@@ -93,6 +93,8 @@ const AssetPlaceholder = ({ asset }) => {
         padding: '4em',
         borderStyle: 'dashed',
         borderRadius: '0.8em',
+        borderColor: '#eee',
+        color: '#aaa',
       }}
     >
       {message}.
