@@ -17,6 +17,8 @@ Allow people to:
 
 ## Adding your project
 
+Please edit the [boards.txt](boards.txt) file to add your git repo containing an electronics project. You can add a kitspace.yaml to make sure we find all the right files (details below). We will be improving this workflow, come [chat to us](https://app.element.io/#/room/#kitspace:matrix.org) in the meantime and we would be happy to help. 
+
 ### kitspace.yaml format
 
 Currently the `kitspace.yaml` makes use of the following fields:
