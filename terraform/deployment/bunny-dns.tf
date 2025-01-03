@@ -10,7 +10,7 @@ resource "bunnynet_dns_record" "a_wildcard" {
   value = aws_eip.instance_ip.public_ip
   # defaults when adding this record via web UI
   latency_zone = "DE"
-  monitor_type = "Ping"
+  monitor_type = "None"
 }
 
 resource "bunnynet_dns_record" "a" {
@@ -21,7 +21,7 @@ resource "bunnynet_dns_record" "a" {
   value = aws_eip.instance_ip.public_ip
   # defaults when adding this record via web UI
   latency_zone = "DE"
-  monitor_type = "Ping"
+  monitor_type = "None"
 }
 
 resource "bunnynet_dns_record" "frontend_cdn" {
