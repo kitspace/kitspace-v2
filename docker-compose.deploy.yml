@@ -11,7 +11,7 @@ services:
     command: /usr/bin/entrypoint
     restart: always
     ports:
-      - '3333:3000'
+      - '8443:3000'
 
   postgres:
     restart: always

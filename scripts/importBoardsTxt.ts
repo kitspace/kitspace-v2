@@ -13,14 +13,14 @@ const flags = parse(Deno.args, {
   boolean: ['help', 'tokenOnly', 'shuffle'],
   default: {
     numberOfRepos: 150,
-    giteaUrl: 'http://localhost:3333',
+    giteaUrl: 'http://localhost:8443',
     shuffle: true,
   },
 })
 
 const HELP_TEXT = `Usage: importBoardsTxt [options]
     options:
-      --giteaUrl: Gitea URL (default: http://localhost:3333)
+      --giteaUrl: Gitea URL (default: http://localhost:8443)
       --adminToken: Gitea admin API token (default: generated automatically)
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
       --filter: Filter the boards.txt file by url before importing (default: none)
