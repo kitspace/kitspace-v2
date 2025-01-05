@@ -113,6 +113,8 @@ export interface AddProjectToQueueData {
   repoDescription: string
   giteaId: string
   gitDir: string
+  updatedUnix: string
+  createdUnix: string
 }
 export async function addProjectToQueues({
   defaultBranch,
@@ -122,6 +124,8 @@ export async function addProjectToQueues({
   repoDescription,
   giteaId,
   gitDir,
+  updatedUnix,
+  createdUnix,
 }: AddProjectToQueueData) {
   const inputDir = path.join(DATA_DIR, 'checkout', ownerName, repoName)
 
@@ -165,6 +169,8 @@ export async function addProjectToQueues({
       ownerName,
       repoDescription,
       repoName,
+      updatedUnix,
+      createdUnix,
     })
 
     await writeKitspaceYamlQueue.add(

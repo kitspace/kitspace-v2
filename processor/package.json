@@ -10,7 +10,7 @@
     "node": ">=16"
   },
   "scripts": {
-    "dev": "tsc-watch --noClear --onSuccess 'bash -c \"yarn cp-assets && node ./dist/src/main.js\"'",
+    "dev": "tsc-watch --noClear --onCompilationComplete 'bash -c \"yarn cp-assets && node ./dist/src/main.js\"'",
     "cp-assets": "find ./src ! -name '*.ts' -exec cp -r '{}' ./dist/src/ \\;",
     "cp-test-assets": "find ./test ! -name '*.ts' -exec cp -r '{}' ./dist/test/ \\;",
     "test": "vitest run",

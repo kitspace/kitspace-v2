@@ -33,7 +33,7 @@ export async function getRepoInfo(
   repoName: string,
 ): Promise<RepoInfo | undefined> {
   const rows = await sql<Array<RepoInfo>>`
-      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
+      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch, created_unix, updated_unix
         FROM repository WHERE lower(owner_name)=${ownerName.toLowerCase()} AND
         lower_name=${repoName.toLowerCase()}`
 
@@ -42,7 +42,7 @@ export async function getRepoInfo(
 
 export async function getAllRepoInfo(): Promise<Array<RepoInfo>> {
   const rows = await sql<Array<RepoInfo>>`
-      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch
+      SELECT id, is_mirror, is_empty, owner_name, name, description, original_url, default_branch, created_unix, updated_unix
         FROM repository`
 
   return rows
@@ -77,7 +77,7 @@ export async function waitForRepoMigration(repoId: string): Promise<void> {
 
 /**
  * Subscribe to `insert`, `update`, `delete`, or `all` operations on the `repository` table.
- * @param callback - the callback will be called for4 each row that had an operation performed on it.
+ * @param callback - the callback will be called for each row that had an operation performed on it.
  */
 export async function subscribeToRepoEvents(
   operation: Operation,
@@ -110,6 +110,8 @@ export interface RepoInfo {
   original_url: string
   name: string
   description: string
+  created_unix: string
+  updated_unix: string
 }
 
 export enum Operation {

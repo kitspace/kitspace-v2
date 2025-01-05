@@ -120,6 +120,8 @@ describe(
           original_url: 'https://github.com/kitspace/ruler',
           name: 'ruler',
           description: '',
+          created_unix: '1',
+          updated_unix: '1',
         }
         giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
 
@@ -178,6 +180,8 @@ describe(
         original_url: 'https://github.com/kitspace-forks/diy_particle_detector',
         name: 'diy_particle_detector',
         description: '',
+        created_unix: '1',
+        updated_unix: '1',
       }
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
       // first we reset HEAD/master to an exact version of the repo
@@ -235,6 +239,8 @@ describe(
         original_url: 'https://github.com/kitspace-test-repos/tinyogx360',
         name: 'tinyogx360',
         description: '',
+        created_unix: '1',
+        updated_unix: '1',
       }
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
       // first we reset HEAD/master to an exact version of the repo
@@ -284,6 +290,8 @@ describe(
           'https://github.com/kitspace-test-repos/spaces-in-kitspace-data-paths',
         name: 'spaces-in-kitspace-data-paths',
         description: '',
+        created_unix: '1',
+        updated_unix: '1',
       }
 
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
@@ -334,6 +342,8 @@ describe(
         original_url: 'https://github.com/kitspace-test-repos/rover',
         name: 'rover',
         description: '',
+        created_unix: '1',
+        updated_unix: '1',
       }
 
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))
@@ -387,6 +397,8 @@ describe(
         original_url: 'https://github.com/kitspace-test-repos/The-Open-Book',
         name: 'the-open-book',
         description: '',
+        created_unix: '1',
+        updated_unix: '1',
       }
 
       giteaDB.getRepoInfo.mockReturnValue(Promise.resolve(repoInfo))

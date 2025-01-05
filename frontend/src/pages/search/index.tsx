@@ -25,7 +25,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const query = (queryParams.q as string) || ''
 
-  const searchParams = { query }
+  const searchParams =
+    query == '' ? { query, sort: ['updatedUnix:desc'] } : { query }
 
   const hits = await searchFetcher(searchParams)
   const props: SearchPageProps = {
@@ -53,7 +54,11 @@ const Search = ({ swrFallback }: SearchPageProps) => {
 
 const PageContent = () => {
   const { query } = useSearchQuery()
-  const { projects, intersectionObserverRef } = useLazySearch({ query })
+  let sort
+  if (query === '') {
+    sort = ['updatedUnix:desc']
+  }
+  const { projects, intersectionObserverRef } = useLazySearch({ query, sort })
 
   return (
     <>

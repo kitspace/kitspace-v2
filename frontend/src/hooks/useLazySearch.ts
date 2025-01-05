@@ -9,6 +9,7 @@ import Project from '@models/Project'
 interface SearchParams {
   query: string
   filter?: Filter
+  sort?: Array<string>
 }
 
 interface SearchSWRKeyParams extends SearchParams {
@@ -19,7 +20,7 @@ interface SearchSWRKeyParams extends SearchParams {
 const defaultPageSize = 18
 
 export const makeSWRKeyGetter =
-  ({ query, filter }: SearchParams) =>
+  ({ query, filter, sort }: SearchParams) =>
   (pageIndex: number, previousPageData: Array<Project>): SearchSWRKeyParams => {
     if (previousPageData && !previousPageData.length) {
       // reached the end
@@ -30,6 +31,7 @@ export const makeSWRKeyGetter =
       offset: pageIndex * defaultPageSize,
       limit: defaultPageSize,
       filter,
+      sort,
     }
   }
 
@@ -40,8 +42,9 @@ export const searchFetcher = async ({
   offset = 0,
   query = '',
   limit = defaultPageSize,
+  sort,
 }: SearchFetcherParams) => {
-  const searchResult = await meiliIndex.search(query, { limit, offset, filter })
+  const searchResult = await meiliIndex.search(query, { limit, offset, filter, sort })
   return searchResult.hits as Array<Project>
 }
 
