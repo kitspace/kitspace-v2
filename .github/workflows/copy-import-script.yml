@@ -47,7 +47,7 @@ jobs:
         id: set_domain
         run: |
           if [ "${{ github.ref_name }}" == "production" ]; then
-            echo 'domain=test.kitspace.org' >> $GITHUB_OUTPUT
+            echo 'domain=kitspace.org' >> $GITHUB_OUTPUT
           else
             echo 'domain=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_OUTPUT
           fi
