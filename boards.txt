@@ -148,3 +148,4 @@ https://github.com/mlab-modules/USBI2C01
 https://github.com/dtomcat/ArdPromSD
 https://github.com/rbaron/b-parasite
 https://github.com/Ryzee119/hawk
+https://github.com/sgreg/4chord-midi

@@ -9,7 +9,7 @@ import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
 import shuffle from 'https://deno.land/x/shuffle@v1.0.1/mod.ts'
 
 const flags = parse(Deno.args, {
-  string: ['giteaUrl', 'adminToken', 'githubToken', 'filter'],
+  string: ['giteaUrl', 'adminToken', 'githubToken', 'filter', 'urls'],
   boolean: ['help', 'tokenOnly', 'shuffle'],
   default: {
     numberOfRepos: 150,
@@ -24,6 +24,7 @@ const HELP_TEXT = `Usage: importBoardsTxt [options]
       --adminToken: Gitea admin API token (default: generated automatically)
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
       --filter: Filter the boards.txt file by url before importing (default: none)
+      --urls: comma separated list of urls to import, using this means it doesn't retrieve the boards.txt file
       --numberOfRepos: Number of repositories to import (default: 1000)
       --tokenOnly: Only generate the admin token and exit.
       --shuffle: Shuffle the boards.txt file before importing (default: true)
@@ -57,7 +58,12 @@ const headers = {
 }
 
 async function main() {
-  let boards = await getBoardsTxt()
+  let boards: Array<string>
+  if (flags.urls) {
+    boards = flags.urls.split(',').filter(Boolean)
+  } else {
+    boards = await getBoardsTxt()
+  }
   if (flags.filter) {
     const filter = new RegExp(flags.filter, 'i')
     boards = boards.filter(board => filter.test(board))
