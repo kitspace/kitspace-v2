@@ -4,3 +4,6 @@
   roles:
     - server
     - production
+    - role: artis3n.tailscale
+      vars:
+        tailscale_up_skip: true
