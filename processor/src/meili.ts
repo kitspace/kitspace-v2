@@ -11,6 +11,7 @@ const meiliSettings: Settings = {
     'ownerName',
     'repoName',
   ],
+  sortableAttributes: ['createdUnix', 'updatedUnix'],
   displayedAttributes: ['id', 'ownerName', 'projectName', 'repoName', 'summary'],
 }
 

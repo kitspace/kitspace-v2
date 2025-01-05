@@ -9,6 +9,7 @@ import Project from '@models/Project'
 interface SearchParams {
   query: string
   filter?: Filter
+  sort?: Array<string>
 }
 
 interface SearchSWRKeyParams extends SearchParams {
@@ -40,8 +41,9 @@ export const searchFetcher = async ({
   offset = 0,
   query = '',
   limit = defaultPageSize,
+  sort,
 }: SearchFetcherParams) => {
-  const searchResult = await meiliIndex.search(query, { limit, offset, filter })
+  const searchResult = await meiliIndex.search(query, { limit, offset, filter, sort })
   return searchResult.hits as Array<Project>
 }
 

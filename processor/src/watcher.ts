@@ -55,6 +55,8 @@ async function addToQueues(giteaRepo: giteaDB.RepoInfo, repoDir: string) {
   const originalUrl = giteaRepo.original_url
   const repoDescription = giteaRepo.description
   const defaultBranch = giteaRepo.default_branch
+  const createdUnix = giteaRepo.created_unix
+  const updatedUnix = giteaRepo.updated_unix
 
   // use case-correct names from the DB
   ownerName = giteaRepo.owner_name
@@ -68,6 +70,8 @@ async function addToQueues(giteaRepo: giteaDB.RepoInfo, repoDir: string) {
     repoDescription,
     giteaId,
     gitDir,
+    createdUnix,
+    updatedUnix,
   })
 }
 

@@ -17,7 +17,7 @@ interface AddToSearchData {
 }
 
 export default async function addToSearch(
-  job: Job,
+  _job: Job,
   {
     subprojectName,
     giteaId,
@@ -27,6 +27,8 @@ export default async function addToSearch(
     repoName,
     hash,
     readmeHTML,
+    createdUnix,
+    updatedUnix,
   }: AddToSearchData & Partial<ProjectJobData>,
 ) {
   // A document identifier must be of type integer or string,
@@ -48,6 +50,8 @@ export default async function addToSearch(
     ownerName,
     repoId: giteaId,
     repoName,
+    createdUnix,
+    updatedUnix,
   }
   log.debug(
     `meilisearch: adding/updating document id='${searchId}' for repo ${ownerName}/${repoName}`,

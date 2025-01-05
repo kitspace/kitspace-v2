@@ -12,6 +12,8 @@ export interface RepoJobData {
   ownerName: string
   repoName: string
   repoDescription: string
+  createdUnix: string
+  updatedUnix: string
 }
 
 export interface ProjectJobData

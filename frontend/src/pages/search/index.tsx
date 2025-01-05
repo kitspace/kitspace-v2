@@ -25,7 +25,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   const query = (queryParams.q as string) || ''
 
-  const searchParams = { query }
+  const searchParams =
+    query == '' ? { query, sort: ['updatedUnix:desc'] } : { query }
 
   const hits = await searchFetcher(searchParams)
   const props: SearchPageProps = {
