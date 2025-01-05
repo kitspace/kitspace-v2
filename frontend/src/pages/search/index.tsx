@@ -54,7 +54,11 @@ const Search = ({ swrFallback }: SearchPageProps) => {
 
 const PageContent = () => {
   const { query } = useSearchQuery()
-  const { projects, intersectionObserverRef } = useLazySearch({ query })
+  let sort
+  if (query === '') {
+    sort = ['updatedUnix:desc']
+  }
+  const { projects, intersectionObserverRef } = useLazySearch({ query, sort })
 
   return (
     <>

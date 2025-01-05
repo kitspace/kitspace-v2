@@ -20,7 +20,7 @@ interface SearchSWRKeyParams extends SearchParams {
 const defaultPageSize = 18
 
 export const makeSWRKeyGetter =
-  ({ query, filter }: SearchParams) =>
+  ({ query, filter, sort }: SearchParams) =>
   (pageIndex: number, previousPageData: Array<Project>): SearchSWRKeyParams => {
     if (previousPageData && !previousPageData.length) {
       // reached the end
@@ -31,6 +31,7 @@ export const makeSWRKeyGetter =
       offset: pageIndex * defaultPageSize,
       limit: defaultPageSize,
       filter,
+      sort,
     }
   }
 
