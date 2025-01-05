@@ -3,7 +3,7 @@ services:
     image: ghcr.io/kitspace/frontend${FRONTEND_DEPLOY_IMAGE_TAG}
     environment:
       - NODE_ENV=production
-      - 'KITSPACE_PROCESSOR_ASSET_URL=https://processor-cdn.${KITSPACE_DOMAIN}/${KITSPACE_PROCESSOR_ASSET_VERSION}'
+      - 'KITSPACE_PROCESSOR_ASSET_URL=https://processor-cdn.${KITSPACE_DOMAIN}/${KITSPACE_PROCESSOR_ASSET_VERSION_FRONTEND}'
       - 'KITSPACE_FRONTEND_ASSET_URL=https://frontend-cdn.${KITSPACE_DOMAIN}'
     restart: always
 
