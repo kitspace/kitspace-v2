@@ -1,0 +1,3 @@
+roles:
+  - name: artis3n.tailscale
+    version: v4.5.0
