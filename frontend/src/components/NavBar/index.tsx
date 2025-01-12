@@ -68,24 +68,30 @@ const SmallBar = () => (
         </Button>
       }
     >
-      <AddProjectButton />
-      <SiteMenuItems />
-      <SocialMenuItems />
+      <Menu inverted vertical className={styles.smallMenu}>
+        <AddProjectButton />
+        <SiteMenuItems />
+        <SocialMenuItems />
+      </Menu>
     </Popup>
   </div>
 )
 
 const AddProjectButton = () => {
   return (
-    <Link
-      passHref
-      href="https://github.com/kitspace/kitspace-v2#adding-your-project"
-    >
-      <Button as="a" basic inverted>
-        <Icon name="external" />
-        Adding a project
-      </Button>
-    </Link>
+    <Menu.Item data-cy="add-project">
+      <Link
+        passHref
+        href="https://github.com/kitspace/kitspace-v2#adding-your-project"
+      >
+        <a>
+          Adding a project
+          <span style={{ marginLeft: 10 }}>
+          <Icon name="external alternate" />
+          </span>
+        </a>
+      </Link>
+    </Menu.Item>
   )
 }
 
@@ -158,10 +164,12 @@ const ContactMenu = () => (
     on="click"
     position="bottom right"
     trigger={
-      <Button as="a" basic inverted>
-        <Icon name="angle down" />
-        Make contact
-      </Button>
+      <Menu.Item className="contact-button">
+        <Button basic inverted icon labelPosition="right">
+          <Icon name="angle down" />
+          Make contact
+        </Button>
+      </Menu.Item>
     }
   >
     <Menu secondary vertical>
