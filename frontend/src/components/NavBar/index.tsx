@@ -84,10 +84,12 @@ const AddProjectButton = () => {
         passHref
         href="https://github.com/kitspace/kitspace-v2#adding-your-project"
       >
-        <Button icon as="a" color="green" id="add_project" labelPosition="left">
-          <Icon name="plus" />
-          Add a project
-        </Button>
+        <a>
+          Adding a project
+          <span style={{ marginLeft: 10 }}>
+          <Icon name="external alternate" />
+          </span>
+        </a>
       </Link>
     </Menu.Item>
   )
