@@ -68,30 +68,24 @@ const SmallBar = () => (
         </Button>
       }
     >
-      <Menu inverted vertical className={styles.smallMenu}>
-        <AddProjectButton />
-        <SiteMenuItems />
-        <SocialMenuItems />
-      </Menu>
+      <AddProjectButton />
+      <SiteMenuItems />
+      <SocialMenuItems />
     </Popup>
   </div>
 )
 
 const AddProjectButton = () => {
   return (
-    <Menu.Item data-cy="add-project">
-      <Link
-        passHref
-        href="https://github.com/kitspace/kitspace-v2#adding-your-project"
-      >
-        <a>
-          Adding a project
-          <span style={{ marginLeft: 10 }}>
-          <Icon name="external alternate" />
-          </span>
-        </a>
-      </Link>
-    </Menu.Item>
+    <Link
+      passHref
+      href="https://github.com/kitspace/kitspace-v2#adding-your-project"
+    >
+      <Button as="a" basic inverted>
+        <Icon name="external" />
+        Adding a project
+      </Button>
+    </Link>
   )
 }
 
@@ -164,14 +158,10 @@ const ContactMenu = () => (
     on="click"
     position="bottom right"
     trigger={
-      <Menu.Item className="contact-button">
-        <Button icon color="blue" labelPosition="right">
-          <Icon inverted name="comments" />
-          {/* force the loading of brand-icons before the menu is visible */}
-          <Icon className={styles.icon} name="twitter" />
-          Make contact
-        </Button>
-      </Menu.Item>
+      <Button as="a" basic inverted>
+        <Icon name="angle down" />
+        Make contact
+      </Button>
     }
   >
     <Menu secondary vertical>
