@@ -87,7 +87,7 @@ const AddProjectButton = () => {
         <a>
           Adding a project
           <span style={{ marginLeft: 10 }}>
-          <Icon name="external alternate" />
+            <Icon name="external alternate" />
           </span>
         </a>
       </Link>
@@ -165,7 +165,7 @@ const ContactMenu = () => (
     position="bottom right"
     trigger={
       <Menu.Item className="contact-button">
-        <Button basic inverted icon labelPosition="right">
+        <Button basic icon inverted labelPosition="right">
           <Icon name="angle down" />
           Make contact
         </Button>
