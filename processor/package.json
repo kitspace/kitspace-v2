@@ -30,7 +30,6 @@
     "js-yaml": "^4.1.0",
     "jszip": "^3.8.0",
     "meilisearch": "^0.25.1",
-    "node-fetch": "^3.3.1",
     "pcb-stackup": "^4.2.5",
     "postgres": "^3.2.2",
     "prexit": "^1.0.0",
