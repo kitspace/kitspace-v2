@@ -11,7 +11,7 @@ import { meiliIndex } from './meili.js'
 import { sh } from './shell.js'
 import * as s3 from './s3.js'
 import redisConnection from './redisConnection.js'
-import registryBoards from './registry.json' assert { type: 'json' }
+import registryBoards from './registry.js'
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
