@@ -1,7 +1,6 @@
 import AsyncLock from 'async-lock'
 import bullmq, { FlowProducer } from 'bullmq'
 import fs from 'node:fs/promises'
-import fetch from 'node-fetch'
 import path from 'node:path'
 import { DATA_DIR, PROCESSOR_ASSET_VERSION } from './env.js'
 import { exists } from './utils.js'
@@ -12,6 +11,7 @@ import { meiliIndex } from './meili.js'
 import { sh } from './shell.js'
 import * as s3 from './s3.js'
 import redisConnection from './redisConnection.js'
+import registryBoards from './registry.json' assert { type: 'json' }
 
 const defaultJobOptions: bullmq.JobsOptions = {
   // keep completed jobs for an hour
@@ -272,16 +272,6 @@ async function alreadyProcessed(
   return allReportsExist
 }
 
-async function getRegistryBoards() {
-  const url =
-    'https://raw.githubusercontent.com/kitspace/kitspace/master/registry.json'
-  const response = await fetch(url)
-  const boards = (await response.json()) as Array<RegistryBoard>
-  return boards
-}
-
-const registryBoards = await getRegistryBoards()
-
 function getRegistryHash(localGitDir: string) {
   const repoFullName = localGitDir
     .split('/')
@@ -291,9 +281,4 @@ function getRegistryHash(localGitDir: string) {
   const registryBoard = registryBoards.find(b => b.repo.includes(repoFullName))
 
   return registryBoard ? registryBoard.hash : null
-}
-
-interface RegistryBoard {
-  repo: string
-  hash: string
 }
