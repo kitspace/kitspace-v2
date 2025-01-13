@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "module": "esnext",
+    "module": "es2022",
     "target": "es2020",
     "moduleResolution": "node",
     "noEmitOnError": false,
     "outDir": "dist",
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "skipLibCheck": true,
     "sourceMap": true,
     "stripInternal": true
