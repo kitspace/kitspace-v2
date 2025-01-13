@@ -89,6 +89,7 @@ export async function uploadFileContents(
         Body: contents,
         ContentType: contentType,
         ContentEncoding: contentEncoding,
+        CacheControl: 'max-age=365000000, immutable',
       }),
     ),
     // make a copy that you can access with user/project/HEAD instead of
@@ -100,6 +101,8 @@ export async function uploadFileContents(
         Body: contents,
         ContentType: contentType,
         ContentEncoding: contentEncoding,
+        // 10 minutes
+        CacheControl: 'max-age=600',
       }),
     ),
   ])
