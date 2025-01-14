@@ -1,7 +1,8 @@
-import { MeiliSearch, Settings } from 'meilisearch'
+import { MeiliSearch, type Settings } from 'meilisearch'
 import { MEILI_MASTER_KEY } from './env.js'
 
 const meiliSettings: Settings = {
+  distinctAttribute: 'id',
   filterableAttributes: ['id', 'repoId', 'gitHash', 'ownerName'],
   searchableAttributes: [
     'projectName',
@@ -20,4 +21,5 @@ const meili = new MeiliSearch({
   apiKey: MEILI_MASTER_KEY,
 })
 export const meiliIndex = meili.index('projects')
+await meiliIndex.update({ primaryKey: 'id' })
 await meiliIndex.updateSettings(meiliSettings)
