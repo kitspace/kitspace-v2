@@ -2,9 +2,20 @@ variable "bunnynet_dns_zone_id" {
   type = string
 }
 
-resource "bunnynet_dns_record" "a_wildcard" {
+resource "bunnynet_dns_record" "a_gitea" {
   zone  = var.bunnynet_dns_zone_id
-  name  = var.branch_name == "production" ? "*" : "*.${var.branch_name}.staging"
+  name  = var.branch_name == "production" ? "gitea" : "gitea.${var.branch_name}.staging"
+  type  = "A"
+  ttl   = 1800
+  value = aws_eip.instance_ip.public_ip
+  # defaults when adding this record via web UI
+  latency_zone = "DE"
+  monitor_type = "None"
+}
+
+resource "bunnynet_dns_record" "a_meilisearch" {
+  zone  = var.bunnynet_dns_zone_id
+  name  = var.branch_name == "production" ? "meilisearch" : "meilisearch.${var.branch_name}.staging"
   type  = "A"
   ttl   = 1800
   value = aws_eip.instance_ip.public_ip
