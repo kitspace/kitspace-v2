@@ -21,5 +21,5 @@ const meili = new MeiliSearch({
   apiKey: MEILI_MASTER_KEY,
 })
 export const meiliIndex = meili.index('projects')
-await meiliIndex.update({ primaryKey: 'id' })
+meili.updateIndex('projects', { primaryKey: 'id' })
 await meiliIndex.updateSettings(meiliSettings)
