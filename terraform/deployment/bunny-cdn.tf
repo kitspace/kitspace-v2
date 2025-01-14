@@ -3,7 +3,7 @@ variable "domain" {
 }
 
 locals {
-  deployment_domain = var.branch_name == "production" ? var.domain : "${var.branch_name}.staging.${var.domain}"
+  deployment_domain = var.mode == "production" ? var.domain : "${var.branch_name}.staging.${var.domain}"
 }
 
 resource "bunnynet_pullzone" "frontend" {

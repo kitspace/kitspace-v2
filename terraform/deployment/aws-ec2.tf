@@ -15,7 +15,7 @@ resource "aws_instance" "instance" {
   ]
   key_name = var.ec2_instance_ssh_key_name
   root_block_device {
-    volume_size = var.branch_name == "production" ? 120 : 60
+    volume_size = var.mode == "production" ? 120 : 60
     tags = {
       "Name" = var.branch_name
     }
