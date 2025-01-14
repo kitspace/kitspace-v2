@@ -68,10 +68,10 @@ const DirectStores = ({ items, multiplier }: DirectStoresProps) => {
 
 const getLocation = async (signal: AbortSignal) => {
   const usedCountryCodes = Object.keys(countriesData).map(key => countriesData[key])
-  const freegeoipEndpoint = 'https://freegeoip.kitspace.org'
+  const freegeoipEndpoint = 'https://reallyfreegeoip.org/json'
 
   try {
-    const res = await fetch(freegeoipEndpoint, { signal })
+    const res = await fetch(freegeoipEndpoint, { signal, mode: 'cors' })
     const body = await res.json()
     const { country_code: code } = body
     if (code === 'GB') {
