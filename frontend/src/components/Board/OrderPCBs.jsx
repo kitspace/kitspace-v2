@@ -15,7 +15,6 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const pcbwayUrl = `https://www.pcbway.com/QuickOrderOnline.aspx?fileurl=${zipUrl}&from=kitspace`
   const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
   const pcbShopperUrl = `https://pcbshopper.com/?Width=${boardSpecs.width}&Height=${boardSpecs.height}&Units=mm&Layers=${boardSpecs.layers}&Quantity=1&GetPrices`
-  const jlcpcbUrl = `https://cart.jlcpcb.com/quote?fileurl=${zipUrl}&from=kitspace`
   const pcbgogoUrl = `https://www.pcbgogo.com/pcb-fabrication-quote.html?fileurl=${zipUrl}`
 
   const trackClick = vendor => () => {
@@ -70,22 +69,6 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
               unoptimized
               alt="PCBWay logo"
               src={`${frontendAssetUrl}/static/images/pcbway.png`}
-              {...serviceLogoDimensions}
-            />
-          </a>
-
-          <a
-            className={styles.PCBMenu__link}
-            href={jlcpcbUrl}
-            rel="nofollow noreferrer"
-            target="_blank"
-            onAuxClick={trackClick('JLCPCB')}
-            onClick={trackClick('JLCPCB')}
-          >
-            <Image
-              unoptimized
-              alt="JLCPCB logo"
-              src={`${frontendAssetUrl}/static/images/jlcpcb.png`}
               {...serviceLogoDimensions}
             />
           </a>
