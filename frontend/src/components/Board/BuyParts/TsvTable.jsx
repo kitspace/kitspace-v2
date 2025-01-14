@@ -1,13 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Table } from 'semantic-ui-react'
 import flattenDeep from 'lodash/flattenDeep'
 
 import { array, bool, string } from 'prop-types'
-import MpnPopup from './MpnPopup'
 import styles from './TsvTable.module.scss'
 
-const TsvTable = ({ parts, tsv, collapsed }) => {
-  const [activePopup, setActivePopup] = useState(null)
+const TsvTable = ({ tsv, collapsed }) => {
   const markerColor = ref => {
     if (/^C\d/.test(ref)) {
       return 'orange'
@@ -30,36 +28,10 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
     return 'purple'
   }
 
-  const mpnCells = (contents, rowIndex, columnIndex) => {
-    const active =
-      activePopup && activePopup[0] === rowIndex && activePopup[1] === columnIndex
+  const mpnCells = (contents, _, columnIndex) => {
     const cells = contents.map((t, i) => (
-      <Table.Cell key={`${columnIndex}_${i}`} active={active}>
-        {t}
-      </Table.Cell>
+      <Table.Cell key={`${columnIndex}_${i}`}>{t}</Table.Cell>
     ))
-    const number = contents[1]
-    if (number !== '') {
-      const part =
-        parts.reduce((accumulator, currentPart) => {
-          if (accumulator) {
-            return accumulator
-          }
-          if (currentPart && currentPart.mpn && currentPart.mpn.part === number) {
-            return currentPart
-          }
-          return null
-        }, null) || {}
-      return cells.map((cell, i) => (
-        <MpnPopup
-          key={`MpnPopup_${rowIndex}_${columnIndex}_${i}`}
-          part={part}
-          trigger={cell}
-          onClose={() => setActivePopup(null)}
-          onOpen={() => setActivePopup([rowIndex, columnIndex])}
-        />
-      ))
-    }
     return cells
   }
 
@@ -133,12 +105,7 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       return cell
     })
 
-    const rowActivePopup = activePopup && activePopup[0] === rowIndex
-    return (
-      <Table.Row key={rowIndex} className={rowActivePopup ? styles.selected : ''}>
-        {flattenDeep(bodyCells)}
-      </Table.Row>
-    )
+    return <Table.Row key={rowIndex}>{flattenDeep(bodyCells)}</Table.Row>
   })
 
   return (
@@ -147,7 +114,6 @@ const TsvTable = ({ parts, tsv, collapsed }) => {
       singleLine
       unstackable
       className={`${styles.TsvTable} ${styles.collapsed}`}
-      selectable={!activePopup}
       size="small"
     >
       {headingJSX}
