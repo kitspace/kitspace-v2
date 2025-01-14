@@ -106,14 +106,18 @@ services:
 
   meilisearch:
     image: getmeili/meilisearch:v0.26.1
+    ports:
+      - '7700:7700'
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     volumes:
       - meilisearch-data:/data.ms
+      - meilisearch-dumps:/dumps
 
 volumes:
   gitea-data: null
   postgres-data: null
   processor-data: null
   meilisearch-data: null
+  meilisearch-dumps: null
   nginx-conf: null
