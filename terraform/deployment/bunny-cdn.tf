@@ -40,8 +40,6 @@ resource "bunnynet_pullzone" "frontend" {
   }
 
   log_forward_enabled = false
-  # added to work around some bug in bunnynet provider
-  log_forward_server = "logs.example.com"
 }
 
 resource "bunnynet_pullzone_hostname" "frontend_cdn" {
@@ -85,8 +83,6 @@ resource "bunnynet_pullzone" "processor" {
   }
 
   log_forward_enabled = false
-  # added to work around some bug in bunnynet provider
-  log_forward_server = "logs.example.com"
 }
 
 resource "bunnynet_pullzone_hostname" "processor_cdn" {
