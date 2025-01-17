@@ -19,11 +19,12 @@ jobs:
         id: set_env
         shell: bash
         run: |
-          if [ "${{ github.ref_name }}" == "production" ]; then
+          if [ "${{ github.ref_name }}" == "production" ] || [ "${{ github.ref_name }}" == "pre-release" ]; then
             echo "env=production" >> $GITHUB_OUTPUT
           else
             echo "env=staging" >> $GITHUB_OUTPUT
           fi
+
 
   copy_import_script:
     runs-on: ubuntu-22.04
