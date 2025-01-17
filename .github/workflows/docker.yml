@@ -2,7 +2,7 @@ name: Docker
 
 on:
   push:
-    branches: [abdo-dev, kaspar-dev, review, master, pre-relese, production]
+    branches: [abdo-dev, kaspar-dev, review, master, pre-release, production]
   # using "pull_request_target" instead of "pull_request" runs this in the
   # "master" branch context and makes secrets work with external pull requests
   # (incl. dependabot). we check for author_association below so first-time
