@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "processor_bucket" {
-  bucket = var.branch_name == "production" ? "kitspace-production" : "kitspace-staging-${var.branch_name}-5"
+  bucket = var.mode == "production" ? "kitspace-${var.branch_name}" : "kitspace-staging-${var.branch_name}-5"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access" {

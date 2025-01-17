@@ -3,7 +3,7 @@ variable "domain" {
 }
 
 locals {
-  deployment_domain = var.branch_name == "production" ? var.domain : "${var.branch_name}.staging.${var.domain}"
+  deployment_domain = var.mode == "production" ? var.domain : "${var.branch_name}.staging.${var.domain}"
 }
 
 resource "bunnynet_pullzone" "frontend" {
@@ -40,8 +40,6 @@ resource "bunnynet_pullzone" "frontend" {
   }
 
   log_forward_enabled = false
-  # added to work around some bug in bunnynet provider
-  log_forward_server = "logs.example.com"
 }
 
 resource "bunnynet_pullzone_hostname" "frontend_cdn" {
@@ -85,8 +83,6 @@ resource "bunnynet_pullzone" "processor" {
   }
 
   log_forward_enabled = false
-  # added to work around some bug in bunnynet provider
-  log_forward_server = "logs.example.com"
 }
 
 resource "bunnynet_pullzone_hostname" "processor_cdn" {
