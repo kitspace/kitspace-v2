@@ -202,36 +202,42 @@ jobs:
           case '${{ github.ref_name }}' in
             kaspar-dev)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=true' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_KASPAR_DEV }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-kaspar-dev-5' >> $GITHUB_ENV;;
             abdo-dev)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=true' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_ABDO_DEV }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-abdo-dev-5' >> $GITHUB_ENV;;
             review)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=true' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_REVIEW }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-review-5' >> $GITHUB_ENV;;
             master)
               echo 'KITSPACE_DOMAIN=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=true' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.STAGING_S3_ACCESS_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-5' >> $GITHUB_ENV;;
             pre-release)
               echo 'KITSPACE_DOMAIN=kitspace.org' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=34.250.218.111' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=false' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.PRODUCTION_S3_ACCESS_KEY }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.PRODUCTION_S3_SECRET_KEY }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-production' >> $GITHUB_ENV;;
             production)
               echo 'KITSPACE_DOMAIN=kitspace.org' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=kitspace.org' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=false' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.PRODUCTION_S3_ACCESS_KEY }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.PRODUCTION_S3_SECRET_KEY }}' >> $GITHUB_ENV
@@ -269,10 +275,10 @@ jobs:
           mkdir -p ~/.ssh
           echo -e '${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan "${KITSPACE_DOMAIN}" >> ~/.ssh/known_hosts
-          docker context create deploy --docker "host=ssh://deploy@${KITSPACE_DOMAIN}"
+          ssh-keyscan "${DEPLOY_SERVER}" >> ~/.ssh/known_hosts
+          docker context create deploy --docker "host=ssh://deploy@${DEPLOY_SERVER}"
           docker context use deploy
-          docker --host="ssh://deploy@${KITSPACE_DOMAIN}" compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml up -d
+          docker --host="ssh://deploy@${DEPLOY_SERVER}" compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml up -d
           rm -f ~/.ssh/id_rsa
 
       - name: Report "review" deploy failure
