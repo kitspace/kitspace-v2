@@ -1,7 +1,6 @@
 ---
 - hosts:
-    - kitspace-org
-    - pre-release
+    - production
   roles:
     - server
     - production

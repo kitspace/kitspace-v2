@@ -8,8 +8,10 @@ resource "bunnynet_dns_record" "a_gitea" {
   type  = "A"
   ttl   = 1800
   value = aws_eip.instance_ip.public_ip
-  # defaults when adding this record via web UI
+
+  # default when adding this record via web UI
   latency_zone = "DE"
+
   monitor_type = "None"
 }
 
@@ -19,8 +21,10 @@ resource "bunnynet_dns_record" "a_meilisearch" {
   type  = "A"
   ttl   = 1800
   value = aws_eip.instance_ip.public_ip
-  # defaults when adding this record via web UI
+
+  # default when adding this record via web UI
   latency_zone = "DE"
+
   monitor_type = "None"
 }
 
@@ -30,8 +34,10 @@ resource "bunnynet_dns_record" "a" {
   type  = "A"
   ttl   = 1800
   value = aws_eip.instance_ip.public_ip
-  # defaults when adding this record via web UI
+
+  # default when adding this record via web UI
   latency_zone = "DE"
+
   monitor_type = "None"
 }
 
@@ -41,8 +47,10 @@ resource "bunnynet_dns_record" "frontend_cdn" {
   type  = "CNAME"
   ttl   = 1800
   value = "frontend-${var.branch_name}-kitspace.b-cdn.net"
-  # defaults when adding this record via web UI
+
+  # default when adding this record via web UI
   latency_zone = "DE"
+
   monitor_type = "None"
 }
 
@@ -53,7 +61,9 @@ resource "bunnynet_dns_record" "processor_cdn" {
   type  = "CNAME"
   ttl   = 1800
   value = "processor-${var.branch_name}-kitspace.b-cdn.net"
-  # defaults when adding this record via web UI
+
+  # default when adding this record via web UI
   latency_zone = "DE"
+
   monitor_type = "None"
 }
