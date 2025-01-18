@@ -106,8 +106,6 @@ services:
 
   meilisearch:
     image: getmeili/meilisearch:v1.12.3
-    ports:
-      - '7700:7700'
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     volumes:
