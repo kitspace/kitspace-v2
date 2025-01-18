@@ -19,6 +19,7 @@ const flags = parse(Deno.args, {
 const HELP_TEXT = `Usage: importBoardsTxt [options]
     options:
       --giteaUrl: Gitea URL (default: http://localhost:3333)
+      --giteaContainer: Gitea container name (default: searches for one containing the word "gitea")
       --adminToken: Gitea admin API token (default: generated automatically)
       --githubToken: GitHub API token (classic) (Embedded into the script in staging servers.)
       --filter: Filter the boards.txt file by url before importing (default: none)
@@ -309,13 +310,20 @@ async function generateGiteaAdminToken() {
     type: 'base64',
   })
 
-  const getGiteaContainerCommand = await exec(
-    `bash -c "docker ps | grep gitea | awk '{print $1}'"`,
-    { output: OutputMode.Capture },
-  )
+  let containerName: string
+
+  if (!flags.giteaContainer) {
+    const getGiteaContainerCommand = await exec(
+      `bash -c "docker ps | grep gitea | awk '{print $1}'"`,
+      { output: OutputMode.Capture },
+    )
+    containerName = getGiteaContainerCommand.output
+  } else {
+    containerName = flags.giteaContainer
+  }
 
   const giteaAdminCommand = await exec(
-    `bash -c "docker exec --user git ${getGiteaContainerCommand.output} /bin/sh -c 'gitea admin user create --username ${adminUsername} --password ${adminPassword} --email ${adminUsername}@example.com --admin --must-change-password=false'"`,
+    `bash -c "docker exec --user git ${containerName} /bin/sh -c 'gitea admin user create --username ${adminUsername} --password ${adminPassword} --email ${adminUsername}@example.com --admin --must-change-password=false'"`,
     { output: OutputMode.Capture },
   )
 
@@ -325,7 +333,7 @@ async function generateGiteaAdminToken() {
   }
 
   const giteaAdminTokenCommand = await exec(
-    `bash -c "docker exec --user git ${getGiteaContainerCommand.output} /bin/sh -c 'gitea admin user generate-access-token --username ${adminUsername} --raw --scopes write:admin,write:repository,read:admin,read:user'"`,
+    `bash -c "docker exec --user git ${containerName} /bin/sh -c 'gitea admin user generate-access-token --username ${adminUsername} --raw --scopes write:admin,write:repository,read:admin,read:user'"`,
     { output: OutputMode.Capture },
   )
 
