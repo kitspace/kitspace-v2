@@ -2,7 +2,7 @@ import React from 'react'
 import { bool } from 'prop-types'
 import getConfig from 'next/config'
 
-import { getRepo, repoExists } from '@utils/giteaApi'
+import { getRepo } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
@@ -20,19 +20,18 @@ const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
-  const username = query.user.toLowerCase()
-  const repoName = query.repo.toLowerCase()
-  const projectName = query.project.toLowerCase()
+  const userLowerCase = query.user.toLowerCase()
+  const repoLowerCase = query.repo.toLowerCase()
+  const projectName = query.project
 
-  const repoFullName = `${username}/${repoName}`
-
-  const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
-  const assetPath = `${rootAssetPath}/${projectName}`
-
-  const exists = await repoExists(repoFullName)
-  if (exists) {
+  const repo = await getRepo(`${userLowerCase}/${repoLowerCase}`)
+  if (repo) {
+    const repoName = repo.name
+    const username = repo.owner.login
+    const repoFullName = `${username}/${repoName}`
+    const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
+    const assetPath = `${rootAssetPath}/${projectName}`
     const [
-      repo,
       readme,
       [bomInfoExists, bomInfo],
       [gerberInfoExists, gerberInfo],
@@ -40,7 +39,6 @@ MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
       finishedProcessing,
       hasIBOM,
     ] = await Promise.all([
-      getRepo(repoFullName),
       getReadme(assetPath),
       getBoardBomInfo(assetPath),
       getBoardGerberInfo(assetPath),

@@ -4,7 +4,7 @@ import getConfig from 'next/config'
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 
 import { getKitspaceYamlArray } from '@utils/projectPage'
-import { getRepo, repoExists } from '@utils/giteaApi'
+import { getRepo } from '@utils/giteaApi'
 import { waitFor } from '@utils/index'
 import Project from '@models/Project'
 import { searchFetcher, SearchFetcherParams } from '@hooks/useLazySearch'
@@ -41,17 +41,20 @@ const RepoPage = (props: RepoPageProps) => {
 RepoPage.getInitialProps = async (ctx: NextPageContext): Promise<RepoPageProps> => {
   const { query, res } = ctx
 
-  const username = (query.user as string).toLowerCase()
-  const repoName = (query.repo as string).toLowerCase()
+  const userLowerCase = (query.user as string).toLowerCase()
+  const repoLowerCase = (query.repo as string).toLowerCase()
 
-  const exists = await repoExists(`${username}/${repoName}`)
+  const repo = await getRepo(`${userLowerCase}/${repoLowerCase}`)
 
-  if (!exists) {
+  if (!repo) {
     if (res != null) {
       res.statusCode = 404
     }
     return { errorCode: 404 }
   }
+
+  const repoName = repo.name
+  const username = repo.owner.login
 
   const kitspaceYamlArray = await getYamlArray(username, repoName)
 

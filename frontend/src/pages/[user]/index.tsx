@@ -10,7 +10,7 @@ import {
   searchFetcher,
   useLazySearch,
 } from '@hooks/useLazySearch'
-import { userExists } from '@utils/giteaApi'
+import { getUser } from '@utils/giteaApi'
 import Project from '@models/Project'
 
 interface UserPageProps {
@@ -19,13 +19,15 @@ interface UserPageProps {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const username = (params.user as string).toLowerCase()
-  const exists = await userExists(username)
-  if (!exists) {
+  const userLowerCase = (params.user as string).toLowerCase()
+  const user = await getUser(userLowerCase)
+  if (!user) {
     return {
       notFound: true,
     }
   }
+
+  const username = user.login
 
   const searchParams = {
     query: '',
