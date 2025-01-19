@@ -20,7 +20,9 @@ const MultiProjectPage = props =>
   props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
-  const { user: username, repo: repoName, project: projectName } = query
+  const username = query.user.toLowerCase()
+  const repoName = query.repo.toLowerCase()
+  const projectName = query.project.toLowerCase()
 
   const repoFullName = `${username}/${repoName}`
 

@@ -19,7 +19,7 @@ interface UserPageProps {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const username = params.user as string
+  const username = (params.user as string).toLowerCase()
   const exists = await userExists(username)
   if (!exists) {
     return {

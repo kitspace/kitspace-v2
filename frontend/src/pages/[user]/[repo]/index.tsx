@@ -40,15 +40,9 @@ const RepoPage = (props: RepoPageProps) => {
 
 RepoPage.getInitialProps = async (ctx: NextPageContext): Promise<RepoPageProps> => {
   const { query, res } = ctx
-  const { user: username, repo: repoName } = query
 
-  if (Array.isArray(username) || Array.isArray(repoName)) {
-    // this really can't happen but the types tell us it could
-    if (res != null) {
-      res.statusCode = 400
-    }
-    return { errorCode: 400 }
-  }
+  const username = (query.user as string).toLowerCase()
+  const repoName = (query.repo as string).toLowerCase()
 
   const exists = await repoExists(`${username}/${repoName}`)
 

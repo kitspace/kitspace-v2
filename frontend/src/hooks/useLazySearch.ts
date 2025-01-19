@@ -44,7 +44,12 @@ export const searchFetcher = async ({
   limit = defaultPageSize,
   sort,
 }: SearchFetcherParams) => {
-  const searchResult = await meiliIndex.search(query, { limit, offset, filter, sort })
+  const searchResult = await meiliIndex.search(query, {
+    limit,
+    offset,
+    filter,
+    sort,
+  })
   return searchResult.hits as Array<Project>
 }
 
