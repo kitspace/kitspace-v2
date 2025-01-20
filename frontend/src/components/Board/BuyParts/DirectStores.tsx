@@ -70,7 +70,7 @@ const getLocation = async (signal: AbortSignal) => {
   const usedCountryCodes = Object.keys(countriesData).map(key => countriesData[key])
 
   try {
-    const res = await fetch('/api/geoip/', { signal })
+    const res = await fetch('/api/geoip', { signal })
     const body = await res.json()
     const { country_code: code } = body
     if (code === 'GB') {
