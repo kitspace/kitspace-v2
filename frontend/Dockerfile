@@ -14,6 +14,7 @@ WORKDIR /build
 COPY . .
 ENV NODE_ENV=development
 RUN yarn --frozen-lockfile
+RUN yarn run download-geoip
 ENV NODE_ENV=production
 RUN yarn build
 WORKDIR /deps
@@ -31,6 +32,7 @@ COPY --chmod=${PERMISSION} package.json .
 COPY --chmod=${PERMISSION} next.config.js .
 COPY --chmod=${PERMISSION} public/ public/
 COPY --chmod=${PERMISSION} src/server.js server.js
+COPY --chmod=${PERMISSION} --from=build /build/src/pages/api/geoip/GeoLite2-Country.mmdb /build/src/pages/api/geoip/GeoLite2-Country.mmdb
 
 # The `.next` directory is used by `next/image` to cache optimized images.
 # So it needs to be owned by the `node` user.

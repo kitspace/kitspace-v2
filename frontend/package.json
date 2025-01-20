@@ -6,7 +6,8 @@
     "build-fallback": "next build && next export -o static_fallback",
     "start": "node src/server.js",
     "fmt": "prettier --write '*.json' 'src/**/*.{ts,js,tsx,jsx}'",
-    "lint": "next lint"
+    "lint": "next lint",
+    "download-geoip": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs({dbList: ['GeoLite2-Country'], path: 'src/pages/api/geoip/'}))\""
   },
   "license": "AGPL-3.0",
   "dependencies": {
@@ -14,11 +15,13 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-brands-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@types/node": "^20.0.0",
     "express": "^4.20.0",
     "file-loader": "^6.0.0",
     "highlight.js": "^11.6.0",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
+    "maxmind": "^4.3.23",
     "meilisearch": "^0.25.1",
     "morgan": "^1.10.0",
     "next": "^12.1.6",
@@ -46,11 +49,13 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "3.4.0",
+    "geolite2-redist": "^3.1.1",
     "jsdom": "^20.0.1",
     "next-router-mock": "^0.7.4",
     "prettier": "^2.0.5",
     "sass": "^1.49.6",
     "typescript": "^4.8.4",
+    "vite": "^3.0.0",
     "vite-tsconfig-paths": "^3.5.1",
     "vitest": "^0.24.2",
     "vitest-fetch-mock": "^0.2.1"
