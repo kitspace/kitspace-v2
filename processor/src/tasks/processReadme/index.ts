@@ -18,7 +18,7 @@ async function processReadme(
     originalUrl,
     defaultBranch,
   }: Partial<ProjectJobData>,
-) {
+): Promise<string | null> {
   const readmePath = path.join(outputDir, 'readme.html')
 
   await job.updateProgress({ status: 'in_progress', file: readmePath, outputDir })
@@ -28,35 +28,45 @@ async function processReadme(
     return s3.getFileContents(readmePath)
   }
 
-  let readmeInputPath: string
+  let processedReadmeHTML = null
 
-  if (kitspaceYaml.readme) {
-    readmeInputPath = path.join(inputDir, kitspaceYaml.readme)
-  } else {
-    const readmeFile = findReadmeFile(inputDir)
-    if (readmeFile === null) {
-      await job.updateProgress({
-        status: 'failed',
-        file: readmePath,
-        error: Error("couldn't find readme file"),
-        outputDir,
-      })
-      return ''
+  try {
+    let readmeInputPath: string
+    if (kitspaceYaml.readme) {
+      readmeInputPath = path.join(inputDir, kitspaceYaml.readme)
+    } else {
+      const readmeFile = findReadmeFile(inputDir)
+      if (readmeFile === null) {
+        await job.updateProgress({
+          status: 'failed',
+          file: readmePath,
+          error: Error("couldn't find readme file"),
+          outputDir,
+        })
+        return ''
+      }
+      readmeInputPath = readmeFile
     }
-    readmeInputPath = readmeFile
+
+    const rawMarkdown = await fs.readFile(readmeInputPath, { encoding: 'utf8' })
+
+    const readmeFolder = path.dirname(path.relative(inputDir, readmeInputPath))
+    processedReadmeHTML = await renderMarkdown({
+      rawMarkdown,
+      ownerName,
+      repoName,
+      readmeFolder,
+      originalUrl,
+      defaultBranch,
+    })
+  } catch (error) {
+    await job.updateProgress({
+      status: 'failed',
+      file: readmePath,
+      error,
+      outputDir,
+    })
   }
-
-  const rawMarkdown = await fs.readFile(readmeInputPath, { encoding: 'utf8' })
-
-  const readmeFolder = path.dirname(path.relative(inputDir, readmeInputPath))
-  const processedReadmeHTML = await renderMarkdown({
-    rawMarkdown,
-    ownerName,
-    repoName,
-    readmeFolder,
-    originalUrl,
-    defaultBranch,
-  })
 
   s3.uploadFileContents(readmePath, processedReadmeHTML, 'text/html')
     .then(() => job.updateProgress({ status: 'done', file: readmePath, outputDir }))
