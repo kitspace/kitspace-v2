@@ -1,11 +1,8 @@
 import React, { useState } from 'react'
-import Image from 'next/image'
 
 import useProjectAssets from '@hooks/useProjectAssets'
 import { string } from 'prop-types'
 import styles from './BoardShowcase.module.scss'
-
-const dimensions = { height: 250, width: 450 }
 
 const BoardShowcase = ({ assetPath }) => {
   const { top, bottom, isLoading, isError } = useProjectAssets(assetPath)
@@ -37,7 +34,7 @@ const BoardShowcase = ({ assetPath }) => {
             <div
               className={styles.boardContainer}
               // Using inline style to keep the container height same as images height.
-              style={{ height: dimensions.height }}
+              style={{ height: 250 }}
             >
               <div
                 className={`${styles.boardDiagram} ${
@@ -45,16 +42,7 @@ const BoardShowcase = ({ assetPath }) => {
                 }`}
               >
                 {isLoading || isError ? null : (
-                  <Image
-                    // we are not using the next `Image` magic in order to simplify our CDN setup
-                    // svgs are not optimized anyway so this is actually a no-op
-                    unoptimized
-                    alt="PCB top view"
-                    data-cy="board-showcase-top"
-                    objectFit="contain"
-                    src={top}
-                    {...dimensions}
-                  />
+                  <img alt="PCB top view" data-cy="board-showcase-top" src={top} />
                 )}
               </div>
               <div className={styles.circuitBorderContainer}>
@@ -66,15 +54,10 @@ const BoardShowcase = ({ assetPath }) => {
                 }`}
               >
                 {isLoading || isError ? null : (
-                  <Image
-                    // we are not using the next `Image` magic in order to simplify our CDN setup
-                    // svgs are not optimized anyway so this is actually a no-op
-                    unoptimized
+                  <img
                     alt="PCB bottom view"
                     data-cy="board-showcase-bottom"
-                    objectFit="contain"
                     src={bottom}
-                    {...dimensions}
                   />
                 )}
               </div>

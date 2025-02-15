@@ -25,7 +25,7 @@ const NavBar = () => {
 
 const Logo = () => {
   return (
-    <Link href="/">
+    <Link legacyBehavior href="/">
       <a>
         {/* using next/image here causes it to blink on page transitions in firefox */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -81,6 +81,7 @@ const AddProjectButton = () => {
   return (
     <Menu.Item data-cy="add-project">
       <Link
+        legacyBehavior
         passHref
         href="https://github.com/kitspace/kitspace-v2#adding-your-project"
       >
@@ -103,7 +104,11 @@ const SiteMenuItems = () => {
   const { query } = useSearchQuery()
   return (
     <>
-      <Link passHref href={query ? `/search?q=${encodeURIComponent(query)}` : '/'}>
+      <Link
+        legacyBehavior
+        passHref
+        href={query ? `/search?q=${encodeURIComponent(query)}` : '/'}
+      >
         <Menu.Item active={isProjectRoute} as="a" className={styles.projects}>
           Projects
         </Menu.Item>
@@ -129,7 +134,7 @@ const SocialMenuItems = () => (
         <FontAwesomeIcon icon={faDiscord} />
       </Icon>
     </Menu.Item>
-    <Link passHref href="/newsletter">
+    <Link legacyBehavior passHref href="/newsletter">
       <Menu.Item as="a">
         Email & Newsletter
         <Icon name="envelope" />

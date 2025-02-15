@@ -26,7 +26,7 @@ const BoardExtraMenus = ({ zipUrl, hasInteractiveBom, interactiveBomPath }) => {
         </div>
       </Button>
       {hasInteractiveBom && (
-        <Link passHref href={ibomUrl}>
+        <Link legacyBehavior passHref href={ibomUrl}>
           <Button basic as="a" data-cy="ibom">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <Header as="h4">

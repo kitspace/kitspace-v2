@@ -32,6 +32,7 @@ const ProjectCard = ({
   )
   return (
     <Link
+      legacyBehavior
       passHref
       href={`/${ownerName}/${repoName}${isSingleProject ? '' : '/' + projectName}`}
     >

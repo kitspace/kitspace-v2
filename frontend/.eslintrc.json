@@ -35,6 +35,7 @@
   "plugins": ["prettier", "@typescript-eslint"],
   "rules": {
     "no-console": ["error", { "allow": ["warn", "error"] }],
+    "@next/next/no-img-element": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "varsIgnorePattern": "[iI]gnored" }

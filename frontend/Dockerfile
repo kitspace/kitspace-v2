@@ -31,7 +31,6 @@ COPY --chmod=${PERMISSION} --from=build /deps/node_modules/ node_modules/
 COPY --chmod=${PERMISSION} package.json .
 COPY --chmod=${PERMISSION} next.config.js .
 COPY --chmod=${PERMISSION} public/ public/
-COPY --chmod=${PERMISSION} src/server.js server.js
 COPY --chmod=${PERMISSION} --from=build /build/src/pages/api/geoip/GeoLite2-Country.mmdb /build/src/pages/api/geoip/GeoLite2-Country.mmdb
 
 # The `.next` directory is used by `next/image` to cache optimized images.
@@ -40,4 +39,4 @@ COPY --chown=node:node --from=build /build/.next/ .next/
 
 USER node
 
-CMD ["node", "server.js"]
+CMD ["npm" , "run", "start"]
