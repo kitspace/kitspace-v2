@@ -20,7 +20,7 @@
     "fmt": "yarn prettier --write"
   },
   "dependencies": {
-    "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#22d119c1c3c299ee98ef4bc887c75ca12881c92b",
+    "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#a520cb44f15dd41068f2a7075f72f928745a3f48",
     "@aws-sdk/client-s3": "^3.194.0",
     "async-lock": "^1.4.1",
     "bullmq": "^1.91.1",
