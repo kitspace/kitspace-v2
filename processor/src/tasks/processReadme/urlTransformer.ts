@@ -4,7 +4,28 @@ import { defaultSchema } from 'rehype-sanitize'
 import type { Options as RehypeSanitizeOptions } from 'rehype-sanitize'
 
 import { GITEA_URL } from '../../env.js'
-import { isRelativeUrl, normalizeRelativeUrl, toGitHubRawUrl } from '../../utils.js'
+import { isRelativeUrl, normalizeRelativeUrl } from '../../utils.js'
+
+function toGitHubRawUrl(url: string) {
+  const parsedUrl = new URL(url)
+
+  const isGitHubUrl = parsedUrl.hostname === 'github.com'
+  const isUserAttachments = parsedUrl.pathname.startsWith('/user-attachments/')
+
+  if (isGitHubUrl && !isUserAttachments) {
+    parsedUrl.hostname = 'raw.githubusercontent.com'
+    const urlPath = parsedUrl.pathname.split('/')
+    // Avoid modifying github actions status badges.
+    const isWorkflowPath = ['workflows', 'actions'].includes(urlPath?.[3])
+
+    if (!isWorkflowPath) {
+      // Remove `/blob/` or '/raw/' from the path.
+      parsedUrl.pathname = urlPath.slice(0, 3).concat(urlPath.slice(4)).join('/')
+      url = parsedUrl.toString()
+    }
+  }
+  return url
+}
 
 interface URLParserArgs {
   readmeFolder: string

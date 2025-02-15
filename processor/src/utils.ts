@@ -71,24 +71,6 @@ export function normalizeRelativeUrl(url: string, rootFolder: string) {
   return path.join(rootFolder, url)
 }
 
-export function toGitHubRawUrl(url: string) {
-  const parsedUrl = new URL(url)
-
-  if (parsedUrl.hostname === 'github.com') {
-    parsedUrl.hostname = 'raw.githubusercontent.com'
-    const urlPath = parsedUrl.pathname.split('/')
-    // Avoid modifying github actions status badges.
-    const isWorkflowPath = ['workflows', 'actions'].includes(urlPath?.[3])
-
-    if (!isWorkflowPath) {
-      // Remove `/blob/` or '/raw/' from the path.
-      parsedUrl.pathname = urlPath.slice(0, 3).concat(urlPath.slice(4)).join('/')
-      url = parsedUrl.toString()
-    }
-  }
-  return url
-}
-
 export type WaitForFunction<T> = () => Promise<T>
 export type WaitForCheckFunction<T> = (x: T) => boolean
 export interface WaitForOptions<T> {
