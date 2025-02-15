@@ -13,7 +13,7 @@ const SearchProvider = ({ children, initialQuery }: SearchProviderProps) => {
     if (initialQuery != null) {
       setQuery(initialQuery)
     }
-  }, [initialQuery])
+  }, [initialQuery, setQuery])
 
   return (
     <SearchContext.Provider value={{ query, updateQuery: setQuery }}>

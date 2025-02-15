@@ -1,10 +1,10 @@
 {
   "name": "kitspace-frontend",
   "scripts": {
-    "dev": "node --inspect=0.0.0.0:9229 src/server.js",
+    "dev": "next dev",
     "build": "next build",
     "build-fallback": "next build && next export -o static_fallback",
-    "start": "node src/server.js",
+    "start": "next start",
     "fmt": "prettier --write '*.json' 'src/**/*.{ts,js,tsx,jsx}'",
     "lint": "next lint",
     "download-geoip": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs({dbList: ['GeoLite2-Country'], path: 'src/pages/api/geoip/'}))\""
@@ -23,18 +23,17 @@
     "lodash.debounce": "^4.0.8",
     "maxmind": "^4.3.23",
     "meilisearch": "^0.25.1",
-    "morgan": "^1.10.0",
-    "next": "^12.1.6",
+    "next": "^15.0.0",
     "prop-types": "^15.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-double-scrollbar": "^0.0.15",
     "react-intersection-observer": "^9.4.1",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^2.0.3",
+    "semantic-ui-css": "^2.5.0",
+    "semantic-ui-react": "^3.0.0-beta.2",
     "swr": "^2.2.5",
     "usehooks-ts": "^3.1.0",
-    "webpack": "^5.94.0"
+    "webpack": "^5.98.0"
   },
   "devDependencies": {
     "@testing-library/react": "12.1.2",
