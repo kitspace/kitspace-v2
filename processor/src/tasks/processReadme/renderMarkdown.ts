@@ -64,7 +64,7 @@ export async function renderMarkdown({
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
     .use(rehypeShiftHeading, { shift: 1 })
-    .use(rehypeHighlight)
+    .use(rehypeHighlight, { ignoreMissing: true })
     .use(rehypeSanitize, rehypeSanitizeOpts)
     .use(rehypeStringify)
 
