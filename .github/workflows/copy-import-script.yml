@@ -1,7 +1,6 @@
 name: Copy import script
 
 on:
-  workflow_dispatch:
   push:
     paths:
       - 'scripts/importBoardsTxt.ts'
