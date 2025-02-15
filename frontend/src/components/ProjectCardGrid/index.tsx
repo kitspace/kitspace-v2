@@ -23,8 +23,6 @@ const ProjectCardGrid = ({
           intersectionObserverRef={
             index === loadMoreProjectsMarker ? intersectionObserverRef : null
           }
-          // Load the images of the first 9 cards immediately.
-          priority={index < 9}
         />
       ))}
     </div>

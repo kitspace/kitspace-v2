@@ -1,7 +1,6 @@
 import React from 'react'
 import { Card } from 'semantic-ui-react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 import useThumbnail from '@hooks/useThumbnail'
 import styles from './index.module.scss'
@@ -12,7 +11,6 @@ interface ProjectCardProps {
   summary: string
   ownerName: string
   repoName: string
-  priority?: boolean
   intersectionObserverRef?: IntersectionObserverRef
 }
 
@@ -21,7 +19,6 @@ const ProjectCard = ({
   summary,
   ownerName,
   repoName,
-  priority,
   intersectionObserverRef,
 }: ProjectCardProps) => {
   const isSingleProject = projectName === '_'
@@ -39,16 +36,11 @@ const ProjectCard = ({
       <Card as="a" className={styles.card} data-cy="project-card">
         <div ref={intersectionObserverRef} className={styles.thumbnail}>
           {isLoading || isError ? null : (
-            <Image
-              // we are not using the next `Image` magic in order to simplify our CDN setup
-              unoptimized
+            <img
               alt={`Render of PCB of ${nameOnCard}`}
               data-cy="project-card-thumbnail"
-              height={180}
-              objectFit="contain"
-              priority={priority}
               src={src}
-              width={240}
+              style={{ maxWidth: 240, maxHeight: 180 }}
             />
           )}
         </div>
