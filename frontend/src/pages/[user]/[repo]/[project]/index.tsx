@@ -1,6 +1,6 @@
 import React from 'react'
-import { bool } from 'prop-types'
 import getConfig from 'next/config'
+import type { NextPage } from 'next'
 
 import { getRepo } from '@utils/giteaApi'
 import {
@@ -12,16 +12,16 @@ import {
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
-import Custom404 from '@pages/404'
+import ErrorPage from '@pages/_error'
 
 const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
 
-const MultiProjectPage = props =>
-  props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
+const MultiProjectPage: NextPage<{ notFound?: boolean }> = props =>
+  props.notFound ? <ErrorPage statusCode={404} /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
-  const userLowerCase = query.user.toLowerCase()
-  const repoLowerCase = query.repo.toLowerCase()
+  const userLowerCase = (query.user as string).toLowerCase()
+  const repoLowerCase = (query.repo as string).toLowerCase()
   const projectName = query.project
 
   const repo = await getRepo(`${userLowerCase}/${repoLowerCase}`)
@@ -93,14 +93,6 @@ MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
     res.statusCode = 404
   }
   return { notFound: true }
-}
-
-MultiProjectPage.propTypes = {
-  notFound: bool,
-}
-
-MultiProjectPage.defaultProps = {
-  notFound: false,
 }
 
 export default MultiProjectPage

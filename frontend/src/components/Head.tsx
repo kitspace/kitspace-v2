@@ -1,8 +1,19 @@
 import React from 'react'
 import NextHead from 'next/head'
-import { string } from 'prop-types'
 
-const Head = ({ title, ogDescription, url, ogImage }) => (
+type HeadProps = {
+  title?: string
+  ogDescription?: string
+  url?: string
+  ogImage?: string
+}
+
+const Head = ({
+  title = 'Kitspace',
+  ogDescription = 'A site for sharing electronics projects.',
+  url = 'https://kitspace.org',
+  ogImage = 'https://kitspace.org/images/logo_meta.png',
+}: HeadProps) => (
   <NextHead>
     <meta charSet="UTF-8" />
     <title>{title}</title>
@@ -52,19 +63,5 @@ const Head = ({ title, ogDescription, url, ogImage }) => (
     <meta content="#000000" name="theme-color" />
   </NextHead>
 )
-
-Head.propTypes = {
-  ogDescription: string,
-  ogImage: string,
-  title: string,
-  url: string,
-}
-
-Head.defaultProps = {
-  description: 'A site for sharing electronics projects.',
-  ogImage: 'https://kitspace.org/images/logo_meta.png',
-  title: 'Kitspace',
-  url: 'https://kitspace.org',
-}
 
 export default Head

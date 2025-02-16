@@ -1,5 +1,5 @@
 import React from 'react'
-import { number } from 'prop-types'
+import type { NextPage } from 'next'
 
 import NavBar from '@components/NavBar'
 import Head from '@components/Head'
@@ -10,9 +10,13 @@ const statusCodes = {
   404: 'This page could not be found',
   405: 'Method Not Allowed',
   500: 'Internal Server Error',
+} as const
+
+interface ErrorPageProps {
+  statusCode: number
 }
 
-const ErrorPage = ({ statusCode }) => {
+const ErrorPage: NextPage<ErrorPageProps> = ({ statusCode }) => {
   const statusMessage = statusCodes[statusCode]
 
   return (
@@ -23,16 +27,11 @@ const ErrorPage = ({ statusCode }) => {
     </div>
   )
 }
-
-ErrorPage.getInitialProps = ({ res, err, query }) => {
+ErrorPage.getInitialProps = async ({ res, err, query }: { res?; err?; query? }) => {
   const statusCode =
     query?.staticStatusCode ?? res?.staticStatusCode ?? err?.statusCode ?? 404
 
   return { statusCode }
-}
-
-ErrorPage.propTypes = {
-  statusCode: number.isRequired,
 }
 
 export default ErrorPage
