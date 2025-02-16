@@ -12,12 +12,12 @@ import {
   getReadme,
 } from '@utils/projectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
-import Custom404 from '@pages/404'
+import ErrorPage from '@pages/_error'
 
 const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
 
 const MultiProjectPage = props =>
-  props.notFound ? <Custom404 /> : <SharedProjectPage {...props} />
+  props.notFound ? <ErrorPage statusCode={404} /> : <SharedProjectPage {...props} />
 
 MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
   const userLowerCase = query.user.toLowerCase()

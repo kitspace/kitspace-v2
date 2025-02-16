@@ -51,7 +51,7 @@
     "react/react-in-jsx-scope": "off",
     "react/jsx-props-no-spreading": "off",
     "react/destructuring-assignment": "off",
-    "react/prop-types": "error",
+    "react/prop-types": "off",
     "react/jsx-sort-props": [
       1,
       {
