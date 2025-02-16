@@ -11,7 +11,7 @@ defaults:
 
 jobs:
   lint_frontend:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Setup Node
         uses: actions/setup-node@v4
