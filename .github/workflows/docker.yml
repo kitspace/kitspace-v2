@@ -13,7 +13,7 @@ jobs:
   get_version:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
     name: Get git version
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       frontend_sha: ${{ steps.get_sha.outputs.frontend_sha }}
       processor_sha: ${{ steps.get_sha.outputs.processor_sha }}
@@ -56,7 +56,7 @@ jobs:
   build:
     if: ${{ github.event_name == 'push' || github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'CONTRIBUTOR' }}
     name: Build image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - get_version
     strategy:
@@ -291,7 +291,7 @@ jobs:
 
   test:
     name: Test E2E
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - get_version
       - build
