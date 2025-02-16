@@ -58,8 +58,8 @@ bom: my-bom.xlsx
 gerbers: my/gerber/folder 
 
 eda:
-  type: kicad # or eagle
-  pcb: path/to/your/file.kicad_pcb # your/eagle.brd
+  type: kicad # | eagle | easyeda
+  pcb: path/to/your/file.kicad_pcb # | your/eagle.brd | your/easyeda.json
 
 # A path to your README file in case it isn't in the repository root directory.
 readme: my/special/readme.md
@@ -72,9 +72,7 @@ ibom-enabled: false
 ```
 
 Paths should be in UNIX style (i.e. use `/` not `\`) and relative to the root
-of your repository. The YAML format is pretty straight forward but if you need
-to know more check the example below and [the YAML website][6]. Use [this YAML
-validator][yamllint] to be extra sure that your `kitspace.yaml` is valid.
+of your repository.
 
 ### KiCad PCB
 
