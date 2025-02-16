@@ -44,17 +44,16 @@ async function processIBOM(
   }
 
   let pcbFile
-  if (
-    kitspaceYaml.eda &&
-    (kitspaceYaml.eda.type === 'kicad' || kitspaceYaml.eda.type === 'eagle') &&
-    kitspaceYaml.eda.pcb != null
-  ) {
+  if (kitspaceYaml.eda?.pcb != null) {
     pcbFile = path.join(inputDir, kitspaceYaml.eda.pcb)
   } else if (kitspaceYaml.eda == null) {
     pcbFile = await findBoardFile(inputDir, 'kicad_pcb')
   }
   if (pcbFile == null) {
     pcbFile = await findBoardFile(inputDir, 'brd', checkEagleFile)
+  }
+  if (pcbFile == null) {
+    pcbFile = await findBoardFile(inputDir, 'json', checkEasyEdaFile)
   }
 
   if (pcbFile == null) {
@@ -103,8 +102,12 @@ async function processIBOM(
 
 async function findBoardFile(folderPath, ext, check?) {
   const f = globule.find(`${folderPath}/**/*.${ext}`)[0]
-  if (check == null || (f != null && (await check(f)))) {
-    return f
+  try {
+    if (check == null || (f != null && (await check(f)))) {
+      return f
+    }
+  } catch (error) {
+    log.warn(error)
   }
   return null
 }
@@ -112,6 +115,12 @@ async function findBoardFile(folderPath, ext, check?) {
 async function checkEagleFile(f) {
   const contents = await fs.readFile(f, 'utf8')
   return contents.includes('eagle.dtd')
+}
+
+async function checkEasyEdaFile(f) {
+  const contents = await fs.readFile(f, 'utf8')
+  const doc = JSON.parse(contents)
+  return doc?.head?.docType === '3'
 }
 
 export default processIBOM

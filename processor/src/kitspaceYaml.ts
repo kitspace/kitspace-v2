@@ -4,7 +4,10 @@ import path from 'node:path'
 import { z } from 'zod'
 import { log } from './log.js'
 
-const eda = z.object({ type: z.enum(['kicad', 'eagle']), pcb: z.string() })
+const eda = z.object({
+  type: z.enum(['kicad', 'eagle', 'easyeda']),
+  pcb: z.string(),
+})
 
 export const singleKitspaceYaml = z.object({
   summary: z.string().default(''),
