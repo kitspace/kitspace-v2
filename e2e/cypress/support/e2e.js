@@ -1,6 +1,5 @@
 import 'cypress-fail-fast'
 import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js'
-import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command'
 
 import './commands'
 
@@ -18,4 +17,3 @@ Cypress.on('uncaught:exception', (err, runnable, promise) => {
 })
 
 installLogsCollector()
-addMatchImageSnapshotCommand({ failureThreshold: 0.1 })
