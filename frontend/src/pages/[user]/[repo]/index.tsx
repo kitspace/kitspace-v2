@@ -141,7 +141,7 @@ const getYamlArray = (
 
 const getProjectPageProps = (
   ctx: NextPageContext,
-): Promise<Record<string, unknown>> => {
+): ReturnType<typeof ProjectPage.getInitialProps> => {
   ctx.query = { ...ctx.query, project: '_' }
   return ProjectPage.getInitialProps(ctx)
 }
