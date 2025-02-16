@@ -44,11 +44,7 @@ async function processIBOM(
   }
 
   let pcbFile
-  if (
-    kitspaceYaml.eda &&
-    (kitspaceYaml.eda.type === 'kicad' || kitspaceYaml.eda.type === 'eagle') &&
-    kitspaceYaml.eda.pcb != null
-  ) {
+  if (kitspaceYaml.eda?.pcb != null) {
     pcbFile = path.join(inputDir, kitspaceYaml.eda.pcb)
   } else if (kitspaceYaml.eda == null) {
     pcbFile = await findBoardFile(inputDir, 'kicad_pcb')
