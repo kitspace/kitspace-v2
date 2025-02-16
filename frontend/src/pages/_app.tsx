@@ -1,9 +1,9 @@
-import { bool, func, object, shape, string } from 'prop-types'
-
 import App from 'next/app'
 import getConfig from 'next/config'
+import Script from 'next/script'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
+import type { AppProps } from 'next/app'
 
 import 'semantic-ui-css/components/reset.min.css'
 import 'semantic-ui-css/components/site.min.css'
@@ -35,18 +35,25 @@ import './_app.scss'
 
 const domain = getConfig().publicRuntimeConfig.KITSPACE_DOMAIN
 
-if (typeof window !== 'undefined') {
-  window.plausible =
-    window.plausible ||
-    function () {
-      window.plausible.q = window.plausible.q || []
-      window.plausible.q.push(arguments)
-    }
+declare global {
+  interface Window {
+    isStaticFallback?: boolean
+  }
 }
 
-function KitspaceApp({ Component, pageProps, isStaticFallback, initialQuery }) {
+type KitspaceAppProps = AppProps & {
+  isStaticFallback?: boolean
+  initialQuery?: string
+}
+
+function KitspaceApp({
+  Component,
+  pageProps,
+  isStaticFallback = false,
+  initialQuery,
+}: KitspaceAppProps) {
   const staticFallbackScript = isStaticFallback ? (
-    <script
+    <Script
       // using dangerouslySetInnerHTML to avoid browser parsing errors
       // (could be that these only happen in development mode)
       // eslint-disable-next-line react/no-danger
@@ -60,17 +67,22 @@ function KitspaceApp({ Component, pageProps, isStaticFallback, initialQuery }) {
   }
   const plausibleScript =
     domain === 'kitspace.org' ? (
-      <script
+      <Script
         defer
         data-domain={domain}
         src="https://plausible.io/js/script.outbound-links.js"
-      ></script>
+      />
     ) : null
   return (
     <SearchProvider initialQuery={initialQuery}>
       <Head>
         {staticFallbackScript}
         {plausibleScript}
+        <Script
+          dangerouslySetInnerHTML={{
+            __html: `window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`,
+          }}
+        />
       </Head>
       <Component {...pageProps} />
       {isStaticFallback ? <ErrorMessage /> : null}
@@ -102,19 +114,6 @@ function ErrorMessage() {
       </Message>
     </div>
   )
-}
-
-KitspaceApp.propTypes = {
-  Component: func.isRequired,
-  pageProps: object.isRequired,
-  isStaticFallback: bool,
-  initialQuery: string,
-  session: shape({ csrf: string.isRequired, user: object, ApiToken: string }),
-}
-
-KitspaceApp.defaultProps = {
-  isStaticFallback: false,
-  session: null,
 }
 
 export default KitspaceApp
