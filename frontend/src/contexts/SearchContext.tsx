@@ -10,7 +10,7 @@ const SearchProvider = ({ children, initialQuery }: SearchProviderProps) => {
   const [query, setQuery] = useSessionStorage('searchQuery', initialQuery)
 
   useEffect(() => {
-    if (initialQuery != null) {
+    if (initialQuery) {
       setQuery(initialQuery)
     }
   }, [initialQuery, setQuery])
