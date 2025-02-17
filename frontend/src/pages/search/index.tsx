@@ -55,7 +55,7 @@ const Search = ({ swrFallback }: SearchPageProps) => {
 const PageContent = () => {
   const { query } = useSearchQuery()
   let sort
-  if (query === '') {
+  if (!query) {
     sort = ['updatedUnix:desc']
   }
   const { projects, intersectionObserverRef } = useLazySearch({ query, sort })
@@ -63,7 +63,7 @@ const PageContent = () => {
   return (
     <>
       <SearchInput />
-      {query === '' && <IntroText />}
+      {!query && <IntroText />}
       {projects.length === 0 ? (
         <p className={styles.noMatching} data-cy="cards-grid">
           {query ? `Sorry, no result for "${query}"` : 'No projects added yet.'}

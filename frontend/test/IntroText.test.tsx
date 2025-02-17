@@ -32,15 +32,15 @@ it('removes the intro text on submitting a search query', async () => {
     'Search for projects',
   )[0] as HTMLInputElement
 
-  const copy = screen.getByText(IntroFixture.Text)
-  // The copy should be visible
-  expect(copy).toBeTruthy()
+  const intro = screen.getByText(IntroFixture.Text)
+  // The intro text should be visible
+  expect(intro).toBeTruthy()
 
   //Submit a search query
   fireEvent.change(searchInput, { target: { value: 'foo' } })
   fireEvent.submit(searchInput)
 
-  // The copy should be removed
+  // The intro text should be removed
   await waitFor(() => {
     expect(screen.queryByText(IntroFixture.Text)).toBeFalsy()
   })
