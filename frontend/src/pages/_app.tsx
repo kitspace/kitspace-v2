@@ -1,6 +1,5 @@
 import App from 'next/app'
 import getConfig from 'next/config'
-import Script from 'next/script'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
 import type { AppProps } from 'next/app'
@@ -53,7 +52,7 @@ function KitspaceApp({
   initialQuery,
 }: KitspaceAppProps) {
   const staticFallbackScript = isStaticFallback ? (
-    <Script
+    <script
       // using dangerouslySetInnerHTML to avoid browser parsing errors
       // (could be that these only happen in development mode)
       // eslint-disable-next-line react/no-danger
@@ -67,7 +66,7 @@ function KitspaceApp({
   }
   const plausibleScript =
     domain === 'kitspace.org' ? (
-      <Script
+      <script
         defer
         data-domain={domain}
         src="https://plausible.io/js/script.outbound-links.js"
@@ -78,7 +77,7 @@ function KitspaceApp({
       <Head>
         {staticFallbackScript}
         {plausibleScript}
-        <Script
+        <script
           dangerouslySetInnerHTML={{
             __html: `window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`,
           }}
