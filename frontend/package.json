@@ -18,12 +18,10 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
     "@fortawesome/free-brands-svg-icons": "^6.7.1",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@types/node": "^20.0.0",
-    "express": "^4.20.0",
-    "file-loader": "^6.0.0",
+    "@types/node": "^22.0.0",
     "highlight.js": "^11.6.0",
-    "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
+    "lodash.flattendeep": "^4.4.0",
     "maxmind": "^4.3.23",
     "meilisearch": "^0.25.1",
     "next": "^15.0.0",
@@ -34,8 +32,7 @@
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^3.0.0-beta.2",
     "swr": "^2.3.2",
-    "usehooks-ts": "^3.1.0",
-    "webpack": "^5.98.0"
+    "usehooks-ts": "^3.1.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
