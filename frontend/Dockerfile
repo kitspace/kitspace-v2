@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 ARG PERMISSION=755
 COPY --chmod=${PERMISSION} --from=build /deps/node_modules/ node_modules/
 COPY --chmod=${PERMISSION} package.json .
-COPY --chmod=${PERMISSION} next.config.js .
+COPY --chmod=${PERMISSION} next.config.ts .
 COPY --chmod=${PERMISSION} public/ public/
 COPY --chmod=${PERMISSION} --from=build /build/src/pages/api/geoip/GeoLite2-Country.mmdb /build/src/pages/api/geoip/GeoLite2-Country.mmdb
 
