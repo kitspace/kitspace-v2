@@ -1,11 +1,9 @@
-const { MeiliSearch } = require('meilisearch')
-const {
-  PHASE_PRODUCTION_SERVER,
-  PHASE_DEVELOPMENT_SERVER,
-} = require('next/constants')
+import { MeiliSearch } from 'meilisearch'
+import type { NextConfig } from 'next'
+import { PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_SERVER } from 'next/constants'
 
-module.exports = async phase => {
-  let meiliSearchOnlyKey = {}
+export default async phase => {
+  let meiliSearchOnlyKey: { key?: string } = {}
   let imageDomains = []
   // leaving out these steps for build and test phases
   if ([PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_SERVER].includes(phase)) {
@@ -20,14 +18,9 @@ module.exports = async phase => {
     meiliSearchOnlyKey = meiliKeys.results.find(
       key => key.actions.length === 1 && key.actions[0] === 'search',
     )
-    imageDomains = [
-      new URL(process.env.KITSPACE_PROCESSOR_ASSET_URL).hostname,
-    ]
+    imageDomains = [new URL(process.env.KITSPACE_PROCESSOR_ASSET_URL).hostname]
   }
-  /**
-   * @type {import('next').NextConfig}
-   */
-  const nextConfig = {
+  const nextConfig: NextConfig = {
     // we use nginx to compress so we turn off next.js gzip compression
     compress: false,
     publicRuntimeConfig: {
@@ -46,7 +39,7 @@ module.exports = async phase => {
     exportPathMap(map) {
       for (const key in map) {
         map[key].query = map[key].query || {}
-        map[key].query.isStaticFallback = true
+        map[key].query.isStaticFallback = 'true'
       }
       const codes = [
         400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414,
@@ -54,7 +47,10 @@ module.exports = async phase => {
         501, 502, 503, 504, 505, 506, 507, 508, 510, 511,
       ]
       codes.forEach(err => {
-        map['/error/' + err] = { page: '/_error', query: { staticStatusCode: err } }
+        map['/error/' + err] = {
+          page: '/_error',
+          query: { staticStatusCode: String(err) },
+        }
       })
       return map
     },
