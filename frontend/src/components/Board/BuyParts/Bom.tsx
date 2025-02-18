@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Icon, Table } from 'semantic-ui-react'
-import DoubleScrollBar from 'react-double-scrollbar'
 
 import styles from './Bom.module.scss'
 import TsvTable from './TsvTable'
@@ -21,9 +20,9 @@ const Bom = ({ length, parts, tsv }: BomProps) => {
 
   return (
     <div className={styles.Bom} data-cy="buy-parts-bom">
-      <DoubleScrollBar>
+      <div style={{ overflow: 'scroll' }}>
         <TsvTable collapsed={collapsed} parts={parts} tsv={tsv} />
-      </DoubleScrollBar>
+      </div>
       {diff !== 0 ? (
         <ExpandBom collapsed={collapsed} diff={diff} setCollapsed={setCollapsed} />
       ) : null}
