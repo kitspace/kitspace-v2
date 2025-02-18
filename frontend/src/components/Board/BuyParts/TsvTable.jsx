@@ -105,7 +105,11 @@ const TsvTable = ({ tsv, collapsed }) => {
       return cell
     })
 
-    return <Table.Row key={rowIndex}>{flattenDeep(bodyCells)}</Table.Row>
+    return (
+      <Table.Row data-testid="bom-row" key={rowIndex}>
+        {flattenDeep(bodyCells)}
+      </Table.Row>
+    )
   })
 
   return (

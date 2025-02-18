@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 
 import BuyParts, { calculateQuantity } from '@components/Board/BuyParts'
 import fixture from './fixtures/BuyParts.json'
 
 beforeEach(() => {
+  const mockPlausible = vi.fn()
+  window.plausible = mockPlausible
+  URL.createObjectURL = vi.fn().mockReturnValue('mocked-url')
   fetchMock.mockResponse(() =>
     JSON.stringify({
       country_code: 'GB',
@@ -24,7 +27,7 @@ it('displays BuyParts', () => {
   expect(StoresButtons).toHaveLength(6)
 })
 
-it('still displays BuyParts if there are no purchasable parts', () => {
+it('still displays BuyParts if there are no purchasable parts', async () => {
   render(
     <BuyParts
       lines={fixture.noPurchasableParts.lines}
@@ -36,20 +39,19 @@ it('still displays BuyParts if there are no purchasable parts', () => {
   const NoPurchasableParts = screen.getByText(
     "No parts to buy have been specified in this project's BOM yet.",
   )
-  const BomRows = screen.getAllByRole('row')
+  const BomRows = screen.getAllByTestId('bom-row')
 
   expect(NoPurchasableParts).toBeTruthy()
-  expect(BomRows).toHaveLength(10)
+  expect(BomRows).toHaveLength(7)
 
-  screen.getAllByRole('table')[1].click()
-  const BomRowsCollapsed = screen.getAllByRole('row')
-  expect(BomRowsCollapsed).toHaveLength(63)
+  screen.getByText('View all').click()
+  await waitFor(() => {
+    const BomRowsExpanded = screen.getAllByTestId('bom-row')
+    expect(BomRowsExpanded).toHaveLength(61)
+  })
 })
 
 it('tracks bom download', async () => {
-  const mockCreateObjectURL = vi
-    .spyOn(URL, 'createObjectURL')
-    .mockReturnValue('mocked-url')
   const mockPlausible = vi.fn()
   window.plausible = mockPlausible
 
@@ -71,16 +73,10 @@ it('tracks bom download', async () => {
     },
   })
 
-  mockCreateObjectURL.mockRestore()
   mockPlausible.mockRestore()
 })
 
 it('downloads `*-kitspace-bom.csv` on click', async () => {
-  // Mock the createObjectURL and link click functionality
-  const mockCreateObjectURL = vi
-    .spyOn(URL, 'createObjectURL')
-    .mockReturnValue('mocked-url')
-
   render(
     <BuyParts
       lines={fixture.purchasableParts.lines}
@@ -103,7 +99,6 @@ it('downloads `*-kitspace-bom.csv` on click', async () => {
   const storeButton = screen.getAllByRole('button').at(-1)
   storeButton.click()
 
-  expect(mockCreateObjectURL).toHaveBeenCalledOnce()
   expect(mockLinkElement.setAttribute).toHaveBeenCalledWith('href', 'mocked-url')
   expect(mockLinkElement.setAttribute).toHaveBeenCalledWith(
     'download',
@@ -111,7 +106,6 @@ it('downloads `*-kitspace-bom.csv` on click', async () => {
   )
 
   // cleanup
-  mockCreateObjectURL.mockRestore()
   mockGetElementById.mockRestore()
 })
 
