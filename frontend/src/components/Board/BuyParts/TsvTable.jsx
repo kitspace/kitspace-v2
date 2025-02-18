@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table } from 'semantic-ui-react'
-import flattenDeep from 'lodash/flattenDeep'
+import flattenDeep from 'lodash.flattendeep'
 
 import { array, bool, string } from 'prop-types'
 import styles from './TsvTable.module.scss'
