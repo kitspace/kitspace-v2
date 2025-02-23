@@ -12,6 +12,8 @@ import {
 } from '@hooks/useLazySearch'
 import { getUser } from '@utils/giteaApi'
 import Project from '@models/Project'
+import Head from '@components/Head'
+import getConfig from 'next/config'
 
 interface UserPageProps {
   username: string
@@ -56,13 +58,27 @@ const UserPage = ({ swrFallback, username }: UserPageProps) => {
   )
 }
 
+const { KITSPACE_PROCESSOR_ASSET_URL, KITSPACE_URL } =
+  getConfig().publicRuntimeConfig
+
 const UserProjects = ({ username }: Partial<UserPageProps>) => {
   const { intersectionObserverRef, projects } = useLazySearch({
     query: '',
     filter: `ownerName = ${username}`,
   })
+  const ogImageProject = projects[0]
   return (
-    <Page title={username}>
+    <Page>
+      <Head
+        ogDescription="Shared on kitspace.org"
+        ogImage={
+          ogImageProject
+            ? `${KITSPACE_PROCESSOR_ASSET_URL}/${username}/${ogImageProject.repoName}/HEAD/${ogImageProject.projectName}/images/top-with-background.png`
+            : undefined
+        }
+        title={`Projects by ${username}`}
+        url={`${KITSPACE_URL}/${username}`}
+      />
       <h1>Projects by {username}</h1>
       <ProjectCardGrid
         intersectionObserverRef={intersectionObserverRef}

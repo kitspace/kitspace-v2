@@ -1,5 +1,6 @@
 import React from 'react'
 import NextHead from 'next/head'
+import getConfig from 'next/config'
 
 type HeadProps = {
   title?: string
@@ -8,11 +9,16 @@ type HeadProps = {
   ogImage?: string
 }
 
+const { KITSPACE_URL, KITSPACE_FRONTEND_ASSET_URL } =
+  getConfig().publicRuntimeConfig
+
 const Head = ({
   title = 'Kitspace',
   ogDescription = 'A site for sharing electronics projects.',
-  url = 'https://kitspace.org',
-  ogImage = 'https://kitspace.org/static/images/logo_meta.png',
+  url = KITSPACE_URL,
+  ogImage = `${
+    KITSPACE_FRONTEND_ASSET_URL || KITSPACE_URL
+  }/static/images/logo_meta.png`,
 }: HeadProps) => (
   <NextHead>
     <meta charSet="UTF-8" />

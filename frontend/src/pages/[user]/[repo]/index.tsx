@@ -12,8 +12,10 @@ import ProjectCardGrid from '@components/ProjectCardGrid'
 import ErrorPage from '@pages/_error'
 import Page from '@components/Page'
 import ProjectPage from './[project]'
+import Head from '@components/Head'
 
-const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
+const { KITSPACE_PROCESSOR_ASSET_URL, KITSPACE_URL } =
+  getConfig().publicRuntimeConfig
 
 interface RepoPageProps {
   errorCode?: number
@@ -82,18 +84,35 @@ interface ProjectGridData {
 }
 
 interface ProjectGridProps {
+  repoFullName: string
   parentProject: string
   searchParams: SearchFetcherParams
 }
 
-const PageContent = ({ parentProject, searchParams }: ProjectGridProps) => {
+const PageContent = ({
+  parentProject,
+  searchParams,
+  repoFullName,
+}: ProjectGridProps) => {
   const { data: projects = [] } = useSWR(searchParams, searchFetcher, {
     refreshInterval: 1000,
   })
   const isProcessing = projects.length === 0
 
+  const ogImageProject = projects[0]
+
   return (
-    <Page title={parentProject}>
+    <Page>
+      <Head
+        ogDescription=""
+        ogImage={
+          ogImageProject
+            ? `${KITSPACE_PROCESSOR_ASSET_URL}/${ogImageProject.ownerName}/${ogImageProject.repoName}/HEAD/${ogImageProject.projectName}/images/top-with-background.png`
+            : undefined
+        }
+        title={`${parentProject} on Kitspace`}
+        url={`${KITSPACE_URL}/${repoFullName}`}
+      />
       <h1>{parentProject}</h1>
       {isProcessing ? (
         <p>Processing repository...</p>
@@ -117,6 +136,7 @@ const getGridData = async (
       [unstable_serialize(searchParams)]: hits,
     },
     gridProps: {
+      repoFullName,
       searchParams,
       parentProject: repoName,
     },
@@ -130,7 +150,7 @@ const getYamlArray = (
   repoName: string,
 ): Promise<YamlArray | null> => {
   const repoFullName = `${username}/${repoName}`
-  const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
+  const rootAssetPath = `${KITSPACE_PROCESSOR_ASSET_URL}/${repoFullName}/HEAD`
   const getYaml = async () => {
     const [ignored, arr] = await getKitspaceYamlArray(rootAssetPath)
     return arr

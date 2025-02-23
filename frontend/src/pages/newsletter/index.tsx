@@ -3,9 +3,11 @@ import { Button, Container, Form } from 'semantic-ui-react'
 
 import Page from '@components/Page'
 import styles from './index.module.scss'
+import Head from '@components/Head'
 
 const Newsletter = () => (
-  <Page title="Kitspace Newsletter">
+  <Page>
+    <Head title="Kitspace Newsletter" />
     <Container>
       <p>
         Often people say to us: &quot;Wow that&apos;s a nice printed circuit board.

@@ -1,5 +1,4 @@
 import React from 'react'
-import Head from '@components/Head'
 import NavBar from '@components/NavBar'
 import styles from './index.module.scss'
 
@@ -14,7 +13,6 @@ type ContainerProps = {
 }
 
 type PageProps = {
-  title: string
   initialQuery?: string
   contentFullSize?: boolean
   children: React.ReactNode
@@ -33,10 +31,9 @@ const Container = ({ contentFullSize, children }: ContainerProps) => (
   </main>
 )
 
-const Page = ({ title, contentFullSize = false, children }: PageProps) => {
+const Page = ({ contentFullSize = false, children }: PageProps) => {
   return (
     <>
-      <Head title={title} />
       <NavBar />
       <Content contentFullSize={contentFullSize}>{children}</Content>
     </>
