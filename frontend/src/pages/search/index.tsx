@@ -15,6 +15,7 @@ import SearchInput from '@components/SearchInput'
 import { useSearchQuery } from '@contexts/SearchContext'
 
 import styles from './index.module.scss'
+import Head from '@components/Head'
 
 interface SearchPageProps {
   swrFallback: Record<string, Array<Array<Project>>>
@@ -45,7 +46,8 @@ export const getServerSideProps: GetServerSideProps = async ({
 const Search = ({ swrFallback }: SearchPageProps) => {
   return (
     <SWRConfig value={{ fallback: swrFallback }}>
-      <Page title="Kitspace">
+      <Page>
+        <Head title="Kitspace" />
         <PageContent />
       </Page>
     </SWRConfig>

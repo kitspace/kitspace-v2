@@ -24,6 +24,7 @@ export default async phase => {
     // we use nginx to compress so we turn off next.js gzip compression
     compress: false,
     publicRuntimeConfig: {
+      KITSPACE_URL: process.env.KITSPACE_URL,
       KITSPACE_DOMAIN: process.env.KITSPACE_DOMAIN,
       KITSPACE_GITEA_URL: process.env.KITSPACE_GITEA_URL,
       KITSPACE_FRONTEND_ASSET_URL: process.env.KITSPACE_FRONTEND_ASSET_URL,
