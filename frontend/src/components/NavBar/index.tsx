@@ -124,15 +124,11 @@ const SiteMenuItems = () => {
 
 const SocialMenuItems = () => (
   <>
-    <Menu.Item
-      as="a"
-      href="https://app.element.io/#/room/#kitspace:matrix.org"
-      rel="me"
-    >
+    <Menu.Item as="a" href="https://app.element.io/#/room/#kitspace:matrix.org">
       Element/Matrix Chat
       <Icon name="chat" />
     </Menu.Item>
-    <Menu.Item as="a" href="http://discord.gg/nFjDCZqghC" rel="me">
+    <Menu.Item as="a" href="http://discord.gg/nFjDCZqghC">
       Discord Chat
       <Icon>
         <FontAwesomeIcon icon={faDiscord} />
@@ -144,23 +140,23 @@ const SocialMenuItems = () => (
         <Icon name="envelope" />
       </Menu.Item>
     </Link>
-    <Menu.Item as="a" href="https://bsky.app/profile/kitspace.org" rel="me">
+    <Menu.Item as="a" href="https://bsky.app/profile/kitspace.org">
       Bluesky
       <Icon>
         <FontAwesomeIcon icon={faBluesky} />
       </Icon>
     </Menu.Item>
-    <Menu.Item as="a" href="https://mastodon.social/@kitspace" rel="me">
+    <Menu.Item as="a" href="https://mastodon.social/@kitspace">
       Mastodon
       <Icon>
         <FontAwesomeIcon icon={faMastodon} />
       </Icon>
     </Menu.Item>
-    <Menu.Item as="a" href="https://github.com/kitspace" rel="me">
+    <Menu.Item as="a" href="https://github.com/kitspace">
       GitHub
       <Icon name="github" />
     </Menu.Item>
-    <Menu.Item as="a" href="https://opencollective.com/kitspace" rel="me">
+    <Menu.Item as="a" href="https://opencollective.com/kitspace">
       Donate
       <Icon name="heart" />
     </Menu.Item>
