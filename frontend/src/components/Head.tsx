@@ -12,7 +12,7 @@ const Head = ({
   title = 'Kitspace',
   ogDescription = 'A site for sharing electronics projects.',
   url = 'https://kitspace.org',
-  ogImage = 'https://kitspace.org/images/logo_meta.png',
+  ogImage = 'https://kitspace.org/static/images/logo_meta.png',
 }: HeadProps) => (
   <NextHead>
     <meta charSet="UTF-8" />
