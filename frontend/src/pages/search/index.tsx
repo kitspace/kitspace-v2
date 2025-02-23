@@ -48,6 +48,7 @@ const Search = ({ swrFallback }: SearchPageProps) => {
     <SWRConfig value={{ fallback: swrFallback }}>
       <Page>
         <Head title="Kitspace" />
+        <a href="https://mastodon.social/@kitspace" rel="me" />
         <PageContent />
       </Page>
     </SWRConfig>
