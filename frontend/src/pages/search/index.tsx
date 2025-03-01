@@ -85,7 +85,8 @@ const IntroText = () => {
   return (
     <div className={styles.introTextContainer}>
       <div className={styles.introText}>
-        Kitspace is a place to share ready-to-order electronics designs.
+        Kitspace is a place to share ready-to-order electronics designs. We automate
+        parts purchasing so you can focus on building.
       </div>
     </div>
   )
