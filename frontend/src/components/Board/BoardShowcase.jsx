@@ -42,7 +42,12 @@ const BoardShowcase = ({ assetPath }) => {
                 }`}
               >
                 {isLoading || isError ? null : (
-                  <img alt="PCB top view" data-cy="board-showcase-top" src={top} />
+                  <img
+                    style={{ maxWidth: '100%' }}
+                    alt="PCB top view"
+                    data-cy="board-showcase-top"
+                    src={top}
+                  />
                 )}
               </div>
               <div className={styles.circuitBorderContainer}>
@@ -55,6 +60,7 @@ const BoardShowcase = ({ assetPath }) => {
               >
                 {isLoading || isError ? null : (
                   <img
+                    style={{ maxWidth: '100%' }}
                     alt="PCB bottom view"
                     data-cy="board-showcase-bottom"
                     src={bottom}
