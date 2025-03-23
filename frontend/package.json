@@ -24,7 +24,7 @@
     "lodash.flattendeep": "^4.4.0",
     "maxmind": "^4.3.23",
     "meilisearch": "^0.25.1",
-    "next": "^15.0.0",
+    "next": "^15.2.3",
     "prop-types": "^15.7.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
