@@ -13,7 +13,6 @@ const frontendAssetUrl =
 const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
   const aislerUrl = `https://aisler.net/p/new?url=${zipUrl}&ref=kitspace`
   const pcbwayUrl = `https://www.pcbway.com/QuickOrderOnline.aspx?fileurl=${zipUrl}&from=kitspace`
-  const oshparkUrl = `https://oshpark.com/import?url=${zipUrl}`
   const pcbShopperUrl = `https://pcbshopper.com/?Width=${boardSpecs.width}&Height=${boardSpecs.height}&Units=mm&Layers=${boardSpecs.layers}&Quantity=1&GetPrices`
 
   const trackClick = vendor => () => {
@@ -68,22 +67,6 @@ const OrderPCBs = ({ zipUrl, boardSpecs, projectFullname }) => {
               unoptimized
               alt="PCBWay logo"
               src={`${frontendAssetUrl}/static/images/pcbway.png`}
-              {...serviceLogoDimensions}
-            />
-          </a>
-
-          <a
-            className={styles.PCBMenu__link}
-            href={oshparkUrl}
-            rel="nofollow noreferrer"
-            target="_blank"
-            onAuxClick={trackClick('OSHPark')}
-            onClick={trackClick('OSHPark')}
-          >
-            <Image
-              unoptimized
-              alt="OSHPark logo"
-              src={`${frontendAssetUrl}/static/images/oshpark.png`}
               {...serviceLogoDimensions}
             />
           </a>
