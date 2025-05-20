@@ -21,10 +21,7 @@ https://github.com/JarrettR/USBvil
 https://github.com/8BitMixtape/NextLevelEdition
 https://github.com/dvdfreitag/Signal-Detector
 https://github.com/robotsrulz/SP_Adapter
-https://github.com/pcbsz/SimpleAmp
-https://github.com/pcbsz/AtariSynth
 https://git.defproc.co.uk/DefProc/piezo-sensor
-https://github.com/pcbsz/LM386
 https://github.com/kanflo/aaduino
 https://github.com/descampsa/DynamixelShield
 https://github.com/jpralves/cseduino
