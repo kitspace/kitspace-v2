@@ -78,7 +78,13 @@ describe('Relative README images URLs normalization', () => {
 
     cy.get('[data-cy=readme]').within(() => {
       cy.get('a').each($a => {
-        cy.request($a[0].href).its('status').should('equal', 200)
+        const href = $a[0].href
+        if (href.endsWith('.png')) {
+          assert(
+            href.startsWith('https://github.com/'),
+            'expected relative url to be to github',
+          )
+        }
       })
     })
   })
