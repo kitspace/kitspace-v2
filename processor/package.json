@@ -23,7 +23,7 @@
     "1-click-bom": "https://github.com/kitspace/npm-1-click-bom#a520cb44f15dd41068f2a7075f72f928745a3f48",
     "@aws-sdk/client-s3": "^3.194.0",
     "async-lock": "^1.4.1",
-    "bullmq": "^1.91.1",
+    "bullmq": "^5.53.2",
     "cheerio": "^1.0.0-rc.10",
     "globule": "^1.0.0",
     "hast-util-has-property": "^2.0.0",
