@@ -57,6 +57,7 @@ describe('Relative README images URLs normalization', () => {
         })
         // `scrollIntoView` is not working so we use `click`
         cy.wrap($img).click().should('be.visible')
+        cy.wait(100)
       })
     })
   })
@@ -79,6 +80,7 @@ describe('Relative README images URLs normalization', () => {
     cy.get('[data-cy=readme]').within(() => {
       cy.get('a').each($a => {
         cy.request($a[0].href).its('status').should('equal', 200)
+        cy.wait(2000)
       })
     })
   })

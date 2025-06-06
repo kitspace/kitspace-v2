@@ -73,7 +73,7 @@ Cypress.Commands.add('importRepo', (remoteUrl, repoName, user) => {
         .request({
           url: `http://gitea.kitspace.test:3000/api/v1/repos/${user.username}/${repoName}`,
           method: 'GET',
-          failOnStatusCode: false,
+          failOnStatusCode: true,
         })
         .then(response => !response.body.empty),
     { timeout: 60_000, interval: 1000 },
@@ -105,12 +105,8 @@ Cypress.Commands.add('mirrorRepo', (remoteRepo, repoName, user) => {
     method: 'POST',
     headers,
     body: JSON.stringify(giteaOptions),
-    failOnStatusCode: false,
+    failOnStatusCode: true,
     timeout: 60_000,
-  }).then(response => {
-    if (!response.status === 201) {
-      throw new Error('Failed to mirror repo')
-    }
   })
 })
 
