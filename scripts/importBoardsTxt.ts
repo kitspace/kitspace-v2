@@ -217,7 +217,9 @@ async function getAllGithubReposDescriptions(
       body: JSON.stringify({ query }),
     },
   )
-    .then(res => res.json())
+    .then(res =>
+      res.status === 200 || res.status === 201 ? res.json() : Promise.reject(res),
+    )
     .catch(e => {
       console.error(e)
       throw new Error('Failed to get github repos descriptions')
