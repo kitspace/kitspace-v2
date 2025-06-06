@@ -231,6 +231,9 @@ async function getAllGithubReposDescriptions(
 
   const repoDescriptionsMap = new Map<string, string>()
   for (const entry of Object.values(reposInfo)) {
+    if (!entry) {
+      throw new Error(`empty entry in reposInfo: ${JSON.stringify(reposInfo)}`)
+    }
     repoDescriptionsMap.set(entry.fullName, entry.description)
   }
 
