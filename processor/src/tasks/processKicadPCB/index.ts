@@ -1,7 +1,6 @@
 import globule from 'globule'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import url from 'node:url'
 import { Job, ProjectJobData } from '../../job.js'
 import * as s3 from '../../s3.js'
 import { sh } from '../../shell.js'
@@ -51,7 +50,7 @@ async function processKicadPCB(
       return { inputFiles: {}, gerbers: [] }
     }
 
-    const layoutPromise = plotKicadLayoutSvg(layoutSvgPath, kicadPcbFile, tmpDir)
+    const layoutPromise = plotKicadLayoutSvg(layoutSvgPath, kicadPcbFile)
       .then(() =>
         job.updateProgress({ status: 'done', file: layoutSvgPath, outputDir }),
       )
@@ -85,24 +84,16 @@ async function processKicadPCB(
   }
 }
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
-const plot_kicad_pcb = path.join(__dirname, 'plot_kicad_pcb')
-
 async function plotKicadGerbers(kicadPcbFile, tmpDir) {
   const tmpGerberFolder = path.join(tmpDir, 'gerbers')
   await fs.mkdir(tmpGerberFolder)
-  await sh`${plot_kicad_pcb} gerber ${kicadPcbFile} ${tmpGerberFolder}`
+  await sh`kicad-cli pcb export gerbers ${kicadPcbFile} --output ${tmpGerberFolder}`
+  await sh`kicad-cli pcb export drill ${kicadPcbFile} --output ${tmpGerberFolder}`
   return globule.find(path.join(tmpGerberFolder, '*'))
 }
 
-async function plotKicadLayoutSvg(
-  layoutSvgPath: string,
-  kicadPcbFile: string,
-  tmpDir: string,
-) {
-  const tmpSvgFolder = path.join(tmpDir, 'svg')
-  await fs.mkdir(tmpSvgFolder)
-  await sh`${plot_kicad_pcb} svg ${kicadPcbFile} ${tmpSvgFolder} ${layoutSvgPath}`
+async function plotKicadLayoutSvg(layoutSvgPath: string, kicadPcbFile: string) {
+  await sh`kicad-cli pcb export svg ${kicadPcbFile} --layers='*' -o ${layoutSvgPath}`
   await s3.uploadFile(layoutSvgPath, 'image/svg+xml')
 }
 
