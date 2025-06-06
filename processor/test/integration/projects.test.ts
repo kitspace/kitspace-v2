@@ -438,7 +438,9 @@ describe(
     })
 
     afterEach(async function () {
-      await app.stop()
+      // we would like to stop the app but are having issue with unhandled
+      // promise rejections when doing so in CI
+      // await app.stop()
       await sh`rm -rf ${tmpDir}`
       vi.clearAllMocks()
     }, timeout)
