@@ -14,6 +14,7 @@ RUN apt-get update -qq && apt-get install -qq --no-install-recommends -y \
     inkscape \
     imagemagick \
     nodejs \
+    optipng \
     yarn \
     python3-pip \
     git
