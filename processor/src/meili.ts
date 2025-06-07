@@ -15,7 +15,14 @@ const meiliSettings: Settings = {
     'repoName',
   ],
   sortableAttributes: ['createdUnix', 'updatedUnix'],
-  displayedAttributes: ['id', 'ownerName', 'projectName', 'repoName', 'summary'],
+  displayedAttributes: [
+    'id',
+    'ownerName',
+    'projectName',
+    'repoName',
+    'summary',
+    'gitHash',
+  ],
 }
 
 const meili = new MeiliSearch({

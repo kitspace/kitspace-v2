@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import { Loader } from 'semantic-ui-react'
-import { bool, object, string } from 'prop-types'
 
 import Page from '@components/Page'
 import Head from '@components/Head'
@@ -12,7 +11,33 @@ import PageElements from './elements'
 
 const { KITSPACE_DOMAIN } = getConfig().publicRuntimeConfig
 
-const SharedProjectPage = props => {
+export type SharedProjectPageProps = {
+  rootAssetPath: string
+  repo: any
+  projectFullname: string
+  hasIBOM: boolean
+  kitspaceYAML: any
+  zipUrl: string
+  bomInfo: any
+  boardSpecs: { width: any; height: any; layers: any }
+  readme: string
+  isSynced: boolean
+  isEmpty: boolean
+  username: string
+  projectName: string
+  repoName: string
+  gerberInfoExists: boolean
+  bomInfoExists: boolean
+  readmeExists: boolean
+  kitspaceYAMLExists: boolean
+  boardShowcaseAssetsExist: boolean
+  finishedProcessing: boolean
+  ogDescription: string
+  description: string
+  originalUrl: string
+}
+
+const SharedProjectPage: React.FC<SharedProjectPageProps> = props => {
   const { reload } = useRouter()
   const title = `${
     props.projectName === '_' ? props.repoName : props.projectName
@@ -52,7 +77,7 @@ const SharedProjectPage = props => {
 
   if (!props.finishedProcessing) {
     return (
-      <Page title={title}>
+      <Page>
         <Loader active data-cy="processing-loader">
           Processing repository...
         </Loader>
@@ -62,14 +87,14 @@ const SharedProjectPage = props => {
 
   if (isSyncing) {
     return (
-      <Page title={title}>
+      <Page>
         <Loader active>Syncing repository...</Loader>
       </Page>
     )
   }
   if (migrationStatus === 'Failed') {
     return (
-      <Page title={title}>
+      <Page>
         <Loader active>Migration Failed, please try again later!</Loader>
       </Page>
     )
@@ -91,20 +116,6 @@ const SharedProjectPage = props => {
       />
     </Page>
   )
-}
-
-SharedProjectPage.propTypes = {
-  rootAssetPath: string.isRequired,
-  description: string.isRequired,
-  ogDescription: string.isRequired,
-  repoName: string.isRequired,
-  projectName: string.isRequired,
-  projectFullname: string.isRequired,
-  repo: object.isRequired,
-  username: string.isRequired,
-  isEmpty: bool.isRequired,
-  finishedProcessing: bool.isRequired,
-  isSynced: bool.isRequired,
 }
 
 export default SharedProjectPage

@@ -1,35 +1,44 @@
-import React from 'react'
-import getConfig from 'next/config'
 import type { NextPage } from 'next'
+import getConfig from 'next/config'
 
-import { getRepo } from '@utils/giteaApi'
+import type { SharedProjectPageProps } from '@components/SharedProjectPage'
+import SharedProjectPage from '@components/SharedProjectPage'
+import ErrorPage from '@pages/_error'
+import { getLatestSha, getRepo } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
-  getKitspaceYamlArray,
-  hasInteractiveBom,
   getIsProcessingDone,
+  getKitspaceYamlArray,
   getReadme,
+  hasInteractiveBom,
 } from '@utils/projectPage'
-import SharedProjectPage from '@components/SharedProjectPage'
-import ErrorPage from '@pages/_error'
 
 const assetUrl = getConfig().publicRuntimeConfig.KITSPACE_PROCESSOR_ASSET_URL
 
-const MultiProjectPage: NextPage<{ notFound?: boolean }> = props =>
-  props.notFound ? <ErrorPage statusCode={404} /> : <SharedProjectPage {...props} />
+export type PageProps = { notFound: true } | SharedProjectPageProps
 
-MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
+const ProjectPage: NextPage<PageProps> = props =>
+  'notFound' in props ? (
+    <ErrorPage statusCode={404} />
+  ) : (
+    <SharedProjectPage {...props} />
+  )
+
+ProjectPage.getInitialProps = async ({ query, res = null }) => {
   const userLowerCase = (query.user as string).toLowerCase()
   const repoLowerCase = (query.repo as string).toLowerCase()
-  const projectName = query.project
+  const projectName = Array.isArray(query.project)
+    ? query.project[0]
+    : query.project
 
   const repo = await getRepo(`${userLowerCase}/${repoLowerCase}`)
   if (repo) {
+    const latestSha = (await getLatestSha(userLowerCase, repoLowerCase)) || 'HEAD'
     const repoName = repo.name
     const username = repo.owner.login
     const repoFullName = `${username}/${repoName}`
-    const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
+    const rootAssetPath = `${assetUrl}/${repoFullName}/${latestSha}`
     const assetPath = `${rootAssetPath}/${projectName}`
     const [
       readme,
@@ -71,8 +80,6 @@ MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
       boardSpecs: { width, height, layers },
       readme,
       isSynced: repo?.mirror,
-      // Whether the project was empty or not at the time of requesting this
-      // page from the server.
       isEmpty: repo?.empty,
       username,
       projectName,
@@ -95,4 +102,4 @@ MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
   return { notFound: true }
 }
 
-export default MultiProjectPage
+export default ProjectPage

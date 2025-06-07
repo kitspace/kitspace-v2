@@ -4,4 +4,5 @@ export default interface Project {
   projectName: string
   repoName: string
   summary: string
+  gitHash: string
 }
