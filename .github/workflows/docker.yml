@@ -349,7 +349,7 @@ jobs:
           # start gitea so we can generate the admin token required for e2e
           docker compose --compatibility -f docker-compose.yml -f docker-compose.deploy.yml up -d
           until docker logs kitspace_gitea_1 | grep -q 'ORM engine initialization successful' ; do sleep 3s; done
-          token="$(deno run --allow-env --allow-net --allow-run ./scripts/importBoardsTxt.ts --tokenOnly)"
+          token="$(./scripts/importBoardsTxt.ts --tokenOnly)"
           docker compose stop
 
           echo "CYPRESS_GITEA_ADMIN_TOKEN=${token}" >> $GITHUB_ENV

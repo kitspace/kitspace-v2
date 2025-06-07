@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-env --allow-net --allow-run
+#!/usr/bin/env -S deno run --allow-env --allow-net --allow-run --allow-read
 /* eslint-disable no-console */
 
 import { cryptoRandomString } from 'https://deno.land/x/crypto_random_string@1.0.0/mod.ts'
@@ -6,6 +6,7 @@ import { exec, OutputMode } from 'https://deno.land/x/exec@0.0.5/mod.ts'
 import { parse } from 'https://deno.land/std@0.119.0/flags/mod.ts'
 import * as path from 'https://deno.land/std@0.167.0/path/mod.ts'
 import ProgressBar from 'https://deno.land/x/progress@v1.3.4/mod.ts'
+import "jsr:@std/dotenv/load";
 
 const flags = parse(Deno.args, {
   string: ['giteaUrl', 'adminToken', 'githubToken', 'filter', 'urls'],
@@ -34,7 +35,7 @@ if (flags.help) {
   Deno.exit(0)
 }
 
-if (!flags.githubToken && !flags.tokenOnly) {
+if (!Deno.env.get("GH_TOKEN") && !flags.githubToken && !flags.tokenOnly) {
   console.error('Error: No github token provided.')
   Deno.exit(1)
 }
@@ -212,7 +213,7 @@ async function getAllGithubReposDescriptions(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `bearer ${flags.githubToken}`,
+        Authorization: `bearer ${flags.githubToken || Deno.env.get("GH_TOKEN")}`,
       },
       body: JSON.stringify({ query }),
     },
