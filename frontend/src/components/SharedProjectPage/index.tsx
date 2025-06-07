@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import { Loader } from 'semantic-ui-react'
-import { bool, object, string } from 'prop-types'
 
 import Page from '@components/Page'
 import Head from '@components/Head'
@@ -12,7 +11,23 @@ import PageElements from './elements'
 
 const { KITSPACE_DOMAIN } = getConfig().publicRuntimeConfig
 
-const SharedProjectPage = props => {
+type SharedProjectPageProps = {
+  rootAssetPath: string
+  description: string
+  ogDescription: string
+  repoName: string
+  projectName: string
+  projectFullname: string
+  repo: {
+    id: string | number
+  }
+  username: string
+  isEmpty: boolean
+  finishedProcessing: boolean
+  isSynced: boolean
+}
+
+const SharedProjectPage: React.FC<SharedProjectPageProps> = props => {
   const { reload } = useRouter()
   const title = `${
     props.projectName === '_' ? props.repoName : props.projectName
@@ -91,20 +106,6 @@ const SharedProjectPage = props => {
       />
     </Page>
   )
-}
-
-SharedProjectPage.propTypes = {
-  rootAssetPath: string.isRequired,
-  description: string.isRequired,
-  ogDescription: string.isRequired,
-  repoName: string.isRequired,
-  projectName: string.isRequired,
-  projectFullname: string.isRequired,
-  repo: object.isRequired,
-  username: string.isRequired,
-  isEmpty: bool.isRequired,
-  finishedProcessing: bool.isRequired,
-  isSynced: bool.isRequired,
 }
 
 export default SharedProjectPage

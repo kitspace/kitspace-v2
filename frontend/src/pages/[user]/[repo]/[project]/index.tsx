@@ -2,7 +2,7 @@ import React from 'react'
 import getConfig from 'next/config'
 import type { NextPage } from 'next'
 
-import { getRepo } from '@utils/giteaApi'
+import { getRepo, getLatestSha } from '@utils/giteaApi'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
@@ -26,10 +26,11 @@ MultiProjectPage.getInitialProps = async ({ query, res = null }) => {
 
   const repo = await getRepo(`${userLowerCase}/${repoLowerCase}`)
   if (repo) {
+    const latestSha = (await getLatestSha(userLowerCase, repoLowerCase)) || 'HEAD'
     const repoName = repo.name
     const username = repo.owner.login
     const repoFullName = `${username}/${repoName}`
-    const rootAssetPath = `${assetUrl}/${repoFullName}/HEAD`
+    const rootAssetPath = `${assetUrl}/${repoFullName}/${latestSha}`
     const assetPath = `${rootAssetPath}/${projectName}`
     const [
       readme,
