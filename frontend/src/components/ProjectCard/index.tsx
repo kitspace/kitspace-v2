@@ -14,13 +14,13 @@ interface ProjectCardProps {
   intersectionObserverRef?: IntersectionObserverRef
 }
 
-const ProjectCard = ({
+const ProjectCard: React.FC<ProjectCardProps> = ({
   projectName,
   summary,
   ownerName,
   repoName,
   intersectionObserverRef,
-}: ProjectCardProps) => {
+}) => {
   const isSingleProject = projectName === '_'
   const nameOnCard = isSingleProject ? repoName : projectName
   const { src, isLoading, isError } = useThumbnail(

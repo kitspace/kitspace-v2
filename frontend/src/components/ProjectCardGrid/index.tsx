@@ -8,10 +8,10 @@ interface ProjectCardGridProps {
   intersectionObserverRef?: IntersectionObserverRef
 }
 
-const ProjectCardGrid = ({
+const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   projects,
   intersectionObserverRef,
-}: ProjectCardGridProps) => {
+}) => {
   // Set the marker to load more projects to 6 cards before the end of the grid.
   const loadMoreProjectsMarker = projects?.length - 6
   return (
