@@ -11,20 +11,30 @@ import PageElements from './elements'
 
 const { KITSPACE_DOMAIN } = getConfig().publicRuntimeConfig
 
-type SharedProjectPageProps = {
+export type SharedProjectPageProps = {
   rootAssetPath: string
-  description: string
-  ogDescription: string
-  repoName: string
-  projectName: string
+  repo: any
   projectFullname: string
-  repo: {
-    id: string | number
-  }
-  username: string
-  isEmpty: boolean
-  finishedProcessing: boolean
+  hasIBOM: boolean
+  kitspaceYAML: any
+  zipUrl: string
+  bomInfo: any
+  boardSpecs: { width: any; height: any; layers: any }
+  readme: string
   isSynced: boolean
+  isEmpty: boolean
+  username: string
+  projectName: string
+  repoName: string
+  gerberInfoExists: boolean
+  bomInfoExists: boolean
+  readmeExists: boolean
+  kitspaceYAMLExists: boolean
+  boardShowcaseAssetsExist: boolean
+  finishedProcessing: boolean
+  ogDescription: string
+  description: string
+  originalUrl: string
 }
 
 const SharedProjectPage: React.FC<SharedProjectPageProps> = props => {
@@ -67,7 +77,7 @@ const SharedProjectPage: React.FC<SharedProjectPageProps> = props => {
 
   if (!props.finishedProcessing) {
     return (
-      <Page title={title}>
+      <Page>
         <Loader active data-cy="processing-loader">
           Processing repository...
         </Loader>
@@ -77,14 +87,14 @@ const SharedProjectPage: React.FC<SharedProjectPageProps> = props => {
 
   if (isSyncing) {
     return (
-      <Page title={title}>
+      <Page>
         <Loader active>Syncing repository...</Loader>
       </Page>
     )
   }
   if (migrationStatus === 'Failed') {
     return (
-      <Page title={title}>
+      <Page>
         <Loader active>Migration Failed, please try again later!</Loader>
       </Page>
     )

@@ -1,18 +1,18 @@
-import React from 'react'
 import { NextPageContext } from 'next'
 import getConfig from 'next/config'
 import useSWR, { SWRConfig, unstable_serialize } from 'swr'
 
-import { getKitspaceYamlArray } from '@utils/projectPage'
+import Head from '@components/Head'
+import Page from '@components/Page'
+import ProjectCardGrid from '@components/ProjectCardGrid'
+import { searchFetcher, SearchFetcherParams } from '@hooks/useLazySearch'
+import Project from '@models/Project'
+import ErrorPage from '@pages/_error'
 import { getRepo } from '@utils/giteaApi'
 import { waitFor } from '@utils/index'
-import Project from '@models/Project'
-import { searchFetcher, SearchFetcherParams } from '@hooks/useLazySearch'
-import ProjectCardGrid from '@components/ProjectCardGrid'
-import ErrorPage from '@pages/_error'
-import Page from '@components/Page'
+import { getKitspaceYamlArray } from '@utils/projectPage'
+import type { PageProps } from './[project]'
 import ProjectPage from './[project]'
-import Head from '@components/Head'
 
 const { KITSPACE_PROCESSOR_ASSET_URL, KITSPACE_URL } =
   getConfig().publicRuntimeConfig
@@ -37,7 +37,7 @@ const RepoPage = (props: RepoPageProps) => {
     )
   }
 
-  return <ProjectPage {...props.singleProject} />
+  return <ProjectPage {...(props.singleProject as PageProps)} />
 }
 
 RepoPage.getInitialProps = async (ctx: NextPageContext): Promise<RepoPageProps> => {
