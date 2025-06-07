@@ -11,6 +11,7 @@ interface ProjectCardProps {
   summary: string
   ownerName: string
   repoName: string
+  gitHash: string
   intersectionObserverRef?: IntersectionObserverRef
 }
 
@@ -19,6 +20,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   summary,
   ownerName,
   repoName,
+  gitHash,
   intersectionObserverRef,
 }) => {
   const isSingleProject = projectName === '_'
@@ -26,6 +28,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const { src, isLoading, isError } = useThumbnail(
     `${ownerName}/${repoName}`,
     projectName,
+    gitHash,
   )
   return (
     <Link
