@@ -233,11 +233,12 @@ export default async function processGerbers(
 async function generateTopLargePng(topSvgPath, stackup, topLargePngPath) {
   let constraint: string
   if (stackup.top.width > stackup.top.height + 0.05) {
-    constraint = `--export-width=${240 * 3 - 128}`
+    constraint = `--export-width=${240 * 2 - 128}`
   } else {
-    constraint = `--export-height=${180 * 3 - 128}`
+    constraint = `--export-height=${180 * 2 - 128}`
   }
   await sh`inkscape --without-gui ${topSvgPath} ${constraint} --export-png=${topLargePngPath}`
+  await sh`optipng -o7 ${topLargePngPath}`
   await s3.uploadFile(topLargePngPath, 'image/png')
 }
 
@@ -249,6 +250,7 @@ async function generateTopPng(topSvgPath, stackup, topPngPath) {
     constraint = `--export-height=${180}`
   }
   await sh`inkscape --without-gui ${topSvgPath} ${constraint} --export-png=${topPngPath}`
+  await sh`optipng -o7 ${topPngPath}`
   return s3.uploadFile(topPngPath, 'image/png')
 }
 
