@@ -46,7 +46,8 @@ function recombineTemplate(
   strings: TemplateStringsArray,
   values: Array<string>,
 ): string {
-  return strings.reduce((acc, str, i) => {
+  const combined = strings.reduce((acc, str, i) => {
     return `${acc}${str}${values[i] || ''}`
   }, '')
+  return combined.replace(/\n\s*/g, ' ')
 }
