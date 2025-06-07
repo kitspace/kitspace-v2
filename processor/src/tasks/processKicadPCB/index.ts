@@ -87,7 +87,8 @@ async function processKicadPCB(
 async function plotKicadGerbers(kicadPcbFile, tmpDir) {
   const tmpGerberFolder = path.join(tmpDir, 'gerbers')
   await fs.mkdir(tmpGerberFolder)
-  await sh`kicad-cli pcb export gerbers ${kicadPcbFile} --output ${tmpGerberFolder}`
+  await sh`kicad-cli pcb export gerbers ${kicadPcbFile} --output ${tmpGerberFolder}
+      --layers='*.Cu,B.Mask,F.Mask,B.Paste,F.Paste,F.SilkS,B.SilkS,Edge.Cuts' --subtract-soldermask`
   await sh`kicad-cli pcb export drill ${kicadPcbFile} --output ${tmpGerberFolder}`
   return globule.find(path.join(tmpGerberFolder, '*'))
 }
