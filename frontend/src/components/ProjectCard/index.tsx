@@ -25,7 +25,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const isSingleProject = projectName === '_'
   const nameOnCard = isSingleProject ? repoName : projectName
-  const { src, isLoading, isError } = useThumbnail(
+  const { top, topLarge, isLoading, isError } = useThumbnail(
     `${ownerName}/${repoName}`,
     projectName,
     gitHash,
@@ -39,12 +39,19 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       <Card as="a" className={styles.card} data-cy="project-card">
         <div ref={intersectionObserverRef} className={styles.thumbnail}>
           {isLoading || isError ? null : (
-            <img
-              alt={`Render of PCB of ${nameOnCard}`}
-              data-cy="project-card-thumbnail"
-              src={src}
-              style={{ maxWidth: 240, maxHeight: 180 }}
-            />
+            <picture>
+              <source
+                data-cy="project-card-thumbnail-large"
+                media="(min-resolution: 1.5dppx)"
+                srcSet={topLarge}
+              />
+              <img
+                alt={`Render of PCB of ${nameOnCard}`}
+                data-cy="project-card-thumbnail"
+                src={top}
+                style={{ maxWidth: 240, maxHeight: 180 }}
+              />
+            </picture>
           )}
         </div>
         <Card.Content>
