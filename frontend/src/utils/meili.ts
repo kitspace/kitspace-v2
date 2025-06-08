@@ -3,9 +3,10 @@ import getConfig from 'next/config'
 
 const { KITSPACE_MEILISEARCH_URL, meiliApiKey } = getConfig().publicRuntimeConfig
 
-interface NoApiKeyIndex {
+type NoApiKeyIndex = {
   search: () => Promise<never>
 }
+
 let index: Index<any> | NoApiKeyIndex = {
   async search() {
     throw Error('Search performed but meiliApiKey was not set')

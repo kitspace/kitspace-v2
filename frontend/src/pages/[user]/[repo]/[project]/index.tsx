@@ -4,7 +4,8 @@ import getConfig from 'next/config'
 import type { SharedProjectPageProps } from '@components/SharedProjectPage'
 import SharedProjectPage from '@components/SharedProjectPage'
 import ErrorPage from '@pages/_error'
-import { getLatestSha, getRepo } from '@utils/giteaApi'
+import { getRepo } from '@utils/giteaApi'
+import { meiliIndex } from '@utils/meili'
 import {
   getBoardBomInfo,
   getBoardGerberInfo,
@@ -34,7 +35,10 @@ ProjectPage.getInitialProps = async ({ query, res = null }) => {
 
   const repo = await getRepo(`${userLowerCase}/${repoLowerCase}`)
   if (repo) {
-    const latestSha = (await getLatestSha(userLowerCase, repoLowerCase)) || 'HEAD'
+    const searchResults = await meiliIndex.search('', {
+      filter: [`id = ${repo.id}-${projectName}`],
+    })
+    const latestSha = searchResults?.hits?.[0]?.gitHash || 'HEAD'
     const repoName = repo.name
     const username = repo.owner.login
     const repoFullName = `${username}/${repoName}`
