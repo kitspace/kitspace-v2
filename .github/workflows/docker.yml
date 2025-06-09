@@ -1,5 +1,10 @@
 name: Docker
 
+# Cancel running workflows when a new workflow run is triggered from the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [abdo-dev, kaspar-dev, review, master, pre-release, production]
