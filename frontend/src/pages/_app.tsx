@@ -3,6 +3,7 @@ import getConfig from 'next/config'
 import Head from 'next/head'
 import { Message } from 'semantic-ui-react'
 import type { AppProps } from 'next/app'
+import TopLoader from '@components/TopLoader'
 
 import 'semantic-ui-css/components/reset.min.css'
 import 'semantic-ui-css/components/site.min.css'
@@ -83,6 +84,7 @@ function KitspaceApp({
           }}
         />
       </Head>
+      <TopLoader />
       <Component {...pageProps} />
       {isStaticFallback ? <ErrorMessage /> : null}
     </SearchProvider>
