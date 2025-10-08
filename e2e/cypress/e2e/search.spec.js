@@ -12,6 +12,23 @@ describe('Search', () => {
     cy.url().should('include', `/search?q=${encodeURIComponent(queryTerm)}`)
   })
 
+  it('should clear URL when search term is deleted', () => {
+    const queryTerm = 'awesome project'
+
+    // Visit homepage
+    cy.visit('/')
+    // Find the search input field
+    cy.get('[data-cy=search-field] > input').as('searchInput')
+    // Type the query term
+    cy.get('@searchInput').type(queryTerm)
+    // Verify the URL includes the search term
+    cy.url().should('include', `/search?q=${encodeURIComponent(queryTerm)}`)
+    // Clear the search input
+    cy.get('@searchInput').clear()
+    // Verify the URL is reset to the base search page or homepage
+    cy.url().should('match', /^https?:\/\/[^/]+\/$/)
+  })
+
   it('should display project card on submitting search form', () => {
     const user = getFakeUser()
 
