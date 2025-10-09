@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = "~> 1.55"
+    }
     bunnynet = {
       source  = "BunnyWay/bunnynet"
       version = "~> 0.5.2"
@@ -60,6 +64,57 @@ resource "aws_security_group" "kitspace_server" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+// ---------------------------------------------------------
+// hetzner
+
+variable "hetzner_token" {
+  type      = string
+  sensitive = true
+}
+
+provider "hcloud" {
+  token = var.hetzner_token
+}
+
+resource "hcloud_ssh_key" "kitspace_key" {
+  name       = "kitspace_key"
+  public_key = data.aws_key_pair.info_kitspace_aws.public_key
+}
+
+resource "hcloud_firewall" "kitspace_server" {
+  name = "kitspace-server"
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "22"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "80"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "443"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
   }
 }
 
@@ -125,7 +180,7 @@ provider "sentry" {
 // deployment
 
 locals {
-  staging_branches = toset(["kaspar-dev", "abdo-dev", "review", "master"])
+  staging_branches = toset(["master", "review"])
 }
 
 module "staging" {
@@ -137,6 +192,9 @@ module "staging" {
   domain                            = "kitspace.dev"
   kitspace_server_security_group_id = aws_security_group.kitspace_server.id
   ec2_instance_ssh_key_name         = data.aws_key_pair.info_kitspace_aws.key_name
+  use_hetzner                       = true
+  hetzner_ssh_key_id                = hcloud_ssh_key.kitspace_key.id
+  hetzner_firewall_id               = hcloud_firewall.kitspace_server.id
   providers = {
     bunnynet = bunnynet.staging
   }
