@@ -7,7 +7,9 @@ locals {
 }
 
 resource "bunnynet_pullzone" "frontend" {
-  name = "frontend-${var.branch_name}-kitspace"
+  # Skip creating CDN for pre-release (uses production's CDN)
+  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  name  = "frontend-${var.branch_name}-kitspace"
   cors_extensions = [
     "css",
     "eot",
@@ -43,14 +45,18 @@ resource "bunnynet_pullzone" "frontend" {
 }
 
 resource "bunnynet_pullzone_hostname" "frontend_cdn" {
-  pullzone    = bunnynet_pullzone.frontend.id
+  # Skip creating CDN hostname for pre-release
+  count       = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  pullzone    = bunnynet_pullzone.frontend[0].id
   name        = "frontend-cdn.${local.deployment_domain}"
   tls_enabled = true
   force_ssl   = true
 }
 
 resource "bunnynet_pullzone" "processor" {
-  name = "processor-${var.branch_name}-kitspace"
+  # Skip creating CDN for pre-release (uses production's CDN)
+  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  name  = "processor-${var.branch_name}-kitspace"
   cors_extensions = [
     "css",
     "eot",
@@ -75,7 +81,7 @@ resource "bunnynet_pullzone" "processor" {
 
   origin {
     type = "OriginUrl"
-    url  = "https://${aws_s3_bucket.processor_bucket.bucket}.s3.amazonaws.com"
+    url  = "https://${local.bucket_name}.s3.amazonaws.com"
   }
 
   routing {
@@ -86,7 +92,9 @@ resource "bunnynet_pullzone" "processor" {
 }
 
 resource "bunnynet_pullzone_hostname" "processor_cdn" {
-  pullzone    = bunnynet_pullzone.processor.id
+  # Skip creating CDN hostname for pre-release
+  count       = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  pullzone    = bunnynet_pullzone.processor[0].id
   name        = "processor-cdn.${local.deployment_domain}"
   tls_enabled = true
   force_ssl   = true

@@ -1,13 +1,13 @@
-locals {
-  bucket = aws_s3_bucket.processor_bucket.bucket
-}
-
 resource "aws_iam_user" "s3_user" {
-  name = "${local.bucket}-s3-user"
+  # For pre-release, skip IAM user creation (use production's)
+  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  name  = "${local.bucket_name}-s3-user"
 }
 
 resource "aws_iam_policy" "s3_kitspace_processor_policy" {
-  name        = "${local.bucket}-s3-policy"
+  # For pre-release, skip policy creation (use production's)
+  count       = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  name        = "${local.bucket_name}-s3-policy"
   description = "Policy for processor S3 bucket access"
 
   policy = jsonencode({
@@ -18,7 +18,7 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
         Action = [
           "s3:ListBucket"
         ]
-        Resource = "arn:aws:s3:::${local.bucket}"
+        Resource = "arn:aws:s3:::${local.bucket_name}"
       },
       {
         Effect = "Allow"
@@ -27,17 +27,19 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
           "s3:GetObject",
           "s3:DeleteObject"
         ]
-        Resource = "arn:aws:s3:::${local.bucket}/*"
+        Resource = "arn:aws:s3:::${local.bucket_name}/*"
       }
     ]
   })
 }
 
 resource "aws_iam_user_policy_attachment" "s3_policy_attach" {
-  user       = aws_iam_user.s3_user.name
-  policy_arn = aws_iam_policy.s3_kitspace_processor_policy.arn
+  count      = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  user       = aws_iam_user.s3_user[0].name
+  policy_arn = aws_iam_policy.s3_kitspace_processor_policy[0].arn
 }
 
 resource "aws_iam_access_key" "s3_user_access_key" {
-  user = aws_iam_user.s3_user.name
+  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  user  = aws_iam_user.s3_user[0].name
 }
