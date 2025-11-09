@@ -180,7 +180,8 @@ provider "sentry" {
 // deployment
 
 locals {
-  staging_branches = toset(["master", "review"])
+  staging_branches    = toset(["master", "review"])
+  production_branches = toset(["production", "pre-release"])
 }
 
 module "staging" {
@@ -201,13 +202,17 @@ module "staging" {
 }
 
 module "production" {
+  for_each                          = local.production_branches
   source                            = "./deployment"
-  branch_name                       = "production"
+  branch_name                       = each.value
   mode                              = "production"
   bunnynet_dns_zone_id              = bunnynet_dns_zone.kitspace_org_zone.id
   domain                            = "kitspace.org"
   kitspace_server_security_group_id = aws_security_group.kitspace_server.id
   ec2_instance_ssh_key_name         = data.aws_key_pair.info_kitspace_aws.key_name
+  use_hetzner                       = each.value == "pre-release" ? true : false
+  hetzner_ssh_key_id                = each.value == "pre-release" ? hcloud_ssh_key.kitspace_key.id : ""
+  hetzner_firewall_id               = each.value == "pre-release" ? hcloud_firewall.kitspace_server.id : ""
   providers = {
     bunnynet = bunnynet.production
   }

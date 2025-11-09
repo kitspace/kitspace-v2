@@ -51,7 +51,7 @@ jobs:
           if [ "${{ github.ref_name }}" == "production" ]; then
             echo 'domain=kitspace.org' >> $GITHUB_OUTPUT
           elif [ "${{ github.ref_name }}" == "pre-release" ]; then
-            echo 'domain=kitspace.dev' >> $GITHUB_OUTPUT
+            echo 'domain=pre-release.kitspace.org' >> $GITHUB_OUTPUT
           else
             echo 'domain=${{ github.ref_name }}.staging.kitspace.dev' >> $GITHUB_OUTPUT
           fi
