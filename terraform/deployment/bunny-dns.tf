@@ -2,12 +2,17 @@ variable "bunnynet_dns_zone_id" {
   type = string
 }
 
+locals {
+  # Use Hetzner server primary IPv4 if available, otherwise use AWS EIP
+  instance_public_ip = var.use_hetzner ? hcloud_server.instance[0].ipv4_address : aws_eip.instance_ip[0].public_ip
+}
+
 resource "bunnynet_dns_record" "a_gitea" {
   zone  = var.bunnynet_dns_zone_id
   name  = var.mode == "production" ? "gitea" : "gitea.${var.branch_name}.staging"
   type  = "A"
   ttl   = 1800
-  value = aws_eip.instance_ip.public_ip
+  value = local.instance_public_ip
 
   # default when adding this record via web UI
   latency_zone = "DE"
@@ -20,7 +25,7 @@ resource "bunnynet_dns_record" "a_meilisearch" {
   name  = var.mode == "production" ? "meilisearch" : "meilisearch.${var.branch_name}.staging"
   type  = "A"
   ttl   = 1800
-  value = aws_eip.instance_ip.public_ip
+  value = local.instance_public_ip
 
   # default when adding this record via web UI
   latency_zone = "DE"
@@ -33,7 +38,7 @@ resource "bunnynet_dns_record" "a" {
   name  = var.mode == "production" ? "" : "${var.branch_name}.staging"
   type  = "A"
   ttl   = 1800
-  value = aws_eip.instance_ip.public_ip
+  value = local.instance_public_ip
 
   # default when adding this record via web UI
   latency_zone = "DE"

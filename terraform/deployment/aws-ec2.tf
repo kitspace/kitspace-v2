@@ -7,6 +7,7 @@ variable "ec2_instance_ssh_key_name" {
 }
 
 resource "aws_instance" "instance" {
+  count = var.use_hetzner ? 0 : 1
   # Ubuntu, 22.04 LTS, amd64 jammy image built on 2023-05-16. Owned by Canonical.
   ami           = "ami-01dd271720c1ba44f"
   instance_type = "t2.medium"
@@ -27,7 +28,8 @@ resource "aws_instance" "instance" {
 
 # reserved IP
 resource "aws_eip" "instance_ip" {
-  instance = aws_instance.instance.id
+  count    = var.use_hetzner ? 0 : 1
+  instance = aws_instance.instance[0].id
   tags = {
     "Name" = var.branch_name
   }

@@ -21,6 +21,6 @@
 - name: Reload sshd
   become: true
   service:
-    name: sshd
+    name: ssh
     state: reloaded
   when: sshd_config.changed
