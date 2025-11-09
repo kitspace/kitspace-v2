@@ -11,7 +11,7 @@ on:
 jobs:
   get_env:
     if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Get staging/production
     outputs:
       env: ${{ steps.set_env.outputs.env }}
@@ -28,7 +28,7 @@ jobs:
 
 
   copy_import_script:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     environment:
       name: ${{ needs.get_env.outputs.env }}
     needs:
