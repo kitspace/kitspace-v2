@@ -11,7 +11,7 @@ locals {
 
 resource "bunnynet_dns_record" "a_gitea" {
   zone  = var.bunnynet_dns_zone_id
-  name  = var.mode == "production" ? (var.branch_name == "production" ? "gitea" : "gitea.${var.branch_name}") : "gitea.${var.branch_name}.staging"
+  name  = var.mode == "staging" ? "gitea.${var.deployment_name}.staging" : (var.deployment_name == "legacy" ? "gitea" : "gitea.${var.deployment_name}")
   type  = "A"
   ttl   = local.dns_ttl
   value = local.instance_public_ip
@@ -24,7 +24,7 @@ resource "bunnynet_dns_record" "a_gitea" {
 
 resource "bunnynet_dns_record" "a_meilisearch" {
   zone  = var.bunnynet_dns_zone_id
-  name  = var.mode == "production" ? (var.branch_name == "production" ? "meilisearch" : "meilisearch.${var.branch_name}") : "meilisearch.${var.branch_name}.staging"
+  name  = var.mode == "staging" ? "meilisearch.${var.deployment_name}.staging" : (var.deployment_name == "legacy" ? "meilisearch" : "meilisearch.${var.deployment_name}")
   type  = "A"
   ttl   = local.dns_ttl
   value = local.instance_public_ip
@@ -37,7 +37,7 @@ resource "bunnynet_dns_record" "a_meilisearch" {
 
 resource "bunnynet_dns_record" "a" {
   zone  = var.bunnynet_dns_zone_id
-  name  = var.mode == "production" ? (var.branch_name == "production" ? "" : var.branch_name) : "${var.branch_name}.staging"
+  name  = var.mode == "staging" ? "${var.deployment_name}.staging" : (var.deployment_name == "legacy" ? "" : var.deployment_name)
   type  = "A"
   ttl   = local.dns_ttl
   value = local.instance_public_ip
@@ -50,10 +50,11 @@ resource "bunnynet_dns_record" "a" {
 
 resource "bunnynet_dns_record" "frontend_cdn" {
   zone  = var.bunnynet_dns_zone_id
-  name  = var.mode == "production" ? (var.branch_name == "production" ? "frontend-cdn" : "frontend-cdn.${var.branch_name}") : "frontend-cdn.${var.branch_name}.staging"
+  name  = var.mode == "staging" ? "frontend-cdn.${var.deployment_name}.staging" : (var.deployment_name == "legacy" ? "frontend-cdn" : "frontend-cdn.${var.deployment_name}")
   type  = "CNAME"
   ttl   = local.dns_ttl
-  value = "frontend-${var.branch_name}-kitspace.b-cdn.net"
+  # Both legacy and pre-release use production CDN (frontend-production-kitspace), staging uses its own
+  value = var.mode == "production" ? "frontend-production-kitspace.b-cdn.net" : "frontend-${var.deployment_name}-kitspace.b-cdn.net"
 
   # default when adding this record via web UI
   latency_zone = "DE"
@@ -64,10 +65,11 @@ resource "bunnynet_dns_record" "frontend_cdn" {
 
 resource "bunnynet_dns_record" "processor_cdn" {
   zone  = var.bunnynet_dns_zone_id
-  name  = var.mode == "production" ? (var.branch_name == "production" ? "processor-cdn" : "processor-cdn.${var.branch_name}") : "processor-cdn.${var.branch_name}.staging"
+  name  = var.mode == "staging" ? "processor-cdn.${var.deployment_name}.staging" : (var.deployment_name == "legacy" ? "processor-cdn" : "processor-cdn.${var.deployment_name}")
   type  = "CNAME"
   ttl   = local.dns_ttl
-  value = "processor-${var.branch_name}-kitspace.b-cdn.net"
+  # Both legacy and pre-release use production CDN (processor-production-kitspace), staging uses its own
+  value = var.mode == "production" ? "processor-production-kitspace.b-cdn.net" : "processor-${var.deployment_name}-kitspace.b-cdn.net"
 
   # default when adding this record via web UI
   latency_zone = "DE"

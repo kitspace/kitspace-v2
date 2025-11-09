@@ -15,7 +15,7 @@ terraform {
   }
 }
 
-variable "branch_name" {
+variable "deployment_name" {
   type = string
 }
 

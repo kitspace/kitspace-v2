@@ -180,14 +180,14 @@ provider "sentry" {
 // deployment
 
 locals {
-  staging_branches    = toset(["master", "review"])
-  production_branches = toset(["production", "pre-release"])
+  staging_deployments    = toset(["master", "review"])
+  production_deployments = toset(["legacy", "pre-release"])
 }
 
 module "staging" {
-  for_each                          = local.staging_branches
+  for_each                          = local.staging_deployments
   source                            = "./deployment"
-  branch_name                       = each.value
+  deployment_name                   = each.value
   mode                              = "staging"
   bunnynet_dns_zone_id              = bunnynet_dns_zone.kitspace_dev_zone.id
   domain                            = "kitspace.dev"
@@ -202,9 +202,9 @@ module "staging" {
 }
 
 module "production" {
-  for_each                          = local.production_branches
+  for_each                          = local.production_deployments
   source                            = "./deployment"
-  branch_name                       = each.value
+  deployment_name                   = each.value
   mode                              = "production"
   bunnynet_dns_zone_id              = bunnynet_dns_zone.kitspace_org_zone.id
   domain                            = "kitspace.org"

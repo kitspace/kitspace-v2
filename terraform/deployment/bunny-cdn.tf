@@ -3,13 +3,13 @@ variable "domain" {
 }
 
 locals {
-  deployment_domain = var.mode == "production" ? var.domain : "${var.branch_name}.staging.${var.domain}"
+  deployment_domain = var.mode == "production" ? var.domain : "${var.deployment_name}.staging.${var.domain}"
 }
 
 resource "bunnynet_pullzone" "frontend" {
-  # Skip creating CDN for pre-release (uses production's CDN)
-  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
-  name  = "frontend-${var.branch_name}-kitspace"
+  # Create CDN for staging and legacy deployment (pre-release uses legacy's CDN)
+  count = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
+  name  = var.deployment_name == "legacy" ? "frontend-production-kitspace" : "frontend-${var.deployment_name}-kitspace"
   cors_extensions = [
     "css",
     "eot",
@@ -45,8 +45,8 @@ resource "bunnynet_pullzone" "frontend" {
 }
 
 resource "bunnynet_pullzone_hostname" "frontend_cdn" {
-  # Skip creating CDN hostname for pre-release
-  count       = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  # Create CDN hostname for staging and legacy deployment (pre-release uses legacy's CDN)
+  count       = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
   pullzone    = bunnynet_pullzone.frontend[0].id
   name        = "frontend-cdn.${local.deployment_domain}"
   tls_enabled = true
@@ -54,9 +54,9 @@ resource "bunnynet_pullzone_hostname" "frontend_cdn" {
 }
 
 resource "bunnynet_pullzone" "processor" {
-  # Skip creating CDN for pre-release (uses production's CDN)
-  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
-  name  = "processor-${var.branch_name}-kitspace"
+  # Create CDN for staging and legacy deployment (pre-release uses legacy's CDN)
+  count = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
+  name  = var.deployment_name == "legacy" ? "processor-production-kitspace" : "processor-${var.deployment_name}-kitspace"
   cors_extensions = [
     "css",
     "eot",
@@ -92,8 +92,8 @@ resource "bunnynet_pullzone" "processor" {
 }
 
 resource "bunnynet_pullzone_hostname" "processor_cdn" {
-  # Skip creating CDN hostname for pre-release
-  count       = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  # Create CDN hostname for staging and legacy deployment (pre-release uses legacy's CDN)
+  count       = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
   pullzone    = bunnynet_pullzone.processor[0].id
   name        = "processor-cdn.${local.deployment_domain}"
   tls_enabled = true

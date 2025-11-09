@@ -18,11 +18,11 @@ resource "aws_instance" "instance" {
   root_block_device {
     volume_size = var.mode == "production" ? 120 : 60
     tags = {
-      "Name" = var.branch_name
+      "Name" = var.deployment_name
     }
   }
   tags = {
-    "Name" = var.branch_name
+    "Name" = var.deployment_name
   }
 }
 
@@ -31,6 +31,6 @@ resource "aws_eip" "instance_ip" {
   count    = var.use_hetzner ? 0 : 1
   instance = aws_instance.instance[0].id
   tags = {
-    "Name" = var.branch_name
+    "Name" = var.deployment_name
   }
 }

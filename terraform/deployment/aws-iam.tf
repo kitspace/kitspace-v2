@@ -1,12 +1,12 @@
 resource "aws_iam_user" "s3_user" {
   # For pre-release, skip IAM user creation (use production's)
-  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  count = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
   name  = "${local.bucket_name}-s3-user"
 }
 
 resource "aws_iam_policy" "s3_kitspace_processor_policy" {
   # For pre-release, skip policy creation (use production's)
-  count       = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  count       = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
   name        = "${local.bucket_name}-s3-policy"
   description = "Policy for processor S3 bucket access"
 
@@ -34,12 +34,12 @@ resource "aws_iam_policy" "s3_kitspace_processor_policy" {
 }
 
 resource "aws_iam_user_policy_attachment" "s3_policy_attach" {
-  count      = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  count      = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
   user       = aws_iam_user.s3_user[0].name
   policy_arn = aws_iam_policy.s3_kitspace_processor_policy[0].arn
 }
 
 resource "aws_iam_access_key" "s3_user_access_key" {
-  count = var.mode == "production" && var.branch_name == "pre-release" ? 0 : 1
+  count = var.mode == "production" && var.deployment_name == "pre-release" ? 0 : 1
   user  = aws_iam_user.s3_user[0].name
 }
