@@ -238,8 +238,8 @@ jobs:
               echo 'S3_SECRET_KEY=${{ secrets.STAGING_S3_SECRET_KEY_MASTER }}' >> $GITHUB_ENV
               echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-staging-master-5' >> $GITHUB_ENV;;
             pre-release)
-              echo 'KITSPACE_DOMAIN=pre-release.kitspace.org' >> $GITHUB_ENV
-              echo 'DEPLOY_SERVER=pre-release.kitspace.org' >> $GITHUB_ENV
+              echo 'KITSPACE_DOMAIN=kitspace.org' >> $GITHUB_ENV
+              echo 'DEPLOY_SERVER=kitspace.org' >> $GITHUB_ENV
               echo 'BLOCK_ROBOTS=false' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.PRODUCTION_S3_ACCESS_KEY }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.PRODUCTION_S3_SECRET_KEY }}' >> $GITHUB_ENV
@@ -252,7 +252,9 @@ jobs:
               echo 'BLOCK_ROBOTS=false' >> $GITHUB_ENV
               echo 'S3_ACCESS_KEY=${{ secrets.PRODUCTION_S3_ACCESS_KEY }}' >> $GITHUB_ENV
               echo 'S3_SECRET_KEY=${{ secrets.PRODUCTION_S3_SECRET_KEY }}' >> $GITHUB_ENV
-              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-production' >> $GITHUB_ENV;;
+              echo 'S3_PROCESSOR_BUCKET_NAME=kitspace-production' >> $GITHUB_ENV
+              echo 'KITSPACE_FRONTEND_ASSET_URL=https://frontend-cdn.kitspace.org' >> $GITHUB_ENV
+              echo 'KITSPACE_PROCESSOR_ASSET_URL=https://processor-cdn.kitspace.org/v6' >> $GITHUB_ENV;;
           esac
 
       - name: Deploy to ${{ env.KITSPACE_DOMAIN }}
