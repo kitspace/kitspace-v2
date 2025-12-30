@@ -1,13 +1,4 @@
 https://github.com/OpenDosimeter/OpenDosimeter
-https://github.com/OpenGammaProject/MicroFC-TempCo
-https://github.com/OpenGammaProject/AFBR-SiPM-Array-Board
-https://github.com/OpenGammaProject/Tiny-3mm-MicroFC-Carrier-Board
-https://github.com/OpenGammaProject/Tiny-MicroFC-Carrier-Board
-https://github.com/OpenGammaProject/MicroFC-SiPM-Array-Board
-https://github.com/OpenGammaProject/Mini-SiD
-https://github.com/OpenGammaProject/AFBR-SiPM-Carrier-Board
-https://github.com/OpenGammaProject/MicroFC-SiPM-Carrier-Board
-https://github.com/OpenGammaProject/Open-Gamma-Detector
 https://github.com/kammce/SJTwo
 https://github.com/mattvenn/esp8266-breakout
 https://github.com/kitspace-forks/arduino-uno
